@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary purpose of API rate limiting?",
+    "options": {
+      "A": "To speed up API responses",
+      "B": "To protect services from being overwhelmed and ensure fair usage",
+      "C": "To encrypt API traffic",
+      "D": "To authenticate users"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rate limiting prevents abuse, protects against DDoS, ensures fair resource allocation among clients, and maintains service stability by capping request rates.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which rate limiting algorithm allows bursts of traffic while maintaining an average rate?",
+    "options": {
+      "A": "Fixed window counter",
+      "B": "Token bucket",
+      "C": "Leaky bucket",
+      "D": "Sliding log"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Token bucket accumulates tokens over time (up to a max). Requests consume tokens. This allows bursts (using accumulated tokens) while maintaining average rate. Leaky bucket enforces strict constant rate.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A rate limiter uses a fixed window of 1 minute with 100 requests allowed. What is a potential issue?",
+    "options": {
+      "A": "It's too restrictive",
+      "B": "Burst at window boundaries can allow 200 requests in seconds",
+      "C": "It doesn't work with distributed systems",
+      "D": "It requires too much memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "If 100 requests come at 0:59 and 100 at 1:01, that's 200 requests in 2 seconds—double the intended rate. Sliding window algorithms address this boundary issue.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "Which HTTP status code should be returned when a rate limit is exceeded?",
+    "options": {
+      "A": "400 Bad Request",
+      "B": "403 Forbidden",
+      "C": "429 Too Many Requests",
+      "D": "503 Service Unavailable"
+    },
+    "correct_answers": ["C"],
+    "explanation": "429 Too Many Requests specifically indicates rate limiting. It should include Retry-After header telling the client when to retry. 503 suggests server issues, not client rate limiting.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which headers should a rate-limited API include in responses? (Choose all that apply)",
+    "options": {
+      "A": "X-RateLimit-Limit (max requests allowed)",
+      "B": "X-RateLimit-Remaining (requests left in window)",
+      "C": "X-RateLimit-Reset (when limit resets)",
+      "D": "X-RateLimit-Secret (internal rate limit key)"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Standard rate limit headers inform clients of their quota, remaining allowance, and reset time. This enables clients to self-throttle. Secret/internal keys should never be exposed.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A distributed API runs on multiple servers. What challenge does this create for rate limiting?",
+    "options": {
+      "A": "Rate limits can't be enforced",
+      "B": "Each server tracks limits independently, allowing higher total rates",
+      "C": "Rate limiting becomes faster",
+      "D": "Only one server can handle rate limiting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Without coordination, each server enforces its own limit. A client hitting N servers could make N × limit requests. Centralized stores (Redis) or distributed algorithms solve this.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is the difference between rate limiting and throttling?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Rate limiting rejects excess requests; throttling slows them down",
+      "C": "Throttling is for internal services; rate limiting is for external",
+      "D": "Rate limiting is per-user; throttling is global"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rate limiting typically rejects requests exceeding the limit (429 response). Throttling may queue or delay requests instead of rejecting. The terms are sometimes used interchangeably.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which rate limiting strategy is most appropriate for a public API with paying customers?",
+    "options": {
+      "A": "Same limit for all users",
+      "B": "Tiered limits based on subscription level",
+      "C": "No rate limiting for paying customers",
+      "D": "Rate limiting only for free tier"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tiered limits align with business model—higher-paying customers get higher limits. No limits risks abuse; same limits doesn't differentiate value; limiting only free tier still risks paid tier abuse.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "True or False: Rate limiting should only be applied at the API gateway level.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Defense in depth suggests multiple layers: API gateway (global), service level (per-service limits), and even database level. Gateway-only limiting doesn't protect against internal service abuse.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A client receives 429 with Retry-After: 30. What should it do?",
+    "options": {
+      "A": "Retry immediately",
+      "B": "Wait 30 seconds before retrying",
+      "C": "Give up and report an error",
+      "D": "Switch to a different API endpoint"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Retry-After indicates when the client should retry. Respecting this prevents wasted requests and shows good API citizenship. Immediate retry would likely fail again.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which factors can be used to identify clients for rate limiting? (Choose all that apply)",
+    "options": {
+      "A": "API key",
+      "B": "IP address",
+      "C": "User ID (after authentication)",
+      "D": "Request payload size"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Rate limits are typically per API key, IP, or authenticated user. Payload size might affect other limits (request size) but isn't used for rate identification.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is a 'leaky bucket' rate limiting algorithm?",
+    "options": {
+      "A": "Requests leak out of the system randomly",
+      "B": "Requests are processed at a constant rate regardless of arrival rate",
+      "C": "The bucket loses capacity over time",
+      "D": "Failed requests leak to a backup system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Leaky bucket processes requests at a fixed rate (like water leaking from a bucket). Excess requests queue up or are dropped. It smooths bursts into constant output rate.",
+    "difficulty": "medium",
+    "category": "api design"
+  }
+]

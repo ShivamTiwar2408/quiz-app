@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A system has three independent components in series, each with 99% availability. What is the approximate overall system availability?",
+    "options": {
+      "A": "99%",
+      "B": "97%",
+      "C": "99.9%",
+      "D": "33%"
+    },
+    "correct_answers": ["B"],
+    "explanation": "For components in series, multiply availabilities: 0.99 × 0.99 × 0.99 ≈ 0.97 (97%). Each additional serial component reduces overall availability.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "A critical service requires 99.99% availability. The team proposes adding a redundant instance. If each instance has 99% availability and they operate in active-passive mode, what is the combined availability?",
+    "options": {
+      "A": "99%",
+      "B": "99.99%",
+      "C": "99.9%",
+      "D": "98%"
+    },
+    "correct_answers": ["B"],
+    "explanation": "For parallel redundancy: 1 - (1-0.99)² = 1 - 0.0001 = 0.9999 (99.99%). Two 99% components in parallel achieve 99.99% availability.",
+    "difficulty": "hard",
+    "category": "availability"
+  },
+  {
+    "question": "Which practices contribute to achieving high availability? (Choose all that apply)",
+    "options": {
+      "A": "Deploying across multiple availability zones",
+      "B": "Implementing health checks and automatic failover",
+      "C": "Using a single powerful server instead of multiple smaller ones",
+      "D": "Designing for graceful degradation"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Multi-AZ deployment, health checks with failover, and graceful degradation all improve availability. A single powerful server creates a SPOF, reducing availability.",
+    "difficulty": "easy",
+    "category": "availability"
+  },
+  {
+    "question": "An e-commerce site targets 99.9% availability. During a planned maintenance window, the site will be down for 2 hours. How much additional unplanned downtime can they afford for the rest of the year?",
+    "options": {
+      "A": "Approximately 6.7 hours",
+      "B": "Approximately 8.76 hours",
+      "C": "Approximately 4.76 hours",
+      "D": "No additional downtime allowed"
+    },
+    "correct_answers": ["A"],
+    "explanation": "99.9% allows ~8.76 hours/year downtime. With 2 hours planned maintenance, ~6.76 hours remain for unplanned outages. Note: Some SLAs exclude planned maintenance from calculations.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "A payment processing system experiences a database failover that takes 30 seconds. During this time, all transactions fail. Which availability pattern would minimize this impact?",
+    "options": {
+      "A": "Cold standby",
+      "B": "Warm standby",
+      "C": "Hot standby with synchronous replication",
+      "D": "Scheduled backups"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Hot standby with synchronous replication keeps the standby fully synchronized and ready, minimizing failover time to seconds. Cold/warm standbys require longer recovery. Backups don't help with failover.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "Which statement correctly describes the relationship between availability and reliability?",
+    "options": {
+      "A": "They are the same concept measured differently",
+      "B": "High reliability guarantees high availability",
+      "C": "A system can be highly available but not highly reliable",
+      "D": "Availability only matters for user-facing systems"
+    },
+    "correct_answers": ["C"],
+    "explanation": "A system can be highly available (always accessible) but not reliable (frequently returns errors or wrong results). Reliability is about correct operation; availability is about being operational. High reliability contributes to but doesn't guarantee availability.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "A microservices architecture has 20 services, each with 99.5% availability. If a user request requires all 20 services to respond, what is the approximate request success rate?",
+    "options": {
+      "A": "99.5%",
+      "B": "90%",
+      "C": "95%",
+      "D": "99%"
+    },
+    "correct_answers": ["B"],
+    "explanation": "0.995^20 ≈ 0.905 (90.5%). This demonstrates why microservices must implement resilience patterns—serial dependencies multiply failure probabilities.",
+    "difficulty": "hard",
+    "category": "availability"
+  },
+  {
+    "question": "Which strategies help maintain availability during deployments? (Choose all that apply)",
+    "options": {
+      "A": "Blue-green deployments",
+      "B": "Rolling updates",
+      "C": "Big bang deployments with maintenance windows",
+      "D": "Canary releases"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Blue-green, rolling updates, and canary releases all enable zero-downtime deployments. Big bang deployments with maintenance windows explicitly sacrifice availability.",
+    "difficulty": "easy",
+    "category": "availability"
+  },
+  {
+    "question": "A system architect must choose between synchronous and asynchronous replication for a database. Which trade-off is most accurate?",
+    "options": {
+      "A": "Synchronous: higher availability, lower consistency",
+      "B": "Asynchronous: higher availability, potential data loss on failover",
+      "C": "Synchronous: lower latency, higher availability",
+      "D": "Asynchronous: lower availability, guaranteed consistency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Asynchronous replication doesn't wait for replica acknowledgment, providing better availability and lower latency, but risks losing recent writes during failover. Synchronous ensures consistency but can reduce availability if replicas are slow/unavailable.",
+    "difficulty": "hard",
+    "category": "availability"
+  },
+  {
+    "question": "True or False: Adding more redundant components always improves system availability.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Additional components add complexity, potential failure modes, and coordination overhead. Poorly implemented redundancy (e.g., shared dependencies, complex failover logic) can actually reduce availability. Redundancy must be properly designed.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "A global service needs to maintain availability during regional outages. Which architecture pattern is most appropriate?",
+    "options": {
+      "A": "Single-region with frequent backups",
+      "B": "Multi-region active-passive",
+      "C": "Multi-region active-active",
+      "D": "Single-region with multiple availability zones"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Multi-region active-active provides the highest availability during regional outages as traffic automatically routes to healthy regions. Active-passive requires failover time; single-region solutions don't survive regional failures.",
+    "difficulty": "medium",
+    "category": "availability"
+  },
+  {
+    "question": "Which factors should be included when calculating a system's availability SLA? (Choose all that apply)",
+    "options": {
+      "A": "Planned maintenance windows",
+      "B": "Partial degradation periods",
+      "C": "Third-party dependency outages",
+      "D": "Time to detect failures"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "Comprehensive SLAs should account for all downtime sources: planned maintenance, degraded operation, external dependencies, and detection delays. How each is counted varies by SLA definition.",
+    "difficulty": "medium",
+    "category": "availability"
+  }
+]

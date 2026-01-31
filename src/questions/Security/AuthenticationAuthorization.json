@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the difference between authentication and authorization?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Authentication verifies identity; authorization determines permissions",
+      "C": "Authorization verifies identity; authentication determines permissions",
+      "D": "Authentication is for users; authorization is for services"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Authentication: 'Who are you?' (verify identity via password, token, biometrics). Authorization: 'What can you do?' (check permissions for resources/actions). Authentication comes first, then authorization.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is a JWT (JSON Web Token)?",
+    "options": {
+      "A": "A database format",
+      "B": "A self-contained token containing claims, signed for integrity verification",
+      "C": "A JavaScript framework",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWT is a compact, self-contained token with three parts: header (algorithm), payload (claims like user ID, expiration), signature (integrity). Stateless—server doesn't need to store session. Widely used for API auth.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is OAuth 2.0?",
+    "options": {
+      "A": "An encryption algorithm",
+      "B": "An authorization framework for delegated access without sharing credentials",
+      "C": "A database",
+      "D": "A programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OAuth 2.0 enables delegated authorization: user grants app limited access to their resources on another service without sharing password. Example: 'Login with Google'—app gets access token, not your Google password.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is the difference between session-based and token-based authentication?",
+    "options": {
+      "A": "No difference",
+      "B": "Session-based stores state on server; token-based is stateless with self-contained tokens",
+      "C": "Token-based is less secure",
+      "D": "Session-based is only for mobile"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Session-based: server stores session data, client has session ID cookie. Token-based: token contains all info, server is stateless. Token-based scales better (no shared session store) but tokens can't be easily revoked.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is RBAC (Role-Based Access Control)?",
+    "options": {
+      "A": "A backup system",
+      "B": "Authorization model where permissions are assigned to roles, and users are assigned roles",
+      "C": "A database type",
+      "D": "An encryption method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC: define roles (admin, editor, viewer), assign permissions to roles, assign roles to users. Simplifies management—change role permissions, all users with that role are updated. Common in enterprise systems.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is an access token vs refresh token?",
+    "options": {
+      "A": "Same thing",
+      "B": "Access token: short-lived, used for API calls. Refresh token: long-lived, used to get new access tokens",
+      "C": "Refresh token is for API calls",
+      "D": "Access token never expires"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Access token: short-lived (minutes/hours), sent with each API request. Refresh token: long-lived (days/weeks), stored securely, used only to obtain new access tokens. Limits damage if access token is stolen.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is Single Sign-On (SSO)?",
+    "options": {
+      "A": "Signing documents once",
+      "B": "Authentication allowing users to access multiple applications with one login",
+      "C": "A single password for everything",
+      "D": "Signing in once per day"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO: authenticate once with identity provider, access multiple applications without re-authenticating. Improves UX (fewer logins), security (centralized auth), and management (single point for access control).",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is the principle of least privilege?",
+    "options": {
+      "A": "Give everyone admin access",
+      "B": "Grant only the minimum permissions necessary to perform a task",
+      "C": "Remove all permissions",
+      "D": "Privilege is not important"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least privilege: users/services get only permissions they need, nothing more. Limits blast radius of compromised accounts. Review and revoke unnecessary permissions regularly. Security best practice.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "True or False: JWTs can be revoked instantly like sessions.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWTs are stateless—server doesn't track them. Can't revoke instantly without additional infrastructure (blocklist, short expiration + refresh tokens). Sessions can be invalidated by deleting server-side session data.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is API key authentication?",
+    "options": {
+      "A": "Physical key for servers",
+      "B": "Simple authentication using a secret string passed with requests",
+      "C": "Keyboard shortcuts",
+      "D": "Database keys"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API key: simple secret string identifying the caller. Easy to implement but limited: no user context, hard to rotate, often sent in headers/query strings. Better for service-to-service than user authentication.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is MFA (Multi-Factor Authentication)?",
+    "options": {
+      "A": "Multiple passwords",
+      "B": "Authentication requiring multiple independent factors (something you know, have, are)",
+      "C": "Logging in multiple times",
+      "D": "Multiple user accounts"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MFA requires multiple factors: knowledge (password), possession (phone, hardware key), inherence (biometrics). Compromising one factor isn't enough. Significantly improves security against credential theft.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What should happen when a JWT expires?",
+    "options": {
+      "A": "Continue using it",
+      "B": "Use refresh token to obtain new access token, or re-authenticate",
+      "C": "Delete user account",
+      "D": "Ignore expiration"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Expired JWT should be rejected. Client uses refresh token (if available) to get new access token without user interaction. If refresh token also expired, user must re-authenticate. Never accept expired tokens.",
+    "difficulty": "medium",
+    "category": "security"
+  }
+]

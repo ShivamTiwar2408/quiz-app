@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the 'split-brain' problem in distributed systems?",
+    "options": {
+      "A": "CPU overload causing system slowdown",
+      "B": "Two partitions each believing they are the authoritative cluster, potentially accepting conflicting writes",
+      "C": "Memory fragmentation",
+      "D": "Database query optimization issue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Split-brain occurs during network partition when isolated groups each elect their own leader and accept writes independently. When partition heals, conflicting data must be reconciled—a serious consistency problem.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does quorum-based voting prevent split-brain?",
+    "options": {
+      "A": "It doesn't prevent split-brain",
+      "B": "Only the partition with majority of nodes can make decisions",
+      "C": "It encrypts all communications",
+      "D": "It speeds up network recovery"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quorum requires majority (N/2 + 1) agreement. During partition, only one side can have majority. The minority partition cannot achieve quorum and must stop accepting writes, preventing conflicting decisions.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A 4-node cluster experiences a network partition splitting it 2-2. What is the problem?",
+    "options": {
+      "A": "No problem, both sides continue",
+      "B": "Neither side has majority, so neither can make progress (or both might, causing split-brain)",
+      "C": "One side automatically wins",
+      "D": "The cluster doubles in size"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With even nodes, a 50-50 split has no majority. Neither side can achieve quorum. If the system doesn't handle this, both might operate independently (split-brain). This is why odd node counts are recommended.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'witness' or 'arbiter' node in preventing split-brain?",
+    "options": {
+      "A": "A node that monitors performance",
+      "B": "A lightweight node that participates in voting but doesn't store data",
+      "C": "A backup node",
+      "D": "A node that witnesses transactions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Witness/arbiter nodes participate in quorum voting without storing data. They break ties in even-node clusters. Example: 2 data nodes + 1 witness = 3 votes, enabling majority decisions.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is STONITH and how does it prevent split-brain?",
+    "options": {
+      "A": "A caching algorithm",
+      "B": "'Shoot The Other Node In The Head' - forcibly shutting down nodes to ensure only one partition operates",
+      "C": "A consensus protocol",
+      "D": "A network monitoring tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "STONITH (or fencing) forcibly powers off or isolates nodes that might cause split-brain. If a node is suspected of being in a minority partition, it's killed to ensure it can't accept writes.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Split-brain can only occur with network partitions.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Split-brain can also occur from: slow nodes appearing dead (false failure detection), misconfigured timeouts, or bugs in leader election. Any situation where multiple nodes believe they're the leader can cause split-brain.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A database cluster uses leader-based replication. During split-brain, what is the worst-case scenario?",
+    "options": {
+      "A": "Slower queries",
+      "B": "Two leaders accepting conflicting writes, causing data divergence",
+      "C": "Increased memory usage",
+      "D": "Network congestion"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Two leaders = two sources of truth. Both accept writes that conflict (e.g., different values for same key). When partition heals, data has diverged. Reconciliation may lose data or require manual intervention.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does ZooKeeper prevent split-brain in distributed systems?",
+    "options": {
+      "A": "It doesn't address split-brain",
+      "B": "Uses Zab consensus requiring majority quorum for all decisions",
+      "C": "Encrypts all data",
+      "D": "Uses eventual consistency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ZooKeeper uses Zab (ZooKeeper Atomic Broadcast) consensus. All writes require majority acknowledgment. During partition, minority cannot write. This makes ZooKeeper a reliable coordination service for leader election.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'fencing' in the context of split-brain prevention?",
+    "options": {
+      "A": "Network security perimeter",
+      "B": "Mechanisms to prevent a node from accessing shared resources after being considered failed",
+      "C": "Data partitioning strategy",
+      "D": "Load balancing technique"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fencing ensures a 'dead' node can't access shared resources (storage, network). Methods: power fencing (cut power), storage fencing (revoke access), network fencing (block traffic). Prevents zombie nodes causing split-brain.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A Kubernetes cluster loses connectivity to the control plane. What prevents split-brain in pod scheduling?",
+    "options": {
+      "A": "Nothing, Kubernetes doesn't handle this",
+      "B": "etcd's Raft consensus ensures only majority partition can schedule",
+      "C": "Pods automatically stop",
+      "D": "DNS prevents split-brain"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kubernetes control plane uses etcd (Raft consensus). Only the partition with etcd majority can make scheduling decisions. Minority partition's control plane becomes read-only, preventing conflicting schedules.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which design choices help prevent split-brain? (Choose all that apply)",
+    "options": {
+      "A": "Odd number of nodes",
+      "B": "Quorum-based consensus",
+      "C": "Fencing mechanisms",
+      "D": "Ignoring network partitions"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Odd nodes ensure clear majority. Quorum requires majority for decisions. Fencing kills potentially rogue nodes. Ignoring partitions guarantees split-brain when they occur.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "After split-brain is detected and resolved, what must happen to the data?",
+    "options": {
+      "A": "Nothing, data is automatically consistent",
+      "B": "Conflicting writes must be identified and reconciled",
+      "C": "All data is deleted",
+      "D": "The cluster must be rebuilt"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Split-brain may have caused conflicting writes. Reconciliation strategies: last-write-wins (may lose data), merge (if possible), manual resolution, or application-specific logic. This is why preventing split-brain is critical.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

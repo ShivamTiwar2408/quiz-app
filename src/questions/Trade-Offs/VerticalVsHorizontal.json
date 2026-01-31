@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is vertical scaling?",
+    "options": {
+      "A": "Adding more servers",
+      "B": "Increasing capacity of a single server (more CPU, RAM, storage)",
+      "C": "Distributing data across servers",
+      "D": "Adding more data centers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vertical scaling (scale up) increases single server capacity: more CPU cores, RAM, faster storage. Simple to implement but has hardware limits. Eventually you hit the ceiling of available hardware.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is horizontal scaling?",
+    "options": {
+      "A": "Upgrading server hardware",
+      "B": "Adding more servers to distribute load",
+      "C": "Increasing network bandwidth",
+      "D": "Adding more storage to one server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Horizontal scaling (scale out) adds more servers to share the workload. Theoretically unlimited scaling. Requires load balancing and often application changes to handle distributed state.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which are advantages of vertical scaling? (Choose all that apply)",
+    "options": {
+      "A": "Simpler architecture—no distributed systems complexity",
+      "B": "No application code changes typically required",
+      "C": "Unlimited scaling potential",
+      "D": "Lower operational complexity"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Vertical scaling advantages: simpler (single server), no code changes (just bigger hardware), lower ops complexity (one server to manage). Limitation: NOT unlimited—hardware has maximum specs.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which are advantages of horizontal scaling? (Choose all that apply)",
+    "options": {
+      "A": "Theoretically unlimited scaling",
+      "B": "Better fault tolerance through redundancy",
+      "C": "Simpler than vertical scaling",
+      "D": "Cost-effective at large scale using commodity hardware"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Horizontal scaling advantages: unlimited scaling (add more servers), fault tolerance (one server fails, others continue), cost-effective at scale (commodity hardware). NOT simpler—adds distributed systems complexity.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A startup with 100 users is choosing a scaling strategy. Which is typically recommended initially?",
+    "options": {
+      "A": "Horizontal scaling from day one",
+      "B": "Vertical scaling until it's no longer sufficient",
+      "C": "No scaling strategy needed",
+      "D": "Multi-region deployment"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Start with vertical scaling—simpler, faster to implement, sufficient for early growth. Add horizontal scaling when vertical limits are reached or fault tolerance becomes critical. Premature optimization adds unnecessary complexity.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is a key limitation of vertical scaling?",
+    "options": {
+      "A": "Too expensive at small scale",
+      "B": "Hardware has maximum limits—can't scale indefinitely",
+      "C": "Requires application rewrites",
+      "D": "Doesn't improve performance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vertical scaling hits hardware ceiling—largest available servers have finite CPU, RAM, storage. Beyond that, you must scale horizontally. Also, single server = single point of failure.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What complexity does horizontal scaling introduce? (Choose all that apply)",
+    "options": {
+      "A": "Load balancing",
+      "B": "Distributed state management",
+      "C": "Network communication overhead",
+      "D": "Simpler debugging"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Horizontal scaling adds: load balancing (distribute requests), state management (sessions, caches across servers), network overhead (servers communicate). Debugging becomes HARDER, not simpler—distributed systems are complex.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "True or False: Horizontal scaling always provides better cost efficiency than vertical scaling.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "At small scale, vertical scaling can be more cost-effective (one server vs. multiple + load balancer + ops overhead). Horizontal becomes more economical at large scale where commodity hardware beats expensive high-end servers.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A database is the bottleneck. Which scaling approach helps?",
+    "options": {
+      "A": "Horizontal scaling of application servers only",
+      "B": "Vertical scaling of database or database-specific horizontal strategies (read replicas, sharding)",
+      "C": "Adding more load balancers",
+      "D": "Scaling doesn't help database bottlenecks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "If database is the bottleneck, scaling app servers doesn't help. Options: vertical scaling (bigger DB server), read replicas (for read-heavy), sharding (for write-heavy). Must address the actual bottleneck.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which workloads are easier to scale horizontally? (Choose all that apply)",
+    "options": {
+      "A": "Stateless web servers",
+      "B": "Single-threaded batch jobs",
+      "C": "Microservices",
+      "D": "Stateful applications with in-memory sessions"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "Stateless workloads (web servers, microservices) scale horizontally easily—any instance can handle any request. Stateful apps need session management. Single-threaded jobs may not parallelize well.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is 'scale cube' in system design?",
+    "options": {
+      "A": "A physical server shape",
+      "B": "Three dimensions of scaling: X (cloning), Y (functional split), Z (data partitioning)",
+      "C": "A database type",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Scale cube defines three scaling dimensions: X-axis (horizontal cloning—more instances), Y-axis (functional decomposition—microservices), Z-axis (data partitioning—sharding). Comprehensive scaling uses all three.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A system needs 99.99% availability. Which scaling approach better supports this?",
+    "options": {
+      "A": "Vertical scaling with the most reliable hardware",
+      "B": "Horizontal scaling with redundancy across multiple servers",
+      "C": "Either approach works equally well",
+      "D": "Availability is unrelated to scaling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "High availability requires redundancy—horizontal scaling provides this naturally. Multiple servers mean one failure doesn't cause outage. Vertical scaling creates single point of failure; even reliable hardware eventually fails.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A payment service processes 1 million transactions daily. It has 99.9% reliability (correct results). How many transactions might fail or return incorrect results daily?",
+    "options": {
+      "A": "10 transactions",
+      "B": "100 transactions",
+      "C": "1,000 transactions",
+      "D": "10,000 transactions"
+    },
+    "correct_answers": ["C"],
+    "explanation": "0.1% of 1,000,000 = 1,000 potentially failed or incorrect transactions. This illustrates why even 'three nines' reliability can mean significant absolute failures at scale.",
+    "difficulty": "easy",
+    "category": "reliability"
+  },
+  {
+    "question": "Which practices improve system reliability? (Choose all that apply)",
+    "options": {
+      "A": "Implementing comprehensive input validation",
+      "B": "Using chaos engineering to discover weaknesses",
+      "C": "Minimizing code changes to reduce risk",
+      "D": "Implementing retry logic with exponential backoff"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Input validation prevents bad data, chaos engineering reveals weaknesses, and smart retries handle transient failures. Minimizing changes can actually reduce reliability by accumulating technical debt and delaying necessary fixes.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "A distributed system experiences intermittent failures. Investigation reveals that retries are overwhelming a recovering service. Which pattern addresses this?",
+    "options": {
+      "A": "Immediate retry on failure",
+      "B": "Circuit breaker pattern",
+      "C": "Increasing timeout values",
+      "D": "Adding more service instances"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit breakers stop calling a failing service, giving it time to recover. Immediate retries worsen the problem; longer timeouts don't reduce load; more instances don't help if the service itself is failing.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "What distinguishes fault tolerance from fault avoidance?",
+    "options": {
+      "A": "Fault tolerance prevents faults; fault avoidance handles them",
+      "B": "Fault tolerance handles faults gracefully; fault avoidance tries to prevent them",
+      "C": "They are the same concept with different names",
+      "D": "Fault tolerance is cheaper to implement"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fault avoidance uses techniques like code reviews and testing to prevent faults. Fault tolerance assumes faults will occur and designs systems to continue operating despite them (redundancy, failover, graceful degradation).",
+    "difficulty": "easy",
+    "category": "reliability"
+  },
+  {
+    "question": "A service has MTBF (Mean Time Between Failures) of 720 hours and MTTR (Mean Time To Repair) of 4 hours. What is its approximate availability?",
+    "options": {
+      "A": "99.44%",
+      "B": "99.9%",
+      "C": "98%",
+      "D": "99.99%"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Availability = MTBF / (MTBF + MTTR) = 720 / (720 + 4) = 720/724 ≈ 0.9944 (99.44%). This formula shows how both failure frequency and repair time affect availability.",
+    "difficulty": "hard",
+    "category": "reliability"
+  },
+  {
+    "question": "Which failure handling strategy is most appropriate for a non-critical background job that fails?",
+    "options": {
+      "A": "Immediately alert on-call engineers",
+      "B": "Retry with exponential backoff and dead letter queue",
+      "C": "Fail fast and drop the job",
+      "D": "Block until manual intervention"
+    },
+    "correct_answers": ["B"],
+    "explanation": "For non-critical background jobs, retry with backoff handles transient failures, and DLQ captures persistent failures for later analysis without blocking. Immediate alerts waste attention; dropping loses work; blocking wastes resources.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "A team implements the bulkhead pattern in their microservices. What problem does this primarily solve?",
+    "options": {
+      "A": "Preventing a failure in one component from exhausting shared resources",
+      "B": "Improving response time for critical requests",
+      "C": "Reducing memory usage across services",
+      "D": "Simplifying service discovery"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Bulkheads isolate components so a failure or resource exhaustion in one doesn't cascade to others—like ship compartments preventing total flooding. It's about fault isolation, not performance or resource optimization.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "Which statements about idempotency and reliability are correct? (Choose all that apply)",
+    "options": {
+      "A": "Idempotent operations can be safely retried",
+      "B": "All database writes are naturally idempotent",
+      "C": "Idempotency helps handle duplicate messages in distributed systems",
+      "D": "Idempotency eliminates the need for transactions"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "Idempotent operations produce the same result regardless of how many times they're executed, enabling safe retries and duplicate handling. Database writes aren't naturally idempotent (INSERT creates duplicates). Idempotency doesn't replace transactions for multi-step operations.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "A system uses health checks that only verify the process is running. What critical aspect of reliability might this miss?",
+    "options": {
+      "A": "CPU utilization",
+      "B": "Dependency health and functional correctness",
+      "C": "Memory allocation",
+      "D": "Network bandwidth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "A running process might have broken database connections, failed dependencies, or logic errors. Deep health checks should verify the service can actually perform its function, not just that it's alive.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "True or False: A system with 99.99% availability is necessarily more reliable than one with 99.9% availability.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Availability measures uptime; reliability measures correct operation. A system could be highly available but return incorrect results frequently. The 99.99% available system might have more bugs or data corruption than the 99.9% one.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "Which combination of techniques provides defense in depth for reliability? (Choose all that apply)",
+    "options": {
+      "A": "Input validation at API gateway and service level",
+      "B": "Circuit breakers and retry logic",
+      "C": "Single comprehensive test suite",
+      "D": "Monitoring, alerting, and automated remediation"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Defense in depth uses multiple layers: validation at multiple points, resilience patterns (circuit breakers + retries), and operational safeguards (monitoring + remediation). A single test suite, however comprehensive, is one layer, not defense in depth.",
+    "difficulty": "medium",
+    "category": "reliability"
+  },
+  {
+    "question": "A service experiences cascading failures when a downstream dependency slows down. Which timeout strategy best prevents this?",
+    "options": {
+      "A": "No timeout (wait indefinitely)",
+      "B": "Very short timeout (100ms)",
+      "C": "Adaptive timeout based on historical latency",
+      "D": "Very long timeout (60 seconds)"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Adaptive timeouts adjust based on normal operation patterns, catching abnormal slowdowns without false positives. No timeout causes resource exhaustion; too short causes false failures; too long delays failure detection.",
+    "difficulty": "hard",
+    "category": "reliability"
+  }
+]

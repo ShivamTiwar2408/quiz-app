@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a document database?",
+    "options": {
+      "A": "A database for storing Word documents",
+      "B": "A NoSQL database that stores data as semi-structured documents (JSON, BSON, XML)",
+      "C": "A file system",
+      "D": "A relational database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Document databases store data as documents (typically JSON/BSON). Each document is self-describing, can have different fields, and supports nested structures. Examples: MongoDB, CouchDB, DynamoDB.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is a key advantage of document databases over relational databases?",
+    "options": {
+      "A": "Better ACID compliance",
+      "B": "Flexible schema—documents can have different structures without migrations",
+      "C": "Stronger consistency",
+      "D": "Better join performance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Schema flexibility: add fields without ALTER TABLE, different documents can have different fields. Great for evolving data models, varied data structures, and rapid development. Tradeoff: less structure enforcement.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "When would you choose a document database over a relational database?",
+    "options": {
+      "A": "When you need complex joins across many tables",
+      "B": "When data is hierarchical, schema evolves frequently, or you need horizontal scaling",
+      "C": "When you need strict ACID transactions across multiple records",
+      "D": "When data is highly normalized"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Document DBs excel at: hierarchical/nested data (user profiles, product catalogs), evolving schemas, horizontal scaling, read-heavy workloads. Avoid when you need complex joins or strict multi-document transactions.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is embedding vs referencing in document database design?",
+    "options": {
+      "A": "Two encryption methods",
+      "B": "Embedding: nest related data in one document; Referencing: store ID and query separately",
+      "C": "Two indexing strategies",
+      "D": "Two backup methods"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Embedding: {user: {name: 'John', address: {city: 'NYC'}}}—one query, data locality. Referencing: {user: {name: 'John', addressId: '123'}}—normalized, separate queries. Choose based on access patterns.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is MongoDB's BSON format?",
+    "options": {
+      "A": "A text format",
+      "B": "Binary JSON—extends JSON with additional types like Date, Binary, ObjectId",
+      "C": "A compression algorithm",
+      "D": "An encryption standard"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BSON: Binary JSON. Adds types JSON lacks (Date, Binary, ObjectId, Decimal128). More efficient to parse and encode than text JSON. Supports efficient field traversal without parsing entire document.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How do document databases typically handle relationships between documents?",
+    "options": {
+      "A": "Foreign keys with referential integrity",
+      "B": "Application-level references (store IDs) or embedding; no enforced referential integrity",
+      "C": "Automatic joins",
+      "D": "They don't support relationships"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Document DBs don't enforce referential integrity. You either embed related data (denormalize) or store references (IDs) and join in application code. Design for your access patterns, not normalization.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a collection in MongoDB?",
+    "options": {
+      "A": "A group of databases",
+      "B": "Analogous to a table—a grouping of documents, typically of similar structure",
+      "C": "An index",
+      "D": "A query result"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Collection ≈ table in relational terms. Contains documents (≈ rows). Unlike tables, collections don't enforce schema—documents can vary. Logical grouping for related data.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is the N+1 query problem in document databases?",
+    "options": {
+      "A": "A mathematical formula",
+      "B": "Fetching a list (1 query) then fetching related data for each item (N queries)",
+      "C": "A storage issue",
+      "D": "An indexing problem"
+    },
+    "correct_answers": ["B"],
+    "explanation": "N+1 problem: query users (1), then for each user query their orders (N). Solution: embed orders in user document, use aggregation pipeline, or batch fetch with $in operator.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "Which of these is NOT a document database?",
+    "options": {
+      "A": "MongoDB",
+      "B": "CouchDB",
+      "C": "Redis",
+      "D": "Amazon DocumentDB"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Redis is a key-value store (with data structure support), not a document database. MongoDB, CouchDB, and Amazon DocumentDB are document databases storing JSON/BSON documents.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is the aggregation pipeline in MongoDB?",
+    "options": {
+      "A": "A data import tool",
+      "B": "A framework for data transformation and analysis through sequential stages",
+      "C": "A backup mechanism",
+      "D": "A replication feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Aggregation pipeline: chain of stages ($match, $group, $project, $sort, $lookup). Documents flow through stages, each transforming the data. Powerful for analytics, reporting, and complex queries.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How do document databases handle schema validation?",
+    "options": {
+      "A": "They can't validate schemas",
+      "B": "Optional schema validation rules can be defined at the collection level",
+      "C": "Schemas are always strictly enforced",
+      "D": "Only at application level"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Modern document DBs support optional schema validation. MongoDB: JSON Schema validation on collections. You choose enforcement level (strict, moderate). Flexibility with optional guardrails.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "A social media app stores user posts. Each post has comments. What's the best document design?",
+    "options": {
+      "A": "Always embed all comments in the post document",
+      "B": "Depends on access patterns—embed if few comments, reference if many or accessed separately",
+      "C": "Always use separate collections with references",
+      "D": "Store as CSV"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Design depends on: comment count (documents have size limits), access patterns (always fetch together?), update frequency. Hybrid: embed recent comments, reference older ones. No one-size-fits-all.",
+    "difficulty": "hard",
+    "category": "databases"
+  }
+]

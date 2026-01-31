@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is log aggregation?",
+    "options": {
+      "A": "Deleting logs",
+      "B": "Collecting logs from multiple sources into a centralized system for search and analysis",
+      "C": "Compressing logs",
+      "D": "Encrypting logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log aggregation: collect logs from all services/servers into one place. Enables: searching across systems, correlation, alerting, long-term storage. Essential for distributed systems. Examples: ELK Stack, Splunk, Datadog.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the ELK Stack?",
+    "options": {
+      "A": "A type of animal",
+      "B": "Elasticsearch (search), Logstash (processing), Kibana (visualization) for log management",
+      "C": "A database",
+      "D": "A programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ELK Stack: Elasticsearch (store and search logs), Logstash (collect and transform), Kibana (visualize and dashboard). Now often EFK (Fluentd instead of Logstash) or Elastic Stack. Popular open-source solution.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "Why is centralized logging important for microservices?",
+    "options": {
+      "A": "It's not important",
+      "B": "Requests span multiple services; need to trace and correlate logs across all of them",
+      "C": "To save disk space",
+      "D": "For encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices logging challenge: one request touches many services. Without centralized logging, must SSH into each server. Centralized: search all logs, correlate by request ID, see full picture.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a log shipper?",
+    "options": {
+      "A": "A delivery company",
+      "B": "An agent that collects logs from sources and sends them to the aggregation system",
+      "C": "A log viewer",
+      "D": "A log deleter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log shipper: agent on each server collecting logs. Examples: Filebeat, Fluentd, Fluent Bit, Logstash. Reads log files, adds metadata, buffers, ships to central system. Lightweight, reliable delivery.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is structured logging?",
+    "options": {
+      "A": "Logs in a building",
+      "B": "Logging in a consistent, parseable format (JSON) with defined fields instead of free-form text",
+      "C": "Compressed logs",
+      "D": "Encrypted logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Structured logging: {\"timestamp\": \"...\", \"level\": \"ERROR\", \"service\": \"auth\", \"user_id\": 123, \"message\": \"...\"}. Enables: filtering, aggregation, alerting on specific fields. Much better than parsing free-form text.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is log retention and why does it matter?",
+    "options": {
+      "A": "Keeping employees",
+      "B": "How long logs are stored; balances storage costs, compliance requirements, and debugging needs",
+      "C": "Log encryption",
+      "D": "Log compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log retention: how long to keep logs. Considerations: storage cost (logs are big), compliance (some require years), debugging (need recent logs), legal (discovery requirements). Tiered: hot (recent), warm, cold (archive).",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the difference between Logstash and Fluentd?",
+    "options": {
+      "A": "They are identical",
+      "B": "Both are log processors; Logstash (Ruby, more plugins) vs Fluentd (C/Ruby, lighter, CNCF project)",
+      "C": "Logstash is a database",
+      "D": "Fluentd doesn't process logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Logstash: Elastic's processor, rich plugins, higher resource usage. Fluentd: CNCF project, lighter (Fluent Bit even lighter), Kubernetes-native. Both: collect, transform, route logs. Choose based on ecosystem.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is log sampling?",
+    "options": {
+      "A": "Tasting logs",
+      "B": "Collecting only a percentage of logs to reduce volume and cost while maintaining visibility",
+      "C": "Deleting all logs",
+      "D": "Encrypting logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log sampling: at high volume, store subset (e.g., 10%). Reduces cost, still provides visibility. Strategies: random sampling, sample by importance (always keep errors), head-based sampling. Tradeoff: might miss rare events.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is Splunk?",
+    "options": {
+      "A": "A sound effect",
+      "B": "A commercial platform for log management, search, analysis, and visualization",
+      "C": "A database",
+      "D": "A programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Splunk: enterprise log management platform. Features: powerful search (SPL), dashboards, alerting, ML capabilities. Expensive but feature-rich. Alternatives: ELK (open source), Datadog, Sumo Logic.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the challenge of logging in containerized environments?",
+    "options": {
+      "A": "No challenges",
+      "B": "Containers are ephemeral; logs must be collected before container dies, stdout/stderr handling",
+      "C": "Containers don't produce logs",
+      "D": "Logs are too small"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Container logging challenges: containers die (logs lost), many containers (scale), stdout/stderr (not files), dynamic IPs. Solutions: log to stdout, DaemonSet collectors (Fluentd), sidecar pattern, container runtime integration.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is log parsing?",
+    "options": {
+      "A": "Deleting logs",
+      "B": "Extracting structured fields from log messages for indexing and querying",
+      "C": "Compressing logs",
+      "D": "Encrypting logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log parsing: extract fields from log lines. '192.168.1.1 - - [10/Oct/2024:13:55:36] \"GET /api\"' → {ip: '192.168.1.1', timestamp: '...', method: 'GET', path: '/api'}. Enables filtering, aggregation. Grok patterns common.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "A company has 500 microservices generating 10TB of logs daily. What's the logging strategy?",
+    "options": {
+      "A": "Log to local files only",
+      "B": "Centralized aggregation with structured logging, sampling for high-volume services, tiered retention",
+      "C": "Disable logging",
+      "D": "Print to console only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "500 services, 10TB/day: centralized aggregation essential (ELK, Splunk, Datadog). Structured logging for queryability. Sample high-volume/low-value logs. Tiered retention (7 days hot, 30 days warm, archive cold). Cost management critical.",
+    "difficulty": "hard",
+    "category": "observability"
+  }
+]

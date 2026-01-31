@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a key-value store?",
+    "options": {
+      "A": "A relational database",
+      "B": "A simple database that stores data as key-value pairs, like a hash map",
+      "C": "A file system",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Key-value stores: simplest NoSQL model. Store and retrieve values by unique keys. Like a distributed hash table. Examples: Redis, Memcached, DynamoDB, etcd. Extremely fast for simple lookups.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What operations do key-value stores typically support?",
+    "options": {
+      "A": "Complex SQL queries",
+      "B": "GET, PUT, DELETE—basic CRUD by key",
+      "C": "Joins and aggregations",
+      "D": "Full-text search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Core operations: GET(key), PUT(key, value), DELETE(key). Some support: TTL, atomic increments, conditional writes. No joins, limited querying. Simplicity enables extreme performance.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "When would you choose a key-value store?",
+    "options": {
+      "A": "Complex relational queries",
+      "B": "Caching, session storage, real-time data where access is by known keys",
+      "C": "Data warehousing",
+      "D": "Complex transactions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Key-value stores excel at: caching (Redis/Memcached), session storage, user preferences, shopping carts, real-time leaderboards. When you know the key and need fast access. Not for complex queries.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between Redis and Memcached?",
+    "options": {
+      "A": "They are identical",
+      "B": "Redis: data structures, persistence, replication; Memcached: simpler, multi-threaded, pure cache",
+      "C": "Memcached is newer",
+      "D": "Redis doesn't support strings"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis: rich data types (lists, sets, hashes), persistence options, replication, Lua scripting. Memcached: simpler, multi-threaded (better for simple caching at scale), no persistence. Choose based on needs.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What data structures does Redis support beyond simple strings?",
+    "options": {
+      "A": "Only strings",
+      "B": "Lists, Sets, Sorted Sets, Hashes, Streams, HyperLogLog",
+      "C": "Only integers",
+      "D": "Only JSON"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis data structures: Strings, Lists (queues), Sets (unique items), Sorted Sets (leaderboards), Hashes (objects), Streams (event logs), HyperLogLog (cardinality), Bitmaps. Very versatile.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How do key-value stores achieve high performance?",
+    "options": {
+      "A": "Complex indexing",
+      "B": "Simple data model, in-memory storage, O(1) hash-based lookups",
+      "C": "SQL optimization",
+      "D": "Compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Performance from: hash-based O(1) lookups, in-memory storage (Redis, Memcached), simple data model (no joins/parsing), minimal overhead. Sub-millisecond latency for most operations.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a limitation of key-value stores?",
+    "options": {
+      "A": "They're too fast",
+      "B": "No querying by value—you must know the key; no relationships or complex queries",
+      "C": "They use too little memory",
+      "D": "They're too reliable"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Limitations: must know key to retrieve (no 'find all users where age > 30'), no joins, no secondary indexes (usually), limited transaction support. Design keys carefully for your access patterns.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is etcd used for?",
+    "options": {
+      "A": "Web caching",
+      "B": "Distributed configuration and service discovery (used by Kubernetes)",
+      "C": "Image storage",
+      "D": "Video streaming"
+    },
+    "correct_answers": ["B"],
+    "explanation": "etcd: distributed key-value store for configuration, service discovery, leader election. Uses Raft for consensus. Kubernetes stores all cluster state in etcd. Strong consistency, not for high-throughput caching.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How does DynamoDB differ from Redis as a key-value store?",
+    "options": {
+      "A": "They are the same",
+      "B": "DynamoDB: managed, persistent, scalable, supports secondary indexes; Redis: in-memory, faster, richer data types",
+      "C": "Redis is managed by AWS",
+      "D": "DynamoDB is in-memory only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DynamoDB: fully managed, auto-scaling, persistent, global tables, secondary indexes. Redis: in-memory (faster), rich data structures, pub/sub. DynamoDB for durable storage, Redis for caching/real-time.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is key design important in key-value stores?",
+    "options": {
+      "A": "Keys don't matter",
+      "B": "Keys determine access patterns—must encode all query dimensions into the key",
+      "C": "Keys should be random",
+      "D": "Keys should be as long as possible"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Key design is crucial: user:123:profile, order:456:items. Encode entity type, ID, and attribute. Can't query by value, so key must contain everything needed to locate data. Composite keys for range queries.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is TTL (Time To Live) in key-value stores?",
+    "options": {
+      "A": "A network protocol",
+      "B": "Automatic expiration—keys are deleted after a specified time",
+      "C": "A backup feature",
+      "D": "A replication setting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TTL: set expiration time on keys. After TTL, key is automatically deleted. Perfect for: cache entries, session tokens, temporary data. Redis: EXPIRE, SETEX commands. Prevents stale data accumulation.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "A gaming app needs a real-time leaderboard showing top 100 players. Which is most suitable?",
+    "options": {
+      "A": "MySQL with ORDER BY",
+      "B": "Redis Sorted Sets",
+      "C": "Memcached",
+      "D": "etcd"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis Sorted Sets: O(log n) insert/update, O(log n + m) range queries. ZADD to update scores, ZREVRANGE for top N. Perfect for leaderboards. MySQL would require expensive sorting on every query.",
+    "difficulty": "medium",
+    "category": "databases"
+  }
+]

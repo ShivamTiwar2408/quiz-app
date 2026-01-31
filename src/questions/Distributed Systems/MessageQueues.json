@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary purpose of a message queue in distributed systems?",
+    "options": {
+      "A": "To store data permanently",
+      "B": "To decouple producers and consumers, enabling asynchronous communication",
+      "C": "To encrypt messages",
+      "D": "To compress data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Message queues decouple services—producers send messages without waiting for consumers. This enables asynchronous processing, load leveling, and resilience to consumer failures.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the difference between a message queue and a pub/sub system?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Queue: each message consumed by one consumer; Pub/Sub: messages broadcast to all subscribers",
+      "C": "Pub/Sub is faster",
+      "D": "Queues don't persist messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In queues, each message is processed by one consumer (competing consumers). In pub/sub, messages are broadcast to all subscribers of a topic. Different patterns for different use cases.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'dead letter queue' (DLQ)?",
+    "options": {
+      "A": "A queue for deleted messages",
+      "B": "A queue for messages that failed processing after retries",
+      "C": "A queue that's no longer in use",
+      "D": "A queue for urgent messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DLQ stores messages that couldn't be processed successfully after maximum retries. This prevents poison messages from blocking the queue and allows later analysis/reprocessing.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which delivery guarantee is hardest to achieve in distributed messaging?",
+    "options": {
+      "A": "At-most-once",
+      "B": "At-least-once",
+      "C": "Exactly-once",
+      "D": "Best-effort"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Exactly-once is extremely difficult due to network failures and partial failures. At-most-once (may lose messages) and at-least-once (may duplicate) are easier. Exactly-once often requires idempotent consumers.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A consumer processes a message but crashes before acknowledging. What happens with at-least-once delivery?",
+    "options": {
+      "A": "Message is lost",
+      "B": "Message is redelivered to another consumer",
+      "C": "Message is automatically marked as processed",
+      "D": "The queue stops"
+    },
+    "correct_answers": ["B"],
+    "explanation": "At-least-once delivery redelivers unacknowledged messages. The message may be processed twice (once before crash, once after redelivery). Consumers must handle duplicates idempotently.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which are benefits of using message queues? (Choose all that apply)",
+    "options": {
+      "A": "Load leveling during traffic spikes",
+      "B": "Guaranteed real-time processing",
+      "C": "Fault tolerance through message persistence",
+      "D": "Decoupling of services"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Queues buffer spikes (load leveling), persist messages for reliability, and decouple services. They introduce latency, so they don't guarantee real-time processing—that's a tradeoff.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is message ordering guarantee and why is it challenging?",
+    "options": {
+      "A": "Ensuring messages are processed alphabetically",
+      "B": "Ensuring messages are processed in the order they were sent",
+      "C": "Ensuring messages are encrypted in order",
+      "D": "Ensuring messages are compressed in order"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Ordering guarantees that messages are consumed in send order. It's challenging with multiple consumers/partitions—strict ordering often requires single consumer or partition-level ordering.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Apache Kafka uses partitions. How does this affect message ordering?",
+    "options": {
+      "A": "Messages are globally ordered across all partitions",
+      "B": "Messages are ordered within a partition but not across partitions",
+      "C": "Partitions prevent any ordering",
+      "D": "Ordering is random"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kafka guarantees order within a partition. Messages with the same key go to the same partition, preserving their order. Cross-partition ordering isn't guaranteed—consumers may process partitions at different rates.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Message queues eliminate the need for error handling in consumers.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Queues help with transient failures through retries, but consumers still need error handling for: poison messages, business logic errors, and deciding when to send to DLQ vs retry.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'backpressure' in messaging systems?",
+    "options": {
+      "A": "Compressing messages to save space",
+      "B": "Slowing down producers when consumers can't keep up",
+      "C": "Encrypting message backlogs",
+      "D": "Deleting old messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Backpressure signals producers to slow down when the queue is filling faster than consumers can process. This prevents queue overflow and resource exhaustion. It's a flow control mechanism.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which factors should influence message queue selection? (Choose all that apply)",
+    "options": {
+      "A": "Required delivery guarantees",
+      "B": "Message ordering requirements",
+      "C": "Throughput and latency needs",
+      "D": "The color of the admin UI"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Queue selection depends on delivery guarantees (at-least-once vs exactly-once), ordering needs (strict vs relaxed), and performance requirements. UI aesthetics are irrelevant to technical selection.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A system uses a message queue for order processing. Orders must be processed in sequence per customer but can be parallel across customers. How should this be designed?",
+    "options": {
+      "A": "Single consumer for all orders",
+      "B": "Partition by customer_id with one consumer per partition",
+      "C": "Random distribution across consumers",
+      "D": "Separate queue per customer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partitioning by customer_id ensures each customer's orders go to one partition (preserving order). Multiple partitions enable parallelism across customers. This balances ordering with throughput.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What are the three message delivery semantics?",
+    "options": {
+      "A": "Fast, slow, medium",
+      "B": "At-most-once, at-least-once, exactly-once",
+      "C": "Sync, async, hybrid",
+      "D": "Push, pull, poll"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The three delivery semantics are: at-most-once (may lose messages), at-least-once (may duplicate), exactly-once (neither loss nor duplication). Each has different guarantees and implementation complexity.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What does 'at-most-once' delivery mean?",
+    "options": {
+      "A": "Messages are delivered exactly one time",
+      "B": "Messages are delivered zero or one time—may be lost but never duplicated",
+      "C": "Messages are always delivered",
+      "D": "Messages are delivered multiple times"
+    },
+    "correct_answers": ["B"],
+    "explanation": "At-most-once: fire and forget. Message is sent once without acknowledgment or retry. Fast and simple, but messages can be lost. Suitable for metrics, logs where occasional loss is acceptable.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which scenarios are appropriate for at-most-once delivery? (Choose all that apply)",
+    "options": {
+      "A": "Real-time metrics collection",
+      "B": "Payment processing",
+      "C": "Live video streaming frames",
+      "D": "Log aggregation where some loss is acceptable"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "At-most-once suits scenarios where occasional loss is acceptable: metrics (missing one data point is fine), video frames (old frames are useless anyway), logs (some loss tolerable). Never for payments.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What does 'at-least-once' delivery guarantee?",
+    "options": {
+      "A": "No message loss, but duplicates are possible",
+      "B": "No duplicates, but loss is possible",
+      "C": "Neither loss nor duplicates",
+      "D": "Messages delivered in order"
+    },
+    "correct_answers": ["A"],
+    "explanation": "At-least-once: messages are retried until acknowledged. Guarantees delivery but may cause duplicates (if ack is lost, message is resent). Consumers must handle duplicates idempotently.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A payment system uses at-least-once delivery. What must the consumer implement?",
+    "options": {
+      "A": "Faster processing",
+      "B": "Idempotent message handling to prevent double-charging",
+      "C": "Message compression",
+      "D": "Nothing special"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With at-least-once, duplicates are possible. Payment consumers must be idempotent—processing the same message twice shouldn't charge twice. Use idempotency keys, deduplication, or check-before-write.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Why is exactly-once delivery difficult to achieve?",
+    "options": {
+      "A": "It requires expensive hardware",
+      "B": "Network failures make it impossible to distinguish 'not delivered' from 'delivered but ack lost'",
+      "C": "Databases don't support it",
+      "D": "It's actually easy to achieve"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The Two Generals Problem: if ack is lost, sender doesn't know if message was processed. Retrying may duplicate; not retrying may lose. True exactly-once requires distributed transactions or idempotent consumers.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How do systems like Kafka achieve 'exactly-once semantics'?",
+    "options": {
+      "A": "Magic",
+      "B": "Idempotent producers + transactional consumers + deduplication",
+      "C": "Faster networks",
+      "D": "Exactly-once is impossible"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kafka's exactly-once combines: idempotent producers (dedup at broker), transactions (atomic writes across partitions), and consumer offset management. It's 'effectively exactly-once' within the Kafka ecosystem.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: At-least-once delivery is the most common choice for business-critical systems.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "At-least-once is the practical choice: it prevents message loss (critical for business) while duplicates can be handled with idempotency. It's simpler than exactly-once and safer than at-most-once.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is an idempotency key?",
+    "options": {
+      "A": "Encryption key for messages",
+      "B": "Unique identifier allowing consumers to detect and skip duplicate messages",
+      "C": "Database primary key",
+      "D": "API authentication key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Idempotency key is a unique ID (often UUID) included with each message. Consumers track processed keys; if they see the same key again, they skip processing. Essential for at-least-once systems.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A message broker acknowledges receipt before the consumer processes the message. What delivery semantic does this provide?",
+    "options": {
+      "A": "Exactly-once",
+      "B": "At-most-once",
+      "C": "At-least-once",
+      "D": "No guarantee"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Acknowledging before processing means if consumer crashes mid-processing, message is lost (broker thinks it's delivered). This is at-most-once. At-least-once requires ack AFTER successful processing.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which factors influence the choice of delivery semantics? (Choose all that apply)",
+    "options": {
+      "A": "Business criticality of messages",
+      "B": "Ability to handle duplicates",
+      "C": "Performance requirements",
+      "D": "Cost of message loss vs duplication"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "All factors matter: critical data needs at-least-once minimum; if duplicates are hard to handle, consider exactly-once; high-throughput may favor at-most-once; weigh loss vs duplication costs for your use case.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "An order processing system receives duplicate 'order.created' events. Which approach prevents creating duplicate orders?",
+    "options": {
+      "A": "Process faster",
+      "B": "Check if order ID exists before creating; use database unique constraint",
+      "C": "Ignore all events",
+      "D": "Switch to at-most-once delivery"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Idempotent handling: check if order exists (by ID) before creating. Database unique constraint on order_id provides safety net. This makes at-least-once delivery safe for order creation.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  }
+]

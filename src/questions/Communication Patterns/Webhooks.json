@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a webhook?",
+    "options": {
+      "A": "Client polling server for updates",
+      "B": "Server-initiated HTTP callback to a client-specified URL when an event occurs",
+      "C": "Persistent bidirectional connection",
+      "D": "Scheduled batch data transfer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhooks are HTTP callbacks—when an event occurs, the server makes an HTTP POST to a URL you've registered. It's push-based: no polling needed. Common for payment notifications, CI/CD triggers, etc.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which scenarios are ideal for webhooks? (Choose all that apply)",
+    "options": {
+      "A": "Payment gateway notifying your server of completed transactions",
+      "B": "Real-time multiplayer game state synchronization",
+      "C": "GitHub notifying your CI system of new commits",
+      "D": "Stripe alerting your system of subscription changes"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Webhooks excel at event notifications between services: payments, CI triggers, subscription updates. Real-time gaming needs persistent low-latency connections (WebSockets), not HTTP callbacks.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What security measure should webhook receivers implement?",
+    "options": {
+      "A": "Accept all incoming requests",
+      "B": "Verify webhook signatures using shared secret",
+      "C": "Only accept GET requests",
+      "D": "Require OAuth for each webhook"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhook endpoints are public URLs—anyone could send fake requests. Providers include signatures (HMAC) using a shared secret. Receivers must verify signatures to ensure requests are authentic.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A webhook delivery fails (receiver returns 500 error). What should the sender do?",
+    "options": {
+      "A": "Discard the webhook permanently",
+      "B": "Retry with exponential backoff",
+      "C": "Send email notification instead",
+      "D": "Wait for receiver to poll"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhook senders should implement retry logic with exponential backoff (e.g., retry after 1min, 5min, 30min). This handles temporary failures while avoiding overwhelming struggling receivers.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Why should webhook receivers respond quickly (within seconds)?",
+    "options": {
+      "A": "To reduce network costs",
+      "B": "Senders have timeouts and may retry, causing duplicate deliveries",
+      "C": "Webhooks expire after 1 second",
+      "D": "HTTP doesn't support long responses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhook senders timeout quickly (5-30 seconds typically). Slow responses trigger retries, causing duplicates. Best practice: acknowledge immediately (return 200), process asynchronously via queue.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is webhook idempotency and why is it important?",
+    "options": {
+      "A": "Ensuring webhooks are encrypted",
+      "B": "Handling duplicate deliveries without side effects",
+      "C": "Ordering webhooks chronologically",
+      "D": "Compressing webhook payloads"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Network issues and retries can cause duplicate webhook deliveries. Idempotent handling (using event IDs to detect duplicates) ensures processing the same webhook twice doesn't cause problems like double-charging.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which challenges exist with webhooks? (Choose all that apply)",
+    "options": {
+      "A": "Receiver must be publicly accessible",
+      "B": "Delivery order is not guaranteed",
+      "C": "Debugging failed deliveries is difficult",
+      "D": "Webhooks require persistent connections"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Webhooks require public endpoints (challenging for local dev), don't guarantee order (events may arrive out of sequence), and debugging is hard (you can't easily replay or inspect failed deliveries). They don't need persistent connections.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How can developers test webhooks during local development?",
+    "options": {
+      "A": "Webhooks cannot be tested locally",
+      "B": "Use tunneling services (ngrok) to expose local server",
+      "C": "Deploy to production for each test",
+      "D": "Disable webhook verification"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tunneling services like ngrok create public URLs that forward to localhost, enabling webhook testing during development. Many providers also offer webhook replay/testing tools in their dashboards.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A payment provider sends webhooks for order updates. Your system receives 'order.completed' before 'order.created'. How should you handle this?",
+    "options": {
+      "A": "Reject out-of-order webhooks",
+      "B": "Store events and process in correct order using timestamps",
+      "C": "Assume webhooks always arrive in order",
+      "D": "Request the provider to fix ordering"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhook ordering isn't guaranteed. Robust systems store events with timestamps and either process in order or handle out-of-order gracefully (e.g., create order if it doesn't exist when completing).",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: Webhooks provide guaranteed exactly-once delivery.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Webhooks typically provide at-least-once delivery—retries ensure delivery but may cause duplicates. Exactly-once is extremely difficult over HTTP. Receivers must handle duplicates idempotently.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What information should a well-designed webhook payload include? (Choose all that apply)",
+    "options": {
+      "A": "Unique event ID",
+      "B": "Event type",
+      "C": "Timestamp",
+      "D": "Complete current state of the resource"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "Good webhook payloads include: event ID (for idempotency), event type (for routing), timestamp (for ordering), and resource state (to avoid additional API calls). Some include only IDs, requiring receivers to fetch details.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A webhook receiver is overwhelmed with traffic during a sale. What pattern helps manage this?",
+    "options": {
+      "A": "Reject all webhooks during high traffic",
+      "B": "Queue webhooks and process asynchronously",
+      "C": "Increase webhook timeout",
+      "D": "Ask sender to slow down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Acknowledge webhooks immediately (return 200), push to a queue (SQS, RabbitMQ), and process asynchronously. This decouples receipt from processing, handling traffic spikes without losing events or triggering retries.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  }
+]

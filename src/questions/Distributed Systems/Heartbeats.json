@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a heartbeat in distributed systems?",
+    "options": {
+      "A": "A performance metric",
+      "B": "A periodic signal sent between nodes to indicate they are alive",
+      "C": "A data synchronization mechanism",
+      "D": "A security protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heartbeats are periodic messages (like a pulse) that nodes send to indicate they're alive and functioning. If heartbeats stop, other nodes assume the sender has failed and take appropriate action.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What happens when a node stops receiving heartbeats from another node?",
+    "options": {
+      "A": "Nothing, heartbeats are informational only",
+      "B": "The node is marked as potentially failed after timeout",
+      "C": "The system immediately shuts down",
+      "D": "Data is automatically migrated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Missing heartbeats trigger failure detection. After a timeout (configurable), the node is marked as failed. This may trigger leader election, replica promotion, or traffic rerouting depending on the system.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the tradeoff in setting heartbeat timeout values?",
+    "options": {
+      "A": "No tradeoff exists",
+      "B": "Short timeout: faster failure detection but more false positives; Long timeout: fewer false positives but slower detection",
+      "C": "Short timeout uses more memory",
+      "D": "Long timeout is always better"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Short timeouts detect failures quickly but may falsely mark slow/busy nodes as dead. Long timeouts reduce false positives but delay failure response. Balance depends on network reliability and failure cost.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'false positive' in failure detection?",
+    "options": {
+      "A": "Correctly detecting a failure",
+      "B": "Marking a healthy node as failed due to network delay or high load",
+      "C": "Missing a real failure",
+      "D": "A positive test result"
+    },
+    "correct_answers": ["B"],
+    "explanation": "False positive: a healthy node is incorrectly marked as failed (e.g., heartbeat delayed by network congestion). This can trigger unnecessary failovers, causing disruption. Adaptive timeouts help reduce false positives.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does the Phi Accrual Failure Detector improve upon simple timeout-based detection?",
+    "options": {
+      "A": "It's faster",
+      "B": "It uses historical heartbeat intervals to calculate failure probability",
+      "C": "It uses encryption",
+      "D": "It doesn't improve anything"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Phi Accrual tracks heartbeat arrival times and calculates a 'suspicion level' (phi) based on how unusual the current delay is. This adapts to network conditions, reducing false positives while maintaining detection speed.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "In a leader-follower system, who typically sends heartbeats?",
+    "options": {
+      "A": "Only followers to leader",
+      "B": "Only leader to followers",
+      "C": "Both directions, but leader's heartbeats prevent election timeouts",
+      "D": "Neither, heartbeats aren't used"
+    },
+    "correct_answers": ["C"],
+    "explanation": "In Raft, the leader sends heartbeats to followers to maintain authority and prevent new elections. Followers reset their election timeout on receiving heartbeats. If heartbeats stop, followers start election.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Heartbeats guarantee that a node is functioning correctly.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heartbeats only indicate the node is alive and network-reachable. A node can send heartbeats while having application errors, corrupted data, or degraded performance. Health checks should verify actual functionality.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'heartbeat protocol overhead' and how can it be minimized?",
+    "options": {
+      "A": "CPU usage from heartbeats; minimize by removing heartbeats",
+      "B": "Network bandwidth used by heartbeats; minimize with longer intervals or piggybacking",
+      "C": "Memory used to store heartbeats",
+      "D": "Disk I/O from logging heartbeats"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Frequent heartbeats consume bandwidth, especially in large clusters. Minimize by: longer intervals (tradeoff with detection speed), piggybacking on other messages, or hierarchical heartbeat structures.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A cluster has 100 nodes. If every node heartbeats every other node, how many heartbeat messages per interval?",
+    "options": {
+      "A": "100",
+      "B": "200",
+      "C": "9,900 (n × (n-1))",
+      "D": "10,000"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Full mesh heartbeating: each of 100 nodes sends to 99 others = 100 × 99 = 9,900 messages. This O(n²) scaling is why large clusters use gossip protocols or hierarchical heartbeating instead.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'gossip-based failure detection'?",
+    "options": {
+      "A": "Nodes spreading rumors about failures",
+      "B": "Nodes periodically exchange membership/health info with random peers",
+      "C": "A centralized failure detection service",
+      "D": "Manual failure reporting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip protocols: nodes periodically exchange state with random peers. Information spreads epidemically. Scales better than full mesh (O(n) vs O(n²)). Used by Cassandra, Consul, and other large-scale systems.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What additional information might heartbeats carry beyond 'I'm alive'?",
+    "options": {
+      "A": "Nothing, heartbeats are empty",
+      "B": "Load metrics, version info, cluster membership, or replication state",
+      "C": "User data",
+      "D": "Encryption keys"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heartbeats often piggyback useful data: CPU/memory load (for load balancing), software version, known cluster members (membership protocol), replication lag, or other health metrics. Efficient use of network traffic.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A node experiences a 'gray failure' - it's slow but not dead. How do heartbeats handle this?",
+    "options": {
+      "A": "Heartbeats detect gray failures perfectly",
+      "B": "Basic heartbeats may not detect gray failures; need application-level health checks",
+      "C": "Gray failures don't exist",
+      "D": "Heartbeats automatically fix gray failures"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gray failures: node is alive but degraded (slow disk, memory pressure). Basic heartbeats pass but the node can't serve requests well. Application-level health checks (can you serve a request?) are needed to detect these.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  }
+]

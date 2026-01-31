@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What problem does the Paxos algorithm solve?",
+    "options": {
+      "A": "Load balancing",
+      "B": "Achieving consensus among distributed nodes even with failures",
+      "C": "Data encryption",
+      "D": "Network routing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Paxos solves distributed consensus: getting multiple nodes to agree on a single value even when some nodes fail or messages are delayed/lost. Fundamental for replicated state machines.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What are the three roles in basic Paxos?",
+    "options": {
+      "A": "Client, Server, Database",
+      "B": "Proposer, Acceptor, Learner",
+      "C": "Leader, Follower, Observer",
+      "D": "Master, Slave, Arbiter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Proposer: proposes values. Acceptor: votes on proposals, forms quorums. Learner: learns the chosen value. In practice, a single node often plays multiple roles.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What are the two phases of basic Paxos?",
+    "options": {
+      "A": "Read and Write",
+      "B": "Prepare/Promise and Accept/Accepted",
+      "C": "Lock and Unlock",
+      "D": "Start and Stop"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Phase 1 (Prepare): Proposer sends prepare(n), acceptors promise not to accept lower proposals. Phase 2 (Accept): If majority promised, proposer sends accept(n, value), acceptors accept if they haven't promised higher.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a quorum in Paxos?",
+    "options": {
+      "A": "All nodes",
+      "B": "A majority of acceptors (more than half)",
+      "C": "A single node",
+      "D": "The fastest node"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quorum = majority of acceptors. With 5 acceptors, quorum is 3. Any two quorums overlap by at least one node, ensuring consistency. This allows progress even with minority failures.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why does Paxos use proposal numbers?",
+    "options": {
+      "A": "For logging purposes",
+      "B": "To order proposals and ensure only the highest-numbered proposal can succeed",
+      "C": "For encryption",
+      "D": "To count votes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Proposal numbers (n) create ordering. Acceptors promise to reject proposals with lower numbers. If a proposer's prepare is rejected, it retries with a higher number. Prevents conflicts between concurrent proposers.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What happens if an acceptor receives a prepare request with a number lower than one it already promised?",
+    "options": {
+      "A": "It accepts anyway",
+      "B": "It rejects/ignores the request",
+      "C": "It crashes",
+      "D": "It forwards to another node"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Acceptors track the highest proposal number they've promised. If prepare(n) arrives where n < promised, they reject it. The proposer must retry with a higher number.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is Multi-Paxos?",
+    "options": {
+      "A": "Running Paxos on multiple networks",
+      "B": "An optimization where a stable leader skips Phase 1 for subsequent consensus rounds",
+      "C": "A different algorithm entirely",
+      "D": "Paxos with encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Basic Paxos decides one value. Multi-Paxos: elect a leader who can skip Phase 1 for subsequent values (already has promises). Much more efficient for replicated logs. Most practical implementations use Multi-Paxos.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a key challenge with implementing Paxos?",
+    "options": {
+      "A": "It's too fast",
+      "B": "The algorithm is notoriously difficult to understand and implement correctly",
+      "C": "It requires too little memory",
+      "D": "It only works with two nodes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Paxos is famously hard to understand (even Lamport rewrote his paper). Edge cases, liveness issues, and the gap between theory and implementation make it error-prone. This led to Raft's creation.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Can Paxos make progress if a majority of nodes fail?",
+    "options": {
+      "A": "Yes, it can always make progress",
+      "B": "No, it requires a majority (quorum) of acceptors to be available",
+      "C": "It depends on the network",
+      "D": "Only with special configuration"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Paxos requires quorum (majority) for both phases. With 5 nodes, if 3 fail, no quorum can form. The system blocks until enough nodes recover. This is the tradeoff for consistency.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What does Paxos guarantee about the chosen value?",
+    "options": {
+      "A": "The value will be the first one proposed",
+      "B": "Once a value is chosen, all future rounds will choose the same value (safety)",
+      "C": "The value will be random",
+      "D": "All nodes will have the value immediately"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Paxos safety: once a value is chosen (accepted by quorum), it's permanent. Any future successful proposal will propose the same value. This is achieved through the prepare phase learning previously accepted values.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which systems use Paxos or Paxos-like algorithms?",
+    "options": {
+      "A": "Google Chubby",
+      "B": "Apache ZooKeeper (ZAB)",
+      "C": "MySQL replication",
+      "D": "Amazon DynamoDB (for metadata)"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Chubby uses Paxos. ZooKeeper uses ZAB (Paxos-like). DynamoDB uses Paxos for metadata coordination. MySQL's default replication is async, not consensus-based (though Group Replication uses Paxos).",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the 'dueling proposers' problem in Paxos?",
+    "options": {
+      "A": "Two proposers fighting physically",
+      "B": "Two proposers continuously preempting each other with higher proposal numbers, preventing progress",
+      "C": "Proposers sending encrypted messages",
+      "D": "Proposers running out of memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Livelock scenario: Proposer A prepares(1), Proposer B prepares(2) preempts, A prepares(3) preempts, B prepares(4)... No progress. Solutions: random backoff, leader election, or Multi-Paxos with stable leader.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a quadtree?",
+    "options": {
+      "A": "A tree with four roots",
+      "B": "A tree data structure where each internal node has exactly four children, used to partition 2D space",
+      "C": "A binary tree",
+      "D": "A linked list"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quadtree: recursive space partitioning. Each node divides space into 4 quadrants (NW, NE, SW, SE). Used for: spatial indexing, image compression, collision detection, geographic data.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does a point quadtree insert a new point?",
+    "options": {
+      "A": "Random placement",
+      "B": "Recursively traverse to the appropriate quadrant until finding an empty spot or subdividing",
+      "C": "Always at the root",
+      "D": "Alphabetically"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Insert algorithm: 1) Start at root, 2) Determine which quadrant contains point, 3) If quadrant empty, insert. If occupied and at capacity, subdivide into 4 children, 4) Recurse until placed.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the difference between a point quadtree and a region quadtree?",
+    "options": {
+      "A": "They are the same",
+      "B": "Point quadtree: splits at data points; Region quadtree: splits space into equal quadrants regardless of data",
+      "C": "Region quadtree is faster",
+      "D": "Point quadtree only stores integers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Point quadtree: division lines pass through data points, adapts to data. Region quadtree: fixed grid subdivision, uniform cells. Region: simpler, predictable. Point: better adapts to non-uniform data.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the time complexity of searching for a point in a balanced quadtree?",
+    "options": {
+      "A": "O(1)",
+      "B": "O(log n) on average",
+      "C": "O(n)",
+      "D": "O(n²)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quadtree search: each level eliminates 3/4 of space. Balanced tree: O(log₄ n) = O(log n). Worst case (all points in one quadrant): O(n). Real-world with good distribution: typically O(log n).",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How would you find all points within a rectangular region using a quadtree?",
+    "options": {
+      "A": "Check every point",
+      "B": "Recursively check only quadrants that intersect with the query rectangle",
+      "C": "Binary search",
+      "D": "Random sampling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Range query: 1) If node's region doesn't intersect query rectangle, skip entire subtree. 2) If intersects, check node's points. 3) Recurse into children that intersect. Prunes large portions of tree.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is a common application of quadtrees in gaming?",
+    "options": {
+      "A": "Storing high scores",
+      "B": "Collision detection—quickly finding which objects might collide",
+      "C": "Playing music",
+      "D": "Network communication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Game collision detection: instead of checking all pairs O(n²), use quadtree. Objects in same/adjacent cells might collide. Reduces checks dramatically. Also used for: frustum culling, level-of-detail.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the maximum depth typically set for a quadtree and why?",
+    "options": {
+      "A": "No limit needed",
+      "B": "A fixed maximum to prevent infinite subdivision when points are very close together",
+      "C": "Always exactly 4",
+      "D": "Depends on alphabet size"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Max depth prevents: infinite recursion when points overlap or are extremely close. Typical: 10-20 levels. At max depth, node stores multiple points in a list. Trade-off: depth vs node capacity.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does a quadtree help with nearest neighbor search?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "Prunes search space by checking nearby quadrants first and skipping distant ones",
+      "C": "Sorts all points",
+      "D": "Uses hash tables"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Nearest neighbor: 1) Find quadrant containing query point, 2) Search that quadrant, 3) Use current best distance to prune other quadrants. If quadrant's closest possible point is farther than current best, skip it.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the space complexity of a quadtree storing n points?",
+    "options": {
+      "A": "O(1)",
+      "B": "O(n) for points, but O(n × d) total where d is max depth due to internal nodes",
+      "C": "O(n²)",
+      "D": "O(log n)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Space: n points stored + internal nodes. Worst case: each point causes subdivision chain. With max depth d: O(n × d) nodes possible. Typically much less with good point distribution.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Quadtree vs R-tree: when would you choose quadtree?",
+    "options": {
+      "A": "Always choose R-tree",
+      "B": "Quadtree for simpler implementation, point data, and when data distribution is relatively uniform",
+      "C": "Quadtree for rectangles only",
+      "D": "They are identical"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quadtree: simpler, good for points, uniform distribution. R-tree: better for rectangles/polygons, handles clustering better, self-balancing. Quadtree: easier to implement. R-tree: better worst-case performance.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How is a quadtree used in image compression?",
+    "options": {
+      "A": "It isn't used for images",
+      "B": "Subdivide image regions until each region has uniform color, store only the subdivisions needed",
+      "C": "Convert to text",
+      "D": "Encrypt pixels"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Image quadtree: if region is uniform color, store as leaf. If not, subdivide into 4. Homogeneous areas = few nodes. Detailed areas = more subdivision. Lossy: threshold for 'uniform enough'.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "You're building a map application showing millions of restaurants. How would quadtree help with rendering?",
+    "options": {
+      "A": "Store restaurant names",
+      "B": "At low zoom, show only quadtree nodes with aggregated counts; at high zoom, show individual points",
+      "C": "Compress images",
+      "D": "Sort alphabetically"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Level-of-detail rendering: zoomed out = show quadtree node summaries (e.g., '500 restaurants in this area'). Zoomed in = traverse deeper, show individual points. Prevents rendering millions of markers.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  }
+]

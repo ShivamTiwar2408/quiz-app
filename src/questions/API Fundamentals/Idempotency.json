@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What does it mean for an operation to be idempotent?",
+    "options": {
+      "A": "It completes quickly",
+      "B": "Executing it multiple times produces the same result as executing once",
+      "C": "It can be reversed",
+      "D": "It requires authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Idempotent operations can be safely repeated without changing the result beyond the initial application. This is crucial for handling retries in distributed systems.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "A payment API receives a request but the response is lost due to network failure. The client retries. Without idempotency, what could happen?",
+    "options": {
+      "A": "The payment fails",
+      "B": "The customer is charged twice",
+      "C": "The payment is automatically refunded",
+      "D": "Nothing, payments are always idempotent"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Without idempotency, the retry creates a second payment. The first succeeded (response was lost), so the customer is charged twice. Idempotency keys prevent this.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which technique is commonly used to implement idempotency in APIs?",
+    "options": {
+      "A": "Rate limiting",
+      "B": "Client-provided idempotency key stored server-side",
+      "C": "HTTPS encryption",
+      "D": "Load balancing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Clients send a unique idempotency key (UUID) with requests. The server stores the key and result. Retries with the same key return the stored result instead of re-executing.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which operations are naturally idempotent? (Choose all that apply)",
+    "options": {
+      "A": "Setting a value (x = 5)",
+      "B": "Incrementing a counter (x = x + 1)",
+      "C": "Deleting a resource by ID",
+      "D": "Appending to a list"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "Setting a value and deleting by ID are idempotent—repeating them doesn't change the outcome. Incrementing and appending are not—each execution changes the state further.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "An API uses idempotency keys. How long should the server store them?",
+    "options": {
+      "A": "Forever",
+      "B": "Until the client confirms receipt",
+      "C": "Long enough to cover retry windows (e.g., 24-48 hours)",
+      "D": "Only during the request processing"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Keys should be stored long enough for clients to retry (typically 24-48 hours). Forever wastes storage; too short risks duplicate processing; only during processing doesn't help retries.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "True or False: HTTP GET requests are always idempotent.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "GET should only retrieve data without side effects, making it inherently idempotent. If a GET modifies state, it violates HTTP semantics (though some poorly designed APIs do this).",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "A message queue consumer processes a message but crashes before acknowledging. The message is redelivered. How should the consumer handle this?",
+    "options": {
+      "A": "Process it again, duplicates are acceptable",
+      "B": "Implement idempotent processing using message ID",
+      "C": "Reject the message",
+      "D": "Increase consumer timeout"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Idempotent consumers track processed message IDs and skip duplicates. This ensures exactly-once semantics even with at-least-once delivery. Accepting duplicates causes data inconsistency.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which database operation pattern helps achieve idempotency for inserts?",
+    "options": {
+      "A": "Auto-increment primary keys",
+      "B": "UPSERT (INSERT ... ON CONFLICT UPDATE)",
+      "C": "Transactions",
+      "D": "Foreign key constraints"
+    },
+    "correct_answers": ["B"],
+    "explanation": "UPSERT inserts if the record doesn't exist, updates if it does. With a unique business key, retries don't create duplicates. Auto-increment creates new records on each insert.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "What should an API return when it receives a request with an idempotency key it has already processed?",
+    "options": {
+      "A": "400 Bad Request",
+      "B": "409 Conflict",
+      "C": "The same response as the original request",
+      "D": "200 OK with empty body"
+    },
+    "correct_answers": ["C"],
+    "explanation": "The API should return the stored response from the original request. This makes retries transparent to the client—they get the same result whether it's the first or repeated call.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which scenarios require explicit idempotency handling? (Choose all that apply)",
+    "options": {
+      "A": "Creating orders in an e-commerce system",
+      "B": "Reading user profile information",
+      "C": "Processing financial transactions",
+      "D": "Sending notification emails"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Order creation, payments, and notifications have side effects that shouldn't be duplicated. Reading profiles is naturally idempotent (GET). All write operations with consequences need idempotency.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "An idempotency key collision occurs when two different requests accidentally use the same key. How can this be prevented?",
+    "options": {
+      "A": "Use sequential integers as keys",
+      "B": "Use UUIDs or cryptographically random keys",
+      "C": "Let the server generate keys",
+      "D": "Use timestamps as keys"
+    },
+    "correct_answers": ["B"],
+    "explanation": "UUIDs (128-bit) have negligible collision probability. Sequential integers can collide across clients; timestamps can collide within the same millisecond; server-generated keys don't help client retries.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is the relationship between idempotency and exactly-once delivery semantics?",
+    "options": {
+      "A": "They are unrelated concepts",
+      "B": "Idempotency enables exactly-once semantics with at-least-once delivery",
+      "C": "Exactly-once delivery eliminates the need for idempotency",
+      "D": "Idempotency requires exactly-once delivery"
+    },
+    "correct_answers": ["B"],
+    "explanation": "True exactly-once delivery is nearly impossible in distributed systems. Idempotent consumers + at-least-once delivery achieves effectively-exactly-once processing—duplicates are harmless.",
+    "difficulty": "hard",
+    "category": "api design"
+  }
+]

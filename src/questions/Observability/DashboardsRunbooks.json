@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the purpose of an observability dashboard?",
+    "options": {
+      "A": "To store data",
+      "B": "To visualize system health, metrics, and trends at a glance for monitoring and troubleshooting",
+      "C": "To write code",
+      "D": "To deploy applications"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dashboards: visual representation of system state. Show: key metrics, trends, anomalies. Use cases: real-time monitoring, incident response, capacity planning. Tools: Grafana, Datadog, CloudWatch.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What makes an effective dashboard?",
+    "options": {
+      "A": "As many metrics as possible",
+      "B": "Focused on key metrics, clear hierarchy, actionable information, appropriate time ranges",
+      "C": "Only text",
+      "D": "No labels"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Effective dashboard: focused (not everything), hierarchical (important at top), actionable (what to do?), appropriate granularity. Avoid: vanity metrics, cluttered layouts, missing context. Design for the audience.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a runbook?",
+    "options": {
+      "A": "A running log",
+      "B": "A documented procedure for responding to specific alerts or incidents",
+      "C": "A code repository",
+      "D": "A deployment script"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Runbook: step-by-step guide for handling incidents. Contains: alert description, diagnosis steps, remediation actions, escalation path. Enables: consistent response, faster resolution, knowledge sharing.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What should a runbook include?",
+    "options": {
+      "A": "Only the fix",
+      "B": "Alert description, impact assessment, diagnostic steps, remediation actions, escalation contacts",
+      "C": "Code only",
+      "D": "Marketing information"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Runbook contents: what triggered alert, potential impact, how to diagnose (commands, dashboards), how to fix (step-by-step), when to escalate, who to contact. Keep updated. Link from alerts.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the RED method for dashboard design?",
+    "options": {
+      "A": "A color scheme",
+      "B": "Rate, Errors, Duration—key metrics for request-driven services",
+      "C": "A programming method",
+      "D": "A security protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RED method: Rate (requests/sec), Errors (failed requests), Duration (latency). Perfect for microservices dashboards. Shows: throughput, reliability, performance. Complement with USE for infrastructure.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the USE method for dashboard design?",
+    "options": {
+      "A": "User experience metrics",
+      "B": "Utilization, Saturation, Errors—key metrics for resources like CPU, memory, disk",
+      "C": "A usage guide",
+      "D": "A testing method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "USE method: Utilization (% busy), Saturation (queue length), Errors. For each resource: CPU, memory, disk, network. Infrastructure-focused. Complements RED (request-focused).",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "How should dashboards be organized for incident response?",
+    "options": {
+      "A": "Alphabetically",
+      "B": "Hierarchically—high-level overview first, then drill-down to details",
+      "C": "Randomly",
+      "D": "By color"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Incident dashboard hierarchy: 1) Overview (is something wrong?), 2) Service health (which service?), 3) Component details (which component?), 4) Deep dive (root cause). Enable quick triage.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a Service Level Dashboard?",
+    "options": {
+      "A": "A dashboard for managers",
+      "B": "A dashboard showing SLI/SLO status, error budget consumption, and reliability trends",
+      "C": "A deployment dashboard",
+      "D": "A security dashboard"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SLO dashboard: shows SLI current values, SLO targets, error budget remaining, burn rate. Enables: reliability tracking, prioritization decisions, stakeholder communication. Often weekly/monthly view.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the benefit of linking alerts to runbooks?",
+    "options": {
+      "A": "Reduces storage",
+      "B": "Enables faster incident response by providing immediate access to remediation steps",
+      "C": "Improves security",
+      "D": "Reduces costs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Alert-runbook linking: alert fires → click link → runbook opens. No searching. Faster MTTR. Especially valuable: on-call rotation, new team members, 3 AM incidents. Include link in alert message.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is a golden signals dashboard?",
+    "options": {
+      "A": "A dashboard with gold color",
+      "B": "A dashboard showing the four golden signals: latency, traffic, errors, saturation",
+      "C": "A financial dashboard",
+      "D": "A security dashboard"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Golden signals dashboard: Google SRE's four key metrics. Latency (response time), Traffic (demand), Errors (failure rate), Saturation (resource usage). If you monitor only one dashboard, this is it.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "How often should runbooks be updated?",
+    "options": {
+      "A": "Never",
+      "B": "After every incident where the runbook was used or found lacking",
+      "C": "Once a year",
+      "D": "Only when requested"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Runbook maintenance: update after incidents (what was missing?), after system changes, during regular reviews. Stale runbooks: dangerous, cause confusion. Include 'last updated' date. Assign owners.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "Your on-call engineer receives an alert at 3 AM for a service they've never worked on. What helps most?",
+    "options": {
+      "A": "More alerts",
+      "B": "A linked runbook with clear diagnostic and remediation steps",
+      "C": "A complex dashboard",
+      "D": "Source code access"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3 AM scenario: runbook is critical. Clear steps anyone can follow. No tribal knowledge required. Include: what to check, commands to run, who to escalate to. Dashboard helps, but runbook guides action.",
+    "difficulty": "easy",
+    "category": "observability"
+  }
+]

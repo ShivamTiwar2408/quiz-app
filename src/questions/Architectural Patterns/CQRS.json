@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is CQRS?",
+    "options": {
+      "A": "A database type",
+      "B": "Command Query Responsibility Segregation—separating read and write models",
+      "C": "A caching strategy",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CQRS separates the model for updating data (commands) from the model for reading data (queries). Each can be optimized independently: write model for consistency, read model for query performance.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Why would you use CQRS?",
+    "options": {
+      "A": "To simplify all applications",
+      "B": "When read and write workloads have different requirements and can benefit from separate optimization",
+      "C": "To reduce database size",
+      "D": "For security only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CQRS helps when reads and writes have different needs: complex queries vs. simple writes, different scaling requirements, different data models optimal for each. Adds complexity—use when benefits outweigh costs.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a 'command' in CQRS?",
+    "options": {
+      "A": "A database query",
+      "B": "An intent to change state—processed by write model",
+      "C": "A read request",
+      "D": "A log entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Command represents intent to change state: CreateOrder, UpdateProfile, CancelSubscription. Commands are processed by the write model, validated, and may result in state changes and events.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a 'query' in CQRS?",
+    "options": {
+      "A": "A request to change data",
+      "B": "A request to read data—processed by read model",
+      "C": "A database command",
+      "D": "An event"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Query requests data without changing state: GetOrderDetails, ListUserOrders, SearchProducts. Queries are processed by the read model, optimized for specific query patterns.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How are read and write models typically synchronized in CQRS?",
+    "options": {
+      "A": "They share the same database",
+      "B": "Events from write model update the read model asynchronously",
+      "C": "Manual synchronization",
+      "D": "They don't need synchronization"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Write model publishes events when state changes. Read model subscribes and updates its denormalized views. This is eventually consistent—read model may lag slightly behind write model.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a key challenge of CQRS?",
+    "options": {
+      "A": "Too simple to implement",
+      "B": "Eventual consistency between read and write models",
+      "C": "Reduced performance",
+      "D": "Increased security risks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CQRS typically means eventual consistency: after a write, the read model takes time to update. Users might not immediately see their changes. Must design UI/UX to handle this gracefully.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "True or False: CQRS requires Event Sourcing.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CQRS and Event Sourcing are often used together but are independent patterns. CQRS can use traditional databases for both models. Event Sourcing can be used without CQRS. They complement each other well.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Which scenarios benefit most from CQRS? (Choose all that apply)",
+    "options": {
+      "A": "Complex domains with different read/write patterns",
+      "B": "Simple CRUD applications",
+      "C": "High-performance read requirements with complex queries",
+      "D": "Systems needing independent scaling of reads and writes"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "CQRS suits: complex domains (different models for different concerns), high-performance reads (denormalized read models), independent scaling. Simple CRUD doesn't justify CQRS complexity.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a 'read model' or 'projection' in CQRS?",
+    "options": {
+      "A": "The main database",
+      "B": "A denormalized view optimized for specific queries",
+      "C": "A backup database",
+      "D": "A cache"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Read model/projection is a denormalized view built for specific queries. May duplicate data, pre-compute aggregations, use different storage (search index, document DB). Optimized for read performance.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How does CQRS help with scaling?",
+    "options": {
+      "A": "It doesn't help with scaling",
+      "B": "Read and write models can be scaled independently based on their specific loads",
+      "C": "It reduces data size",
+      "D": "It eliminates databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CQRS enables independent scaling: read-heavy systems can scale read models (add replicas, caching) without affecting write model. Write-heavy systems can optimize write model separately. Match resources to actual load.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What happens if a command fails validation in CQRS?",
+    "options": {
+      "A": "Read model is updated anyway",
+      "B": "Command is rejected; no state change or event is produced",
+      "C": "System crashes",
+      "D": "Command is queued for retry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Failed commands are rejected at the write model—no state change, no events published, read model unchanged. Return error to caller. Commands should be validated before attempting state changes.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "A user creates an order and immediately views their order list. With CQRS, what might happen?",
+    "options": {
+      "A": "Order always appears immediately",
+      "B": "Order might not appear yet due to eventual consistency",
+      "C": "Order is lost",
+      "D": "System shows an error"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eventual consistency: write model processed the order, but read model may not have updated yet. User might not see their order immediately. Solutions: optimistic UI updates, read-your-writes patterns, or accept the delay.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  }
+]

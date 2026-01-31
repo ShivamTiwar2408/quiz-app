@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is strong consistency?",
+    "options": {
+      "A": "Data is eventually correct",
+      "B": "After a write completes, all subsequent reads see that write—linearizable behavior",
+      "C": "Data is compressed",
+      "D": "Data is encrypted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Strong consistency: once write acknowledged, all readers see it immediately. System behaves as if there's one copy. Requires coordination (consensus, locks). Higher latency, lower availability during partitions.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is eventual consistency?",
+    "options": {
+      "A": "Data is never consistent",
+      "B": "Given no new updates, all replicas will eventually converge to the same value",
+      "C": "Data is always consistent",
+      "D": "Data is deleted eventually"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eventual consistency: replicas may temporarily diverge, but will converge if updates stop. Allows higher availability and lower latency. Reads might see stale data. Common in distributed systems.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the CAP theorem relationship to consistency models?",
+    "options": {
+      "A": "CAP doesn't relate to consistency",
+      "B": "During network partition, must choose between strong consistency (CP) or availability (AP with eventual consistency)",
+      "C": "You can have all three always",
+      "D": "CAP only applies to databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CAP: during partition, choose C or A. Strong consistency (CP): reject writes/reads if can't confirm. Eventual consistency (AP): accept operations, reconcile later. Tradeoff is fundamental.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When would you choose strong consistency?",
+    "options": {
+      "A": "Social media likes",
+      "B": "Financial transactions, inventory management, anything where incorrect data causes serious problems",
+      "C": "User profile pictures",
+      "D": "Analytics dashboards"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Strong consistency for: bank transfers (can't double-spend), inventory (can't oversell), booking systems (can't double-book). Where incorrectness has real consequences. Accept latency/availability tradeoffs.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When would you choose eventual consistency?",
+    "options": {
+      "A": "Bank account balances",
+      "B": "Social media feeds, product reviews, analytics, DNS—where temporary staleness is acceptable",
+      "C": "Inventory counts",
+      "D": "Payment processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eventual consistency for: social feeds (seeing post 1 second late is fine), product reviews, view counts, DNS, caching. Where availability and performance matter more than immediate accuracy.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is read-your-writes consistency?",
+    "options": {
+      "A": "A type of encryption",
+      "B": "A user always sees their own writes, even if other users might see stale data",
+      "C": "Writing data twice",
+      "D": "Reading before writing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Read-your-writes: after you write, you see your write. Others might not yet. Weaker than strong consistency, stronger than eventual. Important for user experience—your actions should be reflected.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is monotonic read consistency?",
+    "options": {
+      "A": "Reads get faster over time",
+      "B": "Once you read a value, subsequent reads won't return older values",
+      "C": "Reading one record at a time",
+      "D": "Reading in alphabetical order"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monotonic reads: time doesn't go backward for a client. If you see version 5, you won't later see version 4. Prevents confusing 'time travel'. Achievable with session stickiness or version tracking.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How does DynamoDB handle consistency?",
+    "options": {
+      "A": "Only strong consistency",
+      "B": "Configurable per-request: eventually consistent reads (default, faster) or strongly consistent reads",
+      "C": "Only eventual consistency",
+      "D": "No consistency guarantees"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DynamoDB: choose per read. Eventually consistent: might be stale, lower latency, half the cost. Strongly consistent: guaranteed current, higher latency, full cost. Flexibility to optimize per use case.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the latency impact of strong consistency?",
+    "options": {
+      "A": "No impact",
+      "B": "Higher latency—must wait for coordination/consensus across replicas before responding",
+      "C": "Lower latency",
+      "D": "Latency becomes zero"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Strong consistency latency: writes must reach quorum/all replicas, reads may need to check multiple replicas. Cross-region: even worse (100s of ms). Eventual consistency: respond from nearest replica immediately.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is causal consistency?",
+    "options": {
+      "A": "Random consistency",
+      "B": "Operations that are causally related are seen in the same order by all nodes",
+      "C": "No consistency",
+      "D": "Alphabetical ordering"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Causal consistency: if A causes B, everyone sees A before B. Concurrent operations (no causal relation) can be seen in different orders. Stronger than eventual, weaker than strong. Good middle ground.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the 'stale read' problem in eventual consistency?",
+    "options": {
+      "A": "Reads are too fresh",
+      "B": "Reading outdated data because replication hasn't propagated the latest write yet",
+      "C": "Reads are encrypted",
+      "D": "Reads are too fast"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stale reads: write to replica A, read from replica B before replication. B returns old value. Duration depends on replication lag. Mitigations: read-your-writes, sticky sessions, version checks.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "An e-commerce site shows product inventory. Which consistency model and why?",
+    "options": {
+      "A": "Eventual consistency for display, strong consistency for purchase",
+      "B": "Strong consistency everywhere",
+      "C": "Eventual consistency everywhere",
+      "D": "No consistency needed"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Hybrid approach: display inventory with eventual consistency (fast, scalable, slight staleness OK). At checkout, use strong consistency (prevent overselling). Match consistency to business requirements.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  }
+]

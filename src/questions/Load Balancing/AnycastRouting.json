@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is Anycast routing?",
+    "options": {
+      "A": "Routing to any available server randomly",
+      "B": "Multiple servers sharing the same IP address, with traffic routed to the nearest one",
+      "C": "Broadcasting to all servers simultaneously",
+      "D": "Routing based on server load"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anycast assigns the same IP address to multiple servers in different locations. BGP routing directs traffic to the topologically nearest server. Used by CDNs and DNS services for low-latency global distribution.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which services commonly use Anycast routing? (Choose all that apply)",
+    "options": {
+      "A": "CDN edge servers",
+      "B": "DNS root servers",
+      "C": "Traditional web applications",
+      "D": "DDoS mitigation services"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "CDNs use Anycast to route users to nearest edge. DNS root servers use it for resilience and performance. DDoS mitigation uses it to absorb attacks across distributed scrubbing centers. Traditional apps typically use unicast.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "How does Anycast differ from GeoDNS for global load distribution?",
+    "options": {
+      "A": "They are the same technology",
+      "B": "Anycast routes at network layer (BGP); GeoDNS routes at application layer (DNS)",
+      "C": "GeoDNS is faster than Anycast",
+      "D": "Anycast requires special client software"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anycast uses BGP routing—the network itself directs packets to the nearest server. GeoDNS returns different IPs based on client location. Anycast is transparent to clients; GeoDNS requires DNS resolution.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is a key advantage of Anycast for DDoS mitigation?",
+    "options": {
+      "A": "It encrypts attack traffic",
+      "B": "Attack traffic is distributed across multiple locations, preventing single-point overload",
+      "C": "It blocks all malicious IPs automatically",
+      "D": "It makes servers invisible to attackers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anycast distributes attack traffic across all locations advertising the IP. No single location bears the full attack load. Combined with scrubbing at each location, this provides effective DDoS absorption.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Why is Anycast particularly well-suited for UDP-based services like DNS?",
+    "options": {
+      "A": "UDP is faster than TCP",
+      "B": "UDP is connectionless, so routing changes don't break sessions",
+      "C": "DNS requires Anycast by specification",
+      "D": "UDP packets are smaller"
+    },
+    "correct_answers": ["B"],
+    "explanation": "UDP is stateless—each packet is independent. If routing changes mid-session, UDP continues working. TCP connections would break if packets suddenly route to a different server mid-connection.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "What challenge does Anycast present for TCP-based services?",
+    "options": {
+      "A": "TCP doesn't work with Anycast",
+      "B": "Routing changes can cause TCP connections to fail",
+      "C": "TCP is too slow for Anycast",
+      "D": "Anycast doesn't support TCP ports"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP is stateful. If BGP routing changes during a connection, subsequent packets may route to a different server that doesn't have the connection state, causing connection reset. Stable routing is important.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "True or False: With Anycast, clients explicitly choose which server to connect to.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anycast is transparent to clients. They connect to a single IP address; the network (BGP routing) determines which physical server receives the traffic based on network topology and routing policies.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "A CDN uses Anycast with servers in 50 locations. A server in Tokyo fails. What happens to traffic that was going to Tokyo?",
+    "options": {
+      "A": "Traffic is lost until manual intervention",
+      "B": "BGP withdraws the route; traffic automatically reroutes to the next nearest server",
+      "C": "All global traffic stops",
+      "D": "Clients must manually reconnect"
+    },
+    "correct_answers": ["B"],
+    "explanation": "When a server fails, it stops advertising the Anycast IP via BGP. Traffic automatically reroutes to the next nearest location advertising that IP. This provides automatic failover at the network layer.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is required to implement Anycast?",
+    "options": {
+      "A": "Special client software",
+      "B": "Control over BGP routing (typically requires owning IP space and AS number)",
+      "C": "Modified DNS servers",
+      "D": "Proprietary network hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anycast requires advertising the same IP prefix from multiple locations via BGP. This typically requires owning IP address space, an AS number, and peering arrangements—usually only feasible for large organizations or cloud providers.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "How does Cloudflare's 1.1.1.1 DNS service achieve global low latency?",
+    "options": {
+      "A": "Faster DNS software",
+      "B": "Anycast routing to hundreds of global locations",
+      "C": "Larger DNS cache",
+      "D": "Direct connections to all ISPs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cloudflare uses Anycast—1.1.1.1 is advertised from 200+ locations worldwide. Users automatically connect to the nearest location, minimizing latency. The same IP works globally but resolves locally.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which statement about Anycast and unicast is correct?",
+    "options": {
+      "A": "Unicast sends to multiple destinations; Anycast sends to one",
+      "B": "Anycast: one IP, multiple destinations (nearest wins); Unicast: one IP, one destination",
+      "C": "They are interchangeable terms",
+      "D": "Anycast is deprecated in favor of unicast"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Unicast: one-to-one (each IP maps to one destination). Anycast: one-to-nearest (same IP on multiple servers, routing picks nearest). Broadcast: one-to-all. Multicast: one-to-many (subscribed group).",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A company wants to use Anycast but doesn't own IP space. What is their best option?",
+    "options": {
+      "A": "Anycast is impossible without owned IP space",
+      "B": "Use a CDN or cloud provider that offers Anycast as a service",
+      "C": "Rent IP space from IANA",
+      "D": "Use IPv6 instead"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDNs (Cloudflare, Akamai) and cloud providers (AWS Global Accelerator) offer Anycast as a managed service. Customers get Anycast benefits without managing BGP, IP space, or global infrastructure.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a database index?",
+    "options": {
+      "A": "A backup of the database",
+      "B": "A data structure that improves query speed by providing quick lookup paths",
+      "C": "A list of all tables",
+      "D": "A database configuration file"
+    },
+    "correct_answers": ["B"],
+    "explanation": "An index is a data structure (typically B-tree or hash) that allows the database to find rows without scanning the entire table. Like a book index—jump directly to relevant pages instead of reading everything.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the trade-off of adding indexes?",
+    "options": {
+      "A": "Faster reads but slower writes and more storage",
+      "B": "Faster writes but slower reads",
+      "C": "No trade-off—indexes are always beneficial",
+      "D": "Reduced data accuracy"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Indexes speed up reads but slow down writes (index must be updated on INSERT/UPDATE/DELETE) and consume storage. Over-indexing hurts write performance. Index strategically based on query patterns.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "Which columns are good candidates for indexing? (Choose all that apply)",
+    "options": {
+      "A": "Columns frequently used in WHERE clauses",
+      "B": "Columns used in JOIN conditions",
+      "C": "Columns with high cardinality (many unique values)",
+      "D": "Columns rarely queried"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Index columns used in WHERE, JOIN, and ORDER BY. High cardinality (many unique values) makes indexes effective. Low cardinality (few values like boolean) or rarely-queried columns don't benefit much from indexing.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a composite (compound) index?",
+    "options": {
+      "A": "An index on a single column",
+      "B": "An index on multiple columns, useful for queries filtering on those columns together",
+      "C": "A compressed index",
+      "D": "An index shared across tables"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Composite index covers multiple columns (e.g., (last_name, first_name)). Efficient for queries filtering on those columns together. Column order matters—index on (A, B) helps queries on A or (A, B), but not B alone.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "A query filters on columns A and B. An index exists on (A, B). Which queries can use this index? (Choose all that apply)",
+    "options": {
+      "A": "WHERE A = 1",
+      "B": "WHERE A = 1 AND B = 2",
+      "C": "WHERE B = 2",
+      "D": "WHERE A = 1 OR B = 2"
+    },
+    "correct_answers": ["A", "B"],
+    "explanation": "Composite index (A, B) follows leftmost prefix rule: it helps queries on A alone or (A AND B). Query on B alone can't use this index efficiently. OR conditions typically can't use single composite index well.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a covering index?",
+    "options": {
+      "A": "An index that covers the entire table",
+      "B": "An index containing all columns needed by a query, avoiding table lookup",
+      "C": "An encrypted index",
+      "D": "A backup index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Covering index includes all columns a query needs. The query can be satisfied entirely from the index without accessing the table (index-only scan). Significantly faster for read-heavy queries.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "True or False: Primary keys are automatically indexed in most databases.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Most databases automatically create an index on the primary key. This ensures fast lookups by primary key and enforces uniqueness. Foreign keys, however, are often NOT automatically indexed.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is index selectivity?",
+    "options": {
+      "A": "How fast the index is",
+      "B": "The ratio of distinct values to total rows—higher is better",
+      "C": "The size of the index",
+      "D": "How many indexes exist"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Selectivity = distinct values / total rows. High selectivity (close to 1) means the index effectively narrows down results. Low selectivity (e.g., boolean column) means index doesn't help much—still scans many rows.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "A table has 10 million rows. A query without index takes 30 seconds. With a proper index, approximately how fast might it be?",
+    "options": {
+      "A": "25 seconds",
+      "B": "Milliseconds",
+      "C": "Still 30 seconds",
+      "D": "Cannot be determined"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Indexes can reduce query time from seconds to milliseconds by avoiding full table scans. B-tree index lookup is O(log n)—for 10M rows, only ~24 comparisons needed. Dramatic improvement for selective queries.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a partial (filtered) index?",
+    "options": {
+      "A": "An incomplete index",
+      "B": "An index on a subset of rows matching a condition",
+      "C": "A corrupted index",
+      "D": "An index on part of a column"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partial index only includes rows matching a condition (e.g., WHERE status = 'active'). Smaller than full index, faster to maintain. Useful when queries consistently filter on the same condition.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "Which situations indicate missing or ineffective indexes? (Choose all that apply)",
+    "options": {
+      "A": "Full table scans in query execution plans",
+      "B": "Slow queries on large tables",
+      "C": "High disk I/O during reads",
+      "D": "Fast query performance"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Signs of missing indexes: EXPLAIN shows full table scans, queries slow on large tables, high disk I/O for reads. Fast performance indicates indexes are working. Use EXPLAIN to analyze query plans.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is index fragmentation?",
+    "options": {
+      "A": "Index corruption",
+      "B": "Index pages becoming non-contiguous and less efficient over time due to updates",
+      "C": "Index being too small",
+      "D": "Index being deleted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "As data is inserted/updated/deleted, index pages become fragmented (non-contiguous, partially filled). This increases I/O and slows queries. Periodic index rebuilding or reorganization addresses fragmentation.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  }
+]

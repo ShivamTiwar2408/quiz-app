@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is block storage?",
+    "options": {
+      "A": "Storage for blocking requests",
+      "B": "Storage that divides data into fixed-size blocks, accessed like a raw disk",
+      "C": "Storage for large files only",
+      "D": "Encrypted storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Block storage divides data into fixed-size blocks with unique addresses. Accessed like a raw disk—no file system built-in. Used for databases, VMs, and applications needing low-latency, high-performance storage.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is file storage?",
+    "options": {
+      "A": "Storage for executables only",
+      "B": "Hierarchical storage with directories and files, accessed via file system protocols",
+      "C": "Storage without organization",
+      "D": "Temporary storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "File storage organizes data in hierarchical directory structure. Accessed via protocols like NFS, SMB. Familiar file/folder paradigm. Good for shared access, home directories, content management.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is object storage?",
+    "options": {
+      "A": "Storage for programming objects",
+      "B": "Flat storage where data is stored as objects with metadata and unique identifiers",
+      "C": "Storage for small files only",
+      "D": "In-memory storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Object storage stores data as objects (data + metadata + unique ID) in a flat namespace. No hierarchy. Accessed via HTTP APIs. Highly scalable, ideal for unstructured data: images, videos, backups, logs.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "Which storage type is best for a database requiring low latency and high IOPS?",
+    "options": {
+      "A": "Object storage",
+      "B": "Block storage",
+      "C": "File storage",
+      "D": "Tape storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Block storage provides lowest latency and highest IOPS—databases need fast random access to data blocks. Object storage has higher latency (HTTP overhead). File storage adds file system overhead.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "Which storage type is best for storing millions of images for a web application?",
+    "options": {
+      "A": "Block storage",
+      "B": "Object storage",
+      "C": "Local SSD",
+      "D": "Database BLOB"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Object storage excels at storing large amounts of unstructured data (images, videos). Scales to billions of objects, cost-effective, accessible via HTTP/CDN. S3, GCS, Azure Blob are common choices.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "What are characteristics of object storage? (Choose all that apply)",
+    "options": {
+      "A": "Flat namespace (no directories)",
+      "B": "Rich metadata support",
+      "C": "HTTP-based access",
+      "D": "Low latency like block storage"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Object storage features: flat namespace (objects identified by keys, not paths), rich custom metadata, HTTP API access. Latency is higher than block storage due to HTTP overhead—not suitable for databases.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "A team needs shared storage accessible by multiple servers simultaneously. Which type is most appropriate?",
+    "options": {
+      "A": "Block storage (single attach)",
+      "B": "File storage (NFS/SMB)",
+      "C": "Local disk",
+      "D": "Object storage for real-time access"
+    },
+    "correct_answers": ["B"],
+    "explanation": "File storage (NFS, SMB) supports concurrent access from multiple servers—designed for shared access. Block storage typically attaches to one server. Object storage works but isn't optimized for real-time shared file access.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "True or False: Object storage supports in-place updates to stored objects.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Object storage is typically immutable—you can't modify part of an object. To update, you replace the entire object. This simplifies consistency and enables features like versioning. Block storage supports in-place updates.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "Which AWS services represent each storage type?",
+    "options": {
+      "A": "EBS = Block, EFS = File, S3 = Object",
+      "B": "S3 = Block, EBS = File, EFS = Object",
+      "C": "EFS = Block, S3 = File, EBS = Object",
+      "D": "All are the same type"
+    },
+    "correct_answers": ["A"],
+    "explanation": "AWS storage services: EBS (Elastic Block Store) = block storage for EC2, EFS (Elastic File System) = managed NFS file storage, S3 (Simple Storage Service) = object storage. Each serves different use cases.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is a key advantage of object storage for data durability?",
+    "options": {
+      "A": "Faster writes",
+      "B": "Automatic replication across multiple locations with high durability (11 9s)",
+      "C": "Lower cost per IOPS",
+      "D": "Better compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Object storage services like S3 provide 99.999999999% (11 9s) durability through automatic replication across multiple facilities. Data is protected against hardware failures, disasters. Exceptional durability at low cost.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "Which factors should influence storage type selection? (Choose all that apply)",
+    "options": {
+      "A": "Access patterns (random vs sequential)",
+      "B": "Latency requirements",
+      "C": "Scalability needs",
+      "D": "Cost considerations"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "All factors matter: access patterns (block for random, object for sequential), latency (block lowest), scalability (object scales best), cost (object cheapest per GB). Match storage type to workload requirements.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "A video streaming platform stores 10PB of video files. Which storage type is most cost-effective?",
+    "options": {
+      "A": "Block storage",
+      "B": "Object storage",
+      "C": "File storage",
+      "D": "In-memory storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Object storage is most cost-effective for large-scale unstructured data. Videos are write-once, read-many—perfect for object storage. S3, GCS offer tiered pricing for infrequently accessed data. Block storage would be prohibitively expensive.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is Two-Phase Commit (2PC)?",
+    "options": {
+      "A": "Committing code twice",
+      "B": "A distributed transaction protocol ensuring all participants commit or all abort",
+      "C": "A backup strategy",
+      "D": "A database index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC: atomic commit protocol. Coordinator asks all participants to prepare, if all vote yes, coordinator tells all to commit. If any votes no, all abort. Ensures all-or-nothing across distributed resources.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What are the two phases in 2PC?",
+    "options": {
+      "A": "Read and Write",
+      "B": "Prepare (voting) phase and Commit (completion) phase",
+      "C": "Lock and Unlock",
+      "D": "Start and Stop"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Phase 1 (Prepare): coordinator sends prepare, participants vote yes/no. Phase 2 (Commit): if all yes, coordinator sends commit; if any no, sends abort. Participants execute coordinator's decision.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What happens if a participant votes 'no' in 2PC?",
+    "options": {
+      "A": "Transaction continues anyway",
+      "B": "Coordinator sends abort to all participants; entire transaction rolls back",
+      "C": "Only that participant aborts",
+      "D": "The vote is ignored"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Any 'no' vote → global abort. Coordinator sends abort to all. Participants release locks, undo changes. Atomicity preserved: either all commit or none do. One failure fails the whole transaction.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the coordinator's role in 2PC?",
+    "options": {
+      "A": "Store all data",
+      "B": "Orchestrate the protocol: collect votes, make commit/abort decision, inform participants",
+      "C": "Execute the transaction",
+      "D": "Backup data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Coordinator: initiates transaction, sends prepare requests, collects votes, decides commit/abort, sends decision, logs state for recovery. Single point of coordination (and potential failure).",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the 'blocking' problem in 2PC?",
+    "options": {
+      "A": "Network blocking",
+      "B": "If coordinator fails after prepare but before commit, participants are stuck holding locks indefinitely",
+      "C": "Slow queries",
+      "D": "Full disk"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC blocking: participant voted yes, waiting for decision. Coordinator crashes. Participant can't commit (might need to abort) or abort (might need to commit). Holds locks, blocks other transactions. Major weakness.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Why is 2PC considered a blocking protocol?",
+    "options": {
+      "A": "It blocks network traffic",
+      "B": "Participants must wait for coordinator's decision and can't proceed independently if coordinator fails",
+      "C": "It blocks disk writes",
+      "D": "It's not blocking"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Blocking: after voting yes, participant is 'in doubt'. Can't decide alone—might conflict with coordinator's decision. Must wait (potentially forever) or use recovery protocols. 3PC attempts to solve this.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the prepare record in 2PC?",
+    "options": {
+      "A": "A music recording",
+      "B": "A durable log entry participants write before voting yes, enabling recovery",
+      "C": "A backup file",
+      "D": "A network packet"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Prepare record: before voting yes, participant logs 'prepared' to durable storage. If crash and recover, can see it voted yes and wait for coordinator's decision. Essential for crash recovery.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the performance impact of 2PC?",
+    "options": {
+      "A": "No impact",
+      "B": "High latency (multiple round trips), reduced throughput (locks held longer), coordinator bottleneck",
+      "C": "Faster transactions",
+      "D": "Less network usage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC overhead: 2 round trips minimum, durable logging at each phase, locks held during entire protocol. Latency = 2 * max(participant latency). Throughput limited by lock duration. Use sparingly.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Which systems use 2PC?",
+    "options": {
+      "A": "XA transactions in databases",
+      "B": "Distributed databases like Spanner (variant)",
+      "C": "Some message queue exactly-once delivery",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "2PC used in: XA standard (cross-database transactions), Google Spanner (2PC + TrueTime), Kafka transactions (variant), distributed databases. Despite limitations, still fundamental for distributed atomicity.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is presumed abort optimization in 2PC?",
+    "options": {
+      "A": "Always aborting",
+      "B": "Coordinator doesn't log abort decision; participants assume abort if no commit record found",
+      "C": "Faster commits",
+      "D": "No logging"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Presumed abort: coordinator only logs commit, not abort. On recovery, no record = abort. Saves one log write for aborted transactions (common case). Optimization for reducing logging overhead.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "How does 2PC relate to the CAP theorem?",
+    "options": {
+      "A": "No relation",
+      "B": "2PC prioritizes consistency over availability—blocks during coordinator failure",
+      "C": "2PC provides availability",
+      "D": "2PC ignores partitions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC is CP: chooses consistency (atomicity) over availability. During coordinator failure or partition, participants block rather than make potentially inconsistent decisions. Availability sacrificed for correctness.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "A microservices system needs to update inventory and create an order atomically. Is 2PC a good choice?",
+    "options": {
+      "A": "Yes, always use 2PC",
+      "B": "Often no—consider Saga pattern for better availability and loose coupling",
+      "C": "2PC is the only option",
+      "D": "Atomicity isn't needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices + 2PC: tight coupling, blocking, coordinator SPOF. Saga pattern often better: local transactions + compensating actions. Eventually consistent but more available and loosely coupled.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  }
+]

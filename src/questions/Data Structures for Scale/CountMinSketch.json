@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a Count-Min Sketch?",
+    "options": {
+      "A": "A drawing tool",
+      "B": "A probabilistic data structure for estimating frequency of elements in a stream using sub-linear space",
+      "C": "A sorting algorithm",
+      "D": "A compression format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Count-Min Sketch: estimates frequency counts. Uses d hash functions and w counters per row. Space: O(d × w), independent of stream size. Answers: 'how many times did X appear?' with bounded error.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does Count-Min Sketch update work?",
+    "options": {
+      "A": "Store exact counts",
+      "B": "Hash element with d hash functions, increment counter at each hash position",
+      "C": "Replace oldest element",
+      "D": "Sort and insert"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Update: for element x, compute h₁(x), h₂(x), ..., hd(x). Increment counter[i][hᵢ(x)] for each row i. O(d) time per update. No need to store the element itself.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does Count-Min Sketch estimate frequency?",
+    "options": {
+      "A": "Sum all counters",
+      "B": "Return the minimum value across all d hash positions for that element",
+      "C": "Return the maximum",
+      "D": "Return the average"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Query: compute all d hash positions, return min(counter[i][hᵢ(x)]). Why minimum? Collisions only increase counts. Minimum is closest to true count. Never underestimates, may overestimate.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What type of error does Count-Min Sketch have?",
+    "options": {
+      "A": "Can underestimate",
+      "B": "One-sided error—can only overestimate, never underestimate",
+      "C": "No error",
+      "D": "Random error in both directions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "One-sided error: collisions add to counts, never subtract. Estimated count ≥ true count. Error bound: with probability 1-δ, error ≤ εN where N is total count. Tune ε, δ via width and depth.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How do width (w) and depth (d) affect Count-Min Sketch accuracy?",
+    "options": {
+      "A": "No effect",
+      "B": "Larger w reduces error magnitude; larger d reduces error probability",
+      "C": "Only w matters",
+      "D": "Only d matters"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Width w = e/ε (error magnitude). Depth d = ln(1/δ) (failure probability). Want ε=0.01, δ=0.01? w≈272, d≈5. More space = better accuracy. Trade-off: space vs precision.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is a common use case for Count-Min Sketch?",
+    "options": {
+      "A": "Sorting data",
+      "B": "Finding heavy hitters—elements appearing frequently in a data stream",
+      "C": "Encrypting data",
+      "D": "Compressing images"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heavy hitters: find elements with frequency > threshold. Network traffic: detect DDoS sources. Ad clicks: find popular ads. Search queries: trending topics. All with bounded memory.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Count-Min Sketch vs hash table for frequency counting: when use CMS?",
+    "options": {
+      "A": "When you need exact counts",
+      "B": "When cardinality is huge and approximate counts are acceptable",
+      "C": "When you have unlimited memory",
+      "D": "When order matters"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CMS advantage: fixed memory regardless of unique elements. Hash table: O(n) space for n unique elements. Billions of unique IPs? Hash table = GB of RAM. CMS = KB with bounded error.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Can Count-Min Sketch handle deletions?",
+    "options": {
+      "A": "No, never",
+      "B": "Yes, by decrementing counters, but this can cause underestimation",
+      "C": "Yes, with no issues",
+      "D": "Only with special hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Deletions: decrement counters. Problem: if collision occurred, decrementing affects other elements' counts. Can go negative or underestimate. Count-Min-Log and other variants handle this better.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the space complexity of Count-Min Sketch?",
+    "options": {
+      "A": "O(n) where n is stream size",
+      "B": "O(1/ε × log(1/δ))—independent of stream size",
+      "C": "O(n²)",
+      "D": "O(log n)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Space: d × w counters. d = O(log(1/δ)), w = O(1/ε). Total: O(1/ε × log(1/δ)). Key insight: space depends only on desired accuracy, not on stream size or cardinality.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How is Count-Min Sketch used in network monitoring?",
+    "options": {
+      "A": "To encrypt packets",
+      "B": "To estimate traffic volume per source IP for detecting anomalies and DDoS attacks",
+      "C": "To route packets",
+      "D": "To compress data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Network monitoring: millions of IPs, can't store all. CMS tracks per-IP packet counts. Detect: DDoS (sudden spike from IP), port scans (many destinations from one source). Real-time, bounded memory.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the relationship between Count-Min Sketch and Bloom filters?",
+    "options": {
+      "A": "They are identical",
+      "B": "Both are probabilistic structures using multiple hash functions; Bloom for membership, CMS for counting",
+      "C": "Bloom filter is more accurate",
+      "D": "CMS is a type of Bloom filter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Similarities: multiple hash functions, sub-linear space, one-sided error. Bloom: 'is X in set?' (yes/maybe). CMS: 'how many X?' (count/overestimate). CMS generalizes Bloom to counting.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "You're processing a stream of 1 billion search queries and need to find queries appearing more than 1 million times. What approach?",
+    "options": {
+      "A": "Store all queries in a hash table",
+      "B": "Use Count-Min Sketch to estimate frequencies, report queries exceeding threshold",
+      "C": "Sample randomly",
+      "D": "Sort all queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heavy hitters with CMS: 1) Update CMS for each query, 2) Maintain candidate set of potential heavy hitters, 3) Query CMS for candidates, report those above threshold. Bounded memory, streaming algorithm.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  }
+]

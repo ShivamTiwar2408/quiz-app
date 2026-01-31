@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the OWASP API Security Top 10?",
+    "options": {
+      "A": "The 10 fastest APIs",
+      "B": "A list of the most critical API security risks",
+      "C": "The top 10 API frameworks",
+      "D": "A ranking of API providers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OWASP API Security Top 10 identifies critical API vulnerabilities: Broken Object Level Authorization, Broken Authentication, Excessive Data Exposure, etc. Essential reading for API security.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "What is Broken Object Level Authorization (BOLA)?",
+    "options": {
+      "A": "A database error",
+      "B": "When APIs don't verify users can access the specific objects they request",
+      "C": "A network timeout",
+      "D": "An encryption failure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BOLA (IDOR) occurs when APIs accept object IDs without verifying the user has permission. Example: GET /api/users/123/data - does the requester have access to user 123's data? Always verify authorization.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "Which practices help prevent injection attacks in APIs? (Choose all that apply)",
+    "options": {
+      "A": "Parameterized queries for database access",
+      "B": "Input validation and sanitization",
+      "C": "Using string concatenation for queries",
+      "D": "Escaping special characters in outputs"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Parameterized queries prevent SQL injection. Input validation rejects malicious input. Output escaping prevents XSS. String concatenation for queries is the CAUSE of injection vulnerabilities.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the principle of least privilege in API design?",
+    "options": {
+      "A": "Give all users admin access for convenience",
+      "B": "Grant only the minimum permissions necessary for a task",
+      "C": "Privilege all API endpoints equally",
+      "D": "Remove all authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least privilege means users/services get only permissions they need. API tokens should have minimal scopes. This limits damage from compromised credentials and reduces attack surface.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "Why should API error messages be carefully designed?",
+    "options": {
+      "A": "To make debugging easier",
+      "B": "Detailed errors can leak sensitive information to attackers",
+      "C": "To reduce response size",
+      "D": "Error messages don't matter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Verbose errors can reveal stack traces, database schemas, internal paths, or valid usernames. Return generic errors to clients; log details server-side. Example: 'Invalid credentials' not 'User not found'.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is API rate limiting's role in security?",
+    "options": {
+      "A": "It only affects performance, not security",
+      "B": "It prevents brute force attacks, DoS, and resource exhaustion",
+      "C": "It encrypts API traffic",
+      "D": "It validates user identity"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rate limiting prevents: brute force password attacks, credential stuffing, DoS attacks, and scraping. It's a critical security control, not just performance optimization.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "True or False: HTTPS alone is sufficient for API security.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HTTPS provides transport security (encryption in transit) but doesn't address authentication, authorization, input validation, rate limiting, or application-level vulnerabilities. It's necessary but not sufficient.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "What is 'Excessive Data Exposure' in API security?",
+    "options": {
+      "A": "Sending too many API requests",
+      "B": "APIs returning more data than the client needs, relying on client-side filtering",
+      "C": "Exposing API documentation publicly",
+      "D": "Having too many API endpoints"
+    },
+    "correct_answers": ["B"],
+    "explanation": "APIs often return full objects, expecting clients to filter. Attackers can see all data in responses. APIs should return only necessary fields. Don't rely on client-side filtering for security.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "How should API keys be protected?",
+    "options": {
+      "A": "Embed them in client-side JavaScript",
+      "B": "Store in environment variables, never commit to code repositories",
+      "C": "Include them in URLs for easy access",
+      "D": "Share them in documentation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API keys should be in environment variables or secret managers, never in code/repos. Use .gitignore for config files. Rotate keys regularly. Use different keys for dev/prod environments.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "What is CORS and why is it important for API security?",
+    "options": {
+      "A": "A caching mechanism",
+      "B": "Cross-Origin Resource Sharing - controls which domains can access your API from browsers",
+      "C": "A compression algorithm",
+      "D": "A routing protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CORS headers control browser cross-origin requests. Misconfigured CORS (Access-Control-Allow-Origin: *) can allow malicious sites to make authenticated requests to your API using victim's cookies.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What security headers should APIs include? (Choose all that apply)",
+    "options": {
+      "A": "Content-Security-Policy",
+      "B": "X-Content-Type-Options: nosniff",
+      "C": "Strict-Transport-Security (HSTS)",
+      "D": "X-API-Speed: fast"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Security headers: CSP (prevents XSS), X-Content-Type-Options (prevents MIME sniffing), HSTS (enforces HTTPS), X-Frame-Options (prevents clickjacking). X-API-Speed is not a real header.",
+    "difficulty": "hard",
+    "category": "api security"
+  },
+  {
+    "question": "An API endpoint allows users to update their profile. What authorization check is essential?",
+    "options": {
+      "A": "Check if the user is logged in",
+      "B": "Verify the user can only update their OWN profile, not others'",
+      "C": "Check if the request uses HTTPS",
+      "D": "Validate the JSON format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Authentication (logged in) isn't enough. Authorization must verify the user can access/modify the specific resource. PUT /users/123 should verify the requester IS user 123 or has admin rights.",
+    "difficulty": "medium",
+    "category": "api security"
+  }
+]

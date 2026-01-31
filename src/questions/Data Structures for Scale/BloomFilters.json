@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a Bloom filter?",
+    "options": {
+      "A": "A water filter",
+      "B": "A probabilistic data structure for testing set membership with possible false positives but no false negatives",
+      "C": "A sorting algorithm",
+      "D": "A compression method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filter: space-efficient probabilistic structure. Can answer 'is X in set?' with: definitely not (100% accurate) or probably yes (may be false positive). No false negatives. Very compact.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How does a Bloom filter work?",
+    "options": {
+      "A": "Stores all elements",
+      "B": "Uses multiple hash functions to set bits in a bit array; checks if all bits are set for membership",
+      "C": "Uses a linked list",
+      "D": "Sorts elements"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filter: bit array + k hash functions. Insert: hash element k times, set those bits to 1. Query: hash element k times, if all bits are 1, probably present; if any bit is 0, definitely absent.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a false positive in a Bloom filter?",
+    "options": {
+      "A": "An error in the code",
+      "B": "Reporting an element is in the set when it actually isn't (due to hash collisions)",
+      "C": "Missing an element that exists",
+      "D": "A correct result"
+    },
+    "correct_answers": ["B"],
+    "explanation": "False positive: all k bits happen to be set by other elements. Query says 'probably yes' but element was never added. Rate depends on: array size, number of elements, hash functions. Tunable tradeoff.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Can a Bloom filter have false negatives?",
+    "options": {
+      "A": "Yes, frequently",
+      "B": "No—if element was added, its bits are set and will always be found",
+      "C": "Only with certain hash functions",
+      "D": "Only when full"
+    },
+    "correct_answers": ["B"],
+    "explanation": "No false negatives: once bits are set, they stay set (standard Bloom filter). If element was added, all its bits are 1, query returns 'probably yes'. This guarantee is key to Bloom filter usefulness.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What are common use cases for Bloom filters?",
+    "options": {
+      "A": "Avoiding expensive lookups (disk, network) for non-existent keys",
+      "B": "Spell checkers and URL blacklists",
+      "C": "Database query optimization",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Bloom filter uses: cache lookup optimization (skip disk if definitely not there), spell check (is word in dictionary?), malicious URL detection, database (skip SSTable if key not present), deduplication.",
+    "difficulty": "easy",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How does the false positive rate relate to Bloom filter size?",
+    "options": {
+      "A": "No relationship",
+      "B": "Larger bit array = lower false positive rate (more space, fewer collisions)",
+      "C": "Larger array = higher false positive rate",
+      "D": "Size doesn't matter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "False positive rate ≈ (1 - e^(-kn/m))^k where m=bits, n=elements, k=hash functions. Larger m (more bits) = lower rate. Tradeoff: space vs accuracy. Can calculate optimal k for given m and n.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Can you delete elements from a standard Bloom filter?",
+    "options": {
+      "A": "Yes, easily",
+      "B": "No—clearing a bit might affect other elements that share it",
+      "C": "Only the last element",
+      "D": "Only with special hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Standard Bloom filter: no deletion. Clearing a bit might remove other elements sharing that bit (false negatives). Solution: Counting Bloom filter (counters instead of bits, decrement on delete).",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Counting Bloom filter?",
+    "options": {
+      "A": "A filter that counts elements",
+      "B": "A variant using counters instead of bits, enabling deletion",
+      "C": "A filter for numbers only",
+      "D": "A faster Bloom filter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Counting Bloom filter: replace bits with counters (typically 4 bits each). Insert: increment counters. Delete: decrement counters. Enables deletion but uses more space. Counter overflow is a concern.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How do databases like Cassandra use Bloom filters?",
+    "options": {
+      "A": "For sorting data",
+      "B": "To quickly determine if a key might exist in an SSTable, avoiding unnecessary disk reads",
+      "C": "For compression",
+      "D": "For encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LSM-tree databases (Cassandra, LevelDB, RocksDB): each SSTable has Bloom filter. Query: check Bloom filter first. If 'definitely not', skip reading that SSTable from disk. Huge I/O savings.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the space efficiency of Bloom filters?",
+    "options": {
+      "A": "Uses more space than storing elements",
+      "B": "Very space-efficient—typically 10 bits per element for 1% false positive rate",
+      "C": "Uses exactly same space as elements",
+      "D": "Unlimited space"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filter space: ~10 bits/element for 1% FP rate, ~15 bits for 0.1%. Compare to storing actual elements (strings, IDs). For millions of elements, Bloom filter is orders of magnitude smaller.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the optimal number of hash functions for a Bloom filter?",
+    "options": {
+      "A": "Always 1",
+      "B": "k = (m/n) * ln(2), where m is bits and n is elements",
+      "C": "Always 100",
+      "D": "Doesn't matter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Optimal k = (m/n) * ln(2) ≈ 0.7 * (m/n). Too few hash functions: more false positives. Too many: too many bits set, also more false positives. Sweet spot minimizes FP rate for given m and n.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "A web service needs to check if URLs are in a blocklist of 10 million malicious URLs. Best approach?",
+    "options": {
+      "A": "Query database for every URL",
+      "B": "Use Bloom filter—check locally first, only query database on 'probably yes'",
+      "C": "Store all URLs in memory",
+      "D": "Ignore the blocklist"
+    },
+    "correct_answers": ["B"],
+    "explanation": "10M URLs blocklist: Bloom filter perfect. ~100MB for 1% FP rate. Check every URL locally (fast). 'Definitely not' = safe (99% of traffic). 'Probably yes' = check database (1% + actual malicious). Massive speedup.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  }
+]

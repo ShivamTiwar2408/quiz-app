@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is connection pooling?",
+    "options": {
+      "A": "Swimming pool management",
+      "B": "Maintaining a cache of reusable database connections to avoid the overhead of creating new connections",
+      "C": "A backup strategy",
+      "D": "A type of index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Connection pooling: pre-create connections, reuse them. Creating a DB connection is expensive (TCP handshake, authentication, memory allocation). Pool maintains ready connections. Borrow, use, return.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "Why is creating database connections expensive?",
+    "options": {
+      "A": "It's not expensive",
+      "B": "TCP handshake, SSL negotiation, authentication, server-side memory allocation",
+      "C": "It uses too much disk",
+      "D": "It requires manual approval"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Connection cost: TCP 3-way handshake (~1 RTT), SSL/TLS handshake (~2 RTT), authentication, server allocates memory/process. Can be 50-100ms. At scale, this overhead is devastating.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What are key connection pool parameters?",
+    "options": {
+      "A": "Only pool size",
+      "B": "Min/max pool size, connection timeout, idle timeout, max lifetime",
+      "C": "Only timeout",
+      "D": "No parameters needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Key parameters: minPoolSize (always ready), maxPoolSize (limit), connectionTimeout (wait for available), idleTimeout (close unused), maxLifetime (recycle old connections). Tune for your workload.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What happens when all connections in a pool are in use?",
+    "options": {
+      "A": "New connections are created infinitely",
+      "B": "Requests wait (up to timeout) or fail if pool is exhausted",
+      "C": "The database crashes",
+      "D": "Connections are shared simultaneously"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pool exhaustion: requests queue waiting for a connection. If wait exceeds timeout, request fails. Symptoms: increased latency, then errors. Solutions: increase pool size, optimize query duration, add replicas.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is connection leak?",
+    "options": {
+      "A": "Water leaking",
+      "B": "Connections borrowed from pool but never returned, eventually exhausting the pool",
+      "C": "Fast connections",
+      "D": "Encrypted connections"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Connection leak: code gets connection, doesn't close/return it (often due to exceptions). Pool depletes over time. Symptoms: gradual slowdown, then failures. Fix: always close in finally block, use try-with-resources.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is HikariCP?",
+    "options": {
+      "A": "A database",
+      "B": "A high-performance JDBC connection pool for Java applications",
+      "C": "A message queue",
+      "D": "An operating system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HikariCP: fast, lightweight Java connection pool. Default in Spring Boot. Known for: minimal overhead, fast connection acquisition, good defaults. Alternatives: c3p0, DBCP, Tomcat pool.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "How do you size a connection pool?",
+    "options": {
+      "A": "Always use maximum possible",
+      "B": "Based on: concurrent requests, query duration, database capacity; often smaller than expected",
+      "C": "Always use 1 connection",
+      "D": "Random number"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pool sizing formula: connections = (core_count * 2) + effective_spindle_count (for disk). Often 10-20 is enough. Too large: wastes DB resources, context switching. Test and tune for your workload.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is PgBouncer?",
+    "options": {
+      "A": "A game",
+      "B": "A lightweight connection pooler for PostgreSQL that sits between application and database",
+      "C": "A backup tool",
+      "D": "A monitoring system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PgBouncer: external connection pooler for PostgreSQL. Multiplexes many client connections to fewer DB connections. Modes: session, transaction, statement pooling. Essential for serverless/high-connection scenarios.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the difference between application-level and external connection pooling?",
+    "options": {
+      "A": "They are the same",
+      "B": "Application-level: pool per app instance; External: shared pool between app and DB, can serve multiple apps",
+      "C": "External is slower",
+      "D": "Application-level doesn't work"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Application pool (HikariCP): each app instance has own pool. External (PgBouncer, ProxySQL): sits between apps and DB, pools across all apps. External better for: many app instances, serverless, connection limits.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "Why might serverless functions need external connection pooling?",
+    "options": {
+      "A": "They don't need it",
+      "B": "Each function instance creates connections; many concurrent instances can overwhelm database connection limits",
+      "C": "Serverless is always slow",
+      "D": "For encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless problem: 1000 concurrent Lambda invocations = 1000 DB connections. Most DBs can't handle this. Solution: external pooler (RDS Proxy, PgBouncer) multiplexes to fewer actual connections.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is connection validation in a pool?",
+    "options": {
+      "A": "Checking user credentials",
+      "B": "Testing if a pooled connection is still valid before giving it to the application",
+      "C": "Encrypting connections",
+      "D": "Counting connections"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Connection validation: before returning connection from pool, verify it's alive (network issues, DB restart can kill connections). Methods: test query, TCP check. Adds latency but prevents errors.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "An application experiences intermittent 'connection timeout' errors during traffic spikes. Most likely cause?",
+    "options": {
+      "A": "Database is down",
+      "B": "Connection pool is too small—all connections in use, requests waiting exceed timeout",
+      "C": "Network is too fast",
+      "D": "Too few queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Symptoms match pool exhaustion: works normally, fails under load. Solutions: increase pool size (if DB can handle), optimize slow queries (free connections faster), add read replicas, implement queuing.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  }
+]

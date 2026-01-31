@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is push-based architecture?",
+    "options": {
+      "A": "Clients request data",
+      "B": "Server proactively sends data to clients when events occur, without clients asking",
+      "C": "Data is compressed",
+      "D": "Data is deleted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Push: server initiates communication. When event happens, server pushes to interested clients. Examples: WebSockets, push notifications, pub/sub. Real-time, but requires maintaining connections/subscriptions.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is pull-based architecture?",
+    "options": {
+      "A": "Server sends data automatically",
+      "B": "Clients request data when they need it; server responds to requests",
+      "C": "Data flows continuously",
+      "D": "No data transfer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pull: client initiates. Client asks 'give me updates', server responds. Examples: HTTP requests, polling, REST APIs. Simple, stateless, but may miss events or waste resources polling.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When would you choose push over pull?",
+    "options": {
+      "A": "When data changes rarely",
+      "B": "When real-time updates are critical and data changes frequently",
+      "C": "When clients are offline",
+      "D": "When bandwidth is unlimited"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Push for: real-time needs (chat, live scores, trading), frequent updates, many interested clients. Avoids polling overhead. Tradeoff: connection management, handling disconnections, scaling subscribers.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When would you choose pull over push?",
+    "options": {
+      "A": "Real-time chat",
+      "B": "When data changes infrequently, clients need data on-demand, or simplicity is valued",
+      "C": "Live stock prices",
+      "D": "Multiplayer games"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pull for: infrequent updates, on-demand data needs, simple architecture, stateless servers. Examples: checking email, loading web pages, API calls. Simpler to implement and scale.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the main disadvantage of polling (pull)?",
+    "options": {
+      "A": "Too fast",
+      "B": "Wasted resources when no updates; delayed detection of changes between polls",
+      "C": "Too secure",
+      "D": "Too simple"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Polling problems: most polls return 'no change' (wasted requests), updates detected only at next poll interval (latency). High frequency = more waste. Low frequency = more delay. Lose-lose.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the main disadvantage of push?",
+    "options": {
+      "A": "Too slow",
+      "B": "Complexity of maintaining connections, handling disconnections, and scaling to many subscribers",
+      "C": "Uses no resources",
+      "D": "Too simple"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Push challenges: maintain persistent connections (memory, file descriptors), handle disconnections gracefully, scale to millions of subscribers, ensure delivery. More complex infrastructure.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is long polling?",
+    "options": {
+      "A": "Polling for a long time",
+      "B": "A hybrid where client polls but server holds request open until data is available or timeout",
+      "C": "Polling every second",
+      "D": "Never polling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Long polling: client requests, server waits (holds connection) until update available, then responds. Client immediately re-requests. Simulates push over HTTP. Used before WebSockets were common.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How does Prometheus collect metrics?",
+    "options": {
+      "A": "Applications push metrics to Prometheus",
+      "B": "Prometheus pulls (scrapes) metrics from application endpoints",
+      "C": "Metrics are stored in files",
+      "D": "No metrics collection"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Prometheus: pull-based. Scrapes /metrics endpoints at configured intervals. Advantages: simpler apps (just expose endpoint), Prometheus controls rate, works through firewalls. Push gateway for short-lived jobs.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How do push notifications work on mobile?",
+    "options": {
+      "A": "Apps constantly poll servers",
+      "B": "Device maintains connection to platform service (APNs/FCM); server pushes to platform, platform pushes to device",
+      "C": "Users manually check",
+      "D": "SMS messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mobile push: device maintains one connection to Apple/Google. Your server sends to APNs/FCM, they push to device. Efficient: one connection for all apps, platform handles delivery. True push.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the 'thundering herd' problem with pull?",
+    "options": {
+      "A": "Animals running",
+      "B": "Many clients polling simultaneously, overwhelming the server with requests",
+      "C": "Slow network",
+      "D": "Data corruption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Thundering herd: if all clients poll at same interval starting same time, requests bunch up. Solutions: jitter (randomize poll times), exponential backoff, or switch to push for high-scale scenarios.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is fan-out in push systems?",
+    "options": {
+      "A": "Cooling servers",
+      "B": "Distributing a single update to many subscribers",
+      "C": "Compressing data",
+      "D": "Encrypting messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fan-out: one event → many recipients. Celebrity tweets to millions of followers. Challenge: delivering quickly to all. Solutions: async processing, message queues, hierarchical distribution.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A social media feed needs to show new posts. Push or pull?",
+    "options": {
+      "A": "Always push",
+      "B": "Hybrid: push for active users, pull on app open; or pull with smart caching",
+      "C": "Always pull",
+      "D": "Neither"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Social feeds often hybrid: push new posts to timeline cache (fan-out on write), pull when user opens app (fan-out on read for celebrities). Balance real-time feel with scalability. Twitter/Facebook use hybrid.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  }
+]

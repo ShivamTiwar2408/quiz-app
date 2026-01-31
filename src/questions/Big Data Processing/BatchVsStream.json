@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is batch processing?",
+    "options": {
+      "A": "Processing data in real-time",
+      "B": "Processing large volumes of data collected over time in a single job",
+      "C": "Processing one record at a time",
+      "D": "Interactive data analysis"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Batch processing: collect data over time (hours, days), process all at once. High throughput, high latency. Examples: daily reports, ETL jobs, training ML models. MapReduce is classic batch paradigm.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is stream processing?",
+    "options": {
+      "A": "Processing video streams",
+      "B": "Processing data continuously as it arrives, with low latency",
+      "C": "Batch processing with smaller batches",
+      "D": "Database queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stream processing: process data as it arrives, continuously. Low latency (seconds/milliseconds). Examples: real-time fraud detection, live dashboards, alerting. Kafka Streams, Flink, Spark Streaming.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "Which scenarios are best suited for batch processing? (Choose all that apply)",
+    "options": {
+      "A": "Daily sales reports",
+      "B": "Real-time fraud detection",
+      "C": "Training machine learning models",
+      "D": "Monthly billing calculations"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Batch suits: periodic reports (daily/monthly), ML training (needs all data), billing (accuracy over speed). Real-time fraud needs stream processing—can't wait for batch to detect fraud.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "Which scenarios are best suited for stream processing? (Choose all that apply)",
+    "options": {
+      "A": "Real-time fraud detection",
+      "B": "Live monitoring dashboards",
+      "C": "Historical data analysis",
+      "D": "Alerting on anomalies"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Stream suits: fraud detection (immediate action needed), live dashboards (current state), alerting (timely response). Historical analysis typically uses batch—no urgency, can optimize for throughput.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the main trade-off between batch and stream processing?",
+    "options": {
+      "A": "Cost vs quality",
+      "B": "Latency vs throughput",
+      "C": "Security vs speed",
+      "D": "Simplicity vs features"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Core trade-off: Batch has high throughput but high latency (results after job completes). Stream has low latency but typically lower throughput per-record. Choose based on latency requirements.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is micro-batching?",
+    "options": {
+      "A": "Very small batch jobs",
+      "B": "Processing small batches frequently to approximate stream processing",
+      "C": "Batching microservices",
+      "D": "Compressing batches"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Micro-batching: collect data for short intervals (seconds), process as small batches. Approximates streaming with batch semantics. Spark Streaming uses this. Trade-off: simpler than true streaming, but higher latency.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the Lambda architecture?",
+    "options": {
+      "A": "AWS Lambda functions",
+      "B": "Architecture combining batch layer (accuracy) and speed layer (low latency) with serving layer",
+      "C": "A programming paradigm",
+      "D": "A database design"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lambda architecture: batch layer processes all data for accuracy, speed layer processes recent data for low latency, serving layer merges results. Addresses batch vs stream trade-off. Complexity: maintaining two codepaths.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the Kappa architecture?",
+    "options": {
+      "A": "A Greek letter system",
+      "B": "Architecture using only stream processing, reprocessing from log when needed",
+      "C": "A database design",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa architecture: stream processing only. Historical reprocessing by replaying from log (Kafka). Simpler than Lambda (one codebase). Requires stream processor capable of handling both real-time and replay.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "True or False: Stream processing can completely replace batch processing.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Not always. Some workloads suit batch: complex analytics over entire dataset, ML training, cost-sensitive jobs (batch can use spot instances). Stream adds complexity. Choose based on requirements, not trends.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is 'event time' vs 'processing time' in stream processing?",
+    "options": {
+      "A": "Same thing",
+      "B": "Event time: when event occurred; Processing time: when system processes it",
+      "C": "Event time is faster",
+      "D": "Processing time is more accurate"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event time: when event actually happened (embedded in data). Processing time: when system processes it. They differ due to delays. Event time is usually what matters for correctness; handling late data is a key challenge.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "Which tools are used for stream processing? (Choose all that apply)",
+    "options": {
+      "A": "Apache Kafka Streams",
+      "B": "Apache Flink",
+      "C": "Apache Spark Streaming",
+      "D": "Apache Hadoop MapReduce"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Stream processing tools: Kafka Streams (library), Flink (true streaming), Spark Streaming (micro-batch). Hadoop MapReduce is batch processing—not designed for streaming. Each has different trade-offs.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is windowing in stream processing?",
+    "options": {
+      "A": "Opening windows on screen",
+      "B": "Grouping events into time-based or count-based windows for aggregation",
+      "C": "Filtering events",
+      "D": "Compressing data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Windowing groups unbounded stream into finite chunks for aggregation: tumbling windows (fixed, non-overlapping), sliding windows (overlapping), session windows (activity-based). Essential for stream analytics.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  }
+]

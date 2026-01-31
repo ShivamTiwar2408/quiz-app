@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is microservices architecture?",
+    "options": {
+      "A": "A single large application",
+      "B": "An architecture where applications are composed of small, independent services that communicate over networks",
+      "C": "A database design pattern",
+      "D": "A frontend framework"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices decompose applications into small, independently deployable services. Each service owns its data, has a specific business capability, and communicates via APIs. Enables team autonomy and independent scaling.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Which are benefits of microservices? (Choose all that apply)",
+    "options": {
+      "A": "Independent deployment of services",
+      "B": "Technology diversity—different services can use different tech stacks",
+      "C": "Simpler than monoliths",
+      "D": "Easier scaling of individual components"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Microservices benefits: independent deployment (change one service without affecting others), tech diversity (best tool for each job), targeted scaling. NOT simpler—distributed systems add significant complexity.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a key challenge of microservices?",
+    "options": {
+      "A": "Too simple to implement",
+      "B": "Distributed system complexity: network failures, data consistency, debugging",
+      "C": "Cannot scale",
+      "D": "Requires single programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices introduce distributed systems challenges: network is unreliable, maintaining data consistency across services is hard, debugging spans multiple services, operational complexity increases significantly.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How should microservices handle data?",
+    "options": {
+      "A": "Share a single database",
+      "B": "Each service owns its data; no direct database sharing",
+      "C": "Use only in-memory storage",
+      "D": "Store all data in files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Database per service: each microservice owns its data, accessed only through its API. No shared databases—this would couple services. Enables independent schema changes and technology choices.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the recommended size for a microservice?",
+    "options": {
+      "A": "Exactly 100 lines of code",
+      "B": "Small enough for one team to own; large enough to provide meaningful business capability",
+      "C": "As small as possible",
+      "D": "One function per service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Size isn't about code lines—it's about ownership and capability. A service should be owned by one team (two-pizza team) and represent a cohesive business capability. Too small = overhead; too large = mini-monolith.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "When should you NOT use microservices?",
+    "options": {
+      "A": "When you have a small team and simple domain",
+      "B": "When you need high scalability",
+      "C": "When you have multiple teams",
+      "D": "When services have clear boundaries"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Microservices add overhead. Small teams with simple domains are better served by monoliths—less complexity, faster development. Microservices shine with multiple teams, complex domains, and scaling needs.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How do microservices typically communicate? (Choose all that apply)",
+    "options": {
+      "A": "Synchronous REST/gRPC calls",
+      "B": "Asynchronous messaging (events, queues)",
+      "C": "Shared memory",
+      "D": "Direct database queries"
+    },
+    "correct_answers": ["A", "B"],
+    "explanation": "Microservices communicate via: synchronous calls (REST, gRPC) for request-response, asynchronous messaging (Kafka, RabbitMQ) for events. NOT shared memory (different processes) or direct DB queries (violates encapsulation).",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is 'service mesh' in microservices?",
+    "options": {
+      "A": "A fishing net for services",
+      "B": "Infrastructure layer handling service-to-service communication, security, and observability",
+      "C": "A database type",
+      "D": "A deployment tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service mesh (Istio, Linkerd) is infrastructure for service communication. Handles: load balancing, encryption, authentication, retries, circuit breaking, observability. Offloads cross-cutting concerns from application code.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "True or False: Microservices eliminate the need for careful API design.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API design is MORE critical in microservices. APIs are contracts between services—breaking changes affect dependent services. Versioning, backward compatibility, and clear contracts are essential.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the 'distributed monolith' anti-pattern?",
+    "options": {
+      "A": "A well-designed microservices system",
+      "B": "Microservices that are tightly coupled, requiring coordinated deployments",
+      "C": "A single-server application",
+      "D": "A database pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Distributed monolith: services are technically separate but tightly coupled—changes require coordinated deployments, shared databases, synchronous call chains. Worst of both worlds: distributed complexity without independence benefits.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How should microservices handle failures in dependent services?",
+    "options": {
+      "A": "Crash immediately",
+      "B": "Implement resilience patterns: circuit breakers, retries, fallbacks, timeouts",
+      "C": "Ignore failures",
+      "D": "Wait indefinitely"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices must handle failures gracefully: circuit breakers (stop calling failing services), retries with backoff, fallbacks (degraded functionality), timeouts (don't wait forever). Failures are normal in distributed systems.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What organizational structure supports microservices best?",
+    "options": {
+      "A": "Centralized team owning all services",
+      "B": "Cross-functional teams owning services end-to-end (Conway's Law)",
+      "C": "Separate teams for frontend, backend, database",
+      "D": "One developer per service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Conway's Law: system design mirrors organization structure. Cross-functional teams (dev, ops, QA) owning services end-to-end work best. Siloed teams (frontend/backend/DB) create coordination overhead and coupling.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  }
+]

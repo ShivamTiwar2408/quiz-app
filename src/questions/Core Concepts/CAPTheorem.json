@@ -1,0 +1,156 @@
+[
+  {
+    "question": "According to the CAP theorem, during a network partition, a distributed system must choose between:",
+    "options": {
+      "A": "Consistency and Performance",
+      "B": "Availability and Performance",
+      "C": "Consistency and Availability",
+      "D": "Durability and Availability"
+    },
+    "correct_answers": ["C"],
+    "explanation": "CAP states that during a partition (P), you cannot have both Consistency (C) and Availability (A). You must choose to either return potentially stale data (AP) or reject requests until consistency is restored (CP).",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A banking system requires that account balances are always accurate, even if it means rejecting transactions during network issues. Which CAP classification best describes this system?",
+    "options": {
+      "A": "AP (Availability + Partition tolerance)",
+      "B": "CP (Consistency + Partition tolerance)",
+      "C": "CA (Consistency + Availability)",
+      "D": "CAP (all three)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The system prioritizes consistency over availability—it will reject requests rather than risk incorrect balances. This is a CP system. CA is impossible in distributed systems (partitions happen); CAP together is impossible by the theorem.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which statement about the CAP theorem is FALSE?",
+    "options": {
+      "A": "It applies only during network partitions",
+      "B": "A system must always sacrifice one of the three properties",
+      "C": "Most distributed systems are partition-tolerant by necessity",
+      "D": "The choice between C and A can be made per-operation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CAP tradeoffs only apply during partitions. When the network is healthy, a system can provide both consistency and availability. The theorem doesn't require permanently sacrificing one property.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A social media platform shows slightly outdated follower counts but never goes offline. Which CAP properties does it prioritize?",
+    "options": {
+      "A": "Consistency and Availability",
+      "B": "Consistency and Partition tolerance",
+      "C": "Availability and Partition tolerance",
+      "D": "Only Partition tolerance"
+    },
+    "correct_answers": ["C"],
+    "explanation": "The system accepts stale data (relaxed consistency) to remain available during partitions—this is an AP system. It prioritizes user access over perfect accuracy for non-critical data.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why is a CA (Consistency + Availability without Partition tolerance) system impractical for distributed systems?",
+    "options": {
+      "A": "Network partitions are inevitable in distributed systems",
+      "B": "CA systems are too expensive to build",
+      "C": "CA systems cannot scale horizontally",
+      "D": "CA systems have poor performance"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Network partitions (hardware failures, network issues) are unavoidable in distributed systems. A CA system would fail entirely during partitions. Practical distributed systems must be partition-tolerant, leaving the C vs A choice.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which databases are typically classified as CP systems? (Choose all that apply)",
+    "options": {
+      "A": "MongoDB (with majority write concern)",
+      "B": "Cassandra (with eventual consistency)",
+      "C": "Google Spanner",
+      "D": "Amazon DynamoDB (default settings)"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "MongoDB with majority writes and Spanner prioritize consistency, potentially rejecting operations during partitions. Cassandra and DynamoDB default to eventual consistency (AP), though both can be configured differently.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A distributed database uses quorum reads and writes (majority of replicas). During a partition that isolates the minority, what happens?",
+    "options": {
+      "A": "The minority partition continues serving reads and writes",
+      "B": "The minority partition becomes unavailable for writes",
+      "C": "Both partitions continue operating independently",
+      "D": "The entire system shuts down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quorum systems require majority agreement. The minority partition cannot achieve quorum, so it rejects writes to maintain consistency. The majority partition continues operating. This is CP behavior.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: The CAP theorem means you must permanently choose two of the three properties when designing a system.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CAP tradeoffs apply during partitions only. Systems can (and do) provide all three properties during normal operation. The choice between C and A is made when partitions occur, and can even vary per operation or data type.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A system architect wants to build a globally distributed database that is always consistent and always available. What should you tell them?",
+    "options": {
+      "A": "Use synchronous replication across all regions",
+      "B": "This is impossible according to CAP theorem",
+      "C": "Use a consensus algorithm like Paxos",
+      "D": "Deploy in a single region to avoid partitions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CAP proves this is impossible during partitions. Synchronous replication and consensus algorithms help with consistency but sacrifice availability during partitions. Single region avoids the distributed system context entirely.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which strategy allows a system to provide different CAP tradeoffs for different types of data?",
+    "options": {
+      "A": "Using a single database with configurable consistency",
+      "B": "Polyglot persistence with different databases for different needs",
+      "C": "Tunable consistency levels per operation",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "All approaches work: single DBs with configurable consistency (Cassandra), multiple specialized databases, or per-operation tuning. Critical data can use CP settings while less critical data uses AP settings.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "During a network partition, a CP system receives a write request. What is the expected behavior?",
+    "options": {
+      "A": "Accept the write and sync later",
+      "B": "Reject the write or block until partition heals",
+      "C": "Write to local node only",
+      "D": "Redirect to a different region"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CP systems prioritize consistency—they won't accept writes that can't be consistently replicated. The system either rejects the request or blocks until it can guarantee consistency across replicas.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which real-world scenario best illustrates the CAP tradeoff?",
+    "options": {
+      "A": "Choosing between SQL and NoSQL databases",
+      "B": "An ATM allowing withdrawals during network outage vs. declining transactions",
+      "C": "Scaling vertically vs. horizontally",
+      "D": "Using caching vs. direct database access"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ATM during network outage: allow withdrawal (AP—available but potentially inconsistent with actual balance) or decline (CP—consistent but unavailable). This directly illustrates the C vs A choice during partition.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  }
+]

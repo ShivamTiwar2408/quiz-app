@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a relational database?",
+    "options": {
+      "A": "A database that stores files",
+      "B": "A database that organizes data into tables with rows and columns, using relationships between tables",
+      "C": "A key-value store",
+      "D": "A document database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Relational database: data in tables (relations), rows (records), columns (attributes). Tables linked via foreign keys. SQL for queries. ACID compliant. Examples: PostgreSQL, MySQL, Oracle, SQL Server.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is a primary key?",
+    "options": {
+      "A": "The first column",
+      "B": "A column or set of columns that uniquely identifies each row in a table",
+      "C": "A password",
+      "D": "An index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Primary key: unique identifier for each row. Cannot be NULL. Can be single column (id) or composite (order_id + product_id). Automatically indexed. Foundation for relationships via foreign keys.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is a foreign key?",
+    "options": {
+      "A": "A key from another country",
+      "B": "A column that references the primary key of another table, establishing a relationship",
+      "C": "An encryption key",
+      "D": "A backup key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Foreign key: links tables. orders.customer_id references customers.id. Enforces referential integrity (can't reference non-existent customer). Enables JOINs. Cascading deletes/updates optional.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is normalization?",
+    "options": {
+      "A": "Making data normal",
+      "B": "Organizing data to reduce redundancy and improve integrity through normal forms",
+      "C": "Compressing data",
+      "D": "Encrypting data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Normalization: eliminate redundancy, prevent anomalies. 1NF: atomic values. 2NF: no partial dependencies. 3NF: no transitive dependencies. Trade-off: more tables, more JOINs. Denormalize for read performance.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a JOIN operation?",
+    "options": {
+      "A": "Combining two databases",
+      "B": "Combining rows from two or more tables based on a related column",
+      "C": "Merging files",
+      "D": "Connecting servers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JOIN: combine data from multiple tables. INNER JOIN: matching rows only. LEFT JOIN: all left + matching right. RIGHT JOIN: all right + matching left. FULL JOIN: all rows from both. Foundation of relational queries.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between INNER JOIN and LEFT JOIN?",
+    "options": {
+      "A": "No difference",
+      "B": "INNER: only matching rows; LEFT: all rows from left table plus matching from right",
+      "C": "LEFT is faster",
+      "D": "INNER returns more rows"
+    },
+    "correct_answers": ["B"],
+    "explanation": "INNER JOIN: returns only rows with matches in both tables. LEFT JOIN: returns all rows from left table, NULL for non-matching right columns. Use LEFT when you need all records from one table regardless of matches.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is an index in a relational database?",
+    "options": {
+      "A": "A table of contents",
+      "B": "A data structure that improves query speed by providing quick lookup paths",
+      "C": "A backup",
+      "D": "A log file"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Index: B-tree or hash structure for fast lookups. Without index: full table scan O(n). With index: O(log n). Trade-off: faster reads, slower writes (index maintenance), storage overhead. Index columns in WHERE, JOIN, ORDER BY.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a transaction in relational databases?",
+    "options": {
+      "A": "A payment",
+      "B": "A sequence of operations executed as a single logical unit with ACID guarantees",
+      "C": "A query",
+      "D": "A backup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Transaction: BEGIN → operations → COMMIT/ROLLBACK. ACID: Atomic (all or nothing), Consistent (valid state), Isolated (concurrent transactions don't interfere), Durable (committed = permanent). Essential for data integrity.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a stored procedure?",
+    "options": {
+      "A": "A saved query",
+      "B": "A precompiled set of SQL statements stored in the database that can be executed as a unit",
+      "C": "A backup procedure",
+      "D": "A security policy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stored procedure: SQL code stored in database. Benefits: reusability, reduced network traffic, security (grant execute without table access), encapsulation. Drawbacks: harder to version control, database-specific syntax.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a view in a relational database?",
+    "options": {
+      "A": "A display setting",
+      "B": "A virtual table based on a SELECT query that doesn't store data itself",
+      "C": "A backup",
+      "D": "An index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "View: saved SELECT query, appears as table. Benefits: simplify complex queries, security (expose subset of columns), abstraction (hide schema changes). Materialized view: actually stores data, needs refresh.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is referential integrity?",
+    "options": {
+      "A": "Data encryption",
+      "B": "Ensuring foreign key values always reference existing primary key values",
+      "C": "Data compression",
+      "D": "Query optimization"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Referential integrity: foreign keys must reference valid primary keys. Prevents orphan records. Enforced by database. Actions on violation: RESTRICT (block), CASCADE (propagate), SET NULL. Critical for data consistency.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "When would you choose a relational database over NoSQL?",
+    "options": {
+      "A": "For unstructured data",
+      "B": "When you need ACID transactions, complex queries with JOINs, and structured data with relationships",
+      "C": "For maximum write throughput",
+      "D": "For document storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Choose relational: structured data, complex relationships, need JOINs, ACID critical (financial), complex queries, data integrity paramount. Examples: banking, ERP, e-commerce orders. NoSQL: flexible schema, scale writes, simple access patterns.",
+    "difficulty": "easy",
+    "category": "databases"
+  }
+]

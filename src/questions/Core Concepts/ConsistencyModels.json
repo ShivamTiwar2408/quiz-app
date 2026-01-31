@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A user updates their profile picture. They immediately refresh the page but see the old picture. After a few seconds, the new picture appears. Which consistency model is this system using?",
+    "options": {
+      "A": "Strong consistency",
+      "B": "Eventual consistency",
+      "C": "Read-your-writes consistency",
+      "D": "Linearizability"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The delay before seeing the update indicates eventual consistency—replicas converge over time. Read-your-writes would guarantee the user sees their own update immediately.",
+    "difficulty": "easy",
+    "category": "consistency"
+  },
+  {
+    "question": "Which consistency model guarantees that if process A completes a write, any subsequent read by ANY process will see that write?",
+    "options": {
+      "A": "Eventual consistency",
+      "B": "Read-your-writes consistency",
+      "C": "Strong consistency (linearizability)",
+      "D": "Causal consistency"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Strong consistency/linearizability ensures all processes see writes in the same order, and completed writes are immediately visible to everyone. Other models allow temporary inconsistencies or only guarantee visibility to specific processes.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "A collaborative document editor must ensure that if User A sees User B's edit, User A will also see all edits that User B saw before making that edit. Which consistency model is required?",
+    "options": {
+      "A": "Strong consistency",
+      "B": "Eventual consistency",
+      "C": "Causal consistency",
+      "D": "Read-your-writes consistency"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Causal consistency preserves cause-and-effect relationships. If edit X influenced edit Y, anyone seeing Y must also see X. This is weaker than strong consistency but stronger than eventual.",
+    "difficulty": "hard",
+    "category": "consistency"
+  },
+  {
+    "question": "Which consistency models allow a system to return stale data? (Choose all that apply)",
+    "options": {
+      "A": "Eventual consistency",
+      "B": "Strong consistency",
+      "C": "Read-your-writes consistency",
+      "D": "Monotonic reads consistency"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Only strong consistency guarantees the latest data. Eventual allows stale reads until convergence. Read-your-writes only guarantees you see YOUR writes. Monotonic reads prevents going backward but allows staleness.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "A shopping cart service uses eventual consistency. A user adds an item, then immediately views their cart from a different device. What might they observe?",
+    "options": {
+      "A": "The item is always present",
+      "B": "The item might not appear yet",
+      "C": "The cart is empty",
+      "D": "An error message"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With eventual consistency, the write may not have propagated to the replica serving the second device. The item will eventually appear, but there's a window where it's not visible.",
+    "difficulty": "easy",
+    "category": "consistency"
+  },
+  {
+    "question": "What is the key difference between 'read-your-writes' and 'monotonic reads' consistency?",
+    "options": {
+      "A": "Read-your-writes is stronger than monotonic reads",
+      "B": "Read-your-writes guarantees seeing your own writes; monotonic reads guarantees not seeing older versions after newer ones",
+      "C": "They are the same consistency model",
+      "D": "Monotonic reads only applies to write operations"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Read-your-writes: you always see your own writes. Monotonic reads: once you see version X, you never see version < X. Different guarantees—a system might provide one without the other.",
+    "difficulty": "hard",
+    "category": "consistency"
+  },
+  {
+    "question": "A distributed database offers tunable consistency. For a financial transaction, which setting is most appropriate?",
+    "options": {
+      "A": "ONE (read/write to single replica)",
+      "B": "QUORUM (majority of replicas)",
+      "C": "ALL (all replicas must respond)",
+      "D": "ANY (at least one replica, including hints)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "QUORUM provides strong consistency (if read quorum + write quorum > replication factor) while maintaining availability if some replicas fail. ALL is strongest but sacrifices availability; ONE/ANY risk inconsistency.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "True or False: Eventual consistency guarantees that all replicas will have the same data at some specific point in time.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eventual consistency only guarantees convergence IF no new updates occur. With continuous updates, replicas may never be simultaneously identical. It guarantees convergence eventually, not at a specific time.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "Which scenarios are acceptable for eventual consistency? (Choose all that apply)",
+    "options": {
+      "A": "Social media like counts",
+      "B": "Bank account balances",
+      "C": "User profile information",
+      "D": "Inventory counts for high-demand items"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "Like counts and profiles can tolerate temporary inconsistency. Bank balances require strong consistency to prevent overdrafts. Inventory for high-demand items needs consistency to prevent overselling.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "A system implements 'session consistency'. What does this guarantee?",
+    "options": {
+      "A": "All users see the same data",
+      "B": "Within a session, a user sees a consistent view including their own writes",
+      "C": "Sessions are always connected to the same server",
+      "D": "Data is consistent across all sessions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Session consistency combines read-your-writes and monotonic reads within a session. The user sees their writes and doesn't go backward, but different sessions may see different states.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "Which technique helps achieve strong consistency in a distributed database?",
+    "options": {
+      "A": "Asynchronous replication",
+      "B": "Consensus protocols (Paxos, Raft)",
+      "C": "Last-write-wins conflict resolution",
+      "D": "Read repair"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consensus protocols ensure all nodes agree on the order of operations, enabling strong consistency. Async replication causes lag; last-write-wins can lose data; read repair helps eventual consistency.",
+    "difficulty": "medium",
+    "category": "consistency"
+  },
+  {
+    "question": "A distributed system uses vector clocks. What problem do they solve?",
+    "options": {
+      "A": "Reducing network latency",
+      "B": "Detecting and ordering concurrent events",
+      "C": "Encrypting data in transit",
+      "D": "Load balancing requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clocks track causality between events across nodes, helping detect concurrent (conflicting) updates and establish partial ordering. They're essential for conflict detection in eventually consistent systems.",
+    "difficulty": "hard",
+    "category": "consistency"
+  }
+]

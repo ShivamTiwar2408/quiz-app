@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a cache stampede (thundering herd)?",
+    "options": {
+      "A": "Cache servers crashing",
+      "B": "Many requests simultaneously hitting the backend when a popular cache entry expires",
+      "C": "Cache filling up too quickly",
+      "D": "Users refreshing pages rapidly"
+    },
+    "correct_answers": ["B"],
+    "explanation": "When a popular cache entry expires, many concurrent requests find it missing and all hit the database simultaneously. This can overwhelm the backend, causing cascading failures.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A product page is cached with 5-minute TTL. At expiration, 1000 users are viewing it. What happens without stampede protection?",
+    "options": {
+      "A": "One user fetches, others wait",
+      "B": "All 1000 requests hit the database simultaneously",
+      "C": "The page becomes unavailable",
+      "D": "Cache automatically extends TTL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Without protection, all 1000 requests see cache miss and query the database. This sudden load spike can overwhelm the database, slow all requests, and potentially cause timeouts or crashes.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "How does locking prevent cache stampede?",
+    "options": {
+      "A": "It doesn't prevent stampede",
+      "B": "Only one request fetches from backend; others wait for cache to be populated",
+      "C": "It locks the database",
+      "D": "It prevents all cache access"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With locking: first request acquires lock and fetches data. Other requests wait (or return stale data). Once cache is populated, lock releases and waiting requests get cached data. Only one backend hit.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'probabilistic early expiration' for stampede prevention?",
+    "options": {
+      "A": "Randomly deleting cache entries",
+      "B": "Some requests refresh cache before TTL expires, spreading the load",
+      "C": "Setting random TTL values",
+      "D": "Expiring cache based on probability"
+    },
+    "correct_answers": ["B"],
+    "explanation": "As TTL approaches, requests have increasing probability of refreshing cache early. This spreads refreshes over time instead of all at once. XFetch algorithm implements this mathematically.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'stale-while-revalidate' and how does it help with stampede?",
+    "options": {
+      "A": "Serving errors while cache refreshes",
+      "B": "Serving stale cached data while one request refreshes in background",
+      "C": "Validating cache entries periodically",
+      "D": "Revalidating user sessions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stale-while-revalidate: when cache expires, serve stale data immediately while triggering background refresh. Users get fast (stale) responses; only one background request hits backend. No stampede.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "Which techniques prevent cache stampede? (Choose all that apply)",
+    "options": {
+      "A": "Distributed locking",
+      "B": "Background refresh before expiration",
+      "C": "Shorter TTL values",
+      "D": "Request coalescing"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Locking ensures single fetch. Background refresh prevents expiration. Request coalescing groups concurrent requests into one backend call. Shorter TTL actually increases stampede frequency.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is request coalescing (request collapsing)?",
+    "options": {
+      "A": "Combining multiple different requests",
+      "B": "Multiple identical concurrent requests share a single backend call",
+      "C": "Compressing requests",
+      "D": "Canceling duplicate requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request coalescing: when multiple requests for the same key arrive simultaneously, only one fetches from backend. Others wait and receive the same result. Nginx, Varnish, and some caches support this.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "True or False: Cache stampede only affects read operations.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Cache stampede is a read phenomenon—many reads hitting backend when cache misses. Write operations don't typically cause stampede (though they can cause other issues like write amplification).",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "A cache warming job runs before a flash sale. How does this prevent stampede?",
+    "options": {
+      "A": "It doesn't help with stampede",
+      "B": "Popular items are pre-cached, so they won't expire during peak traffic",
+      "C": "It warms up the servers",
+      "D": "It reduces database size"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache warming pre-populates cache with expected hot data. If TTL is set appropriately, entries won't expire during the sale. No expiration = no stampede. Combine with longer TTL for sale duration.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is the 'dog-pile effect'?",
+    "options": {
+      "A": "A caching algorithm",
+      "B": "Another name for cache stampede",
+      "C": "Cache entries piling up",
+      "D": "Multiple caches synchronizing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dog-pile effect is another term for cache stampede—many processes 'piling on' the backend when cache expires. The terms are used interchangeably in caching literature.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "How can TTL jittering help prevent stampede?",
+    "options": {
+      "A": "It makes cache faster",
+      "B": "Adding random variation to TTL spreads expirations over time",
+      "C": "It encrypts TTL values",
+      "D": "It prevents cache from expiring"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Instead of all entries expiring at exactly 5 minutes, add random jitter (4.5-5.5 minutes). Expirations spread out, preventing synchronized expiration of related entries that could cause stampede.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A system uses Redis for caching. Which Redis feature helps prevent stampede?",
+    "options": {
+      "A": "Redis Cluster",
+      "B": "SETNX for distributed locking",
+      "C": "Redis Streams",
+      "D": "Redis Pub/Sub"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SETNX (SET if Not eXists) can implement distributed locks. On cache miss, try SETNX lock_key. If successful, fetch and cache. If failed, another process is fetching—wait or return stale data.",
+    "difficulty": "hard",
+    "category": "caching"
+  }
+]

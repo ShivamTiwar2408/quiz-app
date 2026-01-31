@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What are the three pillars of observability?",
+    "options": {
+      "A": "Speed, reliability, security",
+      "B": "Logs, metrics, and traces",
+      "C": "CPU, memory, disk",
+      "D": "Frontend, backend, database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The three pillars: Logs (discrete events), Metrics (numeric measurements over time), Traces (request flow across services). Together they provide comprehensive system visibility for debugging and monitoring.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the purpose of observability?",
+    "options": {
+      "A": "To make systems faster",
+      "B": "To understand system behavior and diagnose issues from external outputs",
+      "C": "To reduce costs",
+      "D": "To write better code"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Observability enables understanding internal system state from external outputs (logs, metrics, traces). Essential for debugging production issues, understanding behavior, and answering questions you didn't anticipate.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What are logs?",
+    "options": {
+      "A": "Numeric measurements",
+      "B": "Discrete, timestamped records of events that occurred in the system",
+      "C": "Request paths",
+      "D": "Database records"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Logs are timestamped records of discrete events: errors, state changes, user actions. Rich context (stack traces, request details). Good for debugging specific issues. Challenge: high volume, searching at scale.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What are metrics?",
+    "options": {
+      "A": "Error messages",
+      "B": "Numeric measurements aggregated over time (counters, gauges, histograms)",
+      "C": "Request traces",
+      "D": "Log files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Metrics are numeric values tracked over time: request count, latency percentiles, CPU usage, error rate. Aggregated and efficient to store. Good for dashboards, alerting, trend analysis. Less detail than logs.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What are distributed traces?",
+    "options": {
+      "A": "Log files distributed across servers",
+      "B": "Records of request flow across multiple services, showing timing and dependencies",
+      "C": "Backup copies of data",
+      "D": "Network packets"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Traces track requests across service boundaries: which services were called, in what order, how long each took. Essential for debugging latency issues and understanding request flow in microservices.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "When should you use logs vs metrics vs traces? (Choose the best matches)",
+    "options": {
+      "A": "Logs for debugging specific errors",
+      "B": "Metrics for alerting on thresholds",
+      "C": "Traces for understanding request flow across services",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Use all three: Logs for detailed debugging (what exactly happened), Metrics for monitoring and alerting (is the system healthy?), Traces for understanding distributed request flow (where is latency?). Complementary tools.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a 'span' in distributed tracing?",
+    "options": {
+      "A": "A time period",
+      "B": "A unit of work within a trace, representing an operation in one service",
+      "C": "A network connection",
+      "D": "A log entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Span represents a single operation: service call, database query, etc. Contains: operation name, start/end time, tags, logs. Spans are linked to form traces. Parent-child relationships show call hierarchy.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is cardinality in metrics and why does it matter?",
+    "options": {
+      "A": "Number of data points",
+      "B": "Number of unique label combinations; high cardinality increases storage and query costs",
+      "C": "Metric accuracy",
+      "D": "Collection frequency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cardinality = unique label combinations. High cardinality (e.g., user_id as label) explodes storage and slows queries. Use low-cardinality labels (status_code, endpoint). Aggregate high-cardinality data differently.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "True or False: Observability and monitoring are the same thing.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monitoring: watching known metrics, alerting on predefined conditions. Observability: ability to understand ANY system state from outputs, including unknown-unknowns. Observability enables exploring questions you didn't anticipate.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a correlation ID?",
+    "options": {
+      "A": "A database primary key",
+      "B": "A unique identifier passed through all services handling a request, linking logs and traces",
+      "C": "A metric label",
+      "D": "An error code"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Correlation ID (trace ID, request ID) is passed through all services handling a request. Enables linking logs, traces, and metrics for a single request across the distributed system. Essential for debugging.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "Which tools are commonly used for each observability pillar? (Choose all that apply)",
+    "options": {
+      "A": "Logs: ELK Stack, Splunk, CloudWatch Logs",
+      "B": "Metrics: Prometheus, Datadog, CloudWatch Metrics",
+      "C": "Traces: Jaeger, Zipkin, AWS X-Ray",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Common tools: Logs (ELK/Elasticsearch, Splunk, CloudWatch), Metrics (Prometheus, Grafana, Datadog), Traces (Jaeger, Zipkin, X-Ray). Many platforms now offer unified observability across all three pillars.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the challenge of observability in microservices?",
+    "options": {
+      "A": "Too few services",
+      "B": "Requests span multiple services; correlating data across services is complex",
+      "C": "Services are too fast",
+      "D": "No challenges exist"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices challenge: a single request touches many services. Logs are scattered, metrics are per-service, failures can occur anywhere. Need distributed tracing and correlation IDs to connect the dots.",
+    "difficulty": "medium",
+    "category": "observability"
+  }
+]

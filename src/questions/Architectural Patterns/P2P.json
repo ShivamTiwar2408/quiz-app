@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is peer-to-peer (P2P) architecture?",
+    "options": {
+      "A": "Client-server with multiple servers",
+      "B": "A decentralized architecture where each node acts as both client and server",
+      "C": "A database design",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "P2P: no central server. Each peer is equal—can request and provide resources. Examples: BitTorrent, Bitcoin, Skype (originally), IPFS. Decentralized, fault-tolerant, scalable.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the main advantage of P2P over client-server?",
+    "options": {
+      "A": "Simpler implementation",
+      "B": "No single point of failure and resources scale with participants",
+      "C": "Better security",
+      "D": "Easier to manage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "P2P advantages: no SPOF (network survives node failures), self-scaling (more peers = more resources), no central bottleneck, censorship resistant. Trade-off: harder to manage, inconsistent data.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a pure P2P network vs hybrid P2P?",
+    "options": {
+      "A": "Same thing",
+      "B": "Pure: completely decentralized; Hybrid: uses some central servers for coordination",
+      "C": "Pure is faster",
+      "D": "Hybrid has no servers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pure P2P: no central component (Gnutella, Bitcoin). Hybrid P2P: central server for discovery/indexing, peers for data transfer (original Napster, Skype). Hybrid: easier discovery, some centralization risk.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does peer discovery work in P2P networks?",
+    "options": {
+      "A": "Central directory always",
+      "B": "Through bootstrapping nodes, DHT, gossip protocol, or hybrid trackers",
+      "C": "Peers know all others automatically",
+      "D": "DNS only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Discovery methods: bootstrap nodes (known entry points), DHT (distributed hash table for peer lookup), gossip (peers share known peers), trackers (hybrid approach). Challenge: finding peers without central authority.",
+    "difficulty": "hard",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a Distributed Hash Table (DHT) in P2P?",
+    "options": {
+      "A": "A centralized database",
+      "B": "A decentralized system that distributes key-value storage across peers",
+      "C": "A hashing algorithm",
+      "D": "A file format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DHT: distributes data across peers using consistent hashing. Each peer responsible for key range. Lookup: O(log n) hops. Examples: Kademlia (BitTorrent), Chord. Enables decentralized discovery and storage.",
+    "difficulty": "hard",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does BitTorrent achieve fast downloads?",
+    "options": {
+      "A": "Single fast server",
+      "B": "Downloads different pieces from multiple peers simultaneously",
+      "C": "Compression only",
+      "D": "Caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BitTorrent: file split into pieces. Download different pieces from different peers in parallel. Rarest-first strategy: prioritize rare pieces. More seeders = faster download. Bandwidth aggregation.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the 'free rider' problem in P2P?",
+    "options": {
+      "A": "Network congestion",
+      "B": "Users who download but don't upload, consuming resources without contributing",
+      "C": "Security vulnerability",
+      "D": "Data corruption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Free riding: download without sharing. Degrades network. Solutions: tit-for-tat (BitTorrent—upload to get download speed), reputation systems, cryptocurrency incentives (Filecoin). Incentive design critical.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the consistency challenge in P2P systems?",
+    "options": {
+      "A": "No challenge",
+      "B": "No central authority to enforce consistent state—different peers may have different views",
+      "C": "Too much consistency",
+      "D": "Only affects small networks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consistency challenge: no single source of truth. Updates propagate slowly. Conflicts possible. Solutions: eventual consistency, vector clocks, blockchain consensus. Trade-off: decentralization vs consistency.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does blockchain use P2P architecture?",
+    "options": {
+      "A": "It doesn't use P2P",
+      "B": "Peers maintain copies of the ledger and reach consensus on new blocks",
+      "C": "Central server stores blockchain",
+      "D": "Only for mining"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Blockchain P2P: every node has full ledger copy. Transactions broadcast to all peers. Consensus (PoW, PoS) determines valid blocks. No central authority. Immutable, censorship-resistant. Bitcoin, Ethereum.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is NAT traversal and why is it important for P2P?",
+    "options": {
+      "A": "A security feature",
+      "B": "Techniques to establish connections between peers behind NAT/firewalls",
+      "C": "A routing protocol",
+      "D": "A compression method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "NAT traversal: most peers behind NAT, can't receive incoming connections. Techniques: STUN (discover public IP), TURN (relay server), hole punching. Critical for P2P—peers must connect directly.",
+    "difficulty": "hard",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is IPFS?",
+    "options": {
+      "A": "A file format",
+      "B": "InterPlanetary File System—a P2P protocol for content-addressed, distributed file storage",
+      "C": "A database",
+      "D": "A programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IPFS: content-addressed (hash identifies content, not location). P2P distribution. Deduplication (same content = same hash). Permanent web vision. Used for: NFT metadata, decentralized websites, archiving.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "You're building a video streaming platform. When would P2P be beneficial?",
+    "options": {
+      "A": "Never use P2P for video",
+      "B": "For live events with many viewers—peers can share stream, reducing server bandwidth costs",
+      "C": "Only for small files",
+      "D": "Only for audio"
+    },
+    "correct_answers": ["B"],
+    "explanation": "P2P video: live events with millions of viewers. Each viewer shares with nearby peers. Reduces CDN costs dramatically. Examples: Peer5, Streamroot. Trade-off: latency, quality consistency. Works best for popular content.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  }
+]

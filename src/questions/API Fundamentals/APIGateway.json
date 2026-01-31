@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is an API Gateway?",
+    "options": {
+      "A": "A database",
+      "B": "A server that acts as a single entry point for API requests, handling routing, authentication, and other cross-cutting concerns",
+      "C": "A programming language",
+      "D": "A testing tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API Gateway: reverse proxy for APIs. Single entry point. Handles: routing, authentication, rate limiting, caching, request transformation, monitoring. Decouples clients from backend services.",
+    "difficulty": "easy",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What are the main responsibilities of an API Gateway?",
+    "options": {
+      "A": "Request routing to appropriate services",
+      "B": "Authentication and authorization",
+      "C": "Rate limiting and throttling",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "API Gateway responsibilities: routing (direct to correct service), security (auth, SSL termination), traffic management (rate limiting, throttling), transformation (request/response modification), observability (logging, metrics).",
+    "difficulty": "easy",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "How does an API Gateway help with microservices?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "Provides single entry point, hides internal service topology, handles cross-cutting concerns centrally",
+      "C": "It replaces microservices",
+      "D": "It only does logging"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices + Gateway: clients see one endpoint (not dozens of services), internal changes don't affect clients, centralized auth/rate limiting/monitoring. Essential for managing microservices complexity.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is the difference between an API Gateway and a load balancer?",
+    "options": {
+      "A": "They are the same",
+      "B": "Load balancer: distributes traffic; API Gateway: application-level concerns (auth, routing, transformation)",
+      "C": "API Gateway is faster",
+      "D": "Load balancer handles authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Load balancer: L4/L7 traffic distribution, health checks, simple routing. API Gateway: application-aware, authentication, rate limiting, request transformation, API versioning. Often used together.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is request transformation in an API Gateway?",
+    "options": {
+      "A": "Deleting requests",
+      "B": "Modifying requests/responses (headers, body, format) between client and backend",
+      "C": "Encrypting requests",
+      "D": "Caching requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request transformation: modify before forwarding. Examples: add headers, change JSON to XML, rename fields, aggregate responses from multiple services. Enables: backend changes without client changes, protocol translation.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is API composition in an API Gateway?",
+    "options": {
+      "A": "Writing APIs",
+      "B": "Aggregating responses from multiple backend services into a single response",
+      "C": "Splitting APIs",
+      "D": "Deleting APIs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API composition: client makes one request, gateway calls multiple services, combines responses. Reduces client complexity, fewer round trips. Example: product page needs data from product, inventory, reviews services.",
+    "difficulty": "hard",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What are popular API Gateway solutions?",
+    "options": {
+      "A": "AWS API Gateway",
+      "B": "Kong",
+      "C": "NGINX",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "API Gateway options: AWS API Gateway (managed), Kong (open source, enterprise), NGINX (reverse proxy + gateway), Apigee (Google), Azure API Management, Traefik, Ambassador. Choose based on needs.",
+    "difficulty": "easy",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is the potential downside of an API Gateway?",
+    "options": {
+      "A": "No downsides",
+      "B": "Single point of failure, added latency, can become a bottleneck",
+      "C": "Too fast",
+      "D": "Too secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gateway risks: SPOF (need HA deployment), latency (extra hop), bottleneck (all traffic through it), complexity (another component to manage). Mitigate: redundancy, caching, proper sizing.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is SSL/TLS termination at the API Gateway?",
+    "options": {
+      "A": "Ending SSL support",
+      "B": "Decrypting HTTPS traffic at the gateway, forwarding plain HTTP to backends",
+      "C": "Starting SSL",
+      "D": "Encrypting databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSL termination: gateway handles HTTPS, backends receive HTTP. Benefits: offload crypto from backends, centralize certificate management. Consideration: internal traffic unencrypted (use mTLS or private network).",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "How does an API Gateway handle API versioning?",
+    "options": {
+      "A": "It can't handle versioning",
+      "B": "Routes requests to different backend versions based on URL path, header, or query parameter",
+      "C": "Deletes old versions",
+      "D": "Only supports one version"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API versioning via gateway: /v1/users → service-v1, /v2/users → service-v2. Or by header: Accept-Version: v2. Gateway routes appropriately. Enables: running multiple versions, gradual migration.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "What is the Backend for Frontend (BFF) pattern related to API Gateways?",
+    "options": {
+      "A": "A database pattern",
+      "B": "Separate API Gateways optimized for different client types (web, mobile, IoT)",
+      "C": "A caching pattern",
+      "D": "A security pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF: separate gateway per client type. Web BFF: optimized for browser. Mobile BFF: optimized for mobile (smaller payloads, different aggregations). Each tailored to client needs. Avoids one-size-fits-all.",
+    "difficulty": "hard",
+    "category": "API fundamentals"
+  },
+  {
+    "question": "A company has 50 microservices. Clients currently call services directly. What problem does this cause?",
+    "options": {
+      "A": "No problems",
+      "B": "Clients must know all service locations, handle auth for each, complex client code",
+      "C": "Services are too fast",
+      "D": "Too much security"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Direct calls problem: clients coupled to service topology, auth logic duplicated, no central rate limiting, hard to change backends. Solution: API Gateway as single entry point, handles cross-cutting concerns.",
+    "difficulty": "medium",
+    "category": "API fundamentals"
+  }
+]

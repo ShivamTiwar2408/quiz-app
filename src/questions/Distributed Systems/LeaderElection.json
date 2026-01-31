@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is leader election in distributed systems?",
+    "options": {
+      "A": "Voting for company leadership",
+      "B": "Process of selecting one node to coordinate actions among distributed nodes",
+      "C": "Electing database primary",
+      "D": "User authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Leader election selects one node as coordinator/leader among peers. Leader handles coordination tasks (writes, scheduling, decisions). If leader fails, new election occurs. Ensures single point of coordination.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why is leader election needed?",
+    "options": {
+      "A": "To reduce costs",
+      "B": "To coordinate actions that require single decision-maker and avoid conflicts",
+      "C": "To improve security",
+      "D": "To increase latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Some tasks need single coordinator: assigning work, ordering operations, making decisions. Without leader, multiple nodes might conflict (split-brain). Leader election ensures one authoritative coordinator.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the 'split-brain' problem?",
+    "options": {
+      "A": "Server hardware failure",
+      "B": "Multiple nodes believing they are the leader simultaneously",
+      "C": "Network being too fast",
+      "D": "Database corruption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Split-brain: network partition causes nodes to lose contact; each partition elects its own leader. Multiple leaders make conflicting decisions, causing data inconsistency. Quorum-based election prevents this.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a quorum in leader election?",
+    "options": {
+      "A": "A type of database",
+      "B": "Minimum number of nodes that must agree for election to be valid",
+      "C": "Maximum cluster size",
+      "D": "Network bandwidth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quorum: majority of nodes (N/2 + 1) must participate for valid election. Prevents split-brain—only one partition can have majority. With 5 nodes, quorum is 3; minority partition can't elect leader.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What happens when the leader fails?",
+    "options": {
+      "A": "System stops permanently",
+      "B": "Followers detect failure and trigger new election",
+      "C": "Nothing—system continues normally",
+      "D": "All data is lost"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Leader failure triggers re-election: followers detect via heartbeat timeout, initiate election, select new leader. Brief unavailability during election. System resumes with new leader. Automatic recovery.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How do nodes detect leader failure?",
+    "options": {
+      "A": "Manual monitoring",
+      "B": "Heartbeat timeouts—leader sends periodic heartbeats; missing heartbeats indicate failure",
+      "C": "Database queries",
+      "D": "User reports"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heartbeat mechanism: leader sends periodic heartbeats to followers. If follower doesn't receive heartbeat within timeout, it assumes leader failed and may trigger election. Balance timeout vs. false positives.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which algorithms are used for leader election? (Choose all that apply)",
+    "options": {
+      "A": "Raft",
+      "B": "Paxos",
+      "C": "Bully algorithm",
+      "D": "Bubble sort"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Leader election algorithms: Raft (understandable consensus), Paxos (foundational but complex), Bully (simple, highest ID wins), ZAB (ZooKeeper). Bubble sort is a sorting algorithm, not election.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'term' or 'epoch' in leader election?",
+    "options": {
+      "A": "Time period for leader",
+      "B": "Monotonically increasing number identifying each election period",
+      "C": "Database term",
+      "D": "Network term"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Term/epoch: incrementing number for each election. Helps identify stale leaders—messages from old terms are rejected. New election = new term. Prevents confusion when old leader rejoins after partition.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Leader election guarantees exactly one leader at all times.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Brief periods may have zero leaders (during election) or appear to have multiple (old leader hasn't realized it's replaced). Algorithms minimize these windows. Terms/epochs help nodes identify current valid leader.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the role of ZooKeeper in leader election?",
+    "options": {
+      "A": "It manages zoo animals",
+      "B": "Provides coordination primitives (locks, leader election) for distributed systems",
+      "C": "It's a database",
+      "D": "It's a load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ZooKeeper provides distributed coordination: leader election, distributed locks, configuration management. Applications use ZooKeeper's primitives instead of implementing their own. Highly available coordination service.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why should cluster size be odd for leader election?",
+    "options": {
+      "A": "Odd numbers are lucky",
+      "B": "Ensures clear majority; avoids tie situations in quorum",
+      "C": "Even numbers don't work",
+      "D": "Performance reasons"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Odd cluster size ensures clear majority: 3 nodes need 2 for quorum, 5 need 3. Even sizes waste a node: 4 nodes still need 3 for quorum (same as 3 nodes). Odd maximizes fault tolerance per node.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A 5-node cluster loses 2 nodes. Can it still elect a leader?",
+    "options": {
+      "A": "No—too many failures",
+      "B": "Yes—3 remaining nodes form quorum (majority)",
+      "C": "Only if specific nodes survive",
+      "D": "Depends on network speed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "5-node cluster quorum = 3. With 3 nodes remaining, quorum is met—can elect leader and continue operating. Lose one more (2 remaining), quorum lost, cluster becomes read-only or unavailable.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

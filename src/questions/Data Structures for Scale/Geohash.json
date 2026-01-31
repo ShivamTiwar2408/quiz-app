@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a geohash?",
+    "options": {
+      "A": "A cryptographic hash function",
+      "B": "A hierarchical spatial encoding that converts latitude/longitude into a short alphanumeric string",
+      "C": "A database index",
+      "D": "A compression algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Geohash: encodes lat/long into string like 'u4pruydqqvj'. Hierarchical: longer string = more precision. Each character narrows the area. Invented by Gustavo Niemeyer in 2008.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does geohash encoding work?",
+    "options": {
+      "A": "Random string generation",
+      "B": "Alternating bit interleaving of longitude and latitude, then base32 encoding",
+      "C": "Simple concatenation",
+      "D": "MD5 hashing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Geohash algorithm: 1) Binary search on longitude (0/1 for west/east half), 2) Binary search on latitude, 3) Interleave bits (lon, lat, lon, lat...), 4) Convert to base32. Each character adds ~5 bits of precision.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the key property that makes geohash useful for proximity searches?",
+    "options": {
+      "A": "Randomness",
+      "B": "Points that are close geographically often share a common prefix",
+      "C": "Alphabetical ordering",
+      "D": "Fixed length"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Prefix property: nearby points share prefixes. 'u4pruy' and 'u4pruz' are neighbors. Enables: range queries on string index, efficient proximity search. Caveat: edge cases at cell boundaries.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the precision of a 6-character geohash?",
+    "options": {
+      "A": "1 meter",
+      "B": "Approximately 1.2 km × 600 m",
+      "C": "10 km",
+      "D": "100 km"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Geohash precision: 1 char ≈ 5000km, 4 chars ≈ 39km, 6 chars ≈ 1.2km × 0.6km, 8 chars ≈ 38m × 19m, 12 chars ≈ 3.7cm. Choose length based on use case precision needs.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the 'edge case' problem with geohash?",
+    "options": {
+      "A": "Geohashes are too long",
+      "B": "Two points very close together may have completely different geohash prefixes if they're on opposite sides of a cell boundary",
+      "C": "Geohashes expire",
+      "D": "Geohashes only work in certain countries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Edge case: points 1 meter apart can have different prefixes if crossing cell boundary. Solution: search current cell AND all 8 neighboring cells. This ensures no nearby points are missed.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How would you find all restaurants within 1km of a user using geohash?",
+    "options": {
+      "A": "Calculate distance to every restaurant",
+      "B": "Compute user's geohash prefix, query for matching prefixes, then filter by exact distance",
+      "C": "Use alphabetical sorting",
+      "D": "Random sampling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Proximity search: 1) Get user's geohash at appropriate precision, 2) Find 8 neighboring cells, 3) Query WHERE geohash LIKE 'prefix%' for all 9 cells, 4) Calculate exact distance, filter results.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Why is geohash useful for database indexing?",
+    "options": {
+      "A": "It's smaller than integers",
+      "B": "It converts 2D spatial queries into 1D string range queries that work with standard B-tree indexes",
+      "C": "It encrypts location data",
+      "D": "It compresses data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Geohash + B-tree: 2D problem → 1D solution. Standard string index supports prefix queries. No special spatial index needed. Works in any database. Trade-off: less precise than R-tree but simpler.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the relationship between geohash length and cell size?",
+    "options": {
+      "A": "Longer geohash = larger cell",
+      "B": "Longer geohash = smaller cell (more precision)",
+      "C": "No relationship",
+      "D": "Cell size is always fixed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Each character adds precision: 1 char = 5000km cell, each additional char divides cell by ~32. 8 chars = ~38m precision. Choose length based on query radius: 1km search → 5-6 chars.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does Uber use geohash for ride matching?",
+    "options": {
+      "A": "To encrypt rider locations",
+      "B": "To efficiently find nearby drivers by querying geohash prefixes",
+      "C": "To calculate fares",
+      "D": "To store payment information"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Uber's approach: drivers update geohash location. Rider request: find drivers with matching geohash prefix + neighbors. Efficient: millions of drivers, but only query small geographic area. Real-time matching.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What are the 8 neighbors of a geohash cell?",
+    "options": {
+      "A": "Random cells",
+      "B": "The cells directly adjacent in N, NE, E, SE, S, SW, W, NW directions",
+      "C": "Cells with similar names",
+      "D": "Cells in the same country"
+    },
+    "correct_answers": ["B"],
+    "explanation": "8 neighbors: compass directions around center cell. Computing neighbors: bit manipulation on geohash. Libraries provide neighbor functions. Always search center + 8 neighbors to handle edge cases.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Geohash vs S2 geometry: when would you choose S2?",
+    "options": {
+      "A": "When you need simpler implementation",
+      "B": "When you need uniform cell sizes across the globe and better handling of polar regions",
+      "C": "When you need shorter strings",
+      "D": "When you need alphabetical ordering"
+    },
+    "correct_answers": ["B"],
+    "explanation": "S2 (Google): projects Earth onto cube, uniform cells everywhere. Geohash: cells distort near poles, vary in size. S2: better for global scale, complex. Geohash: simpler, good enough for most apps.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "You're building a food delivery app. What geohash precision would you use for restaurant search?",
+    "options": {
+      "A": "2 characters (5000km precision)",
+      "B": "5-6 characters (1-5km precision) for typical delivery radius",
+      "C": "12 characters (centimeter precision)",
+      "D": "1 character"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Food delivery: typical radius 1-5km. 5 chars ≈ 5km, 6 chars ≈ 1km. Use 5-6 chars for initial filter, then exact distance calculation. Too precise = too many cells to query. Too coarse = too many results to filter.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  }
+]

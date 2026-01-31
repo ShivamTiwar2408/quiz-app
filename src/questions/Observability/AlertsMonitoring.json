@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the purpose of alerting in observability?",
+    "options": {
+      "A": "To generate reports",
+      "B": "To notify operators when systems deviate from expected behavior and require attention",
+      "C": "To store data",
+      "D": "To compress logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Alerting: proactive notification of problems. Goals: detect issues before users, enable quick response, reduce MTTR. Good alerts: actionable, not noisy, clear severity. Bad alerts: ignored, cause fatigue.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is alert fatigue?",
+    "options": {
+      "A": "Tired alerts",
+      "B": "When too many alerts cause operators to ignore or miss important ones",
+      "C": "Slow alert delivery",
+      "D": "Alert encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Alert fatigue: too many alerts → desensitization → missed critical alerts. Causes: low thresholds, non-actionable alerts, duplicate alerts. Solution: tune thresholds, consolidate, ensure every alert is actionable.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What makes a good alert?",
+    "options": {
+      "A": "Triggers frequently",
+      "B": "Actionable, has clear ownership, includes context, and indicates severity",
+      "C": "As sensitive as possible",
+      "D": "Alerts on every metric"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Good alert criteria: actionable (someone can do something), urgent (needs immediate attention), clear (what's wrong, where, severity), owned (who responds). If alert doesn't meet these, reconsider it.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the difference between threshold-based and anomaly-based alerting?",
+    "options": {
+      "A": "They are the same",
+      "B": "Threshold: alert when metric crosses fixed value; Anomaly: alert when metric deviates from learned normal pattern",
+      "C": "Anomaly is simpler",
+      "D": "Threshold is more accurate"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Threshold: static rules (CPU > 90%). Simple, predictable. Anomaly: ML-based, learns normal patterns, detects deviations. Better for: variable workloads, unknown failure modes. Trade-off: complexity, false positives.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a Service Level Indicator (SLI)?",
+    "options": {
+      "A": "A service name",
+      "B": "A quantitative measure of service behavior—like latency, error rate, or availability",
+      "C": "A log message",
+      "D": "A deployment metric"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SLI: measurable aspect of service. Examples: request latency (p99), error rate (%), availability (uptime %). Foundation for SLOs and SLAs. Choose SLIs that reflect user experience.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a Service Level Objective (SLO)?",
+    "options": {
+      "A": "A service goal",
+      "B": "A target value for an SLI—like 99.9% availability or p99 latency < 200ms",
+      "C": "A contract",
+      "D": "A metric name"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SLO: target for SLI. Example: 99.9% of requests complete in < 200ms. Internal goal. Basis for: alerting (alert when approaching SLO breach), error budgets, prioritization. More aggressive than SLA.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is an error budget?",
+    "options": {
+      "A": "Money for fixing errors",
+      "B": "The allowed amount of unreliability—100% minus SLO target",
+      "C": "Error count limit",
+      "D": "Budget for monitoring tools"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Error budget: 99.9% SLO = 0.1% error budget = ~43 minutes/month downtime allowed. Use for: balancing reliability vs velocity. Budget remaining: ship features. Budget exhausted: focus on reliability.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is PagerDuty used for?",
+    "options": {
+      "A": "Log storage",
+      "B": "Incident management—routing alerts to on-call engineers with escalation policies",
+      "C": "Metrics collection",
+      "D": "Code deployment"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PagerDuty: incident management platform. Features: on-call scheduling, alert routing, escalation policies, incident tracking. Integrates with monitoring tools. Alternatives: Opsgenie, VictorOps.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is alert suppression?",
+    "options": {
+      "A": "Deleting alerts",
+      "B": "Temporarily silencing alerts during known events like maintenance windows",
+      "C": "Ignoring all alerts",
+      "D": "Encrypting alerts"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Alert suppression: silence during maintenance, known issues, deployments. Prevents: noise, unnecessary pages. Implement: scheduled maintenance windows, manual suppression with expiry. Don't forget to re-enable!",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is alert correlation?",
+    "options": {
+      "A": "Linking alerts to tickets",
+      "B": "Grouping related alerts to identify root cause and reduce noise",
+      "C": "Sorting alerts alphabetically",
+      "D": "Encrypting alerts"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Alert correlation: one root cause → many symptoms → many alerts. Correlation groups them. Example: database down → 50 service alerts. Show one incident, not 50 pages. Reduces noise, speeds diagnosis.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the recommended approach for setting alert thresholds?",
+    "options": {
+      "A": "As low as possible",
+      "B": "Based on historical data, SLOs, and what's actually actionable",
+      "C": "Same for all services",
+      "D": "Random values"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Threshold setting: analyze historical data (what's normal?), align with SLOs (alert before breach), ensure actionable (can someone fix it?). Start conservative, tune based on false positive/negative rates.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "Your team receives 100 alerts per day but only 5 require action. What should you do?",
+    "options": {
+      "A": "Ignore all alerts",
+      "B": "Review and tune alerts—raise thresholds, remove non-actionable alerts, consolidate duplicates",
+      "C": "Add more alerts",
+      "D": "Hire more people"
+    },
+    "correct_answers": ["B"],
+    "explanation": "95% noise = alert fatigue risk. Actions: raise thresholds (reduce sensitivity), delete non-actionable alerts, consolidate related alerts, convert to dashboards instead of pages. Goal: every alert = action needed.",
+    "difficulty": "easy",
+    "category": "observability"
+  }
+]

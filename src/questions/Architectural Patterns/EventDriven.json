@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is event-driven architecture?",
+    "options": {
+      "A": "Architecture based on scheduled jobs",
+      "B": "Architecture where components communicate by producing and consuming events",
+      "C": "Architecture using only REST APIs",
+      "D": "Architecture without any communication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event-driven architecture: components communicate through events (facts about what happened). Producers emit events without knowing consumers. Enables loose coupling, scalability, and real-time responsiveness.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is an 'event' in event-driven architecture?",
+    "options": {
+      "A": "A request for action",
+      "B": "An immutable record of something that happened",
+      "C": "A database query",
+      "D": "A scheduled task"
+    },
+    "correct_answers": ["B"],
+    "explanation": "An event is a fact—an immutable record of something that occurred: 'OrderPlaced', 'PaymentReceived', 'UserRegistered'. Events describe what happened, not what should happen. Past tense naming convention.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Which are benefits of event-driven architecture? (Choose all that apply)",
+    "options": {
+      "A": "Loose coupling between components",
+      "B": "Better scalability through async processing",
+      "C": "Simpler debugging than synchronous systems",
+      "D": "Real-time responsiveness"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "EDA benefits: loose coupling (producers don't know consumers), scalability (async processing, independent scaling), real-time (react to events immediately). Debugging is HARDER—tracing event flows across services is complex.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the difference between events and commands?",
+    "options": {
+      "A": "No difference",
+      "B": "Events describe what happened; commands request an action",
+      "C": "Commands are faster",
+      "D": "Events are synchronous"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Events: past tense, describe facts ('OrderPlaced'). Commands: imperative, request action ('PlaceOrder'). Events are broadcast to interested parties; commands are sent to specific handlers. Different semantics and patterns.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is an event broker?",
+    "options": {
+      "A": "A person who manages events",
+      "B": "Infrastructure that receives, stores, and delivers events between producers and consumers",
+      "C": "A database",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event broker (Kafka, RabbitMQ, AWS EventBridge) is the messaging infrastructure. Receives events from producers, stores them (optionally), delivers to consumers. Decouples producers from consumers.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What challenge does event ordering present?",
+    "options": {
+      "A": "Events are always ordered",
+      "B": "Events may arrive out of order; consumers must handle this",
+      "C": "Ordering is not important",
+      "D": "Events cannot be ordered"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In distributed systems, events may arrive out of order due to network delays, partitioning, or parallel processing. Consumers must handle this: use timestamps, sequence numbers, or design for order-independence.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "True or False: Event-driven architecture guarantees exactly-once event processing.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Most event systems provide at-least-once delivery (events may be duplicated). Exactly-once is extremely difficult in distributed systems. Consumers must be idempotent—handle duplicate events safely.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is 'event sourcing'?",
+    "options": {
+      "A": "Finding where events come from",
+      "B": "Storing all state changes as a sequence of events, deriving current state from event history",
+      "C": "Deleting old events",
+      "D": "Compressing events"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event sourcing: instead of storing current state, store all events that led to current state. Current state is derived by replaying events. Provides complete audit trail, enables temporal queries, supports rebuilding state.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Which scenarios are well-suited for event-driven architecture? (Choose all that apply)",
+    "options": {
+      "A": "Real-time notifications",
+      "B": "Audit logging",
+      "C": "Simple CRUD applications",
+      "D": "Decoupled microservices communication"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "EDA suits: real-time notifications (react to events), audit logging (events are natural audit trail), microservices (loose coupling). Simple CRUD may not need EDA complexity—synchronous calls are simpler.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is 'eventual consistency' in event-driven systems?",
+    "options": {
+      "A": "Data is always consistent",
+      "B": "Data will become consistent across services after events are processed, but may be temporarily inconsistent",
+      "C": "Data is never consistent",
+      "D": "Consistency is not important"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eventual consistency: after an event, different services may temporarily have different views of data. Eventually, all services process the event and converge to consistent state. Trade-off for availability and scalability.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How should event consumers handle failures?",
+    "options": {
+      "A": "Crash and lose the event",
+      "B": "Retry with backoff; use dead letter queues for persistent failures",
+      "C": "Ignore failures",
+      "D": "Stop processing all events"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consumers should: retry failed processing with exponential backoff, move persistently failing events to dead letter queue for investigation, be idempotent (safe to retry). Never lose events silently.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the 'event notification' pattern?",
+    "options": {
+      "A": "Sending push notifications",
+      "B": "Events contain minimal data; consumers fetch details from source if needed",
+      "C": "Events contain all data",
+      "D": "Events are not stored"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event notification: events contain minimal info (IDs, event type). Consumers call back to source for full data if needed. Reduces event size, but adds coupling (consumers depend on source availability).",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  }
+]

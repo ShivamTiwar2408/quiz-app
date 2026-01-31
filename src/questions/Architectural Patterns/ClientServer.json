@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is client-server architecture?",
+    "options": {
+      "A": "A peer-to-peer network",
+      "B": "A distributed model where clients request services and servers provide them",
+      "C": "A single computer system",
+      "D": "A storage system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client-server: fundamental distributed architecture. Client: initiates requests, presents UI. Server: processes requests, manages resources. Clear separation of concerns. Foundation of web, email, databases.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What are the main responsibilities of a client in client-server architecture?",
+    "options": {
+      "A": "Store all data",
+      "B": "Present user interface, send requests, and display responses",
+      "C": "Process business logic",
+      "D": "Manage databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client responsibilities: user interface, input handling, request formatting, response rendering. Thin client: minimal processing. Thick/fat client: more local processing. Modern trend: rich web clients (SPAs).",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a thin client vs thick client?",
+    "options": {
+      "A": "Physical size difference",
+      "B": "Thin: minimal local processing, relies on server; Thick: significant local processing and storage",
+      "C": "Network speed difference",
+      "D": "Cost difference"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Thin client: browser, terminal—server does heavy lifting. Thick client: desktop apps with local processing. Trade-offs: thin = easier updates, less client resources; thick = works offline, faster response.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a two-tier architecture?",
+    "options": {
+      "A": "Two servers",
+      "B": "Client communicates directly with database server, no middle tier",
+      "C": "Two clients",
+      "D": "Two networks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Two-tier: client ↔ database. Client contains UI + business logic. Simple, fast for small apps. Problems: business logic duplication, tight coupling, scalability limits. Evolved to three-tier.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a three-tier architecture?",
+    "options": {
+      "A": "Three clients",
+      "B": "Presentation tier (client), application tier (business logic), data tier (database)",
+      "C": "Three databases",
+      "D": "Three networks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Three-tier: separates concerns. Presentation: UI. Application: business logic, API. Data: storage. Benefits: independent scaling, technology flexibility, security layers. Standard for web applications.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the main advantage of client-server over peer-to-peer?",
+    "options": {
+      "A": "Faster always",
+      "B": "Centralized control, easier security management, and consistent data",
+      "C": "Less hardware needed",
+      "D": "No network required"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client-server advantages: centralized data (single source of truth), easier security (protect server), simpler management, consistent backups. Trade-off: server is potential bottleneck and SPOF.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a stateless server?",
+    "options": {
+      "A": "A server without storage",
+      "B": "A server that doesn't retain client session information between requests",
+      "C": "A server that's always offline",
+      "D": "A server without an operating system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateless: each request contains all needed information. Server doesn't remember previous requests. Benefits: easy horizontal scaling, any server can handle any request. REST APIs are typically stateless.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the role of middleware in client-server architecture?",
+    "options": {
+      "A": "Physical hardware",
+      "B": "Software that facilitates communication between client and server, handling protocols and data translation",
+      "C": "A type of database",
+      "D": "A client application"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Middleware: glue between tiers. Examples: message queues, API gateways, ORMs, RPC frameworks. Handles: protocol translation, load balancing, caching, security. Simplifies distributed communication.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the main scalability challenge in client-server architecture?",
+    "options": {
+      "A": "Too many clients",
+      "B": "Server becomes a bottleneck as client count grows",
+      "C": "Network is too fast",
+      "D": "Clients are too powerful"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Scalability challenge: single server limits. Solutions: vertical scaling (bigger server), horizontal scaling (multiple servers + load balancer), caching, database replication. Modern: auto-scaling cloud infrastructure.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is request-response communication pattern?",
+    "options": {
+      "A": "One-way communication",
+      "B": "Client sends request, waits for server response—synchronous interaction",
+      "C": "Server initiates all communication",
+      "D": "No acknowledgment needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request-response: fundamental client-server pattern. Client blocks waiting for response. Simple, predictable. Limitations: latency, server must be available. Alternatives: async messaging, webhooks, streaming.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does client-server architecture handle server failures?",
+    "options": {
+      "A": "Clients automatically fix servers",
+      "B": "Through redundancy—multiple servers, load balancers, failover mechanisms",
+      "C": "Failures are impossible",
+      "D": "Clients store all data locally"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fault tolerance: redundant servers, health checks, automatic failover. Load balancer detects failed server, routes to healthy ones. Database replication for data durability. No single point of failure.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "You're designing a banking application. Why would client-server be preferred over peer-to-peer?",
+    "options": {
+      "A": "Peer-to-peer is faster",
+      "B": "Centralized server ensures data consistency, security controls, audit trails, and regulatory compliance",
+      "C": "Client-server uses less bandwidth",
+      "D": "Peer-to-peer doesn't support transactions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Banking needs: ACID transactions (centralized DB), security (server-side validation), audit logs (centralized logging), compliance (controlled access). P2P lacks these guarantees. Client-server is the standard.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  }
+]

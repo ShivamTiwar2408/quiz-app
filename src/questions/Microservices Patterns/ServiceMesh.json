@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a service mesh?",
+    "options": {
+      "A": "A fishing net",
+      "B": "A dedicated infrastructure layer for handling service-to-service communication in microservices",
+      "C": "A database",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service mesh: infrastructure layer handling inter-service communication. Provides: traffic management, security (mTLS), observability—without changing application code. Examples: Istio, Linkerd, Consul Connect.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is a sidecar proxy in a service mesh?",
+    "options": {
+      "A": "A motorcycle attachment",
+      "B": "A proxy container deployed alongside each service instance that handles all network traffic",
+      "C": "A backup service",
+      "D": "A database connection"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar proxy: runs next to each service (same pod in Kubernetes). Intercepts all inbound/outbound traffic. Handles: load balancing, retries, circuit breaking, mTLS, metrics. Service unaware of mesh.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What problems does a service mesh solve?",
+    "options": {
+      "A": "Service-to-service security (mTLS)",
+      "B": "Traffic management (routing, retries, circuit breaking)",
+      "C": "Observability (metrics, tracing, logging)",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Service mesh provides: security (automatic mTLS, authorization), traffic management (routing, load balancing, retries, circuit breaking), observability (metrics, distributed tracing). Cross-cutting concerns handled uniformly.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the data plane in a service mesh?",
+    "options": {
+      "A": "An airplane",
+      "B": "The sidecar proxies that handle actual service traffic",
+      "C": "The control plane",
+      "D": "A database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data plane: the sidecars (usually Envoy proxies). Handle actual traffic: routing, load balancing, health checks, metrics collection. Distributed across all service instances. Does the work.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the control plane in a service mesh?",
+    "options": {
+      "A": "An airplane cockpit",
+      "B": "The centralized component that configures and manages the data plane proxies",
+      "C": "The sidecar proxies",
+      "D": "A database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Control plane: centralized management. Configures proxies, distributes policies, collects telemetry. Istio: istiod. Linkerd: control plane components. Provides API for operators to configure mesh behavior.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is Istio?",
+    "options": {
+      "A": "A programming language",
+      "B": "A popular open-source service mesh that uses Envoy proxies",
+      "C": "A database",
+      "D": "A container runtime"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Istio: most popular service mesh. Uses Envoy sidecars. Features: traffic management, security policies, observability. Runs on Kubernetes. Powerful but complex. Backed by Google, IBM, Lyft.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is mTLS (mutual TLS) in a service mesh?",
+    "options": {
+      "A": "A messaging protocol",
+      "B": "Both client and server authenticate each other with certificates, encrypting all service-to-service traffic",
+      "C": "A database connection",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "mTLS: mutual authentication. Both sides present certificates. Service mesh automates: certificate generation, rotation, verification. All traffic encrypted. Zero-trust networking without code changes.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the overhead of using a service mesh?",
+    "options": {
+      "A": "No overhead",
+      "B": "Latency (extra network hop through proxy), resource usage (sidecar per service), complexity",
+      "C": "Only memory overhead",
+      "D": "Only CPU overhead"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service mesh overhead: latency (typically 1-3ms per hop), memory/CPU for sidecars, operational complexity. At scale, sidecar resources add up. Evaluate if benefits outweigh costs for your use case.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "When should you NOT use a service mesh?",
+    "options": {
+      "A": "Large microservices deployments",
+      "B": "Simple applications with few services, or when the overhead isn't justified",
+      "C": "When you need mTLS",
+      "D": "When you need observability"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip service mesh for: monoliths, few services (overhead not worth it), simple networking needs, resource-constrained environments. Service mesh shines at scale with complex networking requirements.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is Envoy proxy?",
+    "options": {
+      "A": "A diplomat",
+      "B": "A high-performance proxy used as the data plane in many service meshes",
+      "C": "A database",
+      "D": "A programming language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Envoy: L7 proxy originally from Lyft. Features: dynamic configuration, extensive observability, extensible. Used by: Istio, AWS App Mesh, Consul Connect. De facto standard for service mesh data planes.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is traffic shifting in a service mesh?",
+    "options": {
+      "A": "Moving servers",
+      "B": "Gradually routing traffic between service versions for canary deployments or A/B testing",
+      "C": "Deleting traffic",
+      "D": "Encrypting traffic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Traffic shifting: route percentages to different versions. Canary: 5% to v2, 95% to v1. Gradually increase. A/B testing: route by headers. Blue-green: instant switch. Service mesh makes this declarative.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "A company has 200 microservices and needs consistent security, observability, and traffic management. Best approach?",
+    "options": {
+      "A": "Implement in each service",
+      "B": "Deploy a service mesh to handle cross-cutting concerns uniformly",
+      "C": "Ignore these requirements",
+      "D": "Use a monolith"
+    },
+    "correct_answers": ["B"],
+    "explanation": "200 services: implementing security/observability in each is inconsistent and expensive. Service mesh: uniform mTLS, metrics, tracing across all services. One place to configure policies. Worth the overhead at this scale.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  }
+]

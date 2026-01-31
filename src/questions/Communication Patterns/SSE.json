@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is Server-Sent Events (SSE)?",
+    "options": {
+      "A": "Bidirectional communication protocol",
+      "B": "Unidirectional server-to-client streaming over HTTP",
+      "C": "Client-to-server push mechanism",
+      "D": "Binary data transfer protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE enables servers to push updates to clients over a single HTTP connection. It's unidirectional (server→client only) and uses text-based event streams. Ideal for live feeds, notifications, and real-time updates.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which use cases are ideal for SSE? (Choose all that apply)",
+    "options": {
+      "A": "Live news feed updates",
+      "B": "Real-time chat with typing indicators",
+      "C": "Stock price ticker",
+      "D": "Social media notification stream"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "SSE excels at server-push scenarios: feeds, tickers, notifications. Chat with typing indicators needs bidirectional communication (client sends typing status), making WebSockets more appropriate.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What HTTP header indicates an SSE response?",
+    "options": {
+      "A": "Content-Type: application/json",
+      "B": "Content-Type: text/event-stream",
+      "C": "Upgrade: sse",
+      "D": "Transfer-Encoding: sse"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE responses use 'Content-Type: text/event-stream'. This tells the browser to keep the connection open and parse the response as an event stream rather than a complete document.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What built-in feature does SSE provide that WebSockets lack?",
+    "options": {
+      "A": "Binary data support",
+      "B": "Automatic reconnection with last-event-id",
+      "C": "Bidirectional communication",
+      "D": "Lower latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE has built-in reconnection: browser automatically reconnects on disconnect and sends 'Last-Event-ID' header so server can resume from where client left off. WebSockets require manual reconnection logic.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "An SSE event stream contains: 'id: 123\\ndata: {\"price\": 150}\\n\\n'. What does the 'id' field enable?",
+    "options": {
+      "A": "Message encryption",
+      "B": "Resumption after reconnection",
+      "C": "Message routing",
+      "D": "Client authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The 'id' field sets the last event ID. On reconnection, browser sends this ID in 'Last-Event-ID' header, allowing server to replay missed events. Essential for reliable delivery.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a limitation of SSE compared to WebSockets?",
+    "options": {
+      "A": "SSE doesn't work in browsers",
+      "B": "SSE is unidirectional—client cannot send data over the same connection",
+      "C": "SSE has higher latency",
+      "D": "SSE requires special server software"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE is server→client only. To send data, client must use separate HTTP requests. WebSockets provide full-duplex communication on a single connection. SSE is simpler but less flexible.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How does SSE handle connection limits in browsers?",
+    "options": {
+      "A": "SSE bypasses browser connection limits",
+      "B": "Each SSE connection counts against the per-domain limit (~6)",
+      "C": "SSE uses UDP to avoid limits",
+      "D": "Browsers allow unlimited SSE connections"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE uses standard HTTP, so connections count against browser limits (~6 per domain). Multiple tabs with SSE can exhaust limits. HTTP/2 multiplexing helps by sharing one TCP connection.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which SSE event fields are standard? (Choose all that apply)",
+    "options": {
+      "A": "data",
+      "B": "event",
+      "C": "id",
+      "D": "retry"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "SSE defines four fields: 'data' (message content), 'event' (event type/name), 'id' (event identifier for resumption), 'retry' (reconnection delay in ms). All are optional except data for meaningful events.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A stock trading platform needs to push price updates. Why might SSE be preferred over WebSockets?",
+    "options": {
+      "A": "SSE supports binary data",
+      "B": "SSE works through HTTP proxies and firewalls more reliably",
+      "C": "SSE has lower latency",
+      "D": "SSE supports bidirectional trading"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE uses standard HTTP, working through proxies and firewalls that might block WebSocket upgrades. For server-push only scenarios (price feeds), SSE's simplicity and compatibility are advantages.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What happens if an SSE connection is interrupted?",
+    "options": {
+      "A": "Data is permanently lost",
+      "B": "Browser automatically reconnects and sends Last-Event-ID",
+      "C": "Server must initiate reconnection",
+      "D": "User must manually refresh the page"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE has built-in reconnection. Browser automatically reconnects (default 3 seconds, configurable via 'retry' field) and sends 'Last-Event-ID' header so server can resume the stream.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: SSE can only send text data, not binary.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "SSE is text-based (UTF-8). Binary data must be encoded (Base64) before sending, adding overhead. WebSockets natively support binary frames, making them better for binary data transfer.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "An SSE implementation sends 'retry: 5000' in the event stream. What does this configure?",
+    "options": {
+      "A": "Maximum connection duration",
+      "B": "Reconnection delay of 5 seconds after disconnect",
+      "C": "Message timeout",
+      "D": "Keep-alive interval"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The 'retry' field sets the reconnection delay in milliseconds. 'retry: 5000' tells the browser to wait 5 seconds before attempting to reconnect after a connection loss.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  }
+]

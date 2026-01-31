@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the Saga pattern?",
+    "options": {
+      "A": "A database backup strategy",
+      "B": "A pattern for managing distributed transactions through a sequence of local transactions with compensating actions",
+      "C": "A caching strategy",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Saga manages distributed transactions by breaking them into local transactions. Each step has a compensating action (undo). If a step fails, compensating actions roll back previous steps. Achieves eventual consistency without distributed locks.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Why is Saga preferred over two-phase commit (2PC) in microservices?",
+    "options": {
+      "A": "Saga is faster",
+      "B": "Saga avoids distributed locks, improving availability and scalability",
+      "C": "Saga provides stronger consistency",
+      "D": "Saga is simpler to implement"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC requires distributed locks, blocking resources until commit. Saga uses local transactions—no distributed locks. Better availability (no coordinator SPOF) and scalability. Trade-off: eventual consistency, not strong consistency.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is a compensating transaction in Saga?",
+    "options": {
+      "A": "A transaction that pays for services",
+      "B": "An action that undoes the effect of a previous step when the saga fails",
+      "C": "A backup transaction",
+      "D": "A faster transaction"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Compensating transaction reverses a completed step. Example: if 'charge credit card' succeeded but 'reserve inventory' failed, compensating action 'refund credit card' undoes the charge. Essential for saga rollback.",
+    "difficulty": "easy",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "An order saga has steps: 1) Reserve inventory, 2) Charge payment, 3) Ship order. Step 3 fails. What happens?",
+    "options": {
+      "A": "Retry step 3 indefinitely",
+      "B": "Execute compensating actions: refund payment, release inventory reservation",
+      "C": "Ignore the failure",
+      "D": "Restart from step 1"
+    },
+    "correct_answers": ["B"],
+    "explanation": "When step 3 fails, saga executes compensating actions in reverse: refund payment (undo step 2), release inventory (undo step 1). This returns the system to consistent state without the order being partially processed.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What are the two main saga coordination approaches?",
+    "options": {
+      "A": "Synchronous and asynchronous",
+      "B": "Choreography and orchestration",
+      "C": "Push and pull",
+      "D": "Master and slave"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Choreography: services react to events, no central coordinator. Orchestration: central orchestrator directs saga steps. Choreography is more decoupled; orchestration is easier to understand and debug.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "In choreography-based saga, how do services coordinate?",
+    "options": {
+      "A": "Central coordinator sends commands",
+      "B": "Services publish events; other services react to events",
+      "C": "Direct service-to-service calls",
+      "D": "Shared database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Choreography: each service publishes events after completing its step. Other services subscribe and react. No central coordinator—coordination emerges from event flow. Decoupled but harder to track overall saga state.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "In orchestration-based saga, what is the orchestrator's role?",
+    "options": {
+      "A": "Store all data",
+      "B": "Coordinate saga steps by sending commands to services and handling responses",
+      "C": "Replace all services",
+      "D": "Cache responses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Orchestrator is the saga's brain: sends commands to services, waits for responses, decides next step or triggers compensation. Centralized logic makes saga flow clear but creates a coordination point.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Which challenges exist with the Saga pattern? (Choose all that apply)",
+    "options": {
+      "A": "Designing compensating actions for each step",
+      "B": "Handling concurrent saga executions",
+      "C": "Eventual consistency—temporary inconsistent states",
+      "D": "Simpler than local transactions"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Saga challenges: designing compensations (not all actions are easily reversible), concurrency (multiple sagas may conflict), eventual consistency (system is temporarily inconsistent during saga). NOT simpler—more complex than local transactions.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "True or False: All operations can have compensating actions.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Some operations can't be compensated: sent emails, external API calls, physical shipments. Design sagas to defer non-compensatable actions to the end, or use semantic compensation (send apology email, not unsend).",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is a 'pivot transaction' in a saga?",
+    "options": {
+      "A": "The first transaction",
+      "B": "The point of no return—after which saga commits forward, not backward",
+      "C": "A rotating transaction",
+      "D": "The fastest transaction"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pivot transaction is the go/no-go point. Before it, saga can be compensated. After it, saga must complete (retry forward, not compensate backward). Often the step with non-compensatable side effects.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "How should saga handle a compensating action that fails?",
+    "options": {
+      "A": "Ignore it",
+      "B": "Retry with backoff until successful; alert if retries exhausted",
+      "C": "Cancel the entire saga",
+      "D": "Compensating actions never fail"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Compensating actions must eventually succeed to maintain consistency. Retry with exponential backoff. If retries exhausted, alert for manual intervention. Design compensations to be idempotent for safe retries.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Which scenario is best suited for the Saga pattern?",
+    "options": {
+      "A": "Single database transaction",
+      "B": "Multi-service business process requiring eventual consistency",
+      "C": "Real-time gaming",
+      "D": "Static website"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Saga suits multi-service transactions where strong consistency isn't required: e-commerce orders, travel bookings, financial workflows. Single database uses local transactions. Real-time gaming needs immediate consistency.",
+    "difficulty": "easy",
+    "category": "distributed transactions"
+  }
+]

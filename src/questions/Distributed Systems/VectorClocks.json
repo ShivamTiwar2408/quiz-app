@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What problem do vector clocks solve in distributed systems?",
+    "options": {
+      "A": "Time synchronization across nodes",
+      "B": "Tracking causality and detecting concurrent events",
+      "C": "Improving system performance",
+      "D": "Encrypting timestamps"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clocks track causal relationships between events across nodes. They can determine if event A happened before B, B before A, or if they're concurrent (neither caused the other). Essential for conflict detection.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How is a vector clock structured?",
+    "options": {
+      "A": "A single timestamp",
+      "B": "An array/map of counters, one per node in the system",
+      "C": "A hash of all events",
+      "D": "A linked list of timestamps"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clock: {NodeA: 3, NodeB: 2, NodeC: 5}. Each node maintains a counter. When a node acts, it increments its counter. When receiving a message, it takes max of each counter and increments its own.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Given vector clocks V1={A:2, B:3} and V2={A:3, B:2}, what is their relationship?",
+    "options": {
+      "A": "V1 happened before V2",
+      "B": "V2 happened before V1",
+      "C": "They are concurrent (neither happened before the other)",
+      "D": "They are identical"
+    },
+    "correct_answers": ["C"],
+    "explanation": "V1 < V2 requires all V1 counters ≤ V2 and at least one <. Here A:2<3 but B:3>2. Neither dominates, so they're concurrent—these events happened independently and may conflict.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the difference between Lamport timestamps and vector clocks?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Lamport: single counter, establishes ordering; Vector: per-node counters, detects concurrency",
+      "C": "Vector clocks are faster",
+      "D": "Lamport timestamps are more accurate"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport timestamps: single counter, if A→B then L(A)<L(B), but L(A)<L(B) doesn't mean A→B. Vector clocks: can determine if events are causally related OR concurrent. More information, more overhead.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "When should vector clocks be updated?",
+    "options": {
+      "A": "Only when sending messages",
+      "B": "On local events, sending messages, and receiving messages",
+      "C": "Only on receiving messages",
+      "D": "At fixed time intervals"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Update on: local event (increment own counter), send (increment own, attach clock), receive (merge clocks taking max of each, then increment own). This captures all causal relationships.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a limitation of vector clocks?",
+    "options": {
+      "A": "They can't track causality",
+      "B": "Size grows with number of nodes, becoming impractical for large systems",
+      "C": "They require synchronized physical clocks",
+      "D": "They only work with two nodes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clock size = O(n) where n is number of nodes. In systems with thousands of nodes or high churn, this becomes impractical. Alternatives: dotted version vectors, interval tree clocks.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How do vector clocks help in conflict resolution?",
+    "options": {
+      "A": "They automatically resolve conflicts",
+      "B": "They identify when conflicts exist (concurrent updates) so the system can handle them",
+      "C": "They prevent conflicts from occurring",
+      "D": "They encrypt conflicting data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clocks detect concurrent updates (potential conflicts). The system then applies resolution strategy: last-write-wins, merge, or return both versions to the application. Detection is the first step.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Vector clocks require synchronized physical clocks across nodes.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector clocks are logical clocks—they track causality through message passing, not wall-clock time. They work correctly even if physical clocks are completely unsynchronized. That's their key advantage.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Amazon's Dynamo uses vector clocks. What happens when a client reads conflicting versions?",
+    "options": {
+      "A": "Dynamo automatically picks one",
+      "B": "Dynamo returns all conflicting versions; client must reconcile",
+      "C": "The read fails",
+      "D": "Dynamo deletes all versions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dynamo returns all concurrent versions (siblings) to the client. The client/application must reconcile (e.g., merge shopping carts). This pushes conflict resolution to the application layer.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'version vector' and how does it relate to vector clocks?",
+    "options": {
+      "A": "A different name for the same concept",
+      "B": "Version vectors track data versions; vector clocks track event ordering",
+      "C": "Version vectors are faster",
+      "D": "They are unrelated concepts"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Often used interchangeably, but technically: vector clocks track event causality, version vectors track data item versions. In practice, version vectors are vector clocks applied to data versioning.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A system has nodes A, B, C. Node A has clock {A:5, B:3, C:2}. It receives a message from B with clock {A:4, B:4, C:3}. What is A's new clock?",
+    "options": {
+      "A": "{A:5, B:3, C:2}",
+      "B": "{A:6, B:4, C:3}",
+      "C": "{A:4, B:4, C:3}",
+      "D": "{A:9, B:7, C:5}"
+    },
+    "correct_answers": ["B"],
+    "explanation": "On receive: take max of each component: max(5,4)=5, max(3,4)=4, max(2,3)=3 → {A:5, B:4, C:3}. Then increment own counter: {A:6, B:4, C:3}. This captures that A has seen B's state.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which systems use vector clocks or similar mechanisms? (Choose all that apply)",
+    "options": {
+      "A": "Amazon DynamoDB",
+      "B": "Riak",
+      "C": "Traditional SQL databases",
+      "D": "CouchDB"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "DynamoDB, Riak, and CouchDB use vector clocks or version vectors for conflict detection in eventually consistent systems. Traditional SQL databases use transactions and locks instead.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

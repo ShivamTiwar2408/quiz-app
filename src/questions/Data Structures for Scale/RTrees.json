@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is an R-tree?",
+    "options": {
+      "A": "A tree for storing strings",
+      "B": "A balanced tree structure for indexing multi-dimensional spatial data using minimum bounding rectangles",
+      "C": "A binary search tree",
+      "D": "A hash table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "R-tree: spatial index for rectangles, polygons, points. Each node contains MBR (Minimum Bounding Rectangle) enclosing all children. Balanced: all leaves at same depth. Used in: PostGIS, SQLite, MongoDB.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is a Minimum Bounding Rectangle (MBR)?",
+    "options": {
+      "A": "The smallest rectangle",
+      "B": "The smallest axis-aligned rectangle that completely contains a spatial object or group of objects",
+      "C": "A square",
+      "D": "A circle"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MBR: axis-aligned rectangle defined by (min_x, min_y, max_x, max_y). Approximates complex shapes. R-tree nodes store MBRs of children. Enables fast overlap/containment tests.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does R-tree search work for a range query?",
+    "options": {
+      "A": "Check every object",
+      "B": "Start at root, only descend into children whose MBR intersects the query rectangle",
+      "C": "Binary search",
+      "D": "Hash lookup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "R-tree search: 1) Check if query rectangle intersects node's MBR. 2) If no intersection, skip entire subtree. 3) If intersects, recurse into children. 4) At leaves, check actual objects. Prunes non-overlapping branches.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the key challenge when inserting into an R-tree?",
+    "options": {
+      "A": "Finding the root",
+      "B": "Choosing which subtree to insert into to minimize MBR expansion and overlap",
+      "C": "Sorting data",
+      "D": "Memory allocation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Insert challenge: which child to choose? Goals: minimize MBR enlargement, minimize overlap between siblings. Overlap = multiple paths to search. Various heuristics: least enlargement, least overlap, combined.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What happens when an R-tree node overflows?",
+    "options": {
+      "A": "Data is lost",
+      "B": "The node splits into two nodes, distributing entries to minimize total MBR area and overlap",
+      "C": "The tree is rebuilt",
+      "D": "Entries are deleted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Node split: when node exceeds capacity M. Split algorithms: linear (fast, simple), quadratic (better quality), R*-tree (best quality, reinserts). Goal: minimize dead space and overlap in resulting MBRs.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the R*-tree improvement over basic R-tree?",
+    "options": {
+      "A": "Faster insertion",
+      "B": "Better split algorithm and forced reinsert strategy that improves tree structure",
+      "C": "Smaller memory usage",
+      "D": "Simpler implementation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "R*-tree improvements: 1) Better split considering overlap, margin, area. 2) Forced reinsert: on overflow, reinsert 30% of entries instead of immediate split. Results in better-structured tree, faster queries.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the typical node capacity (M) for an R-tree?",
+    "options": {
+      "A": "2 entries",
+      "B": "50-100 entries, sized to fit a disk page",
+      "C": "1000 entries",
+      "D": "Unlimited"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Node capacity: typically sized to disk page (4KB-8KB). 50-100 entries common. Larger M = shallower tree, fewer disk reads. Trade-off: larger nodes = more entries to scan within node.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "R-tree vs Quadtree: when would you choose R-tree?",
+    "options": {
+      "A": "For simpler implementation",
+      "B": "For indexing rectangles/polygons, handling non-uniform data distribution, and when you need guaranteed balance",
+      "C": "For point data only",
+      "D": "For in-memory only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "R-tree advantages: handles rectangles/polygons natively, self-balancing, better with clustered data. Quadtree: simpler, good for points, uniform distribution. R-tree: production spatial databases. Quadtree: games, simple apps.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does PostGIS use R-trees?",
+    "options": {
+      "A": "For text search",
+      "B": "As the underlying index structure for GIST spatial indexes on geometry columns",
+      "C": "For user authentication",
+      "D": "For backup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PostGIS: CREATE INDEX ON table USING GIST(geom). GIST uses R-tree internally. Enables fast: ST_Intersects, ST_Contains, ST_DWithin queries. Index stores MBRs, actual geometry checked only for candidates.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the time complexity of R-tree search in the average case?",
+    "options": {
+      "A": "O(1)",
+      "B": "O(log n) for well-structured trees with minimal overlap",
+      "C": "O(n)",
+      "D": "O(n²)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "R-tree search: O(log_M n) average case with good structure. Worst case: O(n) if all MBRs overlap (must check all paths). R*-tree minimizes overlap, keeping performance closer to O(log n).",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is bulk loading in R-trees?",
+    "options": {
+      "A": "Loading data slowly",
+      "B": "Building the tree from a sorted dataset all at once, producing better structure than repeated inserts",
+      "C": "Deleting all data",
+      "D": "Compressing the tree"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bulk loading: Sort-Tile-Recursive (STR) algorithm. Sort data, pack into nodes bottom-up. Results: minimal overlap, optimal packing, faster queries. Use when loading large static datasets.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "You're building a ride-sharing app that needs to find all drivers within a polygon (city boundary). Which index would you use?",
+    "options": {
+      "A": "B-tree on driver ID",
+      "B": "R-tree spatial index to efficiently query drivers whose location intersects the polygon",
+      "C": "Hash index",
+      "D": "Full table scan"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Polygon query: R-tree indexes driver locations. Query: find all points within polygon. R-tree first finds candidates via MBR intersection, then precise polygon containment check. Efficient for complex boundaries.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  }
+]

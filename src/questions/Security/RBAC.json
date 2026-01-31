@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is RBAC (Role-Based Access Control)?",
+    "options": {
+      "A": "A database type",
+      "B": "An access control model where permissions are assigned to roles, and users are assigned to roles",
+      "C": "A programming language",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC: users → roles → permissions. Instead of assigning permissions directly to users, assign to roles. Users get permissions through role membership. Simplifies management at scale.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What are the core components of RBAC?",
+    "options": {
+      "A": "Users, Roles, Permissions",
+      "B": "Only users and passwords",
+      "C": "Only roles",
+      "D": "Only permissions"
+    },
+    "correct_answers": ["A"],
+    "explanation": "RBAC components: Users (people/services), Roles (job functions like 'admin', 'editor'), Permissions (actions like 'read', 'write', 'delete'). Users assigned to roles, roles have permissions.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is the advantage of RBAC over direct permission assignment?",
+    "options": {
+      "A": "No advantage",
+      "B": "Easier management—change role permissions once, affects all users with that role",
+      "C": "Faster performance",
+      "D": "Less secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC advantage: scalability. 1000 users need 'editor' access? Assign role once. Permission change? Update role, all users affected. Without RBAC: manage permissions for each user individually.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is role hierarchy in RBAC?",
+    "options": {
+      "A": "Roles sorted alphabetically",
+      "B": "Roles can inherit permissions from other roles (e.g., 'admin' inherits 'editor' permissions)",
+      "C": "Roles are numbered",
+      "D": "Roles are encrypted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Role hierarchy: senior roles inherit junior role permissions. Admin inherits Editor inherits Viewer. Reduces duplication. Admin automatically has all Editor and Viewer permissions plus admin-specific ones.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is the principle of least privilege in RBAC?",
+    "options": {
+      "A": "Give everyone admin access",
+      "B": "Users should have only the minimum permissions needed for their job function",
+      "C": "Remove all permissions",
+      "D": "Share passwords"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least privilege: assign minimum necessary permissions. Developer doesn't need production database admin. Reduces risk: compromised account has limited damage. RBAC makes this manageable through well-defined roles.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is separation of duties in RBAC?",
+    "options": {
+      "A": "Everyone does everything",
+      "B": "Critical tasks require multiple roles, preventing single person from completing sensitive operations alone",
+      "C": "Duties are encrypted",
+      "D": "No duties assigned"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Separation of duties: no single person can complete critical process. Example: one role creates payment, another approves. Prevents fraud. RBAC enforces by requiring different roles for different steps.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "How does RBAC differ from ABAC (Attribute-Based Access Control)?",
+    "options": {
+      "A": "They are the same",
+      "B": "RBAC: permissions based on roles; ABAC: permissions based on attributes (user, resource, environment)",
+      "C": "ABAC is older",
+      "D": "RBAC is more flexible"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC: role-centric, simpler. ABAC: attribute-centric, more flexible. ABAC example: 'allow if user.department == resource.department AND time.hour > 9'. ABAC handles complex policies RBAC can't express.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is a common RBAC implementation in cloud platforms?",
+    "options": {
+      "A": "AWS IAM roles and policies",
+      "B": "Kubernetes RBAC",
+      "C": "Azure RBAC",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "RBAC everywhere: AWS IAM (roles, policies), Kubernetes (Role, ClusterRole, RoleBinding), Azure RBAC, GCP IAM. Standard approach for cloud access control. Similar concepts, platform-specific implementations.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is role explosion in RBAC?",
+    "options": {
+      "A": "Roles becoming popular",
+      "B": "Creating too many fine-grained roles, making the system hard to manage",
+      "C": "Roles being deleted",
+      "D": "Roles being encrypted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Role explosion: too many roles. Every combination of permissions becomes a role. 100s or 1000s of roles, hard to manage. Solutions: role hierarchy, ABAC for fine-grained control, regular role audits.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is a RoleBinding in Kubernetes RBAC?",
+    "options": {
+      "A": "A type of pod",
+      "B": "Associates a Role with users or service accounts, granting them the role's permissions",
+      "C": "A network policy",
+      "D": "A storage class"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kubernetes RoleBinding: connects Role (permissions) to subjects (users, groups, service accounts). Role defines what, RoleBinding defines who. ClusterRoleBinding for cluster-wide roles.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "How do you audit RBAC permissions?",
+    "options": {
+      "A": "Never audit",
+      "B": "Regularly review role assignments, remove unused roles, verify least privilege",
+      "C": "Delete all roles",
+      "D": "Add more roles"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC audit: review who has what roles, are permissions still needed, any over-privileged users, unused roles. Regular audits prevent permission creep. Tools: AWS IAM Access Analyzer, cloud audit logs.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "A company has 500 employees across 10 departments. How should they structure RBAC?",
+    "options": {
+      "A": "One role per employee",
+      "B": "Define roles by job function (developer, manager, analyst), assign users to appropriate roles",
+      "C": "No roles needed",
+      "D": "Everyone gets admin"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RBAC design: identify job functions (not individuals), create roles matching functions, assign permissions to roles, assign users to roles. Maybe 20-30 roles for 500 employees. Much simpler than 500 individual permission sets.",
+    "difficulty": "medium",
+    "category": "security"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a read replica?",
+    "options": {
+      "A": "A backup database",
+      "B": "A copy of the primary database that handles read queries to distribute load",
+      "C": "A database for storing logs",
+      "D": "A cache layer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Read replica is a copy of the primary database that stays synchronized and handles read queries. Distributes read load across multiple servers while writes go to primary. Common scaling pattern for read-heavy workloads.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "Which workload pattern benefits most from read replicas?",
+    "options": {
+      "A": "Write-heavy applications",
+      "B": "Read-heavy applications with high read-to-write ratio",
+      "C": "Applications with equal reads and writes",
+      "D": "Batch processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Read replicas scale reads, not writes. Applications with high read-to-write ratio (e.g., 90% reads) benefit most. Write-heavy apps need different strategies (sharding). All writes still go to primary.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is replication lag?",
+    "options": {
+      "A": "Network latency",
+      "B": "Delay between write on primary and its appearance on replica",
+      "C": "Slow query execution",
+      "D": "Database startup time"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Replication lag is the time between a write on primary and when it's visible on replicas. During lag, replicas show stale data. Critical consideration for applications requiring read-your-writes consistency.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "A user updates their profile, then immediately views it. The read goes to a replica with lag. What happens?",
+    "options": {
+      "A": "User sees updated profile",
+      "B": "User sees old profile data (stale read)",
+      "C": "Error occurs",
+      "D": "Database automatically retries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With replication lag, the replica may not have the update yet. User sees stale data—confusing UX. Solutions: read-your-writes consistency (route user's reads to primary after writes), or accept eventual consistency.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "How can applications handle replication lag? (Choose all that apply)",
+    "options": {
+      "A": "Route critical reads to primary",
+      "B": "Use read-your-writes consistency",
+      "C": "Accept eventual consistency for non-critical reads",
+      "D": "Ignore lag—it's not important"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Strategies: route critical reads (user's own data) to primary, implement read-your-writes (track recent writes, read from primary if recent), or accept eventual consistency for non-critical data (feeds, analytics).",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is synchronous vs asynchronous replication?",
+    "options": {
+      "A": "Synchronous is faster",
+      "B": "Synchronous waits for replica confirmation; asynchronous doesn't",
+      "C": "Asynchronous is more reliable",
+      "D": "No difference"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Synchronous: primary waits for replica to confirm write before acknowledging client (no lag, but slower). Asynchronous: primary acknowledges immediately, replica catches up later (faster, but lag possible).",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "True or False: Read replicas can accept write operations.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Standard read replicas are read-only. Writes must go to primary to maintain consistency. Some systems support multi-master replication where all nodes accept writes, but this adds complexity (conflict resolution).",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "A primary database fails. What happens to read replicas?",
+    "options": {
+      "A": "They automatically become primary",
+      "B": "They continue serving reads; one can be promoted to primary (failover)",
+      "C": "They immediately stop working",
+      "D": "Data is lost"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Replicas continue serving reads during primary failure. For writes, a replica must be promoted to primary (failover). This can be automatic (managed services) or manual. Some data loss possible if async replication.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "How many read replicas should an application have?",
+    "options": {
+      "A": "Always exactly 2",
+      "B": "Depends on read load, latency requirements, and availability needs",
+      "C": "As many as possible",
+      "D": "Replicas are not recommended"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Replica count depends on: read throughput needs (more replicas = more capacity), latency (geo-distributed replicas reduce latency), availability (more replicas = better fault tolerance). Balance against cost and complexity.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is cascading replication?",
+    "options": {
+      "A": "Replicas failing one after another",
+      "B": "Replicas replicating from other replicas instead of primary",
+      "C": "Automatic failover",
+      "D": "Data corruption spreading"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cascading replication: replicas replicate from other replicas, not directly from primary. Reduces load on primary (doesn't serve all replicas). Trade-off: increased lag for downstream replicas.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "Which cloud services provide managed read replicas? (Choose all that apply)",
+    "options": {
+      "A": "Amazon RDS",
+      "B": "Google Cloud SQL",
+      "C": "Azure SQL Database",
+      "D": "Amazon S3"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "RDS, Cloud SQL, and Azure SQL Database all support managed read replicas with automatic replication. S3 is object storage, not a database—it doesn't have read replicas in the database sense.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "An e-commerce site has 1 primary and 3 read replicas. During Black Friday, reads increase 10x. What's the best immediate action?",
+    "options": {
+      "A": "Add more read replicas",
+      "B": "Upgrade primary server",
+      "C": "Reduce write operations",
+      "D": "Disable replication"
+    },
+    "correct_answers": ["A"],
+    "explanation": "For read scaling, add more read replicas to handle increased load. Upgrading primary helps writes, not reads. Read replicas can be added quickly in cloud environments. Also consider caching for further read scaling.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  }
+]

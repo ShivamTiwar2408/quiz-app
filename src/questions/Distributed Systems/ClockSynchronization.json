@@ -1,0 +1,158 @@
+[
+  {
+    "question": "Why is clock synchronization difficult in distributed systems?",
+    "options": {
+      "A": "Clocks are too expensive",
+      "B": "Network delays are variable and unpredictable, making it impossible to know exact message transit time",
+      "C": "All computers use the same clock",
+      "D": "Clocks don't exist in distributed systems"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Network latency varies unpredictably. When Node A sends its time to Node B, B doesn't know how long the message took. This uncertainty makes perfect synchronization impossible—we can only bound the error.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is clock drift?",
+    "options": {
+      "A": "Clocks moving physically",
+      "B": "The gradual divergence of a clock from true time due to hardware imperfections",
+      "C": "Network latency",
+      "D": "Time zone differences"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Crystal oscillators in computers aren't perfect. A typical drift rate is 10-100 ppm (parts per million), meaning clocks can drift apart by seconds per day. Without synchronization, clocks diverge over time.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is NTP (Network Time Protocol) used for?",
+    "options": {
+      "A": "Encrypting network traffic",
+      "B": "Synchronizing clocks across computers over a network",
+      "C": "Load balancing",
+      "D": "DNS resolution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "NTP synchronizes clocks to UTC using a hierarchy of time servers. It accounts for network delay by measuring round-trip time. Typical accuracy: milliseconds over internet, microseconds on LAN.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the NTP stratum hierarchy?",
+    "options": {
+      "A": "Network security levels",
+      "B": "Layers of time servers where Stratum 0 are atomic clocks, Stratum 1 directly connected to them, and so on",
+      "C": "Database replication levels",
+      "D": "Load balancer tiers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stratum 0: atomic clocks, GPS. Stratum 1: servers directly connected to Stratum 0. Stratum 2: sync to Stratum 1, etc. Each level adds potential error. Most computers sync to Stratum 2-3 servers.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What problem can occur if a system clock jumps backward?",
+    "options": {
+      "A": "No problems occur",
+      "B": "Log timestamps become non-monotonic, cache TTLs break, unique ID generation can produce duplicates",
+      "C": "The system runs faster",
+      "D": "Network connections improve"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Backward clock jumps cause: duplicate timestamps in logs, cache entries expiring early or late, time-based UUIDs colliding, scheduled tasks running twice. Many systems assume monotonic time.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is Google's TrueTime API designed to provide?",
+    "options": {
+      "A": "Faster network speeds",
+      "B": "Bounded clock uncertainty with explicit error intervals",
+      "C": "Free time synchronization",
+      "D": "Timezone conversion"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TrueTime returns an interval [earliest, latest] guaranteed to contain the true time. Spanner uses this to implement external consistency—it waits out the uncertainty before committing. Requires GPS and atomic clocks.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does Cristian's algorithm estimate clock offset?",
+    "options": {
+      "A": "By using GPS",
+      "B": "By measuring round-trip time and assuming symmetric network delay",
+      "C": "By using atomic clocks",
+      "D": "By ignoring network delay"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client sends request at T1, server responds with its time Ts, client receives at T4. Estimated offset = Ts - (T1 + RTT/2). Assumes request and response take equal time—not always true.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the Berkeley Algorithm for clock synchronization?",
+    "options": {
+      "A": "A master polls all clocks, computes average, and tells each node how to adjust",
+      "B": "Each node syncs to GPS",
+      "C": "Nodes never synchronize",
+      "D": "Only the fastest clock is used"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Berkeley Algorithm: master polls slaves for their times, computes average (excluding outliers), sends each node its required adjustment. No external time source needed—internal consistency only.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why might a distributed database need synchronized clocks?",
+    "options": {
+      "A": "For display purposes only",
+      "B": "To order transactions, determine causality, and implement consistency guarantees",
+      "C": "Clocks are not needed in databases",
+      "D": "For encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Databases use timestamps for: transaction ordering (snapshot isolation), conflict resolution (last-write-wins), TTL/expiration, audit logs. Poor synchronization can cause anomalies or incorrect ordering.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the difference between clock synchronization and logical clocks?",
+    "options": {
+      "A": "They are the same",
+      "B": "Clock sync aligns physical time; logical clocks track causality without physical time",
+      "C": "Logical clocks are more accurate",
+      "D": "Clock synchronization is faster"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Clock synchronization: align wall-clock time across nodes (NTP, GPS). Logical clocks (Lamport, Vector): track event ordering through message passing, no physical time needed. Different tools for different problems.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is PTP (Precision Time Protocol) and when is it used?",
+    "options": {
+      "A": "A replacement for TCP",
+      "B": "A high-precision time sync protocol achieving sub-microsecond accuracy, used in finance and telecom",
+      "C": "A database protocol",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PTP (IEEE 1588) achieves nanosecond-level accuracy using hardware timestamping. Used in: high-frequency trading, telecom, industrial automation. More complex and expensive than NTP.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A distributed system uses timestamps for conflict resolution. Clocks are synchronized to within 100ms. What's a potential issue?",
+    "options": {
+      "A": "No issues",
+      "B": "Events within 100ms window may be ordered incorrectly, causing wrong conflict resolution",
+      "C": "The system will crash",
+      "D": "Network will slow down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With 100ms uncertainty, two events 50ms apart might be ordered wrong. Last-write-wins could pick the wrong write. Solutions: larger uncertainty windows, logical clocks, or hybrid approaches.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  }
+]

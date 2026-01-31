@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the main advantage of GraphQL over REST for client applications?",
+    "options": {
+      "A": "GraphQL is faster",
+      "B": "Clients can request exactly the data they need, avoiding over-fetching",
+      "C": "GraphQL is more secure",
+      "D": "GraphQL doesn't require a server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GraphQL lets clients specify exactly which fields they need in a single request. REST often returns fixed response shapes, leading to over-fetching (unused data) or under-fetching (multiple requests needed).",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "What is the N+1 query problem in GraphQL and how can it be solved?",
+    "options": {
+      "A": "A security vulnerability; solved with authentication",
+      "B": "Fetching related data causes N additional database queries; solved with DataLoader batching",
+      "C": "A caching issue; solved with CDN",
+      "D": "A versioning problem; solved with schema evolution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "When resolving a list of N items with related data, naive implementation makes N additional queries. DataLoader batches these into a single query, dramatically improving performance.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "In GraphQL, what is a 'resolver'?",
+    "options": {
+      "A": "A DNS component",
+      "B": "A function that fetches data for a specific field in the schema",
+      "C": "A conflict resolution mechanism",
+      "D": "A query optimizer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Resolvers are functions that return data for each field in the schema. When a query requests a field, GraphQL calls its resolver to fetch the actual data from databases, APIs, or other sources.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which GraphQL operation types exist? (Choose all that apply)",
+    "options": {
+      "A": "Query (read data)",
+      "B": "Mutation (modify data)",
+      "C": "Subscription (real-time updates)",
+      "D": "Transaction (atomic operations)"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "GraphQL has three operation types: Query (read), Mutation (write), and Subscription (real-time via WebSocket). There's no built-in Transaction type—atomic operations must be handled in resolvers.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is GraphQL introspection?",
+    "options": {
+      "A": "Debugging GraphQL queries",
+      "B": "Querying the schema itself to discover available types and fields",
+      "C": "Monitoring GraphQL performance",
+      "D": "Validating GraphQL syntax"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Introspection lets clients query the schema (__schema, __type) to discover available types, fields, and operations. This enables tools like GraphiQL and automatic documentation. Often disabled in production for security.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A mobile app needs user profile with posts, but a web app needs profile with followers. How does GraphQL handle this better than REST?",
+    "options": {
+      "A": "GraphQL creates separate endpoints automatically",
+      "B": "Each client queries exactly the fields it needs from one endpoint",
+      "C": "GraphQL compresses responses for mobile",
+      "D": "GraphQL caches differently per client"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Both clients query the same GraphQL endpoint but request different fields. Mobile: { user { profile, posts } }. Web: { user { profile, followers } }. No backend changes needed for different client needs.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is a potential security concern with GraphQL that doesn't exist with REST?",
+    "options": {
+      "A": "SQL injection",
+      "B": "Deeply nested queries causing resource exhaustion",
+      "C": "Cross-site scripting",
+      "D": "Man-in-the-middle attacks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GraphQL's flexibility allows malicious queries with deep nesting or requesting huge datasets. Query complexity analysis, depth limiting, and rate limiting by query cost are essential protections.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "True or False: GraphQL always uses POST requests.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "While POST is most common (query in body), GraphQL queries can use GET with the query as a URL parameter. GET enables HTTP caching for queries. Mutations should always use POST.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "How does GraphQL handle API versioning compared to REST?",
+    "options": {
+      "A": "GraphQL uses URL versioning like REST",
+      "B": "GraphQL typically evolves schemas additively, avoiding versions",
+      "C": "GraphQL requires version headers",
+      "D": "GraphQL doesn't support schema changes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GraphQL encourages schema evolution: add new fields (backward compatible), deprecate old fields (clients warned), eventually remove. This avoids version proliferation common in REST APIs.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is a GraphQL fragment and why is it useful?",
+    "options": {
+      "A": "A partial response from the server",
+      "B": "A reusable unit of fields that can be included in multiple queries",
+      "C": "A broken query that needs repair",
+      "D": "A security token"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fragments define reusable sets of fields: fragment UserFields on User { id, name, email }. Queries can include ...UserFields to avoid repetition and ensure consistency across queries.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "When is REST a better choice than GraphQL?",
+    "options": {
+      "A": "Never, GraphQL is always better",
+      "B": "Simple APIs with predictable access patterns and strong HTTP caching needs",
+      "C": "When you need real-time updates",
+      "D": "When clients need flexible queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "REST excels with simple, predictable APIs where HTTP caching (CDN, browser) is important. GraphQL's flexibility adds complexity; if you don't need it, REST's simplicity and caching are advantages.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What does the GraphQL schema define?",
+    "options": {
+      "A": "Database table structures",
+      "B": "The types, fields, and operations available in the API",
+      "C": "Network routing rules",
+      "D": "Authentication requirements"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The schema is the contract defining all types (User, Post), their fields (id, name), relationships, and available operations (queries, mutations, subscriptions). It's the API's type system.",
+    "difficulty": "easy",
+    "category": "api design"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary difference between HTTP and HTTPS?",
+    "options": {
+      "A": "HTTPS is faster than HTTP",
+      "B": "HTTPS encrypts data in transit using TLS",
+      "C": "HTTPS uses a different port and protocol entirely",
+      "D": "HTTPS compresses data for efficiency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HTTPS is HTTP over TLS—the same protocol encrypted. It uses port 443 (vs 80) but the HTTP semantics are identical. TLS adds encryption, not compression or speed.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "During a TLS handshake, what does the server send to prove its identity?",
+    "options": {
+      "A": "Username and password",
+      "B": "Digital certificate signed by a Certificate Authority",
+      "C": "Encryption key",
+      "D": "IP address verification"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The server presents its certificate, signed by a trusted CA, containing its public key. The client verifies the certificate chain to establish trust before encrypted communication.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which attacks does HTTPS protect against? (Choose all that apply)",
+    "options": {
+      "A": "Eavesdropping on data in transit",
+      "B": "Man-in-the-middle attacks",
+      "C": "SQL injection",
+      "D": "Data tampering during transmission"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "HTTPS/TLS provides confidentiality (prevents eavesdropping), authentication (prevents MITM), and integrity (prevents tampering). SQL injection is an application-layer vulnerability unrelated to transport security.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A website shows a certificate warning. What could cause this? (Choose all that apply)",
+    "options": {
+      "A": "Certificate has expired",
+      "B": "Certificate is for a different domain",
+      "C": "Certificate is self-signed (not from trusted CA)",
+      "D": "Website is using HTTP instead of HTTPS"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Certificate warnings occur for expired, mismatched domain, or untrusted (self-signed) certificates. HTTP sites don't show certificate warnings—they simply lack the padlock icon.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "What is the purpose of HSTS (HTTP Strict Transport Security)?",
+    "options": {
+      "A": "To compress HTTP responses",
+      "B": "To force browsers to only use HTTPS for a domain",
+      "C": "To speed up TLS handshakes",
+      "D": "To validate server certificates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HSTS tells browsers to always use HTTPS for a domain, preventing downgrade attacks where an attacker redirects users to HTTP. Once set, browsers refuse HTTP connections to that domain.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "TLS 1.3 improved upon TLS 1.2 in which ways? (Choose all that apply)",
+    "options": {
+      "A": "Faster handshake (1-RTT vs 2-RTT)",
+      "B": "Removed support for weak cipher suites",
+      "C": "Added support for HTTP/2",
+      "D": "0-RTT resumption for repeat connections"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "TLS 1.3: faster handshake (1-RTT), removed weak ciphers (RC4, SHA-1, etc.), and 0-RTT resumption. HTTP/2 is independent of TLS version—it works with TLS 1.2 too.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "A load balancer terminates TLS and forwards unencrypted traffic to backend servers. What is this called?",
+    "options": {
+      "A": "TLS passthrough",
+      "B": "TLS termination / SSL offloading",
+      "C": "End-to-end encryption",
+      "D": "TLS bridging"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS termination (SSL offloading) decrypts traffic at the load balancer, reducing backend server load. Traffic between LB and backends is unencrypted (or re-encrypted for end-to-end).",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Why might an organization use a private Certificate Authority for internal services?",
+    "options": {
+      "A": "Public CAs don't support internal domains",
+      "B": "To avoid certificate costs and enable internal-only trust",
+      "C": "Private CAs provide stronger encryption",
+      "D": "Public CAs are too slow"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Private CAs allow issuing certificates for internal domains without public CA costs or validation requirements. Internal clients trust the private CA; external clients wouldn't.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: HTTPS guarantees that the website content is safe and trustworthy.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HTTPS only ensures encrypted, authenticated transport. A malicious site can have valid HTTPS. It protects data in transit but says nothing about the site's content or intentions.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "What is certificate pinning?",
+    "options": {
+      "A": "Storing certificates on a physical device",
+      "B": "Hardcoding expected certificates/keys in an application",
+      "C": "Using multiple certificates for redundancy",
+      "D": "Automatically renewing certificates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Certificate pinning embeds expected certificate or public key hashes in the application, rejecting connections even with valid CA-signed certificates if they don't match. Prevents CA compromise attacks.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "A company wants to inspect HTTPS traffic for security monitoring. What technique is required?",
+    "options": {
+      "A": "Packet sniffing",
+      "B": "TLS interception with proxy and trusted CA",
+      "C": "DNS monitoring",
+      "D": "Firewall rules"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HTTPS inspection requires a proxy that terminates TLS, inspects content, and re-encrypts. Clients must trust the proxy's CA. This is essentially an authorized MITM for security purposes.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which HTTP header helps prevent mixed content issues when migrating to HTTPS?",
+    "options": {
+      "A": "Content-Security-Policy with upgrade-insecure-requests",
+      "B": "X-Frame-Options",
+      "C": "Cache-Control",
+      "D": "Access-Control-Allow-Origin"
+    },
+    "correct_answers": ["A"],
+    "explanation": "CSP's upgrade-insecure-requests directive tells browsers to automatically upgrade HTTP resource requests to HTTPS, helping during migration when some resources still reference HTTP URLs.",
+    "difficulty": "hard",
+    "category": "networking"
+  }
+]

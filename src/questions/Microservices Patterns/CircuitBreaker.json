@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the Circuit Breaker pattern?",
+    "options": {
+      "A": "A pattern for breaking electrical circuits",
+      "B": "A pattern that prevents cascading failures by stopping calls to failing services",
+      "C": "A database connection pattern",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit Breaker prevents cascading failures. When a service fails repeatedly, the circuit 'opens'—calls fail immediately without attempting the request. Protects the system and gives failing service time to recover.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What are the three states of a circuit breaker?",
+    "options": {
+      "A": "On, Off, Standby",
+      "B": "Closed, Open, Half-Open",
+      "C": "Start, Stop, Pause",
+      "D": "Active, Inactive, Pending"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit breaker states: Closed (normal operation, requests pass through), Open (failures exceeded threshold, requests fail immediately), Half-Open (testing if service recovered, limited requests allowed).",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What happens when a circuit breaker is 'open'?",
+    "options": {
+      "A": "All requests are processed normally",
+      "B": "Requests fail immediately without calling the downstream service",
+      "C": "Requests are queued",
+      "D": "Requests are retried indefinitely"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Open circuit: requests fail fast without attempting the call. This prevents: wasting resources on likely-to-fail requests, overwhelming the struggling service, and cascading timeouts through the system.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What triggers a circuit breaker to open?",
+    "options": {
+      "A": "A single failure",
+      "B": "Failure rate exceeding a threshold within a time window",
+      "C": "High CPU usage",
+      "D": "Manual intervention only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit opens when failure rate exceeds threshold (e.g., 50% failures in last 10 requests, or 5 failures in 30 seconds). Single failures don't trip it—transient issues are normal. Thresholds are configurable.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the purpose of the 'half-open' state?",
+    "options": {
+      "A": "To process half the requests",
+      "B": "To test if the downstream service has recovered by allowing limited requests",
+      "C": "To reduce latency",
+      "D": "To save memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Half-open: after timeout, circuit allows limited test requests. If they succeed, circuit closes (service recovered). If they fail, circuit reopens. Enables automatic recovery detection without manual intervention.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What should happen when a circuit breaker is open and a request arrives?",
+    "options": {
+      "A": "Wait indefinitely",
+      "B": "Return fallback response or error immediately",
+      "C": "Retry the request",
+      "D": "Queue the request"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Open circuit should fail fast: return error or fallback response immediately. Fallbacks might be: cached data, default values, degraded functionality, or graceful error message. Don't block or queue.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Which problems does Circuit Breaker solve? (Choose all that apply)",
+    "options": {
+      "A": "Cascading failures across services",
+      "B": "Resource exhaustion from waiting on failing services",
+      "C": "Giving failing services time to recover",
+      "D": "Improving database performance"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Circuit Breaker prevents: cascading failures (one failure doesn't bring down everything), resource exhaustion (threads/connections waiting on timeouts), and gives recovery time (stops hammering failing service).",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "True or False: Circuit Breaker should be used for every external service call.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Best practice: wrap all external calls (services, databases, APIs) with circuit breakers. Any external dependency can fail. Circuit breakers provide consistent failure handling and prevent cascading issues.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What metrics should be monitored for circuit breakers? (Choose all that apply)",
+    "options": {
+      "A": "Circuit state (open/closed/half-open)",
+      "B": "Failure rate",
+      "C": "Number of rejected requests",
+      "D": "Time spent in open state"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "Monitor all: circuit state (alerts on open), failure rate (trending issues), rejected requests (impact on users), time in open state (recovery time). These metrics indicate system health and dependency reliability.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How does Circuit Breaker differ from retry logic?",
+    "options": {
+      "A": "They are the same",
+      "B": "Retry attempts failed requests; Circuit Breaker stops attempting after threshold",
+      "C": "Circuit Breaker is faster",
+      "D": "Retry is for databases only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Retry: attempt failed request again (handles transient failures). Circuit Breaker: stop attempting after repeated failures (handles persistent failures). Use together: retry for transient issues, circuit breaker when retries consistently fail.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Which libraries implement the Circuit Breaker pattern? (Choose all that apply)",
+    "options": {
+      "A": "Resilience4j",
+      "B": "Hystrix (Netflix)",
+      "C": "Polly (.NET)",
+      "D": "jQuery"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Circuit breaker libraries: Resilience4j (Java, recommended), Hystrix (Netflix, maintenance mode), Polly (.NET). These provide circuit breaker plus other resilience patterns. jQuery is a JavaScript UI library.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "A payment service is experiencing 60% failure rate. The circuit breaker opens. What's the appropriate fallback?",
+    "options": {
+      "A": "Process payment anyway",
+      "B": "Return error to user with option to retry later; possibly queue for async processing",
+      "C": "Ignore the payment",
+      "D": "Charge a different amount"
+    },
+    "correct_answers": ["B"],
+    "explanation": "For critical operations like payments: inform user of temporary issue, offer retry later, possibly queue for async processing when service recovers. Never silently fail or process incorrectly. Graceful degradation.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  }
+]

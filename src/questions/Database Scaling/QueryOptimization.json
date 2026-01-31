@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is query optimization?",
+    "options": {
+      "A": "Writing shorter queries",
+      "B": "The process of improving query performance through better execution plans, indexes, and query structure",
+      "C": "Deleting slow queries",
+      "D": "Using faster hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Query optimization: analyze and improve how queries execute. Involves: query rewriting, index usage, execution plan analysis, statistics updates. Goal: minimize I/O, CPU, and response time.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is an execution plan (query plan)?",
+    "options": {
+      "A": "A project timeline",
+      "B": "The database's strategy for executing a query—which indexes to use, join order, scan types",
+      "C": "A backup schedule",
+      "D": "A user permission list"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Execution plan: database's roadmap for query execution. Shows: table scans vs index seeks, join algorithms, sort operations, estimated costs. Use EXPLAIN/EXPLAIN ANALYZE to view. Essential for optimization.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the difference between a table scan and an index seek?",
+    "options": {
+      "A": "They are the same",
+      "B": "Table scan reads all rows; index seek uses index to directly access specific rows",
+      "C": "Index seek is always slower",
+      "D": "Table scan uses less memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Table scan: O(n), reads every row. Index seek: O(log n), uses B-tree index to find rows directly. For selective queries (few rows), index seek is much faster. For large result sets, scan might be better.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a covering index?",
+    "options": {
+      "A": "An index that covers the table",
+      "B": "An index that contains all columns needed by a query, avoiding table lookups",
+      "C": "A backup index",
+      "D": "An encrypted index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Covering index: includes all columns the query needs. Query satisfied entirely from index—no table access. Example: INDEX(user_id, name, email) covers SELECT name, email WHERE user_id=1.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "Why is SELECT * often bad for performance?",
+    "options": {
+      "A": "It's not bad",
+      "B": "Fetches unnecessary columns, prevents covering indexes, increases I/O and network transfer",
+      "C": "It's too fast",
+      "D": "It causes syntax errors"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SELECT * problems: fetches unneeded data, can't use covering indexes, more I/O, more network transfer, breaks if schema changes. Always select only needed columns.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the N+1 query problem?",
+    "options": {
+      "A": "A mathematical formula",
+      "B": "Fetching a list (1 query) then fetching related data for each item (N queries) instead of using joins",
+      "C": "Having too many indexes",
+      "D": "A network issue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "N+1: SELECT users (1 query), then for each user SELECT orders WHERE user_id=X (N queries). Fix: JOIN in single query, or use IN clause. Common ORM pitfall. Devastating at scale.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What does EXPLAIN ANALYZE do?",
+    "options": {
+      "A": "Deletes the query",
+      "B": "Executes the query and shows actual execution statistics vs estimates",
+      "C": "Creates an index",
+      "D": "Backs up the database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "EXPLAIN: shows planned execution. EXPLAIN ANALYZE: actually runs query, shows real times, row counts vs estimates. Reveals: bad estimates, slow operations, missing indexes. Essential debugging tool.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is query caching?",
+    "options": {
+      "A": "Storing queries in files",
+      "B": "Storing query results so identical queries return cached results without re-execution",
+      "C": "Compressing queries",
+      "D": "Encrypting queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Query cache: store result sets keyed by query text. Identical query hits cache. Challenges: cache invalidation on writes, memory usage, doesn't help unique queries. Often disabled in modern systems.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "Why might adding an index make writes slower?",
+    "options": {
+      "A": "Indexes don't affect writes",
+      "B": "Every INSERT/UPDATE/DELETE must also update all relevant indexes",
+      "C": "Indexes compress data",
+      "D": "Indexes are read-only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Index overhead: each write must update table AND all indexes. More indexes = slower writes. Balance: add indexes for read performance, but don't over-index. Profile your workload.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is predicate pushdown?",
+    "options": {
+      "A": "A wrestling move",
+      "B": "Moving filter conditions closer to data source to reduce data transferred between operations",
+      "C": "A backup technique",
+      "D": "An encryption method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Predicate pushdown: apply WHERE filters as early as possible. Instead of: scan all → join → filter, do: filter → join. Reduces intermediate data. Optimizer does this automatically when possible.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the impact of functions on indexed columns in WHERE clauses?",
+    "options": {
+      "A": "No impact",
+      "B": "Prevents index usage—WHERE YEAR(date_col) = 2024 can't use index on date_col",
+      "C": "Makes queries faster",
+      "D": "Creates new indexes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Functions on columns prevent index use: WHERE UPPER(name) = 'JOHN' scans table. Fix: WHERE name = 'john' (if case-insensitive collation), or create functional index. Keep indexed columns 'naked'.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "A query joining 5 tables is slow. What's the first optimization step?",
+    "options": {
+      "A": "Add more RAM",
+      "B": "Run EXPLAIN to understand the execution plan and identify bottlenecks",
+      "C": "Delete some tables",
+      "D": "Rewrite in a different language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "First step: understand what's happening. EXPLAIN shows: join order, index usage, row estimates. Identify: table scans (need index?), bad join order, incorrect estimates. Then optimize specifically.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  }
+]

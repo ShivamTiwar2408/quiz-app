@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the Publish/Subscribe (Pub/Sub) pattern?",
+    "options": {
+      "A": "Direct point-to-point communication between services",
+      "B": "Publishers send messages to topics; subscribers receive messages from topics they're interested in",
+      "C": "Synchronous request-response communication",
+      "D": "Database replication pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pub/Sub decouples publishers from subscribers through topics/channels. Publishers don't know who receives messages; subscribers don't know who sends them. This enables loose coupling and scalability.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which benefits does Pub/Sub provide? (Choose all that apply)",
+    "options": {
+      "A": "Loose coupling between services",
+      "B": "Guaranteed message ordering",
+      "C": "Easy addition of new subscribers without changing publishers",
+      "D": "Scalability through parallel message processing"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Pub/Sub provides loose coupling, easy extensibility (add subscribers anytime), and scalability. Message ordering is NOT guaranteed by default—messages may arrive out of order across subscribers.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How does Pub/Sub differ from a message queue?",
+    "options": {
+      "A": "Pub/Sub delivers messages to all subscribers; queues deliver to one consumer",
+      "B": "Pub/Sub is synchronous; queues are asynchronous",
+      "C": "Pub/Sub doesn't persist messages",
+      "D": "There is no difference"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Key difference: Pub/Sub broadcasts to ALL subscribers (fan-out). Message queues deliver each message to ONE consumer (competing consumers). Both are asynchronous and can persist messages.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A microservices system uses Pub/Sub for order events. The 'order.created' event needs to trigger inventory update, email notification, and analytics. How many subscribers should exist?",
+    "options": {
+      "A": "1 subscriber handling all three tasks",
+      "B": "3 subscribers, one for each concern",
+      "C": "0 subscribers—use direct API calls",
+      "D": "Depends on message volume only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Each concern (inventory, email, analytics) should be a separate subscriber. This follows single responsibility, allows independent scaling, and prevents one slow handler from blocking others.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a 'topic' in Pub/Sub systems?",
+    "options": {
+      "A": "A database table",
+      "B": "A named channel where publishers send messages and subscribers listen",
+      "C": "A message queue",
+      "D": "A subscriber group"
+    },
+    "correct_answers": ["B"],
+    "explanation": "A topic is a named channel/category for messages. Publishers send to topics; subscribers subscribe to topics of interest. Topics enable message routing without direct publisher-subscriber coupling.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What happens to a Pub/Sub message if no subscribers exist for a topic?",
+    "options": {
+      "A": "Message is queued until a subscriber appears",
+      "B": "Behavior depends on implementation—may be discarded or stored",
+      "C": "Publisher receives an error",
+      "D": "Message is returned to publisher"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Behavior varies: some systems discard messages with no subscribers, others store them. Kafka retains messages regardless of subscribers. Google Pub/Sub requires at least one subscription to retain messages.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which challenges exist with Pub/Sub? (Choose all that apply)",
+    "options": {
+      "A": "Message ordering across subscribers",
+      "B": "Debugging message flow across services",
+      "C": "Handling subscriber failures",
+      "D": "Tight coupling between services"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Pub/Sub challenges include: ordering (messages may arrive out of order), debugging (tracing messages across services is complex), and failure handling (what if subscriber is down?). It reduces coupling, not increases it.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A subscriber processes messages slowly, causing backlog. What pattern helps?",
+    "options": {
+      "A": "Delete slow subscriber",
+      "B": "Consumer groups with multiple instances sharing the load",
+      "C": "Increase publisher rate",
+      "D": "Reduce topic count"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consumer groups allow multiple instances of a subscriber to share message processing. Each message goes to one instance in the group, enabling horizontal scaling of slow consumers.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: In Pub/Sub, publishers must know about all subscribers.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Publishers are completely decoupled from subscribers—they only know about topics. New subscribers can be added without any publisher changes. This is a core benefit of the Pub/Sub pattern.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is 'fan-out' in Pub/Sub?",
+    "options": {
+      "A": "Reducing message size",
+      "B": "One message being delivered to multiple subscribers",
+      "C": "Combining multiple messages",
+      "D": "Load balancing publishers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fan-out means one published message is delivered to all subscribers of that topic. If 5 services subscribe to 'order.created', each receives a copy. This enables event-driven architectures.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A Pub/Sub system needs to ensure each subscriber processes messages in the order they were published. Which approach helps?",
+    "options": {
+      "A": "Use multiple topics",
+      "B": "Partition by key and ensure single consumer per partition",
+      "C": "Increase subscriber count",
+      "D": "Ordering is impossible in Pub/Sub"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partitioning by key (e.g., order_id) ensures related messages go to the same partition. With one consumer per partition, ordering is maintained for that key. Kafka uses this approach.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which systems implement the Pub/Sub pattern? (Choose all that apply)",
+    "options": {
+      "A": "Apache Kafka",
+      "B": "Google Cloud Pub/Sub",
+      "C": "Redis Pub/Sub",
+      "D": "Amazon SNS"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "All listed are Pub/Sub implementations: Kafka (distributed log), Google Pub/Sub (managed service), Redis Pub/Sub (in-memory, no persistence), SNS (AWS managed). Each has different guarantees and features.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  }
+]

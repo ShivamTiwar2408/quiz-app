@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is distributed caching?",
+    "options": {
+      "A": "Caching on a single powerful server",
+      "B": "Spreading cache data across multiple nodes for scalability and availability",
+      "C": "Distributing cache to end users",
+      "D": "Caching distributed systems documentation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Distributed caching spreads data across multiple cache nodes. This provides horizontal scalability (more nodes = more capacity), fault tolerance (node failure doesn't lose all data), and reduced latency (data closer to consumers).",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "Which are popular distributed caching solutions? (Choose all that apply)",
+    "options": {
+      "A": "Redis Cluster",
+      "B": "Memcached",
+      "C": "Apache Ignite",
+      "D": "MySQL"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Redis Cluster, Memcached, and Apache Ignite are distributed caching solutions. MySQL is a relational database, not a cache (though it has query cache). Hazelcast and Ehcache are other examples.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "How does consistent hashing help in distributed caching?",
+    "options": {
+      "A": "It encrypts cache data",
+      "B": "It minimizes data redistribution when cache nodes are added or removed",
+      "C": "It makes cache faster",
+      "D": "It compresses cache entries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consistent hashing maps keys to nodes such that adding/removing a node only affects a small portion of keys. Without it, adding a node could invalidate most of the cache (modulo hashing problem).",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A distributed cache has 5 nodes. One node fails. What happens to its data?",
+    "options": {
+      "A": "All cache data is lost",
+      "B": "Data on that node is lost; requests for those keys become cache misses",
+      "C": "Data automatically moves to other nodes",
+      "D": "The entire cache stops working"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Without replication, data on the failed node is lost. Those keys become cache misses until re-cached. With replication (Redis Cluster), replicas can serve the data. Design for cache misses being acceptable.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is cache replication in distributed systems?",
+    "options": {
+      "A": "Copying cache code to multiple servers",
+      "B": "Storing copies of cache data on multiple nodes for fault tolerance",
+      "C": "Replicating cache configuration",
+      "D": "Duplicating cache requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache replication stores data copies on multiple nodes. If one fails, replicas serve requests. Tradeoff: more memory usage, write overhead, but higher availability. Redis Cluster supports replica nodes.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is the difference between Redis and Memcached for distributed caching?",
+    "options": {
+      "A": "They are identical",
+      "B": "Redis supports data structures and persistence; Memcached is simpler key-value only",
+      "C": "Memcached is faster in all cases",
+      "D": "Redis doesn't support clustering"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis: rich data structures (lists, sets, hashes), persistence, pub/sub, Lua scripting. Memcached: simple key-value, multi-threaded (better for simple caching at scale). Choose based on feature needs.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "How should cache clients handle a cache node failure?",
+    "options": {
+      "A": "Crash and restart",
+      "B": "Retry with exponential backoff, fall back to database",
+      "C": "Wait indefinitely for recovery",
+      "D": "Delete all local data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Clients should handle cache failures gracefully: retry briefly, then fall back to the database. Cache is an optimization, not a requirement. Circuit breakers can prevent cascading failures.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "True or False: In a distributed cache, all nodes must have identical data.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Distributed caches typically partition data—each node holds a subset of keys (sharding). Only with full replication would all nodes have identical data, which limits scalability.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'cache coherence' in distributed caching?",
+    "options": {
+      "A": "Cache entries being well-organized",
+      "B": "Ensuring all cache nodes have consistent view of data",
+      "C": "Cache performance optimization",
+      "D": "Cache security protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache coherence ensures that when data is updated, all caches reflect the change. In distributed systems, this is challenging due to network delays. Strategies include invalidation broadcasts and versioning.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "A microservices architecture has services in multiple regions. How should distributed caching be designed?",
+    "options": {
+      "A": "Single global cache cluster",
+      "B": "Regional cache clusters with cross-region replication for shared data",
+      "C": "No caching in distributed systems",
+      "D": "Cache only in one region"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Regional caches provide low latency. Cross-region replication (or invalidation) keeps shared data consistent. Global cache adds latency. Design depends on consistency requirements and data locality.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'hot key' problem in distributed caching?",
+    "options": {
+      "A": "Cache keys being too long",
+      "B": "One key receiving disproportionate traffic, overloading its node",
+      "C": "Cache entries expiring too quickly",
+      "D": "Keys containing sensitive data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Hot keys (e.g., viral content) concentrate traffic on one node, creating a bottleneck. Solutions: local caching, key replication across nodes, or splitting hot keys into multiple sub-keys.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "Which factors affect distributed cache performance? (Choose all that apply)",
+    "options": {
+      "A": "Network latency between app and cache",
+      "B": "Serialization/deserialization overhead",
+      "C": "Cache node memory and CPU",
+      "D": "Color of the server rack"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Network latency affects round-trip time. Serialization adds CPU overhead (use efficient formats). Node resources limit throughput. Physical appearance has no impact on performance.",
+    "difficulty": "easy",
+    "category": "caching"
+  }
+]

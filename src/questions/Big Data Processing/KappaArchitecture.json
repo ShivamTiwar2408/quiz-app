@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is Kappa Architecture?",
+    "options": {
+      "A": "A Greek letter system",
+      "B": "A data processing architecture using only stream processing, eliminating the batch layer",
+      "C": "A database design",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa Architecture (Jay Kreps, LinkedIn): simplification of Lambda. Stream processing only. Reprocess by replaying from log. Single codebase. Treats everything as a stream, including historical data.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What problem does Kappa Architecture solve compared to Lambda?",
+    "options": {
+      "A": "Faster processing",
+      "B": "Eliminates the need to maintain two separate codebases for batch and stream processing",
+      "C": "Better storage",
+      "D": "More accurate results"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa solves: Lambda's dual codebase problem. Same logic for real-time and reprocessing. Simpler maintenance. One system to debug, test, deploy. Trade-off: requires robust stream processing and log retention.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does Kappa Architecture handle historical reprocessing?",
+    "options": {
+      "A": "Uses batch processing",
+      "B": "Replays events from a retained log (like Kafka) through the stream processor",
+      "C": "Cannot reprocess",
+      "D": "Manual data entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Reprocessing in Kappa: retain all events in log (Kafka with long retention). To reprocess: start new consumer from beginning, replay all events through same streaming logic. Output to new table, swap when done.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the key infrastructure requirement for Kappa Architecture?",
+    "options": {
+      "A": "Large batch cluster",
+      "B": "A durable, replayable log system like Apache Kafka with sufficient retention",
+      "C": "Relational database",
+      "D": "File system only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa requires: durable log with long retention. Kafka: can retain data for days, weeks, or indefinitely. Log is the source of truth. Without replayable log, can't reprocess. Storage cost consideration.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "When is Kappa Architecture preferred over Lambda?",
+    "options": {
+      "A": "Always",
+      "B": "When stream processing can handle all use cases and you want simpler architecture",
+      "C": "When batch is faster",
+      "D": "When you have no streaming data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Prefer Kappa: streaming can meet latency/accuracy needs, want single codebase, have robust stream processing (Flink, Kafka Streams). Not suitable: complex batch-only algorithms, very long historical analysis.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the role of Apache Kafka in Kappa Architecture?",
+    "options": {
+      "A": "Database",
+      "B": "The immutable log that stores all events and enables replay for reprocessing",
+      "C": "Visualization tool",
+      "D": "Load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kafka in Kappa: central nervous system. Stores all events durably. Enables: real-time consumption, replay from any offset, multiple consumers. Log retention = how far back you can reprocess.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does Kappa handle late-arriving data?",
+    "options": {
+      "A": "Discards it",
+      "B": "Stream processor handles it with watermarks and allowed lateness, or triggers reprocessing",
+      "C": "Requires batch layer",
+      "D": "Manual correction"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Late data in Kappa: stream processors (Flink) support watermarks, allowed lateness, side outputs for late data. If needed, reprocess affected time window by replaying from log. Same code handles both.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the reprocessing strategy in Kappa called?",
+    "options": {
+      "A": "Batch processing",
+      "B": "Log replay—starting a new stream job from the beginning of the retained log",
+      "C": "Cache refresh",
+      "D": "Database restore"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log replay: deploy new version of streaming job, consume from log beginning, write to new output table. When caught up, switch traffic to new table. Old table can be deleted. Blue-green for data.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a limitation of Kappa Architecture?",
+    "options": {
+      "A": "Too simple",
+      "B": "Reprocessing large historical data can be slow and resource-intensive",
+      "C": "Cannot handle real-time",
+      "D": "Requires two codebases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa limitations: reprocessing years of data through streaming = slow (vs optimized batch). Storage cost for long log retention. Some algorithms better suited for batch. Not always simpler in practice.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Which streaming frameworks are commonly used in Kappa Architecture?",
+    "options": {
+      "A": "Hadoop MapReduce",
+      "B": "Apache Flink, Kafka Streams, Apache Spark Structured Streaming",
+      "C": "MySQL",
+      "D": "Nginx"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kappa streaming frameworks: Flink (true streaming, exactly-once), Kafka Streams (lightweight, Kafka-native), Spark Structured Streaming (micro-batch). All support: stateful processing, event time, reprocessing.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does Kappa Architecture handle schema evolution?",
+    "options": {
+      "A": "Cannot handle schema changes",
+      "B": "Through schema registry and compatible schema changes, with reprocessing for breaking changes",
+      "C": "Automatic migration",
+      "D": "Manual data conversion"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Schema evolution: use schema registry (Confluent). Backward/forward compatible changes: handled automatically. Breaking changes: reprocess from log with new schema. Log contains raw events, can reinterpret.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your team wants to simplify a Lambda Architecture system. What's the migration path to Kappa?",
+    "options": {
+      "A": "Delete batch layer immediately",
+      "B": "Ensure stream processing can handle all use cases, extend log retention, then phase out batch layer",
+      "C": "Add more batch jobs",
+      "D": "Keep both forever"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lambda to Kappa migration: 1) Verify streaming handles accuracy requirements, 2) Extend Kafka retention, 3) Implement reprocessing via replay, 4) Run both in parallel, 5) Phase out batch when confident.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  }
+]

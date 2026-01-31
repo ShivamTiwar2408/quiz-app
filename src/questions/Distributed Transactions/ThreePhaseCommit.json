@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is Three-Phase Commit (3PC)?",
+    "options": {
+      "A": "A backup strategy",
+      "B": "An extension of 2PC that adds a pre-commit phase to reduce blocking",
+      "C": "A database index",
+      "D": "A caching pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC: adds 'pre-commit' phase between prepare and commit. Reduces blocking: participants can make progress even if coordinator fails. Phases: CanCommit → PreCommit → DoCommit.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What problem does 3PC solve that 2PC doesn't?",
+    "options": {
+      "A": "Performance",
+      "B": "The blocking problem—participants can timeout and make progress if coordinator fails",
+      "C": "Security",
+      "D": "Storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "2PC blocking: if coordinator fails after prepare, participants stuck. 3PC: pre-commit phase ensures all participants know the decision before commit. On timeout, participants can safely abort or commit.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What are the three phases in 3PC?",
+    "options": {
+      "A": "Read, Write, Commit",
+      "B": "CanCommit (voting), PreCommit (prepare to commit), DoCommit (actual commit)",
+      "C": "Lock, Process, Unlock",
+      "D": "Start, Middle, End"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC phases: 1) CanCommit: coordinator asks if participants can commit. 2) PreCommit: if all yes, prepare to commit. 3) DoCommit: actually commit. Pre-commit ensures everyone knows decision before committing.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Why is 3PC rarely used in practice?",
+    "options": {
+      "A": "It's too fast",
+      "B": "Higher latency (3 round trips), doesn't handle network partitions well, complexity",
+      "C": "It's too simple",
+      "D": "It's free"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC drawbacks: 3 round trips (vs 2 for 2PC), still fails under network partitions (split-brain possible), added complexity. In practice, other solutions (Paxos, Raft, Saga) preferred.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "How does the pre-commit phase help with blocking?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "All participants know the decision before commit, so they can safely proceed on coordinator failure",
+      "C": "It speeds up commits",
+      "D": "It reduces storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pre-commit key insight: if participant received pre-commit, it knows coordinator decided to commit. On timeout, can safely commit. If no pre-commit received, can safely abort. Eliminates uncertainty.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What happens in 3PC if a participant times out during pre-commit?",
+    "options": {
+      "A": "System crashes",
+      "B": "Participant can abort—if it didn't receive pre-commit, coordinator must have decided to abort",
+      "C": "Participant commits anyway",
+      "D": "Nothing happens"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Timeout during pre-commit: participant hasn't received pre-commit, so coordinator either failed or decided to abort. Safe to abort. This is the non-blocking property 3PC provides.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Can 3PC handle network partitions?",
+    "options": {
+      "A": "Yes, perfectly",
+      "B": "No—network partitions can still cause inconsistency (split-brain)",
+      "C": "Only with special hardware",
+      "D": "Only in certain configurations"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC partition problem: one partition might commit (received pre-commit), another might abort (timed out). Split-brain. 3PC assumes fail-stop (crash), not network partitions. Real networks have partitions.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the latency overhead of 3PC compared to 2PC?",
+    "options": {
+      "A": "Same latency",
+      "B": "One additional round trip (3 phases vs 2 phases)",
+      "C": "Half the latency",
+      "D": "No network communication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC latency: 3 round trips minimum (CanCommit, PreCommit, DoCommit) vs 2PC's 2 round trips. 50% more latency. In distributed systems where latency matters, this is significant.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the relationship between 3PC and consensus algorithms like Paxos?",
+    "options": {
+      "A": "They are the same",
+      "B": "Paxos handles partitions correctly; 3PC doesn't—Paxos is preferred for real systems",
+      "C": "3PC is better",
+      "D": "They are unrelated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Paxos/Raft: handle network partitions correctly, provide consensus. 3PC: non-blocking but fails under partitions. Modern systems use Paxos/Raft for coordination, not 3PC. 3PC is mostly academic.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "In what scenario would 3PC work correctly?",
+    "options": {
+      "A": "Any network condition",
+      "B": "Fail-stop model—nodes crash but network is reliable (no partitions)",
+      "C": "Only with two nodes",
+      "D": "Never works"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC assumes fail-stop: nodes either work or crash completely, network delivers messages. In this model, 3PC is non-blocking. Real networks have partitions, message loss—3PC assumptions don't hold.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the main advantage of 3PC over 2PC?",
+    "options": {
+      "A": "Faster",
+      "B": "Non-blocking—participants can make progress without coordinator in fail-stop model",
+      "C": "Uses less memory",
+      "D": "Simpler to implement"
+    },
+    "correct_answers": ["B"],
+    "explanation": "3PC advantage: non-blocking in fail-stop model. Participants can timeout and decide (abort or commit) without waiting for coordinator forever. 2PC can block indefinitely on coordinator failure.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Why do modern distributed databases not use 3PC?",
+    "options": {
+      "A": "It's too new",
+      "B": "Network partitions are common; 3PC doesn't handle them; Paxos/Raft are better",
+      "C": "It's too fast",
+      "D": "It's patented"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Modern systems face network partitions. 3PC fails under partitions (split-brain). Paxos/Raft: proven correct under partitions, widely implemented. Spanner uses Paxos, CockroachDB uses Raft. 3PC is historical.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A distributed cache uses modulo hashing (hash(key) % N) with 4 nodes. If a 5th node is added, approximately what percentage of keys need to be remapped?",
+    "options": {
+      "A": "20%",
+      "B": "25%",
+      "C": "80%",
+      "D": "100%"
+    },
+    "correct_answers": ["C"],
+    "explanation": "With modulo hashing, adding a node changes N, causing most keys to hash to different nodes. Approximately (N)/(N+1) = 4/5 = 80% of keys are remapped. This is why modulo hashing scales poorly.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "In consistent hashing, what is the primary purpose of virtual nodes (vnodes)?",
+    "options": {
+      "A": "To increase the total storage capacity",
+      "B": "To achieve more uniform data distribution",
+      "C": "To reduce network latency",
+      "D": "To enable data replication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Virtual nodes give each physical node multiple positions on the hash ring, smoothing out distribution imbalances. Without vnodes, nodes with unlucky hash positions might receive disproportionate load.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "A consistent hashing ring has nodes A, B, C, D. Node B fails. Which statement is true about key redistribution?",
+    "options": {
+      "A": "All keys are redistributed across A, C, and D",
+      "B": "Only keys that were on B move to the next node on the ring",
+      "C": "Keys are randomly redistributed",
+      "D": "No redistribution occurs until manual intervention"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In consistent hashing, only keys belonging to the failed node move—they go to the next node clockwise on the ring. Other nodes' keys are unaffected, minimizing redistribution.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "Which problems does consistent hashing solve? (Choose all that apply)",
+    "options": {
+      "A": "Minimizing key redistribution when nodes change",
+      "B": "Guaranteeing perfectly equal data distribution",
+      "C": "Enabling horizontal scaling of distributed caches",
+      "D": "Eliminating the need for a central coordinator"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Consistent hashing minimizes remapping, enables scaling, and allows decentralized key location. It doesn't guarantee perfect distribution—that's why virtual nodes are used to improve uniformity.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "A distributed database uses consistent hashing with a replication factor of 3. How are replicas typically placed?",
+    "options": {
+      "A": "On three random nodes",
+      "B": "On the three nodes closest to the key's hash on the ring",
+      "C": "On the primary node and two designated backup nodes",
+      "D": "Replicas are stored on the same node as the primary"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Replicas are placed on consecutive nodes clockwise from the key's position on the ring. This ensures replicas are deterministically located and spread across different nodes for fault tolerance.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "What happens in consistent hashing when a new node joins the ring?",
+    "options": {
+      "A": "All existing data is rebalanced across all nodes",
+      "B": "The new node takes over a portion of keys from its neighbors",
+      "C": "No data movement occurs until explicitly triggered",
+      "D": "The ring must be rebuilt from scratch"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The new node takes responsibility for keys between itself and its predecessor on the ring—only those keys move. Other nodes are unaffected, enabling smooth scaling.",
+    "difficulty": "easy",
+    "category": "data distribution"
+  },
+  {
+    "question": "A system uses consistent hashing with 100 virtual nodes per physical node. If there are 10 physical nodes, how many points are on the hash ring?",
+    "options": {
+      "A": "10",
+      "B": "100",
+      "C": "1,000",
+      "D": "110"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Each physical node has 100 virtual nodes, so 10 × 100 = 1,000 points on the ring. More points generally means better distribution uniformity.",
+    "difficulty": "easy",
+    "category": "data distribution"
+  },
+  {
+    "question": "Which is a disadvantage of using too many virtual nodes per physical node?",
+    "options": {
+      "A": "Worse data distribution",
+      "B": "Increased memory overhead for ring metadata",
+      "C": "Slower hash computation",
+      "D": "Reduced fault tolerance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Each virtual node requires storage in the ring metadata. With many vnodes across many physical nodes, the ring structure consumes significant memory and takes longer to traverse.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "True or False: Consistent hashing guarantees that data is evenly distributed across all nodes.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Basic consistent hashing can result in uneven distribution due to random node placement on the ring. Virtual nodes improve uniformity but don't guarantee perfect balance. Hot keys can still cause imbalance.",
+    "difficulty": "easy",
+    "category": "data distribution"
+  },
+  {
+    "question": "A CDN uses consistent hashing to route requests to edge servers. A server fails and is removed. What is the impact on cache hit rate?",
+    "options": {
+      "A": "Cache hit rate drops to zero temporarily",
+      "B": "Only requests that would have gone to the failed server experience cache misses",
+      "C": "All cached content must be re-fetched",
+      "D": "Cache hit rate is unaffected"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Only keys that were assigned to the failed server are affected—they'll miss cache on the new server until re-cached. Other servers retain their cached content, minimizing overall impact.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "Which systems commonly use consistent hashing? (Choose all that apply)",
+    "options": {
+      "A": "Amazon DynamoDB",
+      "B": "Apache Cassandra",
+      "C": "Traditional relational databases",
+      "D": "Memcached with ketama"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "DynamoDB, Cassandra, and Memcached (ketama algorithm) use consistent hashing for data distribution. Traditional RDBMS typically don't use consistent hashing—they use B-trees and aren't designed for horizontal partitioning.",
+    "difficulty": "medium",
+    "category": "data distribution"
+  },
+  {
+    "question": "In consistent hashing, what determines which node is responsible for a given key?",
+    "options": {
+      "A": "The node with the smallest hash value",
+      "B": "The first node encountered clockwise from the key's hash position",
+      "C": "A central coordinator assigns keys to nodes",
+      "D": "The node that has the most available storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Keys are assigned to the first node found when traversing clockwise from the key's hash position on the ring. This deterministic assignment allows any client to locate data without central coordination.",
+    "difficulty": "easy",
+    "category": "data distribution"
+  }
+]

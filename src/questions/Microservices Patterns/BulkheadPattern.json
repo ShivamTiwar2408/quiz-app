@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the Bulkhead pattern?",
+    "options": {
+      "A": "A ship design",
+      "B": "Isolating components so failure in one doesn't cascade to others, like compartments in a ship",
+      "C": "A database pattern",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bulkhead pattern: isolate resources (thread pools, connections, instances) per component. If one component fails or is slow, it doesn't exhaust shared resources. Named after ship compartments that prevent total flooding.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What problem does the Bulkhead pattern solve?",
+    "options": {
+      "A": "Slow databases",
+      "B": "Preventing one slow/failing dependency from consuming all resources and affecting other operations",
+      "C": "Data encryption",
+      "D": "Load balancing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Problem: shared thread pool, one slow service consumes all threads, everything fails. Bulkhead: separate pools per dependency. Slow service exhausts only its pool, others continue working. Fault isolation.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How can you implement the Bulkhead pattern?",
+    "options": {
+      "A": "Separate thread pools per dependency",
+      "B": "Separate connection pools per service",
+      "C": "Separate service instances for different workloads",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Bulkhead implementations: thread pool isolation (Hystrix-style), connection pool per dependency, semaphore limits, separate instances/pods for critical vs non-critical traffic. Multiple levels of isolation.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is thread pool isolation in the Bulkhead pattern?",
+    "options": {
+      "A": "Using one thread for everything",
+      "B": "Dedicating separate thread pools to different dependencies or operations",
+      "C": "Removing all threads",
+      "D": "Sharing threads across services"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Thread pool isolation: each dependency gets its own thread pool. Service A: 10 threads. Service B: 20 threads. If A is slow, only its 10 threads blocked. B continues with its 20. Prevents cascade.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is semaphore isolation in the Bulkhead pattern?",
+    "options": {
+      "A": "Using flags",
+      "B": "Limiting concurrent calls to a dependency using a counter, without dedicated threads",
+      "C": "A type of lock",
+      "D": "A database feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Semaphore isolation: limit concurrent requests (e.g., max 10 to Service A). Lighter than thread pools (no extra threads). Requests use calling thread but are limited. Good for non-blocking I/O.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How does the Bulkhead pattern relate to the Circuit Breaker pattern?",
+    "options": {
+      "A": "They are the same",
+      "B": "Complementary—Bulkhead isolates resources, Circuit Breaker fails fast on detected failures",
+      "C": "They conflict",
+      "D": "Bulkhead replaces Circuit Breaker"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Complementary patterns: Bulkhead prevents resource exhaustion (isolation). Circuit Breaker detects failures and fails fast (protection). Use together: bulkhead limits blast radius, circuit breaker prevents repeated failures.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the tradeoff of using thread pool isolation?",
+    "options": {
+      "A": "No tradeoffs",
+      "B": "Additional overhead from thread context switching and managing multiple pools",
+      "C": "Less isolation",
+      "D": "Faster performance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Thread pool tradeoffs: overhead (thread creation, context switching), complexity (sizing pools), resource usage (threads consume memory). Semaphore isolation is lighter but provides less isolation.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How do you size bulkhead pools?",
+    "options": {
+      "A": "Always use maximum",
+      "B": "Based on expected concurrency, latency, and acceptable queue depth for each dependency",
+      "C": "Always use 1",
+      "D": "Random sizing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pool sizing: consider peak concurrency, dependency latency, acceptable wait time. Formula: pool_size = peak_rps * latency_seconds. Add queue for bursts. Monitor and adjust. Too small = rejected requests, too large = wasted resources.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What happens when a bulkhead pool is exhausted?",
+    "options": {
+      "A": "System crashes",
+      "B": "New requests are rejected or queued, protecting the system from overload",
+      "C": "Requests wait forever",
+      "D": "Pool automatically grows"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pool exhaustion: requests rejected immediately (fail fast) or queued with timeout. Better than: consuming all resources, cascading failures. Caller handles rejection gracefully (fallback, retry later).",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Which library popularized the Bulkhead pattern in Java?",
+    "options": {
+      "A": "Spring Boot",
+      "B": "Netflix Hystrix (now Resilience4j)",
+      "C": "Apache Commons",
+      "D": "JUnit"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Hystrix: Netflix's fault tolerance library, popularized bulkhead (thread pool isolation), circuit breaker. Now in maintenance mode. Resilience4j: modern alternative with bulkhead, circuit breaker, rate limiter.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is infrastructure-level bulkheading?",
+    "options": {
+      "A": "Building walls",
+      "B": "Separating workloads into different instances, pods, or clusters",
+      "C": "Database sharding",
+      "D": "Network segmentation only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Infrastructure bulkhead: separate deployments for different traffic types. Critical API: dedicated pods. Batch jobs: separate cluster. Prevents: noisy neighbor, batch jobs affecting real-time traffic. Kubernetes: namespaces, node pools.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "A service calls 3 external APIs. One API becomes slow, causing timeouts. All requests start failing. What pattern helps?",
+    "options": {
+      "A": "Caching",
+      "B": "Bulkhead—isolate each API call with separate thread pools or semaphores",
+      "C": "Load balancing",
+      "D": "Database indexing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Classic bulkhead scenario: slow API consumes shared resources. Solution: separate pool per API. Slow API exhausts only its pool. Other APIs continue working. Combine with circuit breaker for complete protection.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  }
+]

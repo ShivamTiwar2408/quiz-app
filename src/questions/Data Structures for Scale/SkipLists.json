@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a skip list?",
+    "options": {
+      "A": "A list that skips elements",
+      "B": "A probabilistic data structure with multiple levels of linked lists for O(log n) search",
+      "C": "A compressed array",
+      "D": "A hash table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip list: layered linked lists. Bottom layer: all elements. Upper layers: 'express lanes' skipping elements. Probabilistically balanced. Invented by William Pugh (1989). Used in Redis, LevelDB.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does skip list search work?",
+    "options": {
+      "A": "Linear scan from start",
+      "B": "Start at top-left, move right until overshooting, drop down one level, repeat",
+      "C": "Binary search",
+      "D": "Hash lookup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Search algorithm: 1) Start at top-left, 2) Move right while next < target, 3) When next > target or null, drop down one level, 4) Repeat until found or bottom level exhausted. Average O(log n).",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How is the level of a new node determined in a skip list?",
+    "options": {
+      "A": "Always level 1",
+      "B": "Randomly—typically flip a coin repeatedly, each heads adds a level",
+      "C": "Based on value",
+      "D": "Alphabetically"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Level determination: probabilistic. Flip coin: heads = add level, tails = stop. P(level k) = (1/2)^k. Results in ~50% at level 1, ~25% at level 2, etc. Self-balancing without rotations.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the expected space complexity of a skip list with n elements?",
+    "options": {
+      "A": "O(1)",
+      "B": "O(n)—each element appears in ~2 levels on average",
+      "C": "O(n²)",
+      "D": "O(log n)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Space: each element in 1 + 1/2 + 1/4 + ... ≈ 2 levels on average. Total pointers: ~2n. Space complexity: O(n). Constant factor overhead vs simple linked list.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Skip list vs balanced BST: what's the main advantage of skip list?",
+    "options": {
+      "A": "Better worst case",
+      "B": "Simpler implementation—no complex rotations needed for balancing",
+      "C": "Less memory",
+      "D": "Faster search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip list advantages: no rotations (AVL/Red-Black complexity), simpler concurrent implementation, cache-friendly sequential access. Trade-off: probabilistic vs guaranteed balance, slightly more memory.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "Why is Redis sorted set implemented using skip lists?",
+    "options": {
+      "A": "Historical accident",
+      "B": "Skip lists allow efficient range queries and are simpler to implement correctly for concurrent access",
+      "C": "Skip lists use less memory",
+      "D": "Skip lists are faster than all alternatives"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis choice: skip lists support ZRANGE (range queries) efficiently, simpler than balanced trees, easier to reason about for concurrent modifications. Combined with hash table for O(1) lookups by member.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the time complexity of inserting into a skip list?",
+    "options": {
+      "A": "O(1)",
+      "B": "O(log n) expected",
+      "C": "O(n)",
+      "D": "O(n log n)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Insert: 1) Search for position O(log n), 2) Determine random level O(1), 3) Update pointers at each level O(log n). Total: O(log n) expected. Worst case O(n) but extremely unlikely.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How do skip lists handle range queries efficiently?",
+    "options": {
+      "A": "They don't support range queries",
+      "B": "Find start position in O(log n), then traverse bottom level sequentially",
+      "C": "Scan entire list",
+      "D": "Use hash table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Range query: 1) Search for range start O(log n), 2) Follow bottom-level pointers until range end. Total: O(log n + k) where k is result size. Efficient for sorted range retrieval.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the maximum level typically used in a skip list?",
+    "options": {
+      "A": "2 levels",
+      "B": "log₂(n) or a fixed maximum like 32",
+      "C": "Unlimited",
+      "D": "Always 10"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Max level: typically log₂(n) or fixed cap (16-32). Higher levels rarely used. Cap prevents pathological cases. With p=0.5 and max=32, supports billions of elements efficiently.",
+    "difficulty": "medium",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "How does concurrent access work better in skip lists than balanced trees?",
+    "options": {
+      "A": "It doesn't",
+      "B": "Skip list modifications are localized—no global rebalancing that could conflict with other operations",
+      "C": "Skip lists use locks",
+      "D": "Skip lists are single-threaded only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Concurrency advantage: insert/delete only modifies local pointers. No rotations affecting distant nodes. Lock-free implementations possible. Balanced trees: rotations can propagate, harder to make concurrent.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "What is the probability parameter p in skip lists and how does it affect performance?",
+    "options": {
+      "A": "Always 0.5",
+      "B": "Probability of promoting to next level; p=0.5 is common, lower p = less memory but slower search",
+      "C": "Probability of deletion",
+      "D": "Has no effect"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Parameter p: probability of level promotion. p=0.5: ~2n pointers, optimal search. p=0.25: ~1.33n pointers, slightly slower. Trade-off: memory vs speed. p=0.5 most common.",
+    "difficulty": "hard",
+    "category": "data-structures-for-scale"
+  },
+  {
+    "question": "You need an ordered data structure supporting fast insert, delete, search, and range queries. Which would you choose?",
+    "options": {
+      "A": "Hash table",
+      "B": "Skip list—provides O(log n) for all operations plus efficient range queries",
+      "C": "Unsorted array",
+      "D": "Stack"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip list fits perfectly: O(log n) insert/delete/search, O(log n + k) range queries, maintains sorted order. Hash table: O(1) point queries but no ordering. Array: O(n) insert/delete.",
+    "difficulty": "easy",
+    "category": "data-structures-for-scale"
+  }
+]

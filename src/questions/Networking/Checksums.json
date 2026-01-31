@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary purpose of a checksum in network communications?",
+    "options": {
+      "A": "To encrypt data",
+      "B": "To detect data corruption during transmission",
+      "C": "To compress data",
+      "D": "To route packets efficiently"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Checksums detect accidental data corruption (bit flips, transmission errors). The sender calculates a checksum; the receiver recalculates and compares. Mismatch indicates corruption.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which network protocols use checksums for error detection? (Choose all that apply)",
+    "options": {
+      "A": "TCP",
+      "B": "UDP",
+      "C": "IP (IPv4 header)",
+      "D": "Ethernet (CRC)"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "TCP and UDP have checksums for their segments. IPv4 has a header checksum. Ethernet uses CRC (Cyclic Redundancy Check) at the frame level. Multiple layers provide defense in depth.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What happens when a TCP segment arrives with an invalid checksum?",
+    "options": {
+      "A": "The segment is accepted anyway",
+      "B": "The segment is silently discarded",
+      "C": "An error message is sent to the sender",
+      "D": "The connection is terminated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP silently discards corrupted segments. The sender's retransmission timer will expire, triggering a resend. This is more efficient than sending negative acknowledgments for every corrupted packet.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Why is the UDP checksum optional in IPv4 but mandatory in IPv6?",
+    "options": {
+      "A": "IPv6 is faster and can handle the overhead",
+      "B": "IPv6 removed the IP header checksum, so UDP must verify integrity",
+      "C": "IPv4 has better error correction",
+      "D": "UDP over IPv6 carries more sensitive data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IPv4 has a header checksum; IPv6 removed it for efficiency (routers don't need to recalculate at each hop). Without IP-level protection, UDP's checksum became mandatory in IPv6.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "What is the difference between a checksum and a hash function like SHA-256?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Checksums detect accidental errors; cryptographic hashes also detect intentional tampering",
+      "C": "Hashes are faster than checksums",
+      "D": "Checksums are more secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Simple checksums (like TCP's) detect accidental corruption but can be fooled by intentional modification. Cryptographic hashes are designed to be tamper-evident—any change produces unpredictable output.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A file download completes but the checksum doesn't match. What should happen?",
+    "options": {
+      "A": "Use the file anyway",
+      "B": "Re-download the file",
+      "C": "Manually fix the corrupted bytes",
+      "D": "Report the server as malicious"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Checksum mismatch indicates corruption during transfer. Re-downloading is the correct action. Using corrupted files risks data integrity issues. Manual fixing is impractical without knowing what changed.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "What is CRC (Cyclic Redundancy Check) and where is it commonly used?",
+    "options": {
+      "A": "An encryption algorithm used in HTTPS",
+      "B": "A polynomial-based error detection code used in Ethernet and storage",
+      "C": "A compression algorithm for network packets",
+      "D": "A routing protocol for WANs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CRC uses polynomial division to generate check values. It's stronger than simple checksums at detecting burst errors. Used in Ethernet frames, hard drives, and many communication protocols.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: If a checksum matches, the data is guaranteed to be uncorrupted.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Checksums can have collisions—different data producing the same checksum. While rare for accidental corruption, it's possible. Stronger algorithms (CRC, cryptographic hashes) reduce but don't eliminate this risk.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "An API returns data with an ETag header. How does this relate to checksums?",
+    "options": {
+      "A": "ETag is unrelated to checksums",
+      "B": "ETag often contains a hash/checksum of the resource for cache validation",
+      "C": "ETag encrypts the response",
+      "D": "ETag compresses the response"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ETags are often content hashes used for cache validation. Clients send If-None-Match with the ETag; if content hasn't changed (same hash), server returns 304 Not Modified, saving bandwidth.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which checksum algorithm is used by TCP and UDP?",
+    "options": {
+      "A": "MD5",
+      "B": "SHA-256",
+      "C": "One's complement sum",
+      "D": "CRC-32"
+    },
+    "correct_answers": ["C"],
+    "explanation": "TCP/UDP use a 16-bit one's complement checksum—simple and fast to compute. It's not cryptographically secure but sufficient for detecting transmission errors. CRC is used at lower layers (Ethernet).",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "A distributed system uses checksums to verify data integrity across nodes. Which approach is most robust?",
+    "options": {
+      "A": "Simple XOR checksum",
+      "B": "Cryptographic hash (SHA-256) with the data",
+      "C": "No checksum, rely on TCP",
+      "D": "Checksum only on write, not on read"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cryptographic hashes detect both accidental corruption and tampering. TCP checksums only protect during transmission, not storage. End-to-end integrity requires application-level verification.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is 'checksum offloading' in modern network interfaces?",
+    "options": {
+      "A": "Disabling checksums for performance",
+      "B": "Hardware calculating checksums instead of software/CPU",
+      "C": "Sending checksums in a separate packet",
+      "D": "Using cloud services for checksum calculation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Checksum offloading moves calculation from CPU to NIC hardware, improving performance. The OS sends packets without checksums; the NIC adds them. This is transparent to applications.",
+    "difficulty": "hard",
+    "category": "networking"
+  }
+]

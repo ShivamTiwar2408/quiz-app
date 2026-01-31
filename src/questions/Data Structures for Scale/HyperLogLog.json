@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is HyperLogLog?",
+    "options": {
+      "A": "A logging framework",
+      "B": "A probabilistic algorithm for estimating the cardinality (count of distinct elements) of large datasets",
+      "C": "A sorting algorithm",
+      "D": "A compression method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog: estimates count of unique elements using minimal memory. 12KB can estimate billions of unique items with ~2% error. Used for: unique visitors, distinct queries, cardinality estimation at scale.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What problem does HyperLogLog solve?",
+    "options": {
+      "A": "Sorting large datasets",
+      "B": "Counting unique elements when storing all elements would require too much memory",
+      "C": "Encrypting data",
+      "D": "Compressing files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Problem: count unique visitors from 1 billion events. Exact: store all IDs (gigabytes). HyperLogLog: ~12KB, ~2% error. Tradeoff: small memory for approximate count. Acceptable for analytics.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How does HyperLogLog work conceptually?",
+    "options": {
+      "A": "Stores all elements",
+      "B": "Hashes elements and uses the position of the leftmost 1-bit to estimate cardinality",
+      "C": "Counts elements directly",
+      "D": "Compresses elements"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog intuition: hash each element, count leading zeros. Rare to see many leading zeros. If you see 10 leading zeros, probably saw ~2^10 unique elements. Uses multiple 'registers' and harmonic mean for accuracy.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the space complexity of HyperLogLog?",
+    "options": {
+      "A": "O(n) where n is number of elements",
+      "B": "O(1)—constant space regardless of cardinality (typically 12KB)",
+      "C": "O(log n)",
+      "D": "O(n²)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog: constant space. Standard implementation: 2^14 = 16384 registers, 6 bits each = 12KB. Can estimate cardinalities up to billions. Space doesn't grow with data size. Remarkable efficiency.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the typical error rate of HyperLogLog?",
+    "options": {
+      "A": "0% (exact)",
+      "B": "About 0.81% to 2% standard error depending on configuration",
+      "C": "50%",
+      "D": "Always wrong"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog error: ~1.04/√m where m is number of registers. With 16384 registers: ~0.81% standard error. Configurable: more registers = more accuracy = more memory. 2% error often acceptable for analytics.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Can HyperLogLog structures be merged?",
+    "options": {
+      "A": "No, they must be rebuilt",
+      "B": "Yes—take maximum of each register, enabling distributed counting",
+      "C": "Only if they're the same size",
+      "D": "Only with special hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog merge: take max of corresponding registers. Result estimates union cardinality. Enables: distributed counting (merge from multiple servers), time-window aggregation. Key feature for scalability.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Which systems use HyperLogLog?",
+    "options": {
+      "A": "Redis (PFADD, PFCOUNT)",
+      "B": "PostgreSQL (for query planning)",
+      "C": "Elasticsearch",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "HyperLogLog widely used: Redis (PFADD/PFCOUNT commands), PostgreSQL (cardinality estimation), Elasticsearch (cardinality aggregation), Presto, Spark, BigQuery. Standard tool for approximate distinct counts.",
+    "difficulty": "easy",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the difference between HyperLogLog and exact counting?",
+    "options": {
+      "A": "No difference",
+      "B": "HyperLogLog: O(1) space, approximate; Exact: O(n) space, precise",
+      "C": "Exact counting is faster",
+      "D": "HyperLogLog uses more memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Exact counting: store all unique elements (HashSet), O(n) space. HyperLogLog: O(1) space (~12KB), ~2% error. For 1 billion unique 8-byte IDs: exact = 8GB, HLL = 12KB. Massive difference.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What are Redis PFADD and PFCOUNT commands?",
+    "options": {
+      "A": "File operations",
+      "B": "HyperLogLog commands—PFADD adds elements, PFCOUNT returns estimated cardinality",
+      "C": "Sorting commands",
+      "D": "Encryption commands"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Redis HyperLogLog: PFADD key element (add to HLL), PFCOUNT key (get estimate), PFMERGE dest key1 key2 (merge HLLs). 'PF' honors Philippe Flajolet, HLL inventor. Simple API for powerful functionality.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "When should you NOT use HyperLogLog?",
+    "options": {
+      "A": "When counting unique visitors",
+      "B": "When you need exact counts or the cardinality is small enough to count exactly",
+      "C": "When processing streaming data",
+      "D": "When merging counts from multiple sources"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Don't use HyperLogLog when: exact count required (financial, compliance), cardinality is small (just use HashSet), need to enumerate elements (HLL only counts). Use when: large scale, approximate OK.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the relationship between HyperLogLog registers and accuracy?",
+    "options": {
+      "A": "No relationship",
+      "B": "More registers = higher accuracy but more memory",
+      "C": "More registers = lower accuracy",
+      "D": "Registers don't affect accuracy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Accuracy tradeoff: error ≈ 1.04/√m. 1024 registers: ~3.25% error, 1.5KB. 16384 registers: ~0.81% error, 12KB. Choose based on accuracy needs and memory budget. Configurable.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "A website needs to count unique visitors per day. They get 100 million visits daily. Best approach?",
+    "options": {
+      "A": "Store all visitor IDs in a database",
+      "B": "Use HyperLogLog—12KB per day gives ~2% accurate unique count",
+      "C": "Count total visits instead",
+      "D": "Sample 1% of visitors"
+    },
+    "correct_answers": ["B"],
+    "explanation": "100M visits/day: storing IDs = gigabytes. HyperLogLog: 12KB/day, ~2% error. For 'how many unique visitors?' that's perfect. PFADD on each visit, PFCOUNT for result. Redis makes this trivial.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  }
+]

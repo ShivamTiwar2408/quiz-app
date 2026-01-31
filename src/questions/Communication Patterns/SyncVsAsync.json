@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the key difference between synchronous and asynchronous communication?",
+    "options": {
+      "A": "Synchronous is faster",
+      "B": "Synchronous blocks until response; asynchronous continues without waiting",
+      "C": "Asynchronous requires more memory",
+      "D": "Synchronous only works locally"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Synchronous communication blocks the caller until a response is received. Asynchronous communication sends the request and continues execution, handling the response later via callbacks, promises, or message consumption.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which scenarios are best suited for asynchronous communication? (Choose all that apply)",
+    "options": {
+      "A": "Sending email notifications",
+      "B": "Real-time balance inquiry",
+      "C": "Processing large file uploads",
+      "D": "Generating reports that take minutes"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Async suits operations where immediate response isn't needed: notifications, background processing, long-running tasks. Balance inquiry needs immediate, accurate response—sync is appropriate.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A microservice makes a synchronous HTTP call to another service. What happens if the downstream service is slow?",
+    "options": {
+      "A": "The call automatically retries",
+      "B": "The calling service's thread is blocked, potentially exhausting thread pool",
+      "C": "The call is automatically converted to async",
+      "D": "Nothing, HTTP handles this automatically"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Synchronous calls block threads. If downstream is slow, threads accumulate waiting, potentially exhausting the thread pool and causing the calling service to become unresponsive (cascading failure).",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is 'temporal coupling' in the context of service communication?",
+    "options": {
+      "A": "Services must use the same timezone",
+      "B": "Services must be available at the same time for communication to succeed",
+      "C": "Services must be deployed together",
+      "D": "Services must use synchronized clocks"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Temporal coupling means both services must be running simultaneously. Synchronous communication has temporal coupling; asynchronous (via queues) removes it—producer and consumer don't need to be available at the same time.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which pattern helps convert a synchronous operation to asynchronous for the client?",
+    "options": {
+      "A": "Return 202 Accepted with a status polling endpoint",
+      "B": "Increase timeout to infinity",
+      "C": "Use HTTPS instead of HTTP",
+      "D": "Add more servers"
+    },
+    "correct_answers": ["A"],
+    "explanation": "202 Accepted indicates the request is being processed asynchronously. The response includes a URL to poll for status/results. This decouples the client from the processing time.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: Asynchronous communication always provides better performance than synchronous.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Async adds complexity (queues, callbacks) and latency (message routing). For simple, fast operations, sync may be more efficient. Async shines for long operations, decoupling, and resilience—not raw speed.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A user submits an order. Which communication pattern ensures the user gets immediate confirmation while order processing happens in background?",
+    "options": {
+      "A": "Fully synchronous processing",
+      "B": "Accept order synchronously, process asynchronously via queue",
+      "C": "Fully asynchronous with no confirmation",
+      "D": "Batch processing at end of day"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Hybrid approach: synchronously validate and accept the order (immediate confirmation), then queue it for async processing (inventory, payment, shipping). User gets fast response; processing is resilient.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a disadvantage of asynchronous communication?",
+    "options": {
+      "A": "Lower throughput",
+      "B": "Increased complexity in error handling and debugging",
+      "C": "Cannot scale horizontally",
+      "D": "Requires faster network"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Async complicates error handling (where do errors go?), debugging (distributed traces), and reasoning about system state. The decoupling benefit comes with operational complexity cost.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which mechanisms enable asynchronous communication? (Choose all that apply)",
+    "options": {
+      "A": "Message queues",
+      "B": "Synchronous HTTP calls",
+      "C": "Event buses",
+      "D": "Webhooks"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Queues, event buses, and webhooks all enable async communication—sender doesn't wait for processing. Synchronous HTTP is by definition not asynchronous (caller blocks for response).",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A payment service uses synchronous calls to a fraud detection service. The fraud service experiences high latency. What is the best mitigation?",
+    "options": {
+      "A": "Remove fraud detection",
+      "B": "Add circuit breaker and consider async fraud checking for low-risk transactions",
+      "C": "Increase payment service timeout to 5 minutes",
+      "D": "Cache all fraud decisions permanently"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit breaker prevents cascade failures. Async fraud checking (with hold/release pattern) for low-risk transactions reduces blocking. Long timeouts and permanent caching create other problems.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is 'request-reply' pattern in asynchronous messaging?",
+    "options": {
+      "A": "Standard synchronous HTTP",
+      "B": "Async request with correlation ID, response sent to reply queue",
+      "C": "Fire-and-forget messaging",
+      "D": "Broadcasting to all consumers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request-reply over async messaging: sender includes correlation ID and reply queue address. Receiver processes and sends response to reply queue. Sender correlates response using ID. Async but still request-response semantics.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which factor most influences the choice between sync and async communication?",
+    "options": {
+      "A": "Programming language",
+      "B": "Whether immediate response is required for the use case",
+      "C": "Database type",
+      "D": "Server operating system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The key question: does the caller need an immediate response? User-facing queries typically need sync; background processing, notifications, and long tasks suit async. Technical factors are secondary.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  }
+]

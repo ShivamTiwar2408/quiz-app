@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a Lamport timestamp?",
+    "options": {
+      "A": "A physical clock reading",
+      "B": "A single integer counter that provides a partial ordering of events in a distributed system",
+      "C": "A GPS coordinate",
+      "D": "A hash of the event"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport timestamp is a simple integer counter. Each process maintains its own counter, incrementing on local events and updating based on received messages. Provides a consistent partial ordering.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What are the three rules for updating Lamport timestamps?",
+    "options": {
+      "A": "Only update on network events",
+      "B": "Increment on local event; attach timestamp to messages; on receive, set to max(local, received) + 1",
+      "C": "Never update the timestamp",
+      "D": "Update only at midnight"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rule 1: Before local event, increment counter. Rule 2: Send messages with current timestamp. Rule 3: On receive, counter = max(local_counter, received_timestamp) + 1. This ensures causal ordering.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "If event A has Lamport timestamp 5 and event B has timestamp 8, what can we conclude?",
+    "options": {
+      "A": "A definitely happened before B",
+      "B": "A did not happen after B (A happened before B, or they're concurrent)",
+      "C": "B happened before A",
+      "D": "They happened at the same time"
+    },
+    "correct_answers": ["B"],
+    "explanation": "L(A) < L(B) means A → B OR A || B (concurrent). We can't distinguish. But we know B did NOT happen before A. This is the key limitation—Lamport timestamps don't detect concurrency.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Process P1 has counter 3, P2 has counter 7. P1 sends a message to P2. What is P2's new counter after receiving?",
+    "options": {
+      "A": "3",
+      "B": "7",
+      "C": "8",
+      "D": "10"
+    },
+    "correct_answers": ["C"],
+    "explanation": "P1 sends with timestamp 3 (or 4 if incremented before send). P2 receives: max(7, 3) + 1 = 8. The +1 ensures the receive event has a higher timestamp than the send event.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Why do Lamport timestamps use max(local, received) + 1 instead of just received + 1?",
+    "options": {
+      "A": "To save memory",
+      "B": "To ensure the counter never decreases and reflects all known events",
+      "C": "It's arbitrary",
+      "D": "To make timestamps smaller"
+    },
+    "correct_answers": ["B"],
+    "explanation": "If local counter is higher (due to many local events), we shouldn't decrease it. Taking max ensures we account for all events the process knows about. The +1 ensures receive > send.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How can Lamport timestamps be extended to provide total ordering?",
+    "options": {
+      "A": "Use GPS",
+      "B": "Use (timestamp, process_id) pairs and break ties using process ID",
+      "C": "Use larger integers",
+      "D": "Total ordering is impossible"
+    },
+    "correct_answers": ["B"],
+    "explanation": "For total ordering: compare timestamps first, if equal, use process ID as tiebreaker. (5, P1) < (5, P2) if P1 < P2. This gives a deterministic total order while preserving causal ordering.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the space complexity of Lamport timestamps per event?",
+    "options": {
+      "A": "O(n) where n is number of nodes",
+      "B": "O(1) - just a single integer",
+      "C": "O(log n)",
+      "D": "O(n²)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport timestamp is a single integer—O(1) space. This is a major advantage over vector clocks which require O(n) space. The tradeoff is less information about concurrency.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "In which scenario would Lamport timestamps be preferred over vector clocks?",
+    "options": {
+      "A": "When you need to detect concurrent events",
+      "B": "When you have many nodes and need space efficiency, and only need causal ordering",
+      "C": "When you need perfect conflict detection",
+      "D": "Never"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport timestamps: O(1) space, good for large systems where you only need 'A didn't happen after B'. Vector clocks: O(n) space, needed when you must detect concurrent events for conflict resolution.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What property do Lamport timestamps guarantee?",
+    "options": {
+      "A": "If L(A) < L(B), then A happened before B",
+      "B": "If A happened before B, then L(A) < L(B)",
+      "C": "All events have unique timestamps",
+      "D": "Timestamps equal physical time"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport's clock condition: A → B implies L(A) < L(B). The converse is NOT true—L(A) < L(B) doesn't mean A → B. This is the fundamental limitation that vector clocks address.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Leslie Lamport introduced logical clocks in which famous paper?",
+    "options": {
+      "A": "The Google File System",
+      "B": "Time, Clocks, and the Ordering of Events in a Distributed System (1978)",
+      "C": "MapReduce",
+      "D": "The Raft Consensus Algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport's 1978 paper 'Time, Clocks, and the Ordering of Events in a Distributed System' introduced logical clocks and the happens-before relation. One of the most cited papers in distributed systems.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Three processes P1, P2, P3 start with counter 0. P1 does a local event (counter=1), sends to P2. P2 receives (counter=2), does local event (counter=3), sends to P3. What is P3's counter after receiving?",
+    "options": {
+      "A": "1",
+      "B": "3",
+      "C": "4",
+      "D": "6"
+    },
+    "correct_answers": ["C"],
+    "explanation": "P3 starts at 0. Receives message with timestamp 3. max(0, 3) + 1 = 4. The chain of causality P1→P2→P3 is reflected in increasing timestamps.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a practical use case for Lamport timestamps?",
+    "options": {
+      "A": "Conflict detection in databases",
+      "B": "Ordering log entries across distributed services for debugging",
+      "C": "Replacing physical clocks entirely",
+      "D": "Encrypting messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lamport timestamps are great for log ordering—you can reconstruct a consistent view of events across services. For conflict detection, you'd need vector clocks to identify concurrent events.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

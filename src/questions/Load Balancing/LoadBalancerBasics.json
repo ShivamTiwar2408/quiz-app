@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary purpose of a load balancer?",
+    "options": {
+      "A": "To encrypt traffic between clients and servers",
+      "B": "To distribute incoming traffic across multiple servers",
+      "C": "To cache frequently accessed content",
+      "D": "To compress response data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Load balancers distribute traffic across multiple backend servers to improve availability, reliability, and scalability. While they may also handle SSL or caching, distribution is the primary function.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "A load balancer detects that one of five backend servers is unhealthy. What should happen to traffic destined for that server?",
+    "options": {
+      "A": "Traffic continues to the unhealthy server",
+      "B": "Traffic is redistributed to healthy servers",
+      "C": "All traffic stops until the server recovers",
+      "D": "The load balancer shuts down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Load balancers perform health checks and automatically remove unhealthy servers from the pool, redistributing their traffic to healthy servers. This is fundamental to high availability.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which are benefits of using a load balancer? (Choose all that apply)",
+    "options": {
+      "A": "Improved availability through redundancy",
+      "B": "Horizontal scaling capability",
+      "C": "Automatic code deployment",
+      "D": "SSL termination offloading"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Load balancers enable HA (traffic shifts from failed servers), horizontal scaling (add servers behind LB), and SSL offloading (decrypt at LB). Code deployment is a CI/CD function.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is the difference between Layer 4 and Layer 7 load balancing?",
+    "options": {
+      "A": "Layer 4 is faster; Layer 7 is more secure",
+      "B": "Layer 4 routes by IP/port; Layer 7 routes by application data (HTTP headers, URLs)",
+      "C": "Layer 4 is for TCP; Layer 7 is for UDP",
+      "D": "Layer 4 requires more hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Layer 4 LBs make decisions based on TCP/UDP port and IP. Layer 7 LBs understand application protocols (HTTP) and can route based on URL paths, headers, cookies, etc.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A web application requires that a user's session always goes to the same backend server. Which load balancer feature enables this?",
+    "options": {
+      "A": "Round-robin distribution",
+      "B": "Session persistence / sticky sessions",
+      "C": "Health checking",
+      "D": "SSL termination"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Session persistence (sticky sessions) ensures requests from the same client go to the same server, typically using cookies or source IP. This is needed when session state is stored locally on servers.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is a potential drawback of sticky sessions?",
+    "options": {
+      "A": "Increased latency",
+      "B": "Uneven load distribution if some users are more active",
+      "C": "Incompatibility with HTTPS",
+      "D": "Requires more backend servers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sticky sessions can cause uneven load—if heavy users are stuck to certain servers, those servers become overloaded while others are underutilized. It also complicates server removal.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A load balancer is configured with active health checks. What does this mean?",
+    "options": {
+      "A": "It monitors server CPU usage",
+      "B": "It periodically sends requests to servers to verify they're healthy",
+      "C": "It only checks health when a request fails",
+      "D": "It relies on servers to report their own health"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Active health checks proactively probe backend servers (HTTP request, TCP connect, etc.) at regular intervals. Passive checks only detect failures when real requests fail.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "True or False: A single load balancer can become a single point of failure.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "A single load balancer is indeed a SPOF. Production environments typically use redundant load balancers (active-passive or active-active) with failover mechanisms.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which load balancer configuration provides the highest availability?",
+    "options": {
+      "A": "Single load balancer with powerful hardware",
+      "B": "Active-passive load balancer pair",
+      "C": "Active-active load balancer cluster with DNS failover",
+      "D": "Load balancer with frequent backups"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Active-active clusters distribute load across multiple LBs and handle failover automatically. Active-passive has failover delay. Single LB and backups don't provide redundancy.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A company uses a cloud load balancer that automatically scales based on traffic. What type of load balancer is this?",
+    "options": {
+      "A": "Hardware load balancer",
+      "B": "Software load balancer",
+      "C": "Managed/elastic load balancer",
+      "D": "DNS load balancer"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Managed/elastic load balancers (like AWS ALB/NLB, GCP Load Balancer) automatically scale capacity based on traffic, abstracting infrastructure management from users.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "What happens during a 'connection draining' or 'deregistration delay' when removing a server from a load balancer?",
+    "options": {
+      "A": "All connections are immediately terminated",
+      "B": "Existing connections complete while new connections go elsewhere",
+      "C": "The server is kept in the pool indefinitely",
+      "D": "Traffic is duplicated to the new and old server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Connection draining allows in-flight requests to complete gracefully while stopping new requests to the server being removed. This prevents request failures during deployments or scaling.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which scenarios require Layer 7 load balancing instead of Layer 4? (Choose all that apply)",
+    "options": {
+      "A": "Routing based on URL path (/api vs /web)",
+      "B": "Simple TCP port-based distribution",
+      "C": "A/B testing based on cookies",
+      "D": "Routing based on HTTP headers"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "URL path routing, cookie-based decisions, and header inspection all require Layer 7 (application layer) understanding. Simple port-based distribution works at Layer 4.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  }
+]

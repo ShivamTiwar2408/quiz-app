@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A video streaming service needs to deliver live content with minimal latency. Occasional frame drops are acceptable. Which protocol is more suitable?",
+    "options": {
+      "A": "TCP - for reliable delivery",
+      "B": "UDP - for lower latency",
+      "C": "HTTP - for compatibility",
+      "D": "FTP - for file transfer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "UDP's lack of retransmission and connection overhead provides lower latency. For live streaming, a dropped frame is better than delayed frames (which TCP's retransmission would cause).",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which TCP features contribute to its reliability? (Choose all that apply)",
+    "options": {
+      "A": "Sequence numbers for ordering",
+      "B": "Acknowledgments and retransmissions",
+      "C": "Checksum for error detection",
+      "D": "Encryption of payload"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "TCP uses sequence numbers (ordering), ACKs with retransmission (delivery guarantee), and checksums (integrity). TCP doesn't provide encryption—that's TLS's job on top of TCP.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A DNS query typically uses UDP. Why is this appropriate?",
+    "options": {
+      "A": "DNS data is not important enough for TCP",
+      "B": "DNS queries are small and benefit from UDP's lower overhead",
+      "C": "UDP provides better security for DNS",
+      "D": "TCP cannot handle DNS queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS queries are typically small (fit in one packet) and benefit from UDP's connectionless nature—no handshake overhead. TCP's reliability isn't needed when the client can simply retry.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is the TCP three-way handshake sequence?",
+    "options": {
+      "A": "SYN → ACK → FIN",
+      "B": "SYN → SYN-ACK → ACK",
+      "C": "ACK → SYN → FIN",
+      "D": "CONNECT → ACCEPT → CONFIRM"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP connection: Client sends SYN, server responds SYN-ACK, client sends ACK. This establishes sequence numbers and confirms both sides are ready.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A multiplayer game sends player position updates 60 times per second. If one update is lost, the next update will contain the current position anyway. Which protocol should be used?",
+    "options": {
+      "A": "TCP - to ensure all updates arrive",
+      "B": "UDP - lost updates are superseded by newer ones",
+      "C": "TCP with no-delay option",
+      "D": "HTTP long polling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With frequent updates where newer data supersedes older, UDP is ideal. TCP would waste time retransmitting stale positions. The game logic handles the occasional loss.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which statement about TCP flow control is correct?",
+    "options": {
+      "A": "It prevents the sender from overwhelming the network",
+      "B": "It prevents the sender from overwhelming the receiver",
+      "C": "It guarantees constant throughput",
+      "D": "It eliminates packet loss"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP flow control (sliding window) prevents sender from overwhelming the receiver's buffer. Congestion control (different mechanism) addresses network capacity. Neither guarantees throughput or eliminates loss.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "An application needs to send messages where order matters and no message can be lost. Which is the minimum requirement?",
+    "options": {
+      "A": "UDP with application-level ordering",
+      "B": "TCP",
+      "C": "UDP with checksums",
+      "D": "Raw IP sockets"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP provides both ordering (sequence numbers) and reliability (retransmission) built-in. UDP would require implementing these at the application layer, essentially recreating TCP.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "What is head-of-line blocking in TCP, and why is it problematic for HTTP/2?",
+    "options": {
+      "A": "The first request blocks all others until complete",
+      "B": "A lost packet blocks all streams until retransmitted",
+      "C": "Headers must be sent before body",
+      "D": "Only one connection can be open at a time"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP delivers bytes in order. If packet N is lost, packets N+1, N+2... wait even if they arrived. HTTP/2 multiplexes streams over one TCP connection, so one stream's lost packet blocks all streams.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "QUIC protocol is built on UDP instead of TCP. What advantage does this provide? (Choose all that apply)",
+    "options": {
+      "A": "Avoids TCP head-of-line blocking",
+      "B": "Faster connection establishment",
+      "C": "Built-in encryption",
+      "D": "Guaranteed delivery without retransmission"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "QUIC on UDP: avoids TCP HOL blocking (streams are independent), combines handshake with TLS (faster), includes encryption by default. It still retransmits for reliability—just per-stream.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: UDP is always faster than TCP.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "UDP has lower overhead and latency for small messages, but TCP can achieve higher throughput for bulk transfers due to flow control and optimized congestion handling. 'Faster' depends on the use case.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A financial trading system requires guaranteed message delivery with strict ordering. Network latency is critical. What approach balances these requirements?",
+    "options": {
+      "A": "UDP with application-level reliability",
+      "B": "TCP with Nagle's algorithm disabled",
+      "C": "Multiple UDP connections for redundancy",
+      "D": "HTTP/2 over TCP"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TCP provides required reliability and ordering. Disabling Nagle's algorithm (TCP_NODELAY) prevents buffering small messages, reducing latency. Custom UDP reliability adds complexity without clear benefit here.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "Which scenarios are appropriate for UDP? (Choose all that apply)",
+    "options": {
+      "A": "VoIP calls",
+      "B": "File downloads",
+      "C": "Online gaming",
+      "D": "Database transactions"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "VoIP and gaming prioritize low latency over perfect delivery—dropped packets are acceptable. File downloads and database transactions require complete, ordered data—TCP is appropriate.",
+    "difficulty": "easy",
+    "category": "networking"
+  }
+]

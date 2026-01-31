@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a time-series database?",
+    "options": {
+      "A": "A database that only stores dates",
+      "B": "A database optimized for storing and querying timestamped data points over time",
+      "C": "A scheduling application",
+      "D": "A backup system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Time-series DBs: optimized for data indexed by time. Features: high write throughput, efficient time-range queries, automatic downsampling, retention policies. Examples: InfluxDB, TimescaleDB, Prometheus.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What are common use cases for time-series databases?",
+    "options": {
+      "A": "IoT sensor data and metrics",
+      "B": "Application monitoring and observability",
+      "C": "Financial market data",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Time-series use cases: IoT (sensor readings), DevOps (metrics, logs), finance (stock prices, trades), analytics (user events over time). Any data where time is the primary dimension.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "How do time-series databases optimize for write performance?",
+    "options": {
+      "A": "By using complex indexes",
+      "B": "Append-only writes, batch inserts, and columnar storage for compression",
+      "C": "By limiting read performance",
+      "D": "By using only SSDs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Time-series optimizations: append-only (no random updates), batch writes, columnar storage (compress similar values), LSM trees. Data is immutable once written—simplifies storage engine.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is downsampling in time-series databases?",
+    "options": {
+      "A": "Reducing audio quality",
+      "B": "Aggregating high-resolution data into lower-resolution summaries over time",
+      "C": "Deleting random data",
+      "D": "Compressing files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Downsampling: keep 1-second data for 1 day, 1-minute averages for 1 week, 1-hour averages for 1 year. Reduces storage while preserving trends. Most time-series DBs support automatic downsampling.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a retention policy in time-series databases?",
+    "options": {
+      "A": "Employee retention strategy",
+      "B": "Rules defining how long data is kept before automatic deletion",
+      "C": "Backup frequency",
+      "D": "Query timeout"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Retention policy: automatically delete data older than X days/months. Essential for time-series: data volume grows continuously, old data often less valuable. Prevents unbounded storage growth.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between InfluxDB and Prometheus?",
+    "options": {
+      "A": "They are identical",
+      "B": "InfluxDB: push-based, general time-series; Prometheus: pull-based, designed for monitoring with built-in alerting",
+      "C": "Prometheus is a relational database",
+      "D": "InfluxDB doesn't support queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "InfluxDB: push model (apps send data), SQL-like query language, general purpose. Prometheus: pull model (scrapes targets), PromQL, built-in alerting, designed for monitoring. Different architectures.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is TimescaleDB?",
+    "options": {
+      "A": "A time management app",
+      "B": "A time-series database built as a PostgreSQL extension, combining SQL with time-series optimizations",
+      "C": "A scheduling tool",
+      "D": "A backup service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TimescaleDB: PostgreSQL extension for time-series. Benefits: full SQL support, joins with relational data, PostgreSQL ecosystem. Hypertables automatically partition by time. Best of both worlds.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a 'tag' in time-series databases like InfluxDB?",
+    "options": {
+      "A": "A label for organizing code",
+      "B": "Indexed metadata for filtering and grouping time-series data",
+      "C": "A timestamp format",
+      "D": "A backup marker"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tags: indexed key-value metadata. Example: cpu_usage with tags {host: 'server1', region: 'us-east'}. Enable efficient filtering: 'SELECT * WHERE host='server1''. High cardinality tags can hurt performance.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Why is high cardinality a concern in time-series databases?",
+    "options": {
+      "A": "It's not a concern",
+      "B": "Too many unique tag values create too many time-series, bloating indexes and memory",
+      "C": "It makes data more accurate",
+      "D": "It improves query speed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "High cardinality: many unique tag values (e.g., user_id as tag). Each unique combination = separate time-series. Millions of series = huge index, memory pressure, slow queries. Design tags carefully.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What query pattern are time-series databases optimized for?",
+    "options": {
+      "A": "Random point lookups",
+      "B": "Time-range scans with aggregations (avg, sum, max over time windows)",
+      "C": "Complex joins",
+      "D": "Full-text search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Optimized for: 'Give me average CPU for server X from 2pm to 3pm'. Time-range scans, aggregations (avg, max, percentiles), GROUP BY time buckets. Not optimized for: random lookups, joins, full-text.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is continuous aggregation in time-series databases?",
+    "options": {
+      "A": "Manual data entry",
+      "B": "Automatically maintaining pre-computed aggregates that update as new data arrives",
+      "C": "Deleting old data",
+      "D": "Backup compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Continuous aggregates: materialized views that auto-update. Define once: 'hourly average by host'. As data streams in, aggregates update incrementally. Faster queries on pre-computed results.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "A company monitors 10,000 servers, collecting 100 metrics per server every second. Which database type is most appropriate?",
+    "options": {
+      "A": "Relational database",
+      "B": "Time-series database",
+      "C": "Document database",
+      "D": "Graph database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "1 million data points/second, time-indexed, needs aggregations and retention. Time-series DB: handles high write throughput, efficient time-range queries, automatic downsampling and retention. Purpose-built for this.",
+    "difficulty": "medium",
+    "category": "databases"
+  }
+]

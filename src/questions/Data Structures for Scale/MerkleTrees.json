@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a Merkle tree?",
+    "options": {
+      "A": "A type of plant",
+      "B": "A tree of hashes where each non-leaf node is the hash of its children, enabling efficient verification",
+      "C": "A database index",
+      "D": "A sorting algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle tree: binary tree of hashes. Leaves: hashes of data blocks. Parents: hash of children's hashes. Root: single hash representing all data. Enables efficient verification and sync. Used in Git, Bitcoin, databases.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the Merkle root?",
+    "options": {
+      "A": "The bottom of the tree",
+      "B": "The single hash at the top representing all data in the tree",
+      "C": "A type of vegetable",
+      "D": "The largest hash"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle root: top hash. If any data changes, its leaf hash changes, propagating up to root. Comparing roots tells you if two datasets are identical. Single hash summarizes entire dataset.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How do Merkle trees enable efficient data verification?",
+    "options": {
+      "A": "By storing all data twice",
+      "B": "By allowing verification of any piece with O(log n) hashes instead of checking all data",
+      "C": "By compressing data",
+      "D": "By encrypting data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle proof: to verify one leaf, need only O(log n) hashes (path to root). Don't need entire dataset. Verifier with trusted root can confirm any piece. Efficient for large datasets.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How does Bitcoin use Merkle trees?",
+    "options": {
+      "A": "For mining",
+      "B": "To efficiently verify transactions are in a block without downloading all transactions",
+      "C": "For encryption",
+      "D": "For networking"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bitcoin: each block has Merkle tree of transactions. Light clients store only block headers (with Merkle root). To verify transaction, request Merkle proof (O(log n) hashes). SPV (Simplified Payment Verification).",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How does Git use Merkle trees?",
+    "options": {
+      "A": "For user authentication",
+      "B": "Every commit, tree, and blob is content-addressed by hash, forming a Merkle DAG",
+      "C": "For compression only",
+      "D": "Git doesn't use Merkle trees"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Git: content-addressed storage. Blob hash = hash(content). Tree hash = hash(children). Commit hash = hash(tree + parent + metadata). Merkle DAG (not tree). Enables: integrity verification, deduplication, efficient sync.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How do distributed databases use Merkle trees?",
+    "options": {
+      "A": "For sorting",
+      "B": "To efficiently detect and sync differences between replicas (anti-entropy)",
+      "C": "For compression",
+      "D": "For encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anti-entropy with Merkle trees: each replica builds tree over its data. Compare roots: if equal, in sync. If different, traverse tree to find differing subtrees. Efficiently identify what to sync. Used in Cassandra, DynamoDB.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Merkle proof?",
+    "options": {
+      "A": "A mathematical theorem",
+      "B": "The set of hashes needed to verify a leaf belongs to a tree with a given root",
+      "C": "A type of encryption",
+      "D": "A database query"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle proof: sibling hashes along path from leaf to root. Given leaf data and proof, can compute root. If matches trusted root, leaf is authentic. O(log n) proof size. Enables trustless verification.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the time complexity to verify data integrity using a Merkle tree?",
+    "options": {
+      "A": "O(n)",
+      "B": "O(log n)—only need to check path from leaf to root",
+      "C": "O(1)",
+      "D": "O(n²)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Verification: O(log n). Tree height is log n. Verify one leaf: hash leaf, combine with sibling, hash, repeat to root. Compare with trusted root. Much better than O(n) full data comparison.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What happens to the Merkle root if one data block changes?",
+    "options": {
+      "A": "Nothing changes",
+      "B": "The root changes because the change propagates up through all ancestor hashes",
+      "C": "Only the leaf changes",
+      "D": "The tree is deleted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Any change propagates: changed block → new leaf hash → new parent hash → ... → new root. This is the key property: root is a fingerprint of entire dataset. Any tampering is detectable.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is the space overhead of a Merkle tree?",
+    "options": {
+      "A": "No overhead",
+      "B": "Approximately n-1 additional hashes for n data blocks (roughly doubles hash storage)",
+      "C": "n² additional hashes",
+      "D": "Constant overhead"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Space: n leaves + (n-1) internal nodes = 2n-1 hashes total. Overhead is O(n) but constant factor ~1x. For 32-byte hashes and 1KB blocks, overhead is ~3%. Worthwhile for verification benefits.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Merkle DAG?",
+    "options": {
+      "A": "A Merkle tree with errors",
+      "B": "A Directed Acyclic Graph where nodes are content-addressed by hash (like Git)",
+      "C": "A compressed Merkle tree",
+      "D": "A Merkle tree for databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle DAG: generalization of Merkle tree. Nodes can have multiple parents (DAG, not tree). Each node addressed by hash of content. Used in: Git (commits have multiple parents), IPFS. Same integrity properties.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Two database replicas need to sync efficiently. They have millions of records. Best approach?",
+    "options": {
+      "A": "Compare every record",
+      "B": "Build Merkle trees, compare roots, traverse to find differences",
+      "C": "Delete and re-copy everything",
+      "D": "Ignore differences"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle tree sync: compare roots (1 comparison). If different, compare children (2 comparisons), recurse into differing subtrees. Find all differences in O(d * log n) where d is number of differences. Much better than O(n).",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  }
+]

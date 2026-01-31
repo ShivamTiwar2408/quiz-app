@@ -1,0 +1,156 @@
+[
+  {
+    "question": "Why is cache invalidation considered one of the hardest problems in computer science?",
+    "options": {
+      "A": "It requires expensive hardware",
+      "B": "Knowing when data changed and ensuring all caches are updated consistently is complex",
+      "C": "Cache invalidation algorithms are patented",
+      "D": "Modern systems don't need cache invalidation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In distributed systems, data changes in one place but may be cached in many. Ensuring all caches are invalidated consistently, handling race conditions, and avoiding stale data while maintaining performance is genuinely difficult.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What are the main cache invalidation strategies? (Choose all that apply)",
+    "options": {
+      "A": "Time-based (TTL expiration)",
+      "B": "Event-based (invalidate on data change)",
+      "C": "Version-based (cache keys include version)",
+      "D": "Random invalidation"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "TTL: entries expire after time. Event-based: invalidate when source changes. Version-based: new version = new cache key, old entries naturally expire. Random invalidation would cause unpredictable behavior.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A user updates their profile, but the old profile still shows on the website. What likely happened?",
+    "options": {
+      "A": "The database didn't save the update",
+      "B": "The cache wasn't invalidated after the update",
+      "C": "The user's browser is broken",
+      "D": "The server crashed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Classic cache invalidation failure: database updated but cache still holds old data. The application should invalidate or update the cache entry when the profile changes.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'write-through' cache invalidation?",
+    "options": {
+      "A": "Deleting cache entries periodically",
+      "B": "Writing to cache and database simultaneously, keeping them in sync",
+      "C": "Writing only to cache",
+      "D": "Bypassing cache for writes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Write-through updates both cache and database on every write. Cache is always current (no invalidation needed), but writes are slower. Good for read-heavy workloads where consistency is critical.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is the 'cache-aside' invalidation pattern?",
+    "options": {
+      "A": "Cache automatically invalidates itself",
+      "B": "Application explicitly deletes cache entry when data changes",
+      "C": "Cache is never invalidated",
+      "D": "Database invalidates the cache"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In cache-aside, the application manages invalidation: on update, delete the cache entry. Next read will miss cache, fetch from DB, and repopulate cache. Simple but requires discipline.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A distributed system has caches in multiple regions. How can cache invalidation be coordinated?",
+    "options": {
+      "A": "It's impossible to coordinate",
+      "B": "Publish invalidation events to a message queue that all regions subscribe to",
+      "C": "Only use one cache globally",
+      "D": "Disable caching in distributed systems"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pub/sub systems (Kafka, Redis Pub/Sub) can broadcast invalidation events. When data changes, publish an event; all regions receive it and invalidate their local caches. Eventual consistency applies.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "What is a potential race condition in cache invalidation?",
+    "options": {
+      "A": "Cache being too fast",
+      "B": "Stale data being written to cache after invalidation due to timing",
+      "C": "Cache keys being too long",
+      "D": "Too many cache hits"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Race condition: Thread A reads old data, Thread B updates DB and invalidates cache, Thread A writes old data to cache. Now cache has stale data. Solutions: versioning, locks, or delete-after-write patterns.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "True or False: TTL-based invalidation guarantees data is never stale.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TTL only guarantees data won't be stale for longer than the TTL. Data can be stale from the moment it's cached until TTL expires. For strong consistency, event-based invalidation is needed.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'purge' vs 'ban' in cache invalidation (e.g., Varnish)?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Purge removes specific URLs; Ban marks patterns as invalid without immediate removal",
+      "C": "Purge is faster than ban",
+      "D": "Ban is deprecated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Purge immediately removes a specific cached object. Ban adds a rule that marks matching objects as invalid on access (lazy invalidation). Ban is useful for pattern-based invalidation without scanning all cache.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "How does cache key versioning help with invalidation?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "New version = new cache key, so old entries are naturally ignored",
+      "C": "It makes cache faster",
+      "D": "It encrypts cache entries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Include version in cache key: user:123:v2. When data changes, increment version. Old entries (v1) are never accessed again and expire naturally. No explicit invalidation needed, but uses more memory temporarily.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A CDN caches a page with incorrect data. How can it be invalidated?",
+    "options": {
+      "A": "Wait for TTL to expire",
+      "B": "Send a purge request to the CDN API",
+      "C": "Restart the CDN",
+      "D": "Change the page URL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDNs provide purge/invalidation APIs to remove specific URLs or patterns from edge caches. This is faster than waiting for TTL. Some CDNs also support cache tags for grouped invalidation.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'soft' vs 'hard' cache invalidation?",
+    "options": {
+      "A": "Soft uses less memory",
+      "B": "Soft marks as stale but serves while refreshing; Hard removes immediately",
+      "C": "Hard is more secure",
+      "D": "They refer to hardware types"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Soft invalidation (stale-while-revalidate): serve stale data while fetching fresh data in background. Hard invalidation: remove immediately, next request waits for fresh data. Soft improves availability.",
+    "difficulty": "medium",
+    "category": "caching"
+  }
+]

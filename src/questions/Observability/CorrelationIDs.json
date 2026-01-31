@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a correlation ID?",
+    "options": {
+      "A": "A database primary key",
+      "B": "A unique identifier passed through all services handling a request, enabling end-to-end tracing",
+      "C": "A user ID",
+      "D": "A session token"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Correlation ID: unique ID generated at request entry, propagated through all services. Included in logs, traces, errors. Enables: finding all logs for one request across services, debugging distributed systems.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "Why are correlation IDs important in microservices?",
+    "options": {
+      "A": "For authentication",
+      "B": "To trace a single request across multiple services and correlate logs/events",
+      "C": "For encryption",
+      "D": "For load balancing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Microservices challenge: one user request touches many services. Without correlation ID, can't connect logs. With it: search by ID, see entire request flow, identify where failures occurred. Essential for debugging.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "Where should a correlation ID be generated?",
+    "options": {
+      "A": "In the database",
+      "B": "At the entry point (API gateway, first service) if not already present in the request",
+      "C": "In each service",
+      "D": "By the client always"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Generate at entry: API gateway or first service. If client provides one, use it (enables client-side correlation). If not, generate UUID. Never generate new ID mid-flow—defeats purpose.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "How is a correlation ID typically propagated between services?",
+    "options": {
+      "A": "Stored in database",
+      "B": "HTTP headers (X-Correlation-ID, X-Request-ID) or message metadata",
+      "C": "URL parameters only",
+      "D": "Cookies"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Propagation: HTTP header (X-Correlation-ID, X-Request-ID, traceparent), message queue metadata, gRPC metadata. Each service: extract from incoming, include in outgoing, add to all logs.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the relationship between correlation IDs and distributed tracing?",
+    "options": {
+      "A": "They are unrelated",
+      "B": "Correlation ID is a simpler form; distributed tracing (trace ID + span ID) provides richer context",
+      "C": "Distributed tracing replaces correlation IDs",
+      "D": "Correlation IDs are more detailed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Correlation ID: single ID for request. Distributed tracing: trace ID (like correlation ID) + span IDs (each operation) + timing + relationships. Tracing is richer but more complex. Correlation ID is minimum viable.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What should you include in logs along with the correlation ID?",
+    "options": {
+      "A": "Only the correlation ID",
+      "B": "Correlation ID, timestamp, service name, log level, and contextual data",
+      "C": "Only error messages",
+      "D": "Only timestamps"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Structured log: {correlationId: 'abc', timestamp: '...', service: 'order-service', level: 'INFO', userId: 123, message: '...'}. Enables: filter by correlation ID, see timeline, identify service, understand context.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the W3C Trace Context standard?",
+    "options": {
+      "A": "A database standard",
+      "B": "A standard for propagating trace context (including trace ID) across services via HTTP headers",
+      "C": "A logging format",
+      "D": "A security protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "W3C Trace Context: standard headers (traceparent, tracestate) for distributed tracing. Enables interoperability between tracing systems. traceparent contains: version, trace-id, parent-id, flags. Widely adopted.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "How do you handle correlation IDs with asynchronous messaging?",
+    "options": {
+      "A": "Don't use correlation IDs",
+      "B": "Include correlation ID in message headers/metadata, extract and use in consumer",
+      "C": "Generate new ID for each message",
+      "D": "Store in database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Async messaging: include correlation ID in message metadata (Kafka headers, SQS attributes, RabbitMQ properties). Consumer extracts and uses for its logs. Maintains traceability across async boundaries.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is a common mistake with correlation IDs?",
+    "options": {
+      "A": "Using UUIDs",
+      "B": "Generating a new ID in each service instead of propagating the original",
+      "C": "Including in logs",
+      "D": "Using headers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Common mistake: each service generates its own ID. Result: can't correlate logs across services. Correct: generate once at entry, propagate everywhere. Every service uses the same ID for the same request.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "How do correlation IDs help with error debugging?",
+    "options": {
+      "A": "They don't help",
+      "B": "Search logs by correlation ID to see entire request flow and identify where error occurred",
+      "C": "They fix errors automatically",
+      "D": "They prevent errors"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Error debugging: user reports error with correlation ID (shown in error page). Search logs: see request enter API gateway → service A → service B (error here). Pinpoint failure location, see context. Invaluable.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "Should correlation IDs be exposed to end users?",
+    "options": {
+      "A": "Never",
+      "B": "Yes, in error messages—helps support teams debug issues when users report problems",
+      "C": "Only in development",
+      "D": "Only for admin users"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Expose in errors: 'Error occurred. Reference: abc-123-def'. User provides to support. Support searches logs by ID. Much faster than 'it happened around 3pm'. Include in error responses, error pages.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "A user reports an error. Support can't find relevant logs among millions. What's missing?",
+    "options": {
+      "A": "More servers",
+      "B": "Correlation IDs—without them, can't connect user's request to specific log entries",
+      "C": "Faster database",
+      "D": "More storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Without correlation ID: search by time (too many results), user ID (still many requests), guess which logs are related. With correlation ID: one search, exact request, all services. Night and day difference.",
+    "difficulty": "easy",
+    "category": "observability"
+  }
+]

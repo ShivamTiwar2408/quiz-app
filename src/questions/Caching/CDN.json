@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a CDN (Content Delivery Network)?",
+    "options": {
+      "A": "A type of database",
+      "B": "A distributed network of servers that delivers content from locations close to users",
+      "C": "A programming framework",
+      "D": "A security tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDN is a geographically distributed network of edge servers. Caches content close to users, reducing latency and origin server load. Essential for global applications serving static content, media, and APIs.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What types of content are typically served through CDN? (Choose all that apply)",
+    "options": {
+      "A": "Static files (images, CSS, JavaScript)",
+      "B": "Video streaming",
+      "C": "Real-time database queries",
+      "D": "API responses (with caching)"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "CDN serves: static assets (images, scripts), video/media streaming, cacheable API responses. Real-time database queries aren't cacheable—they need fresh data. CDN excels at content that doesn't change frequently.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is an 'edge server' in CDN?",
+    "options": {
+      "A": "The main server",
+      "B": "A server located geographically close to end users that caches and serves content",
+      "C": "A backup server",
+      "D": "A database server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Edge servers are CDN nodes distributed globally, close to users. They cache content from origin server and serve it locally. User in Tokyo gets content from Tokyo edge, not US origin—much lower latency.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is a 'cache miss' in CDN?",
+    "options": {
+      "A": "Cache working correctly",
+      "B": "Requested content not in edge cache; must be fetched from origin",
+      "C": "Cache error",
+      "D": "User error"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache miss: edge server doesn't have requested content. Must fetch from origin server, cache it, then serve. First request to an edge always misses. Subsequent requests hit cache until TTL expires.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is TTL (Time To Live) in CDN caching?",
+    "options": {
+      "A": "Server uptime",
+      "B": "Duration content remains valid in cache before requiring refresh from origin",
+      "C": "Network latency",
+      "D": "User session length"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TTL defines how long cached content is considered fresh. After TTL expires, edge must revalidate or fetch fresh content from origin. Balance: long TTL = better cache hit rate; short TTL = fresher content.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "How does CDN reduce latency?",
+    "options": {
+      "A": "Faster servers",
+      "B": "Serving content from geographically closer edge servers",
+      "C": "Compressing all data",
+      "D": "Using faster internet"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDN reduces latency through proximity: content served from nearby edge server instead of distant origin. Physical distance = network latency. User in Sydney gets content from Sydney edge, not US origin.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What is cache invalidation in CDN?",
+    "options": {
+      "A": "Cache working correctly",
+      "B": "Forcing removal of cached content before TTL expires",
+      "C": "Cache error",
+      "D": "Adding content to cache"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache invalidation: purge cached content before TTL expires. Needed when content changes and stale cache is unacceptable. Can be expensive (propagates to all edges). Use versioned URLs when possible instead.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'origin server' in CDN context?",
+    "options": {
+      "A": "The first CDN server",
+      "B": "The source server where original content lives; CDN fetches from here on cache miss",
+      "C": "A backup server",
+      "D": "The fastest server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Origin server is the source of truth—your actual web server, S3 bucket, or API. CDN edges fetch content from origin on cache miss. Origin handles dynamic requests; CDN caches and distributes.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "True or False: CDN can only serve static content.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDN can serve dynamic content too: API responses with appropriate cache headers, personalized content at edge (edge computing), dynamic content with short TTL. Modern CDNs support edge functions for dynamic logic.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "Which are benefits of using CDN? (Choose all that apply)",
+    "options": {
+      "A": "Reduced latency for global users",
+      "B": "Reduced load on origin server",
+      "C": "DDoS protection",
+      "D": "Improved availability"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "CDN benefits: lower latency (edge proximity), reduced origin load (edges serve cached content), DDoS protection (distributed capacity absorbs attacks), availability (if origin fails, edges may serve cached content).",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is cache warming in CDN?",
+    "options": {
+      "A": "Heating servers",
+      "B": "Pre-populating edge caches with content before users request it",
+      "C": "Clearing cache",
+      "D": "Monitoring cache"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache warming: proactively push content to edge caches before user requests. Ensures first users get cache hits. Useful for: new content launches, predictable traffic patterns, critical content.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A website updates its logo. How should it handle CDN caching?",
+    "options": {
+      "A": "Wait for TTL to expire",
+      "B": "Use versioned URL (logo-v2.png) or invalidate cache",
+      "C": "Disable CDN",
+      "D": "Nothing needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Options: versioned URL (logo-v2.png)—instant update, old version still cached but not referenced; or cache invalidation—purge old logo from all edges. Versioning is preferred—simpler, no propagation delay.",
+    "difficulty": "medium",
+    "category": "caching"
+  }
+]

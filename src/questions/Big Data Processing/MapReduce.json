@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is MapReduce?",
+    "options": {
+      "A": "A navigation system",
+      "B": "A programming model for processing large datasets in parallel across a cluster",
+      "C": "A database",
+      "D": "A compression algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MapReduce: programming model from Google (2004). Two phases: Map (transform/filter data in parallel), Reduce (aggregate results). Enables processing petabytes across thousands of machines. Foundation of big data.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What happens in the Map phase?",
+    "options": {
+      "A": "Data is compressed",
+      "B": "Input is split and processed in parallel, emitting key-value pairs",
+      "C": "Data is deleted",
+      "D": "Results are aggregated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Map phase: input split into chunks, each processed by a mapper in parallel. Mapper reads records, applies function, emits (key, value) pairs. Example: word count mapper emits (word, 1) for each word.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What happens in the Reduce phase?",
+    "options": {
+      "A": "Data is expanded",
+      "B": "Values with the same key are grouped and aggregated together",
+      "C": "Data is split",
+      "D": "Data is encrypted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Reduce phase: shuffle groups all values by key, reducer processes each group. Example: word count reducer receives ('hello', [1,1,1]), outputs ('hello', 3). Aggregation, summarization, joining.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the shuffle phase in MapReduce?",
+    "options": {
+      "A": "Randomizing data",
+      "B": "Transferring map outputs to reducers, grouping by key",
+      "C": "Deleting data",
+      "D": "Compressing data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Shuffle: between map and reduce. Sorts map outputs by key, transfers to appropriate reducers (partitioned by key). Most expensive phase—involves network transfer and disk I/O. Optimization target.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is a combiner in MapReduce?",
+    "options": {
+      "A": "A farming machine",
+      "B": "A local reducer that runs on map output before shuffle, reducing data transfer",
+      "C": "A data splitter",
+      "D": "A network device"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Combiner: mini-reducer on mapper node. Aggregates locally before shuffle. Word count: instead of sending (word,1) 1000 times, combiner sends (word,1000). Reduces network traffic. Must be associative/commutative.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is Apache Hadoop?",
+    "options": {
+      "A": "A programming language",
+      "B": "An open-source framework implementing MapReduce with HDFS for distributed storage",
+      "C": "A database",
+      "D": "An operating system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Hadoop: open-source implementation of Google's MapReduce and GFS papers. Components: HDFS (storage), MapReduce/YARN (processing). Ecosystem: Hive, Pig, HBase, Spark. Revolutionized big data processing.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is a limitation of MapReduce?",
+    "options": {
+      "A": "Too fast",
+      "B": "High latency due to disk I/O between stages; not suitable for iterative algorithms or real-time",
+      "C": "Can't process large data",
+      "D": "Only works on one machine"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MapReduce limitations: writes to disk between stages (slow), batch-only (no streaming), poor for iterative algorithms (ML), complex multi-stage jobs. Led to Spark (in-memory), Flink (streaming).",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "How does MapReduce achieve fault tolerance?",
+    "options": {
+      "A": "No fault tolerance",
+      "B": "Re-executes failed tasks; intermediate data written to disk enables recovery",
+      "C": "Ignores failures",
+      "D": "Stops processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MapReduce fault tolerance: if mapper fails, re-run on another node (input from HDFS). If reducer fails, re-run (map outputs on disk). Master tracks progress, reschedules failed tasks. Handles commodity hardware failures.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is data locality in MapReduce?",
+    "options": {
+      "A": "Data stored locally on laptop",
+      "B": "Scheduling map tasks on nodes that have the input data to minimize network transfer",
+      "C": "Encrypting local data",
+      "D": "Deleting remote data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data locality: move compute to data. HDFS stores blocks on multiple nodes. MapReduce scheduler prefers nodes with local data. Avoids transferring terabytes over network. Key optimization.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What replaced MapReduce for many use cases?",
+    "options": {
+      "A": "Nothing",
+      "B": "Apache Spark—in-memory processing, faster for iterative algorithms and interactive queries",
+      "C": "Microsoft Excel",
+      "D": "Traditional databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Spark largely replaced MapReduce: in-memory processing (10-100x faster), better for ML (iterative), interactive queries, streaming. Same fault tolerance, better performance. MapReduce still used for some batch jobs.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "Write a word count MapReduce job conceptually. What do map and reduce functions do?",
+    "options": {
+      "A": "Map: count words; Reduce: nothing",
+      "B": "Map: emit (word, 1) for each word; Reduce: sum all 1s for each word",
+      "C": "Map: nothing; Reduce: count words",
+      "D": "Map: sort words; Reduce: delete duplicates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Word count: Map(line) → for each word emit (word, 1). Shuffle groups by word. Reduce(word, [1,1,1,...]) → emit (word, sum). Classic MapReduce example. Parallelizes across documents, aggregates counts.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "A company needs to process 100TB of log files to count error types. Best approach?",
+    "options": {
+      "A": "Single server with grep",
+      "B": "MapReduce or Spark job: map extracts error types, reduce counts each type",
+      "C": "Manual counting",
+      "D": "Delete the logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "100TB log analysis: perfect for MapReduce/Spark. Map: parse log, emit (error_type, 1). Reduce: count per type. Parallelizes across cluster. Hours instead of days. This is what MapReduce was designed for.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  }
+]

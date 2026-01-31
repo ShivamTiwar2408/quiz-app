@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is DNS-based load balancing?",
+    "options": {
+      "A": "Using DNS servers as load balancers",
+      "B": "Returning different IP addresses for the same domain to distribute traffic",
+      "C": "Encrypting DNS queries for security",
+      "D": "Caching DNS responses for performance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS load balancing returns different IP addresses (multiple A records or geographic routing) for the same domain name, distributing client connections across multiple servers.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is DNS round-robin and what is its main limitation?",
+    "options": {
+      "A": "Rotating DNS servers; limited by server count",
+      "B": "Returning multiple IPs in rotating order; no health checking",
+      "C": "Encrypting DNS in rotation; limited by key size",
+      "D": "Caching DNS responses; limited by TTL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS round-robin returns multiple A records in rotating order. Its main limitation is no health awareness—it continues returning IPs of failed servers until TTL expires and records are updated.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "How does GeoDNS improve upon basic DNS round-robin?",
+    "options": {
+      "A": "It's faster at resolving queries",
+      "B": "It returns IPs based on client geographic location",
+      "C": "It encrypts DNS responses",
+      "D": "It caches responses longer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GeoDNS (geographic DNS) returns different IPs based on the resolver's location, directing users to nearby servers. This reduces latency and can comply with data residency requirements.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A global application uses DNS load balancing with 5-minute TTL. A server fails. What is the maximum time users might still be directed to the failed server?",
+    "options": {
+      "A": "Immediately stops",
+      "B": "Up to 5 minutes",
+      "C": "Potentially longer than 5 minutes due to caching layers",
+      "D": "Exactly 5 minutes"
+    },
+    "correct_answers": ["C"],
+    "explanation": "While TTL is 5 minutes, intermediate resolvers, browsers, and OS caches may not honor TTL strictly. Some cache longer. Actual propagation can exceed TTL, making DNS failover slower than desired.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which are advantages of DNS load balancing? (Choose all that apply)",
+    "options": {
+      "A": "No additional infrastructure required",
+      "B": "Works globally without deploying load balancers everywhere",
+      "C": "Instant failover when servers fail",
+      "D": "Simple to implement"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "DNS LB requires no extra infrastructure, works globally, and is simple. However, failover is NOT instant—it depends on TTL expiration and cache behavior, which can take minutes.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is the relationship between DNS TTL and failover speed in DNS load balancing?",
+    "options": {
+      "A": "Higher TTL = faster failover",
+      "B": "Lower TTL = faster failover but more DNS queries",
+      "C": "TTL doesn't affect failover",
+      "D": "TTL only affects caching, not failover"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lower TTL means cached records expire faster, allowing quicker updates during failover. The tradeoff is increased DNS query volume. Production systems balance between failover speed and DNS load.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A company uses Route 53 with health checks and failover routing. How does this improve upon basic DNS round-robin?",
+    "options": {
+      "A": "It doesn't improve anything",
+      "B": "Health checks automatically remove unhealthy endpoints from DNS responses",
+      "C": "It encrypts DNS traffic",
+      "D": "It reduces DNS query latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Managed DNS services like Route 53 perform health checks and automatically stop returning IPs of unhealthy endpoints. This addresses the main limitation of basic DNS round-robin.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "True or False: DNS load balancing can distribute load evenly across servers.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS LB distributes DNS queries, not actual load. One resolved IP might receive requests from thousands of users behind a corporate NAT, while another gets few. It's coarse-grained distribution.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which DNS record type enables weighted distribution of traffic?",
+    "options": {
+      "A": "A record only",
+      "B": "CNAME record",
+      "C": "Weighted routing policies (managed DNS feature)",
+      "D": "MX record"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Basic DNS doesn't support weights. Managed DNS services (Route 53, Cloudflare) offer weighted routing policies that return different records based on configured weights, enabling traffic splitting.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A multi-region application needs to route users to the nearest healthy region. Which DNS strategy is most appropriate?",
+    "options": {
+      "A": "Simple round-robin",
+      "B": "Latency-based routing with health checks",
+      "C": "Single A record",
+      "D": "CNAME to a load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Latency-based routing directs users to the region with lowest latency. Combined with health checks, it automatically fails over to the next-best region if the nearest is unhealthy.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is 'DNS failover' and when is it triggered?",
+    "options": {
+      "A": "Switching DNS providers when one fails",
+      "B": "Automatically updating DNS to remove failed endpoints based on health checks",
+      "C": "Manually updating DNS records during outages",
+      "D": "Caching DNS responses for reliability"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS failover automatically updates DNS responses when health checks detect endpoint failures. The failed endpoint's IP is removed from responses until it recovers. Requires managed DNS with health checking.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "Why might DNS load balancing be combined with traditional load balancers?",
+    "options": {
+      "A": "DNS LB is always sufficient alone",
+      "B": "DNS for global/regional distribution; LB for fine-grained server distribution",
+      "C": "To increase DNS query speed",
+      "D": "Traditional LBs don't work without DNS"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS LB handles global traffic distribution (GeoDNS to regions). Traditional LBs at each region handle fine-grained distribution across servers with health checks, session persistence, and instant failover.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  }
+]

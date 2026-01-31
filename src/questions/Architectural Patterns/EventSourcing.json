@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is event sourcing?",
+    "options": {
+      "A": "Logging errors",
+      "B": "Storing all changes to application state as a sequence of immutable events",
+      "C": "A backup strategy",
+      "D": "A caching technique"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event sourcing: instead of storing current state, store events that led to it. Account balance isn't stored; it's computed from: Deposited $100, Withdrew $30, Deposited $50. Complete audit trail, can rebuild state.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the difference between event sourcing and traditional CRUD?",
+    "options": {
+      "A": "They are the same",
+      "B": "CRUD overwrites state; event sourcing appends events and derives state",
+      "C": "Event sourcing is faster",
+      "D": "CRUD stores more data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CRUD: UPDATE account SET balance=120. Previous state lost. Event sourcing: append 'Deposited $20' event. All history preserved. Can answer: 'What was balance on March 1?' or 'Why is balance $120?'",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What are the benefits of event sourcing?",
+    "options": {
+      "A": "Complete audit trail and history",
+      "B": "Ability to rebuild state and debug by replaying events",
+      "C": "Temporal queries (state at any point in time)",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Event sourcing benefits: full audit trail (compliance), temporal queries (state at any time), debugging (replay events), event-driven integration, can add new projections from historical events.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is an event store?",
+    "options": {
+      "A": "A retail store",
+      "B": "A database optimized for storing and retrieving event streams",
+      "C": "A cache",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event store: append-only database for events. Features: ordered streams per aggregate, optimistic concurrency, subscriptions for new events. Examples: EventStoreDB, Kafka (as event store), custom on PostgreSQL.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a projection in event sourcing?",
+    "options": {
+      "A": "A movie projection",
+      "B": "A read model built by processing events—optimized for specific queries",
+      "C": "A backup",
+      "D": "An index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Projection: read model derived from events. Process events to build query-optimized views. Example: events → 'current account balances' table. Can have multiple projections for different query needs. Eventually consistent.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the relationship between event sourcing and CQRS?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Often used together—event sourcing for writes, CQRS projections for reads",
+      "C": "They are incompatible",
+      "D": "CQRS replaces event sourcing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event sourcing + CQRS: natural fit. Write side: append events. Read side: projections built from events, optimized for queries. Separation allows independent scaling and optimization. Common pattern.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is event replay?",
+    "options": {
+      "A": "Playing videos",
+      "B": "Rebuilding state by processing all events from the beginning",
+      "C": "Deleting events",
+      "D": "Copying events"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event replay: process events from start to rebuild state. Use cases: recover from bugs, build new projections, migrate to new system, debugging. Powerful but can be slow for long event histories.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a snapshot in event sourcing?",
+    "options": {
+      "A": "A photograph",
+      "B": "A periodic save of current state to avoid replaying all events from the beginning",
+      "C": "A backup",
+      "D": "An event type"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Snapshot: save state periodically. To rebuild: load latest snapshot, replay only events after it. Optimization for aggregates with many events. Tradeoff: complexity vs replay performance.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is a challenge of event sourcing?",
+    "options": {
+      "A": "Too simple",
+      "B": "Event schema evolution, eventual consistency of projections, increased complexity",
+      "C": "No audit trail",
+      "D": "Can't store history"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event sourcing challenges: schema evolution (old events with old schema), eventual consistency (projections lag), complexity (more moving parts), storage growth, learning curve. Not for every system.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How do you handle event schema changes in event sourcing?",
+    "options": {
+      "A": "Delete old events",
+      "B": "Upcasting (transform old events to new schema) or versioned event handlers",
+      "C": "Ignore old events",
+      "D": "Rewrite history"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Schema evolution strategies: upcasting (transform old events when reading), versioned handlers (handle v1 and v2 events), weak schema (flexible formats). Events are immutable—can't change them.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "Which domains benefit most from event sourcing?",
+    "options": {
+      "A": "Simple CRUD applications",
+      "B": "Financial systems, audit-heavy domains, systems needing temporal queries",
+      "C": "Static websites",
+      "D": "Simple blogs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event sourcing fits: financial (audit trail, regulations), healthcare (history matters), e-commerce (order history), any domain where 'why' and 'when' matter as much as 'what'. Overkill for simple CRUD.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "A bank needs complete audit trail of all account transactions with ability to query historical balances. Best approach?",
+    "options": {
+      "A": "Traditional CRUD with logging",
+      "B": "Event sourcing—store all transactions as events, derive current and historical balances",
+      "C": "Delete old transactions",
+      "D": "Store only current balance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Banking + audit + temporal queries = event sourcing sweet spot. Store: AccountOpened, MoneyDeposited, MoneyWithdrawn events. Query any point in time. Complete audit trail. Regulatory compliance built-in.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  }
+]

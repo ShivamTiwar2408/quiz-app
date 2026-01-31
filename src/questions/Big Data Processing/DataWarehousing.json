@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a data warehouse?",
+    "options": {
+      "A": "A physical storage facility",
+      "B": "A centralized repository optimized for analytical queries on historical data",
+      "C": "A transactional database",
+      "D": "A file system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data warehouse: subject-oriented, integrated, time-variant, non-volatile data store for analytics. Optimized for read-heavy OLAP workloads. Examples: Snowflake, Redshift, BigQuery, Teradata.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the difference between OLTP and OLAP?",
+    "options": {
+      "A": "They are the same",
+      "B": "OLTP: transactional, many small writes; OLAP: analytical, complex queries on large datasets",
+      "C": "OLTP is newer",
+      "D": "OLAP is for small data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OLTP: Online Transaction Processing—banking, e-commerce. Many concurrent users, small transactions. OLAP: Online Analytical Processing—reporting, BI. Few users, complex aggregations. Different optimization needs.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a star schema?",
+    "options": {
+      "A": "A database logo",
+      "B": "A dimensional model with a central fact table connected to dimension tables",
+      "C": "A network topology",
+      "D": "A file format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Star schema: fact table (measures, foreign keys) at center, dimension tables (descriptive attributes) around it. Simple joins, fast queries. Example: sales_fact → date_dim, product_dim, store_dim.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a fact table?",
+    "options": {
+      "A": "A table of true statements",
+      "B": "A table containing measurable business metrics and foreign keys to dimensions",
+      "C": "A lookup table",
+      "D": "A temporary table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fact table: business measurements. Contains: metrics (revenue, quantity, cost), foreign keys to dimensions, often a timestamp. Grain: level of detail (per transaction, per day). Usually the largest table.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a dimension table?",
+    "options": {
+      "A": "A 3D table",
+      "B": "A table containing descriptive attributes used to filter and group facts",
+      "C": "A fact table",
+      "D": "A temporary table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dimension table: descriptive context. Examples: customer (name, address, segment), product (name, category, brand), date (day, month, quarter). Used in WHERE and GROUP BY. Denormalized for query performance.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a snowflake schema?",
+    "options": {
+      "A": "A weather database",
+      "B": "A star schema where dimension tables are normalized into multiple related tables",
+      "C": "A cloud provider",
+      "D": "A caching pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Snowflake schema: normalized dimensions. product_dim → category_dim → department_dim. Saves storage, maintains integrity. Trade-off: more joins, slower queries. Star schema generally preferred for analytics.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is columnar storage and why is it used in data warehouses?",
+    "options": {
+      "A": "Storing data in columns",
+      "B": "Storing data by column rather than row, enabling better compression and faster analytical queries",
+      "C": "A type of index",
+      "D": "A backup method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Columnar storage: store column values together. Benefits: better compression (similar values), read only needed columns, vectorized processing. Perfect for OLAP: SELECT SUM(revenue) reads only revenue column.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is data mart?",
+    "options": {
+      "A": "A data store",
+      "B": "A subset of a data warehouse focused on a specific business area or department",
+      "C": "A shopping application",
+      "D": "A data lake"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data mart: department-specific warehouse subset. Marketing mart, finance mart, sales mart. Benefits: simpler for users, better performance, security isolation. Can be dependent (from warehouse) or independent.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is MPP in data warehousing?",
+    "options": {
+      "A": "Multi-Purpose Processing",
+      "B": "Massively Parallel Processing—distributing queries across multiple nodes",
+      "C": "Main Processing Power",
+      "D": "Memory Processing Protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MPP: query distributed across nodes. Each node processes portion of data. Results combined. Enables petabyte-scale analytics. Redshift, Snowflake, BigQuery all use MPP. Linear scalability.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the difference between data warehouse and data lake?",
+    "options": {
+      "A": "They are the same",
+      "B": "Warehouse: structured, schema-on-write, SQL; Lake: raw, schema-on-read, any format",
+      "C": "Lake is smaller",
+      "D": "Warehouse stores files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data warehouse: curated, structured, transformed data. Schema defined upfront. SQL queries. Data lake: raw data, any format (JSON, Parquet, logs). Schema applied when reading. Cheaper storage, more flexible.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a surrogate key in dimensional modeling?",
+    "options": {
+      "A": "A natural business key",
+      "B": "An artificial key (usually integer) assigned by the warehouse, independent of source systems",
+      "C": "A foreign key",
+      "D": "A composite key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Surrogate key: warehouse-generated ID. Benefits: handles source key changes, supports SCD Type 2 (multiple versions), consistent across sources, smaller joins (integer vs string). Best practice in dimensional modeling.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your company needs to analyze 5 years of sales data with complex aggregations. What system would you use?",
+    "options": {
+      "A": "OLTP database",
+      "B": "Data warehouse optimized for analytical queries with columnar storage",
+      "C": "File system",
+      "D": "Cache"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Historical analytics = data warehouse. Columnar storage for aggregations, MPP for scale, star schema for intuitive queries. OLTP would be too slow, impact production. Warehouse: Snowflake, Redshift, BigQuery.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  }
+]

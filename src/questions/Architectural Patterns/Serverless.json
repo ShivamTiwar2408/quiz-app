@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is serverless architecture?",
+    "options": {
+      "A": "Architecture without any servers",
+      "B": "A cloud model where the provider manages servers, scaling, and infrastructure; you only write code",
+      "C": "Running servers locally",
+      "D": "A type of database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless: servers exist but are abstracted away. Provider handles provisioning, scaling, patching. You deploy functions/containers, pay per execution. Examples: AWS Lambda, Azure Functions, Google Cloud Functions.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is Function as a Service (FaaS)?",
+    "options": {
+      "A": "A database service",
+      "B": "A serverless compute model where you deploy individual functions that run in response to events",
+      "C": "A networking service",
+      "D": "A storage service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "FaaS: deploy functions (small code units), triggered by events (HTTP, queue, schedule). Provider runs function, scales automatically, bills per invocation. AWS Lambda, Azure Functions, Google Cloud Functions.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is cold start in serverless?",
+    "options": {
+      "A": "Server room temperature",
+      "B": "Latency when a function instance must be initialized because no warm instance is available",
+      "C": "A deployment strategy",
+      "D": "A testing method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cold start: first invocation (or after idle timeout) requires: container spin-up, runtime initialization, code loading. Can add 100ms-several seconds latency. Warm starts reuse existing instances—much faster.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What are the benefits of serverless architecture?",
+    "options": {
+      "A": "No scaling, fixed costs",
+      "B": "Auto-scaling, pay-per-use, no server management, faster time to market",
+      "C": "More operational overhead",
+      "D": "Slower development"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless benefits: automatic scaling (0 to millions), pay only for execution time, no patching/maintenance, focus on code not infrastructure. Great for variable workloads, MVPs, event-driven systems.",
+    "difficulty": "easy",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What are the limitations of serverless?",
+    "options": {
+      "A": "No limitations",
+      "B": "Cold starts, execution time limits, vendor lock-in, debugging complexity, statelessness",
+      "C": "Too cheap",
+      "D": "Too fast"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless limitations: cold start latency, execution timeouts (15 min Lambda), memory limits, vendor lock-in, harder debugging/monitoring, stateless (need external state), connection limits (DB pooling issues).",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "When is serverless NOT a good choice?",
+    "options": {
+      "A": "Event-driven workloads",
+      "B": "Long-running processes, consistent high-traffic, latency-sensitive applications",
+      "C": "Infrequent batch jobs",
+      "D": "API backends with variable traffic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Avoid serverless for: long-running tasks (timeout limits), consistent high load (containers cheaper), ultra-low latency needs (cold starts), complex stateful workflows, heavy compute (cost can exceed VMs).",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the pricing model for serverless functions?",
+    "options": {
+      "A": "Fixed monthly fee",
+      "B": "Pay per invocation and execution duration (GB-seconds)",
+      "C": "Pay per server",
+      "D": "Free always"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless pricing: per request + per GB-second of execution. Lambda: $0.20/million requests + $0.0000166667/GB-second. Zero traffic = zero cost. High traffic can become expensive—model carefully.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "How do serverless functions handle state?",
+    "options": {
+      "A": "State is stored in the function",
+      "B": "Functions are stateless; state must be stored externally (database, cache, S3)",
+      "C": "State is automatic",
+      "D": "No state is needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless functions are stateless—instances can be created/destroyed anytime. Store state in: DynamoDB, Redis, S3, RDS. Design for statelessness. Step Functions for stateful workflows.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is AWS Step Functions?",
+    "options": {
+      "A": "A walking tracker",
+      "B": "A serverless orchestration service for coordinating multiple Lambda functions into workflows",
+      "C": "A database",
+      "D": "A networking service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Step Functions: serverless workflow orchestration. Define state machines with steps (Lambda, other services). Handles: sequencing, branching, error handling, retries, parallel execution. Visual workflow designer.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is provisioned concurrency in AWS Lambda?",
+    "options": {
+      "A": "Limiting concurrent executions",
+      "B": "Pre-warming function instances to eliminate cold starts for latency-sensitive workloads",
+      "C": "A pricing tier",
+      "D": "A security feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Provisioned concurrency: keep N instances warm and ready. Eliminates cold starts for those instances. Costs more (pay for idle time) but guarantees low latency. Use for latency-sensitive endpoints.",
+    "difficulty": "hard",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "What is the 'serverless database' concept?",
+    "options": {
+      "A": "Database without storage",
+      "B": "Databases that auto-scale and charge per-use, like Aurora Serverless or DynamoDB on-demand",
+      "C": "In-memory only databases",
+      "D": "Databases that don't exist"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serverless databases: auto-scale capacity, pay per request/storage. Aurora Serverless: scales compute automatically. DynamoDB on-demand: pay per read/write. No capacity planning. Matches serverless compute model.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  },
+  {
+    "question": "A startup needs to build an MVP API with unpredictable traffic. Best architecture choice?",
+    "options": {
+      "A": "Provision large EC2 instances",
+      "B": "Serverless (API Gateway + Lambda + DynamoDB)—scales automatically, pay only for usage",
+      "C": "On-premise servers",
+      "D": "Dedicated hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "MVP with unpredictable traffic: serverless ideal. Zero cost at zero traffic, scales automatically with growth, no ops overhead. API Gateway + Lambda + DynamoDB is classic serverless stack. Focus on product, not infrastructure.",
+    "difficulty": "medium",
+    "category": "architectural patterns"
+  }
+]

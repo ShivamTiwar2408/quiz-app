@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a materialized view?",
+    "options": {
+      "A": "A regular view",
+      "B": "A database object that stores the result of a query physically, unlike regular views which are virtual",
+      "C": "A backup table",
+      "D": "An index type"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Materialized view: query result stored as a physical table. Regular view: just a saved query, executed each time. Materialized views trade storage for speed—pre-computed results, instant reads.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the main advantage of materialized views?",
+    "options": {
+      "A": "Less storage",
+      "B": "Fast reads of pre-computed complex queries without re-executing expensive operations",
+      "C": "Automatic data encryption",
+      "D": "Simpler schema"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Materialized view advantage: complex aggregations, joins computed once, stored. Queries read stored result instantly. Perfect for: dashboards, reports, frequently-run expensive queries.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the main challenge with materialized views?",
+    "options": {
+      "A": "They're too fast",
+      "B": "Keeping them in sync with base tables—refresh strategies and staleness",
+      "C": "They use no storage",
+      "D": "They can't store data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Challenge: data staleness. Base tables change, materialized view becomes outdated. Must refresh: on-demand, scheduled, or incrementally. Tradeoff between freshness and refresh cost.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What are the refresh strategies for materialized views?",
+    "options": {
+      "A": "Only manual refresh",
+      "B": "Complete refresh (rebuild), incremental/fast refresh (apply changes), on-commit refresh",
+      "C": "No refresh needed",
+      "D": "Automatic only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Refresh strategies: Complete (drop and rebuild—simple but expensive), Incremental (apply only changes—faster but complex), On-commit (refresh after each transaction—always fresh but overhead).",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is incremental refresh for materialized views?",
+    "options": {
+      "A": "Rebuilding the entire view",
+      "B": "Applying only the changes from base tables since last refresh, not recomputing everything",
+      "C": "Deleting the view",
+      "D": "Adding more storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Incremental (fast) refresh: track changes to base tables (via logs), apply deltas to materialized view. Much faster than complete refresh for large views with small changes. Requires proper setup.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "When would you use a materialized view instead of a regular view?",
+    "options": {
+      "A": "When the query is simple",
+      "B": "When the underlying query is expensive and results are queried frequently but don't need real-time freshness",
+      "C": "When storage is unlimited",
+      "D": "Always"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Use materialized views when: query is expensive (complex joins, aggregations), queried frequently, slight staleness acceptable. Regular views: simple queries, always need current data, storage constrained.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "Which databases support materialized views?",
+    "options": {
+      "A": "Only Oracle",
+      "B": "PostgreSQL, Oracle, SQL Server, Snowflake, and many others",
+      "C": "No databases support them",
+      "D": "Only NoSQL databases"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Materialized views supported by: PostgreSQL, Oracle, SQL Server (indexed views), MySQL (simulated), Snowflake, Redshift, BigQuery. Implementation details vary. Check your database's capabilities.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a common use case for materialized views?",
+    "options": {
+      "A": "Real-time transaction processing",
+      "B": "Dashboard and reporting queries that aggregate large amounts of data",
+      "C": "Simple CRUD operations",
+      "D": "Backup and recovery"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Common use cases: dashboards (daily sales summary), reports (monthly aggregates), data warehousing (pre-joined dimension tables), search (pre-computed rankings). Anywhere expensive queries run repeatedly.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "How do materialized views differ from summary tables?",
+    "options": {
+      "A": "They are identical",
+      "B": "Materialized views are database-managed with built-in refresh; summary tables are manually maintained",
+      "C": "Summary tables are faster",
+      "D": "Materialized views can't store aggregates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Materialized views: database manages storage, provides refresh mechanisms, query optimizer aware. Summary tables: you create table, write refresh logic, maintain manually. MV is more elegant when supported.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is query rewrite in the context of materialized views?",
+    "options": {
+      "A": "Manually editing queries",
+      "B": "Optimizer automatically uses materialized view to answer queries on base tables",
+      "C": "Deleting queries",
+      "D": "Encrypting queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Query rewrite: optimizer recognizes query can be answered from materialized view instead of base tables. Transparent to application—queries base tables, gets MV performance. Oracle, PostgreSQL support this.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "A data warehouse has a query joining 10 tables that takes 5 minutes. It runs hourly for reports. Best solution?",
+    "options": {
+      "A": "Run it less often",
+      "B": "Create a materialized view refreshed hourly, reports query the materialized view",
+      "C": "Add more indexes",
+      "D": "Delete some tables"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Perfect MV use case: expensive query (5 min), runs repeatedly (hourly), staleness acceptable (hourly refresh OK). Create MV, schedule hourly refresh. Reports get instant results from pre-computed data.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the storage tradeoff with materialized views?",
+    "options": {
+      "A": "No storage needed",
+      "B": "Materialized views consume storage proportional to their result set size",
+      "C": "They reduce storage",
+      "D": "Storage is unlimited"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Storage cost: MV stores full result set. Large aggregations = large MV. Multiple MVs multiply storage. Consider: result size, number of MVs, refresh frequency. Balance performance gain vs storage cost.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What does JWT stand for and what is its purpose?",
+    "options": {
+      "A": "Java Web Token - for Java applications only",
+      "B": "JSON Web Token - a compact, self-contained token for securely transmitting information",
+      "C": "JavaScript Web Transfer - for transferring JS code",
+      "D": "JSON Wrapper Type - for wrapping JSON data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWT (JSON Web Token) is a standard (RFC 7519) for creating tokens that contain claims (user info, permissions). They're self-contained, meaning the server can validate them without database lookups.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "What are the three parts of a JWT?",
+    "options": {
+      "A": "Username, password, timestamp",
+      "B": "Header, payload, signature",
+      "C": "Public key, private key, data",
+      "D": "Token, refresh token, expiry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWT has three Base64-encoded parts separated by dots: Header (algorithm, type), Payload (claims/data), Signature (verification). Format: xxxxx.yyyyy.zzzzz",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "Why is the JWT signature important?",
+    "options": {
+      "A": "It encrypts the token contents",
+      "B": "It proves the token hasn't been tampered with and was issued by a trusted source",
+      "C": "It compresses the token",
+      "D": "It makes the token expire"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The signature is created using the header, payload, and a secret/private key. Servers verify the signature to ensure the token is authentic and unmodified. Note: signature provides integrity, not confidentiality.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "True or False: JWT payload data is encrypted and cannot be read without the secret key.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWT payload is Base64-encoded, NOT encrypted. Anyone can decode and read it. The signature only prevents tampering, not reading. Never put sensitive data in JWTs unless using JWE (encrypted JWTs).",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the 'exp' claim in a JWT?",
+    "options": {
+      "A": "The expected user",
+      "B": "The expiration time after which the token is invalid",
+      "C": "The export format",
+      "D": "The experience level"
+    },
+    "correct_answers": ["B"],
+    "explanation": "'exp' (expiration) is a standard claim containing a Unix timestamp. Servers should reject tokens where current time > exp. This limits the window for stolen tokens to be misused.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "A JWT is stolen by an attacker. What can limit the damage?",
+    "options": {
+      "A": "Nothing, JWTs are completely secure",
+      "B": "Short expiration times and token refresh mechanisms",
+      "C": "Making the JWT longer",
+      "D": "Using a different algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Short-lived JWTs (minutes, not days) limit the attack window. Refresh tokens (stored securely, can be revoked) issue new JWTs. Token blacklisting can invalidate compromised tokens before expiry.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the difference between symmetric (HS256) and asymmetric (RS256) JWT signing?",
+    "options": {
+      "A": "HS256 is faster, RS256 is slower",
+      "B": "HS256 uses shared secret; RS256 uses public/private key pair",
+      "C": "RS256 is deprecated",
+      "D": "They produce different token formats"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HS256: same secret signs and verifies (simpler, secret must be shared). RS256: private key signs, public key verifies (better for distributed systems—verifiers don't need the signing secret).",
+    "difficulty": "hard",
+    "category": "api security"
+  },
+  {
+    "question": "Where should JWTs be stored in a browser application?",
+    "options": {
+      "A": "Always in localStorage",
+      "B": "Always in cookies",
+      "C": "HttpOnly cookies for security, or memory for SPAs (tradeoffs exist)",
+      "D": "In the URL"
+    },
+    "correct_answers": ["C"],
+    "explanation": "HttpOnly cookies prevent XSS access but require CSRF protection. localStorage is accessible to JS (XSS risk). Memory is safest but lost on refresh. Each has tradeoffs; HttpOnly cookies are often recommended.",
+    "difficulty": "hard",
+    "category": "api security"
+  },
+  {
+    "question": "What is a refresh token and how does it relate to JWTs?",
+    "options": {
+      "A": "A token that refreshes the page",
+      "B": "A long-lived token used to obtain new short-lived JWTs without re-authentication",
+      "C": "A token that updates user data",
+      "D": "A backup JWT"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Refresh tokens are long-lived, stored securely (HttpOnly cookie, server-side), and exchanged for new JWTs when they expire. They can be revoked server-side, unlike stateless JWTs.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "Which JWT claims are registered (standard) claims? (Choose all that apply)",
+    "options": {
+      "A": "iss (issuer)",
+      "B": "sub (subject)",
+      "C": "username",
+      "D": "iat (issued at)"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Registered claims are predefined: iss (issuer), sub (subject), aud (audience), exp (expiration), nbf (not before), iat (issued at), jti (JWT ID). 'username' would be a custom/private claim.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "A microservices architecture uses JWTs for service-to-service authentication. What is an advantage of this approach?",
+    "options": {
+      "A": "Services must call an auth server for every request",
+      "B": "Services can validate tokens locally without network calls",
+      "C": "JWTs automatically encrypt all service communication",
+      "D": "JWTs replace HTTPS"
+    },
+    "correct_answers": ["B"],
+    "explanation": "JWTs are self-contained—services verify the signature locally using the public key or shared secret. No auth server roundtrip needed per request, reducing latency and auth server load.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the 'none' algorithm vulnerability in JWT?",
+    "options": {
+      "A": "A secure algorithm for testing",
+      "B": "An attack where tokens with 'alg: none' bypass signature verification",
+      "C": "A compression algorithm",
+      "D": "A deprecated but safe algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Some JWT libraries accepted 'alg: none' (no signature), allowing attackers to forge tokens. Servers must explicitly whitelist allowed algorithms and reject 'none'. This was a serious vulnerability in early implementations.",
+    "difficulty": "hard",
+    "category": "api security"
+  }
+]

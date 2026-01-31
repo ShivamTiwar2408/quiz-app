@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is full-text search?",
+    "options": {
+      "A": "Searching for exact matches",
+      "B": "A technique for searching natural language text, handling relevance ranking, stemming, and fuzzy matching",
+      "C": "A database backup",
+      "D": "A file search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Full-text search: search natural language documents. Features: relevance ranking, stemming (running→run), synonyms, fuzzy matching (typos), phrase search. Beyond simple LIKE queries. Elasticsearch, Solr, PostgreSQL FTS.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is an inverted index?",
+    "options": {
+      "A": "A reversed database",
+      "B": "A data structure mapping terms to the documents containing them, enabling fast text search",
+      "C": "A backup index",
+      "D": "A primary key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Inverted index: term → [doc1, doc2, doc3]. Like a book index. 'database' → [doc5, doc12, doc47]. Enables O(1) lookup of which documents contain a term. Foundation of search engines. Elasticsearch uses this.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is tokenization in full-text search?",
+    "options": {
+      "A": "Creating security tokens",
+      "B": "Breaking text into individual terms (tokens) for indexing",
+      "C": "Encrypting text",
+      "D": "Compressing text"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tokenization: split text into searchable units. 'The quick brown fox' → ['the', 'quick', 'brown', 'fox']. Analyzers handle: lowercase, remove punctuation, split on whitespace. Language-specific rules (Chinese, Japanese different).",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is stemming?",
+    "options": {
+      "A": "Removing stems from plants",
+      "B": "Reducing words to their root form so variations match the same term",
+      "C": "Adding prefixes",
+      "D": "Sorting words"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stemming: running, runs, ran → run. Increases recall (find more matches). Algorithms: Porter, Snowball. Trade-off: may over-stem (university, universe → univers). Alternative: lemmatization (more accurate, slower).",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is TF-IDF?",
+    "options": {
+      "A": "A file format",
+      "B": "Term Frequency-Inverse Document Frequency—a relevance scoring method",
+      "C": "A database type",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TF-IDF: relevance scoring. TF: how often term appears in document (more = more relevant). IDF: how rare term is across all documents (rarer = more significant). 'the' has low IDF, 'kubernetes' has high IDF.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is Elasticsearch?",
+    "options": {
+      "A": "A rubber band database",
+      "B": "A distributed search and analytics engine built on Apache Lucene",
+      "C": "A relational database",
+      "D": "A caching system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Elasticsearch: distributed, RESTful search engine. Built on Lucene. Features: full-text search, aggregations, real-time indexing, horizontal scaling. Use cases: log analysis (ELK stack), e-commerce search, metrics.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is fuzzy matching in search?",
+    "options": {
+      "A": "Exact matching",
+      "B": "Finding results that are similar but not identical, handling typos and misspellings",
+      "C": "Case-sensitive search",
+      "D": "Numeric search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fuzzy matching: find 'elasticsearch' when user types 'elasticsearh'. Uses edit distance (Levenshtein). Configurable fuzziness (1-2 character differences). Essential for user-facing search. Trade-off: more results, some irrelevant.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between search relevance and recall?",
+    "options": {
+      "A": "They are the same",
+      "B": "Relevance: how well results match intent; Recall: percentage of relevant documents returned",
+      "C": "Recall is faster",
+      "D": "Relevance returns more results"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Precision: relevant results / total results (quality). Recall: relevant results found / all relevant documents (completeness). Trade-off: high recall may lower precision. Tune based on use case (legal: high recall, e-commerce: high precision).",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is a search analyzer?",
+    "options": {
+      "A": "A person who analyzes searches",
+      "B": "A component that processes text during indexing and querying—tokenizing, filtering, transforming",
+      "C": "A log analyzer",
+      "D": "A security scanner"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Analyzer: pipeline of character filters → tokenizer → token filters. Example: lowercase filter, stemmer, stop word removal. Same analyzer for index and query ensures matching. Custom analyzers for specific needs.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What are stop words?",
+    "options": {
+      "A": "Error messages",
+      "B": "Common words (the, is, at) often excluded from indexing as they add little search value",
+      "C": "Keywords",
+      "D": "Search operators"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stop words: 'the', 'a', 'is', 'and'—too common to be useful. Removing: smaller index, faster search. Caution: 'to be or not to be' loses meaning without stop words. Modern engines often keep them, rely on TF-IDF.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "When would you use Elasticsearch vs a relational database's full-text search?",
+    "options": {
+      "A": "Always use Elasticsearch",
+      "B": "Elasticsearch for complex search at scale; built-in FTS for simpler needs within existing database",
+      "C": "Always use relational",
+      "D": "They are identical"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Built-in FTS (PostgreSQL): simpler setup, no sync needed, good for moderate scale. Elasticsearch: complex queries, faceted search, high volume, advanced relevance tuning, distributed. Trade-off: operational complexity vs capabilities.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "You're building an e-commerce site with millions of products. Users need to search by name, description, and handle typos. What solution?",
+    "options": {
+      "A": "SQL LIKE queries",
+      "B": "Elasticsearch with fuzzy matching, relevance tuning, and faceted search",
+      "C": "Key-value store",
+      "D": "File system search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "E-commerce search: Elasticsearch ideal. Features needed: fuzzy matching (typos), relevance ranking (popular products higher), faceted search (filter by category, price), autocomplete, synonyms. SQL LIKE won't scale or provide relevance.",
+    "difficulty": "easy",
+    "category": "databases"
+  }
+]

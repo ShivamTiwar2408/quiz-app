@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the Sidecar pattern?",
+    "options": {
+      "A": "A motorcycle attachment",
+      "B": "A helper container deployed alongside the main application container to provide supporting features",
+      "C": "A database pattern",
+      "D": "A frontend framework"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar: auxiliary container co-located with main app. Shares network/storage. Provides: logging, monitoring, security, networking. Main app unaware of sidecar. Foundation of service mesh (Envoy, Istio).",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the main benefit of the Sidecar pattern?",
+    "options": {
+      "A": "Faster application code",
+      "B": "Separates cross-cutting concerns from application code without modifying the app",
+      "C": "Reduces memory usage",
+      "D": "Eliminates network latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar benefits: separation of concerns (app focuses on business logic), language-agnostic (sidecar works with any app), independent updates, consistent infrastructure across services. No app code changes needed.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What are common use cases for sidecars?",
+    "options": {
+      "A": "Only logging",
+      "B": "Logging, monitoring, service mesh proxy, security, configuration management",
+      "C": "Database storage",
+      "D": "User authentication only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar use cases: log collection (Fluentd), metrics (Prometheus exporter), service mesh proxy (Envoy), TLS termination, config sync, secret injection, health checking. Infrastructure concerns externalized.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does a sidecar communicate with the main application?",
+    "options": {
+      "A": "Remote API calls",
+      "B": "Localhost networking, shared volumes, or IPC—they share the same pod/host",
+      "C": "Message queue only",
+      "D": "Database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar communication: same pod = shared localhost (127.0.0.1). Shared volumes for files. Low latency. App calls localhost:port, sidecar intercepts. Transparent to application in many cases.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is Envoy proxy and how does it relate to sidecars?",
+    "options": {
+      "A": "A database",
+      "B": "A high-performance proxy commonly deployed as a sidecar for service mesh functionality",
+      "C": "A programming language",
+      "D": "A container runtime"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Envoy: L7 proxy by Lyft. Deployed as sidecar. Handles: load balancing, circuit breaking, retries, observability, TLS. Foundation of Istio, AWS App Mesh. De facto service mesh data plane.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the resource overhead of sidecars?",
+    "options": {
+      "A": "No overhead",
+      "B": "Each sidecar consumes CPU and memory, multiplied across all service instances",
+      "C": "Only disk space",
+      "D": "Network bandwidth only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar overhead: each instance has sidecar. 100 pods = 100 sidecars. Envoy: ~50MB RAM, some CPU. At scale: significant. Trade-off: operational benefits vs resource cost. Consider sidecar-less alternatives.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does Kubernetes support the Sidecar pattern?",
+    "options": {
+      "A": "It doesn't support sidecars",
+      "B": "Multiple containers in a pod share network namespace and can share volumes",
+      "C": "Special sidecar resource type",
+      "D": "Only through plugins"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kubernetes pods: multiple containers share network (localhost), can share volumes. Perfect for sidecars. Init containers for setup. Sidecar containers (K8s 1.28+) for proper lifecycle management.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is sidecar injection?",
+    "options": {
+      "A": "Manual container configuration",
+      "B": "Automatically adding sidecar containers to pods, typically via admission webhooks",
+      "C": "Removing sidecars",
+      "D": "Updating sidecar code"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar injection: Istio/Linkerd automatically inject proxy sidecars. Kubernetes admission webhook intercepts pod creation, adds sidecar container. No manual configuration per service. Namespace-level enablement.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What happens if a sidecar fails?",
+    "options": {
+      "A": "Main app continues normally",
+      "B": "Depends on configuration—may affect main app if sidecar handles critical functions like networking",
+      "C": "Entire cluster fails",
+      "D": "Automatic recovery always"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar failure impact: if sidecar handles networking (service mesh), app can't communicate. If logging sidecar fails, app continues but loses logs. Design for graceful degradation. Health checks, restarts.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "Sidecar vs library: when to use each?",
+    "options": {
+      "A": "Always use sidecar",
+      "B": "Sidecar: language-agnostic, independent updates; Library: lower latency, simpler deployment",
+      "C": "Always use library",
+      "D": "They are identical"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sidecar: polyglot environments, independent versioning, no app changes. Library: lower overhead, simpler (no extra container), tighter integration. Netflix: libraries. Google/Lyft: sidecars. Depends on context.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the Ambassador pattern related to sidecars?",
+    "options": {
+      "A": "A diplomatic protocol",
+      "B": "A sidecar that proxies network connections from the main container to external services",
+      "C": "A logging pattern",
+      "D": "A database pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Ambassador: sidecar handles outbound connections. Main app connects to localhost, ambassador proxies to external service. Handles: retries, circuit breaking, service discovery. App simplified, ambassador handles complexity.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "Your team has services in Java, Python, and Go. How do you add consistent observability across all?",
+    "options": {
+      "A": "Rewrite all in one language",
+      "B": "Deploy observability sidecar that collects metrics/logs regardless of application language",
+      "C": "Skip observability for some services",
+      "D": "Use different tools per language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Polyglot observability: sidecar solution. Deploy same sidecar (e.g., OpenTelemetry collector) with each service. Collects metrics, traces, logs uniformly. Language-agnostic. Consistent dashboards across all services.",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a graph database?",
+    "options": {
+      "A": "A database for storing charts and graphs",
+      "B": "A database that uses graph structures with nodes, edges, and properties to represent and store data",
+      "C": "A visualization tool",
+      "D": "A type of relational database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Graph databases model data as nodes (entities) and edges (relationships). Both can have properties. Optimized for traversing relationships. Examples: Neo4j, Amazon Neptune, JanusGraph.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "When would you choose a graph database over a relational database?",
+    "options": {
+      "A": "For simple CRUD operations",
+      "B": "When relationships are as important as the data itself—social networks, recommendations, fraud detection",
+      "C": "For time-series data",
+      "D": "For document storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Graph DBs excel when: relationships are central (social graphs), you need to traverse many hops (friends-of-friends), relationship patterns matter (fraud rings). Relational joins become expensive at depth.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the performance advantage of graph databases for relationship queries?",
+    "options": {
+      "A": "They use less storage",
+      "B": "Traversing relationships is O(1) per hop via direct pointers, not expensive joins",
+      "C": "They compress data better",
+      "D": "They have faster writes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Graph DBs store relationships as direct pointers (index-free adjacency). Traversing from node to neighbor is O(1). Relational: each hop requires a join, O(log n) or worse. Graph wins at depth.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is Cypher in the context of graph databases?",
+    "options": {
+      "A": "An encryption algorithm",
+      "B": "Neo4j's declarative query language for pattern matching in graphs",
+      "C": "A graph visualization tool",
+      "D": "A backup format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cypher: Neo4j's query language. Pattern-based: MATCH (a:Person)-[:KNOWS]->(b:Person) WHERE a.name='Alice' RETURN b. Intuitive ASCII-art syntax for expressing graph patterns.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What are common use cases for graph databases?",
+    "options": {
+      "A": "Social networks and recommendations",
+      "B": "Fraud detection and knowledge graphs",
+      "C": "Network and IT operations",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Graph DB use cases: social networks (connections), recommendations (similar users/items), fraud detection (suspicious patterns), knowledge graphs (entities and relationships), network topology, identity resolution.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between a property graph and an RDF graph?",
+    "options": {
+      "A": "They are the same",
+      "B": "Property graph: nodes/edges have properties; RDF: subject-predicate-object triples, semantic web standard",
+      "C": "RDF is faster",
+      "D": "Property graphs don't support relationships"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Property graph: nodes and edges have key-value properties, flexible. RDF: W3C standard, triples (subject-predicate-object), designed for semantic web, uses URIs. Neo4j = property graph, Neptune supports both.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "How would you model a social network in a graph database?",
+    "options": {
+      "A": "One large table with all data",
+      "B": "Users as nodes, friendships as edges, with properties on both",
+      "C": "JSON documents",
+      "D": "Key-value pairs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Social network model: Person nodes (name, age properties), KNOWS edges (since property). Query: 'Find friends of friends who like jazz' becomes a simple traversal pattern, not complex joins.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a graph traversal?",
+    "options": {
+      "A": "Deleting a graph",
+      "B": "Walking through the graph by following edges from node to node",
+      "C": "Creating a backup",
+      "D": "Indexing nodes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Traversal: start at node(s), follow edges based on criteria, collect results. BFS (breadth-first) for shortest path, DFS (depth-first) for exploring branches. Core operation in graph queries.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is the 'six degrees of separation' problem and how do graph databases help?",
+    "options": {
+      "A": "A temperature measurement",
+      "B": "Finding connection paths between people; graph DBs efficiently traverse relationship chains",
+      "C": "A security protocol",
+      "D": "A backup strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Six degrees: any two people connected through ~6 relationships. Graph DBs: find shortest path between nodes efficiently. In relational DB, this requires 6 self-joins—extremely expensive.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is Amazon Neptune?",
+    "options": {
+      "A": "A planet",
+      "B": "AWS's managed graph database supporting both property graph and RDF models",
+      "C": "A message queue",
+      "D": "A compute service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Neptune: AWS managed graph DB. Supports property graphs (Gremlin queries) and RDF (SPARQL queries). Fully managed, highly available, encrypted. Good for AWS-native graph workloads.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is Gremlin?",
+    "options": {
+      "A": "A movie character",
+      "B": "A graph traversal language that's part of Apache TinkerPop",
+      "C": "A database engine",
+      "D": "A backup tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gremlin: graph traversal language from Apache TinkerPop. Imperative style: g.V().has('name','Alice').out('knows').values('name'). Supported by Neptune, JanusGraph, CosmosDB, and others.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "A fraud detection system needs to find accounts connected through shared attributes (phone, address, device). Best database choice?",
+    "options": {
+      "A": "Relational database with many joins",
+      "B": "Graph database—model accounts as nodes, shared attributes as edges, traverse to find fraud rings",
+      "C": "Key-value store",
+      "D": "Time-series database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fraud detection is a graph problem: find clusters of connected accounts. Graph DB: model relationships explicitly, traverse efficiently to find rings. Relational would require expensive recursive joins.",
+    "difficulty": "hard",
+    "category": "databases"
+  }
+]

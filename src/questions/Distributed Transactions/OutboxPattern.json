@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What problem does the Outbox pattern solve?",
+    "options": {
+      "A": "Database performance",
+      "B": "Ensuring atomic database update and event publishing without distributed transactions",
+      "C": "Caching",
+      "D": "Load balancing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Outbox pattern solves dual-write problem: updating database AND publishing event must both succeed or both fail. Without it, you might update DB but fail to publish event (or vice versa), causing inconsistency.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "How does the Outbox pattern work?",
+    "options": {
+      "A": "Write to message broker first, then database",
+      "B": "Write event to outbox table in same database transaction; separate process publishes events",
+      "C": "Use distributed transactions",
+      "D": "Skip event publishing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Outbox pattern: write business data AND event to outbox table in same local transaction (atomic). Separate process (polling or CDC) reads outbox and publishes to message broker. Guarantees consistency.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the 'dual-write problem'?",
+    "options": {
+      "A": "Writing to two databases",
+      "B": "Needing to update database and publish event atomically, but they're separate systems",
+      "C": "Writing duplicate data",
+      "D": "Slow write performance"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dual-write: you need to write to database AND message broker. If one fails after the other succeeds, systems become inconsistent. Can't use single transaction across different systems without distributed transactions.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "In the Outbox pattern, what does the outbox table contain?",
+    "options": {
+      "A": "User credentials",
+      "B": "Events to be published: event type, payload, status, timestamp",
+      "C": "Database backups",
+      "D": "Cache entries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Outbox table stores events awaiting publication: event ID, type, payload (JSON), aggregate ID, timestamp, status (pending/published). The relay process reads pending events and publishes them.",
+    "difficulty": "easy",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "How are events typically read from the outbox table? (Choose all that apply)",
+    "options": {
+      "A": "Polling—periodically query for unpublished events",
+      "B": "Change Data Capture (CDC)—stream changes from transaction log",
+      "C": "Direct message broker connection",
+      "D": "Manual export"
+    },
+    "correct_answers": ["A", "B"],
+    "explanation": "Two approaches: Polling (simple, query outbox periodically) or CDC (Debezium reads transaction log, streams changes). CDC is more efficient and lower latency. Both ensure events are eventually published.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What happens if the event relay process crashes after reading but before publishing?",
+    "options": {
+      "A": "Event is lost",
+      "B": "Event remains in outbox; relay retries on restart (at-least-once delivery)",
+      "C": "Database rolls back",
+      "D": "System crashes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event stays in outbox until marked published. If relay crashes, event is still pending. On restart, relay picks it up again. This provides at-least-once delivery—consumers must handle duplicates idempotently.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "True or False: The Outbox pattern guarantees exactly-once event delivery.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Outbox provides at-least-once delivery. If relay publishes but crashes before marking event as published, it will republish on restart. Consumers must be idempotent. Exactly-once requires additional mechanisms.",
+    "difficulty": "easy",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What should happen to outbox records after successful publishing?",
+    "options": {
+      "A": "Keep forever",
+      "B": "Mark as published and periodically delete old records",
+      "C": "Delete immediately",
+      "D": "Move to another database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mark events as published (for tracking/debugging), then periodically clean up old published records to prevent table growth. Some keep recent records for replay capability. Balance storage vs. operational needs.",
+    "difficulty": "easy",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "Which tools can implement the outbox relay using CDC?",
+    "options": {
+      "A": "Debezium",
+      "B": "Redis",
+      "C": "Nginx",
+      "D": "Kubernetes"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Debezium is a popular CDC platform that reads database transaction logs and streams changes to Kafka. It can capture outbox table changes and publish them as events. Efficient, low-latency alternative to polling.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is the relationship between Outbox pattern and Saga pattern?",
+    "options": {
+      "A": "They are the same pattern",
+      "B": "Outbox ensures reliable event publishing; Saga uses events to coordinate distributed transactions",
+      "C": "They are mutually exclusive",
+      "D": "Saga replaces Outbox"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Complementary patterns: Outbox ensures events are reliably published (solves dual-write). Saga coordinates multi-service transactions using events. Saga often relies on Outbox for reliable event delivery between steps.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "A service updates an order and needs to notify other services. Without Outbox, what could go wrong?",
+    "options": {
+      "A": "Nothing—direct publishing is fine",
+      "B": "DB update succeeds but event publish fails, leaving systems inconsistent",
+      "C": "Event publishes but DB update fails",
+      "D": "Both B and C are possible"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Without Outbox, either failure mode is possible: DB commits but publish fails (other services don't know), or publish succeeds but DB fails (event describes non-existent state). Outbox eliminates both scenarios.",
+    "difficulty": "medium",
+    "category": "distributed transactions"
+  },
+  {
+    "question": "What is an alternative to the Outbox pattern for reliable event publishing?",
+    "options": {
+      "A": "Event Sourcing—events ARE the source of truth",
+      "B": "Ignoring consistency",
+      "C": "Using faster networks",
+      "D": "Caching events"
+    },
+    "correct_answers": ["A"],
+    "explanation": "Event Sourcing: instead of storing state, store events. Events are the source of truth, naturally published. No dual-write problem—there's only one write (the event). Different architecture with its own trade-offs.",
+    "difficulty": "hard",
+    "category": "distributed transactions"
+  }
+]

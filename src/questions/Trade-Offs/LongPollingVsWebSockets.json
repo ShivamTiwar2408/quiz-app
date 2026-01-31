@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is long polling?",
+    "options": {
+      "A": "A voting system",
+      "B": "A technique where the client makes a request and the server holds it open until new data is available",
+      "C": "A database query",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Long polling: client requests, server waits (holds connection) until data available or timeout. Then responds, client immediately re-requests. Simulates push over HTTP. Works through proxies, firewalls.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is WebSocket?",
+    "options": {
+      "A": "A type of electrical socket",
+      "B": "A protocol providing full-duplex communication over a single persistent TCP connection",
+      "C": "A REST API",
+      "D": "A database connection"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket: persistent, bidirectional connection. Starts as HTTP upgrade, then raw TCP frames. Both client and server can send anytime. Low overhead after handshake. Ideal for: chat, gaming, live updates.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the main advantage of WebSockets over long polling?",
+    "options": {
+      "A": "Simpler implementation",
+      "B": "Lower latency and overhead—no repeated connection setup, true bidirectional communication",
+      "C": "Better browser support",
+      "D": "Works through all proxies"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket advantages: single connection (no reconnection overhead), true bidirectional (server pushes anytime), lower latency (no HTTP headers per message), efficient for high-frequency updates.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When would you choose long polling over WebSockets?",
+    "options": {
+      "A": "Never",
+      "B": "When you need to work through restrictive proxies/firewalls or have infrequent updates",
+      "C": "For real-time games",
+      "D": "For chat applications"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Long polling advantages: works through HTTP proxies (WebSocket may be blocked), simpler server implementation, stateless (easier scaling), sufficient for infrequent updates. Corporate networks often block WebSocket.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the connection overhead difference between long polling and WebSockets?",
+    "options": {
+      "A": "Same overhead",
+      "B": "Long polling: new HTTP connection per update; WebSocket: single persistent connection",
+      "C": "WebSocket has more overhead",
+      "D": "Long polling uses less bandwidth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Overhead comparison: Long polling = HTTP headers (~800 bytes) per request/response cycle. WebSocket = 2-14 bytes per frame after handshake. For frequent messages, WebSocket dramatically more efficient.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How does server scalability differ between long polling and WebSockets?",
+    "options": {
+      "A": "No difference",
+      "B": "Long polling: stateless, easier horizontal scaling; WebSocket: stateful connections require sticky sessions or pub/sub",
+      "C": "WebSocket scales better",
+      "D": "Long polling can't scale"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Scaling differences: Long polling = stateless, any server can respond, easy load balancing. WebSocket = stateful connection, need sticky sessions or pub/sub (Redis) to broadcast across servers. More complex.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What happens when a WebSocket connection drops?",
+    "options": {
+      "A": "Automatic reconnection",
+      "B": "Client must detect and manually reconnect, potentially missing messages during disconnect",
+      "C": "Server reconnects",
+      "D": "Connection never drops"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket disconnect: client must detect (heartbeat/ping-pong), reconnect manually. Messages during disconnect lost unless: server queues, client requests replay. Libraries like Socket.IO handle reconnection automatically.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is Server-Sent Events (SSE) and how does it compare?",
+    "options": {
+      "A": "Same as WebSocket",
+      "B": "HTTP-based server-to-client push—simpler than WebSocket but unidirectional",
+      "C": "A database feature",
+      "D": "A caching mechanism"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE: HTTP-based, server pushes to client. Unidirectional (server → client only). Auto-reconnection built-in. Works through proxies. Simpler than WebSocket. Good for: news feeds, notifications. Not for: chat, gaming.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the latency difference between long polling and WebSockets?",
+    "options": {
+      "A": "Same latency",
+      "B": "WebSocket: near-instant delivery; Long polling: up to timeout duration delay",
+      "C": "Long polling is faster",
+      "D": "Depends on database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Latency: WebSocket = message sent immediately over open connection. Long polling = if request just started, instant; if request about to timeout, must wait for new request. Variable latency.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How do mobile apps typically handle real-time updates?",
+    "options": {
+      "A": "Only long polling",
+      "B": "WebSocket when connected, with push notifications for background and reconnection handling",
+      "C": "Only push notifications",
+      "D": "Constant polling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mobile real-time: WebSocket when app active (low latency). Push notifications (APNs, FCM) when backgrounded. Handle: reconnection on network change, battery optimization. Libraries: Socket.IO, Pusher handle complexity.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is Socket.IO?",
+    "options": {
+      "A": "A WebSocket library only",
+      "B": "A library that provides WebSocket-like API with fallbacks to long polling and automatic reconnection",
+      "C": "A database",
+      "D": "A protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Socket.IO: abstraction layer. Uses WebSocket when available, falls back to long polling. Features: auto-reconnection, rooms/namespaces, acknowledgments, binary support. Simplifies real-time development.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "You're building a stock trading dashboard with price updates every 100ms. Which technology?",
+    "options": {
+      "A": "Long polling",
+      "B": "WebSocket—low latency, efficient for high-frequency updates",
+      "C": "Regular polling every second",
+      "D": "Email notifications"
+    },
+    "correct_answers": ["B"],
+    "explanation": "High-frequency updates (100ms) = WebSocket. Long polling overhead too high (HTTP headers per update). WebSocket: minimal frame overhead, persistent connection, sub-millisecond delivery. Essential for trading, gaming.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  }
+]

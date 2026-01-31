@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is OAuth 2.0 primarily designed for?",
+    "options": {
+      "A": "User authentication",
+      "B": "Delegated authorization - allowing apps to access resources on behalf of users",
+      "C": "Data encryption",
+      "D": "Password management"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OAuth 2.0 is an authorization framework. It lets users grant third-party apps limited access to their resources without sharing passwords. Authentication is handled by OpenID Connect (built on OAuth).",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "In OAuth 2.0, what are the four main roles?",
+    "options": {
+      "A": "Client, Server, Database, Cache",
+      "B": "Resource Owner, Client, Authorization Server, Resource Server",
+      "C": "User, Admin, Developer, Tester",
+      "D": "Frontend, Backend, API, Database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Resource Owner (user), Client (app requesting access), Authorization Server (issues tokens), Resource Server (hosts protected resources). Understanding these roles is key to OAuth flows.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the purpose of the OAuth 2.0 authorization code flow?",
+    "options": {
+      "A": "To directly send user credentials to the client",
+      "B": "To exchange a short-lived code for tokens, keeping tokens away from the browser",
+      "C": "To encrypt all communications",
+      "D": "To store passwords securely"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Authorization code flow: user authenticates, gets a code, client exchanges code for tokens server-side. Tokens never pass through the browser, reducing exposure. Best for server-side apps.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is the difference between an access token and a refresh token in OAuth?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Access token: short-lived, used for API calls; Refresh token: long-lived, used to get new access tokens",
+      "C": "Access token is for reading; refresh token is for writing",
+      "D": "Refresh tokens are deprecated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Access tokens are short-lived (minutes/hours) and sent with API requests. Refresh tokens are long-lived, stored securely, and exchanged for new access tokens without re-authentication.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is PKCE (Proof Key for Code Exchange) and why is it important?",
+    "options": {
+      "A": "A new OAuth version",
+      "B": "An extension that protects authorization code flow from interception attacks",
+      "C": "A password encryption method",
+      "D": "A token format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PKCE adds a code_verifier/code_challenge to prevent authorization code interception. Essential for mobile/SPA apps where client secrets can't be kept secret. Now recommended for all OAuth clients.",
+    "difficulty": "hard",
+    "category": "api security"
+  },
+  {
+    "question": "A user clicks 'Login with Google' on a third-party app. Which OAuth flow is typically used?",
+    "options": {
+      "A": "Client credentials flow",
+      "B": "Authorization code flow (with PKCE for SPAs)",
+      "C": "Resource owner password flow",
+      "D": "Implicit flow"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Social login uses authorization code flow: user redirects to Google, authenticates, returns with code, app exchanges code for tokens. PKCE is added for browser-based apps. Implicit flow is deprecated.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What are OAuth 2.0 scopes?",
+    "options": {
+      "A": "The geographic regions where OAuth works",
+      "B": "Permissions that define what access the client is requesting",
+      "C": "The validity period of tokens",
+      "D": "Encryption strength levels"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Scopes define the extent of access requested (e.g., 'read:email', 'write:posts'). Users see and approve scopes during authorization. Principle of least privilege—request only needed scopes.",
+    "difficulty": "easy",
+    "category": "api security"
+  },
+  {
+    "question": "True or False: OAuth 2.0 by itself provides user authentication.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OAuth 2.0 is for authorization (access delegation), not authentication (identity verification). OpenID Connect (OIDC) is built on OAuth 2.0 and adds authentication via ID tokens.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "When should the client credentials flow be used?",
+    "options": {
+      "A": "For user login",
+      "B": "For machine-to-machine authentication where no user is involved",
+      "C": "For mobile apps",
+      "D": "For browser-based apps"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client credentials flow is for server-to-server communication where the client itself (not a user) needs access. The client authenticates with its own credentials to get an access token.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "Why was the implicit flow deprecated in OAuth 2.1?",
+    "options": {
+      "A": "It was too slow",
+      "B": "Tokens in URL fragments are exposed in browser history and logs",
+      "C": "It didn't support refresh tokens",
+      "D": "It required too many redirects"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Implicit flow returned tokens directly in URL fragments, exposing them in browser history, referrer headers, and logs. Authorization code flow with PKCE is now recommended for all clients.",
+    "difficulty": "hard",
+    "category": "api security"
+  },
+  {
+    "question": "What is the redirect URI in OAuth and why must it be validated?",
+    "options": {
+      "A": "The URL where users go after logout",
+      "B": "The URL where authorization codes/tokens are sent; must be validated to prevent token theft",
+      "C": "The API endpoint URL",
+      "D": "The OAuth server URL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "After authorization, users are redirected to the redirect_uri with codes/tokens. If not validated, attackers could register malicious URIs and steal tokens. Servers must whitelist exact URIs.",
+    "difficulty": "medium",
+    "category": "api security"
+  },
+  {
+    "question": "What is OpenID Connect (OIDC) and how does it relate to OAuth 2.0?",
+    "options": {
+      "A": "A replacement for OAuth 2.0",
+      "B": "An identity layer built on top of OAuth 2.0 that adds authentication",
+      "C": "A competing standard",
+      "D": "An older version of OAuth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "OIDC extends OAuth 2.0 with authentication. It adds ID tokens (containing user identity claims), a userinfo endpoint, and standardized scopes (openid, profile, email). OAuth + OIDC = complete auth solution.",
+    "difficulty": "medium",
+    "category": "api security"
+  }
+]

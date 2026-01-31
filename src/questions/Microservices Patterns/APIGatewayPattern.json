@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the API Gateway pattern?",
+    "options": {
+      "A": "A database access layer",
+      "B": "A single entry point that routes requests to appropriate microservices and handles cross-cutting concerns",
+      "C": "A caching mechanism",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API Gateway: single entry point for all clients. Routes to services, handles: authentication, rate limiting, SSL termination, request transformation. Examples: Kong, AWS API Gateway, Nginx.",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What cross-cutting concerns does an API Gateway typically handle?",
+    "options": {
+      "A": "Only routing",
+      "B": "Authentication, rate limiting, SSL termination, logging, request/response transformation",
+      "C": "Database queries",
+      "D": "Business logic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gateway responsibilities: auth/authz, rate limiting, SSL termination, logging/monitoring, request transformation, response aggregation, caching, circuit breaking. Centralizes concerns, simplifies services.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is request aggregation in API Gateway?",
+    "options": {
+      "A": "Combining multiple databases",
+      "B": "Combining responses from multiple services into a single response for the client",
+      "C": "Splitting requests",
+      "D": "Caching requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request aggregation: client needs data from multiple services. Gateway calls services in parallel, combines responses. Reduces client round trips. Example: product page needs inventory + pricing + reviews.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the main risk of using an API Gateway?",
+    "options": {
+      "A": "Too fast",
+      "B": "Single point of failure and potential bottleneck",
+      "C": "Too secure",
+      "D": "Uses too little memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gateway risks: SPOF (all traffic through one point), bottleneck (must scale gateway), added latency, complexity. Mitigation: multiple gateway instances, load balancing, proper scaling, monitoring.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does API Gateway differ from a load balancer?",
+    "options": {
+      "A": "They are the same",
+      "B": "Gateway handles application-level concerns (auth, transformation); load balancer distributes traffic",
+      "C": "Load balancer is more complex",
+      "D": "Gateway only does caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Load balancer: L4/L7 traffic distribution, health checks. API Gateway: L7 application logic—auth, rate limiting, transformation, routing based on content. Often used together: LB in front of gateway cluster.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is protocol translation in API Gateway?",
+    "options": {
+      "A": "Language translation",
+      "B": "Converting between protocols—e.g., REST to gRPC, WebSocket to HTTP",
+      "C": "Encrypting data",
+      "D": "Compressing requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Protocol translation: clients use REST, internal services use gRPC. Gateway translates. Also: WebSocket to HTTP, SOAP to REST. Allows internal protocol optimization without affecting clients.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the relationship between API Gateway and service discovery?",
+    "options": {
+      "A": "No relationship",
+      "B": "Gateway uses service discovery to find service instances for routing requests",
+      "C": "They are the same thing",
+      "D": "Service discovery replaces gateway"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gateway + service discovery: gateway queries service registry (Consul, Eureka) to find healthy service instances. Dynamic routing as services scale up/down. No hardcoded service locations.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is API versioning at the gateway level?",
+    "options": {
+      "A": "Versioning the gateway software",
+      "B": "Routing different API versions to different service versions based on request headers or URL",
+      "C": "Backing up APIs",
+      "D": "Encrypting versions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API versioning: /v1/users → service v1, /v2/users → service v2. Or via headers: Accept-Version: v2. Gateway routes appropriately. Enables gradual migration, backward compatibility.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does an API Gateway implement rate limiting?",
+    "options": {
+      "A": "Blocks all requests",
+      "B": "Tracks request counts per client/API key and rejects requests exceeding limits",
+      "C": "Speeds up requests",
+      "D": "Only logs requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rate limiting: token bucket or sliding window algorithm. Track per API key, user, IP. Return 429 Too Many Requests when exceeded. Protects backend services from overload. Often uses Redis for distributed counting.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the difference between edge gateway and internal gateway?",
+    "options": {
+      "A": "No difference",
+      "B": "Edge: external traffic, security focus; Internal: service-to-service, routing focus",
+      "C": "Edge is slower",
+      "D": "Internal handles more traffic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Edge gateway: internet-facing, heavy security (WAF, DDoS protection, auth). Internal gateway: service mesh ingress, less security overhead, more routing/transformation. Different concerns, sometimes separate systems.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is request transformation in API Gateway?",
+    "options": {
+      "A": "Encrypting requests",
+      "B": "Modifying request/response format, headers, or body before forwarding",
+      "C": "Caching requests",
+      "D": "Logging requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Request transformation: add headers (correlation ID), modify body (XML to JSON), rename fields, filter sensitive data from responses. Decouples client format from service format. Enables API evolution.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "Your mobile app needs data from 5 microservices to render a screen. How does API Gateway help?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "Gateway aggregates calls to all 5 services, returning combined response in single request",
+      "C": "Gateway blocks the requests",
+      "D": "Gateway caches everything"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mobile optimization: single request to gateway, gateway fans out to 5 services in parallel, aggregates responses. Reduces: mobile round trips (latency), battery usage, data transfer. Better UX.",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  }
+]

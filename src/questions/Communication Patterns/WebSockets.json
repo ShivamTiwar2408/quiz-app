@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the main advantage of WebSockets over HTTP for real-time communication?",
+    "options": {
+      "A": "WebSockets are more secure",
+      "B": "WebSockets maintain a persistent bidirectional connection",
+      "C": "WebSockets use less bandwidth for initial connection",
+      "D": "WebSockets work without a server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSockets establish a persistent, full-duplex connection. Both client and server can send messages anytime without the overhead of establishing new connections. HTTP requires new request for each message.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which use cases are ideal for WebSockets? (Choose all that apply)",
+    "options": {
+      "A": "Live chat applications",
+      "B": "Static website content",
+      "C": "Real-time gaming",
+      "D": "Live stock price updates"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "WebSockets excel at real-time, bidirectional communication: chat, gaming, live data feeds. Static content doesn't need real-time updates—standard HTTP with caching is more appropriate.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How does a WebSocket connection begin?",
+    "options": {
+      "A": "Direct TCP connection",
+      "B": "HTTP upgrade request that switches protocol to WebSocket",
+      "C": "UDP handshake",
+      "D": "DNS lookup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket starts as HTTP request with 'Upgrade: websocket' header. Server responds with 101 Switching Protocols, and the connection upgrades from HTTP to WebSocket protocol over the same TCP connection.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What challenge does WebSocket introduce for load balancing?",
+    "options": {
+      "A": "WebSockets cannot be load balanced",
+      "B": "Long-lived connections require sticky sessions or connection-aware routing",
+      "C": "WebSockets use too much bandwidth",
+      "D": "Load balancers don't support TCP"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket connections are long-lived and stateful. Simple round-robin doesn't work—messages must route to the server holding the connection. Sticky sessions or connection-aware infrastructure is needed.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A WebSocket server needs to broadcast a message to 100,000 connected clients. What is a potential challenge?",
+    "options": {
+      "A": "WebSockets don't support broadcasting",
+      "B": "Memory and CPU for maintaining many concurrent connections",
+      "C": "Each broadcast requires a new connection",
+      "D": "Clients must poll for broadcasts"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Each WebSocket connection consumes server memory (buffers, state). 100K connections require significant resources. Broadcasting to all also requires iterating through connections. Horizontal scaling and pub/sub help.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What happens when a WebSocket connection is interrupted?",
+    "options": {
+      "A": "It automatically reconnects",
+      "B": "The connection is lost; client must implement reconnection logic",
+      "C": "Messages are queued until reconnection",
+      "D": "The server maintains the session indefinitely"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket doesn't have built-in reconnection. When connection drops, it's gone. Clients must implement reconnection logic, and applications must handle message loss during disconnection.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: WebSockets are always better than HTTP polling for real-time updates.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSockets add complexity (connection management, scaling). For infrequent updates or simple use cases, long-polling or SSE may be simpler. WebSockets shine for high-frequency, bidirectional communication.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How can WebSocket servers be scaled horizontally?",
+    "options": {
+      "A": "They cannot be scaled horizontally",
+      "B": "Using a pub/sub system (Redis) to coordinate messages across server instances",
+      "C": "By converting to HTTP",
+      "D": "By limiting connections per server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With multiple servers, a client connected to Server A needs messages from Server B. A pub/sub backbone (Redis, Kafka) distributes messages to all servers, which then push to their connected clients.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is the WebSocket frame format used for?",
+    "options": {
+      "A": "Displaying images",
+      "B": "Structuring messages with opcode, length, and payload",
+      "C": "Compressing data",
+      "D": "Authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket frames contain: opcode (text/binary/close/ping/pong), payload length, masking key (client→server), and payload data. This lightweight framing enables efficient message transmission.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which protocol provides server-to-client push without bidirectional communication?",
+    "options": {
+      "A": "WebSocket",
+      "B": "Server-Sent Events (SSE)",
+      "C": "HTTP POST",
+      "D": "FTP"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSE is unidirectional (server→client only) over HTTP. It's simpler than WebSocket when you only need server push (live feeds, notifications). WebSocket is needed for bidirectional communication.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A chat application uses WebSockets. How should it handle user authentication?",
+    "options": {
+      "A": "Authentication is not needed for WebSockets",
+      "B": "Authenticate during HTTP upgrade or send auth token as first message",
+      "C": "WebSockets have built-in authentication",
+      "D": "Use a separate HTTP endpoint only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket doesn't have built-in auth. Common approaches: authenticate during upgrade handshake (cookies, tokens in query string) or require auth message immediately after connection before accepting other messages.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a WebSocket 'heartbeat' or 'ping/pong' mechanism?",
+    "options": {
+      "A": "A way to measure server CPU",
+      "B": "Periodic messages to detect dead connections and keep connection alive",
+      "C": "A security feature",
+      "D": "A compression algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Heartbeats (ping/pong frames) detect dead connections that didn't close cleanly and keep connections alive through proxies/firewalls that might timeout idle connections. Essential for connection health.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  }
+]

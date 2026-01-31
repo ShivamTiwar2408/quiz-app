@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the Strangler Fig pattern?",
+    "options": {
+      "A": "A gardening technique",
+      "B": "Incrementally replacing a legacy system by routing traffic to new services while the old system is gradually deprecated",
+      "C": "A database migration",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Strangler Fig: named after trees that grow around and eventually replace host trees. Incrementally migrate: route some traffic to new system, gradually increase, eventually retire old system. Low-risk modernization.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What problem does the Strangler Fig pattern solve?",
+    "options": {
+      "A": "Performance issues",
+      "B": "Safely migrating from a monolith to microservices without big-bang rewrites",
+      "C": "Database scaling",
+      "D": "Network latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Problem: legacy monolith needs modernization. Big-bang rewrite: risky, expensive, often fails. Strangler Fig: incremental migration, always have working system, can stop/reverse anytime. Proven approach.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How does the Strangler Fig pattern work?",
+    "options": {
+      "A": "Rewrite everything at once",
+      "B": "Place a facade/proxy in front, route requests to old or new system, gradually shift traffic",
+      "C": "Delete the old system",
+      "D": "Copy the database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Implementation: 1) Add facade/proxy in front of legacy. 2) Build new service for one feature. 3) Route that feature's traffic to new service. 4) Repeat for other features. 5) Eventually, all traffic goes to new services.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the role of the facade in the Strangler Fig pattern?",
+    "options": {
+      "A": "To store data",
+      "B": "To intercept requests and route them to either the legacy or new system",
+      "C": "To encrypt traffic",
+      "D": "To compress responses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Facade (API gateway, proxy): intercepts all requests. Routes based on: URL path, feature flags, percentage. Clients unaware of backend changes. Enables gradual migration without client changes.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What are the benefits of the Strangler Fig pattern?",
+    "options": {
+      "A": "Incremental migration with lower risk",
+      "B": "Can stop or reverse at any point",
+      "C": "Always have a working system",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Strangler Fig benefits: incremental (small changes), reversible (route back to legacy), always working (no big-bang cutover), learn as you go (adjust approach), deliver value early (new features in new system).",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is a challenge of the Strangler Fig pattern?",
+    "options": {
+      "A": "Too fast",
+      "B": "Managing data synchronization between old and new systems during transition",
+      "C": "Too simple",
+      "D": "No challenges"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Challenges: data sync (both systems may need same data), maintaining two systems (temporary complexity), defining boundaries (what to migrate first), testing (both paths), longer timeline than hoped.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How do you decide what to migrate first in a Strangler Fig approach?",
+    "options": {
+      "A": "Random selection",
+      "B": "Start with well-defined, loosely-coupled features that provide value and are lower risk",
+      "C": "Most complex features first",
+      "D": "Everything at once"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Migration order: start with features that are well-bounded, have clear interfaces, lower risk, provide learning. Avoid: core features first, tightly coupled areas. Build confidence, then tackle harder parts.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the 'anti-corruption layer' in the context of Strangler Fig?",
+    "options": {
+      "A": "Security feature",
+      "B": "A layer that translates between old and new system models, preventing legacy concepts from polluting new design",
+      "C": "A database layer",
+      "D": "A caching layer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anti-corruption layer: adapter between old and new. New system has clean model. ACL translates legacy formats/concepts. Prevents: legacy debt in new system, tight coupling. Essential for clean migration.",
+    "difficulty": "hard",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How long does a Strangler Fig migration typically take?",
+    "options": {
+      "A": "A few days",
+      "B": "Months to years, depending on system size and complexity",
+      "C": "One hour",
+      "D": "Exactly one year"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Timeline: varies greatly. Small system: months. Large enterprise monolith: years. Key: continuous delivery of value during migration. Not a sprint, a marathon. Plan for long-term coexistence.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What happens to the legacy system at the end of a Strangler Fig migration?",
+    "options": {
+      "A": "It runs forever",
+      "B": "It's decommissioned once all traffic is routed to new services",
+      "C": "It becomes the primary system",
+      "D": "It's converted to a database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "End state: legacy system receives no traffic, can be decommissioned. 'Strangled' by new system. Celebrate! But verify: no hidden dependencies, data migrated, monitoring confirms zero traffic.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Can you use feature flags with the Strangler Fig pattern?",
+    "options": {
+      "A": "No, they're incompatible",
+      "B": "Yes—feature flags enable gradual traffic shifting and easy rollback",
+      "C": "Only in development",
+      "D": "Only for testing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Feature flags + Strangler Fig: powerful combination. Route by flag: 10% to new system, 90% to legacy. Gradually increase. If issues, flip flag back. Fine-grained control over migration.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "A company has a 15-year-old monolith they want to modernize. What approach minimizes risk?",
+    "options": {
+      "A": "Rewrite from scratch in 2 years",
+      "B": "Strangler Fig—incrementally extract services while keeping the monolith running",
+      "C": "Abandon the system",
+      "D": "Add more features to the monolith"
+    },
+    "correct_answers": ["B"],
+    "explanation": "15-year monolith: big-bang rewrite is extremely risky (most fail). Strangler Fig: extract one bounded context at a time, always have working system, learn and adjust, deliver value continuously. Proven approach.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is TLS (Transport Layer Security)?",
+    "options": {
+      "A": "A programming language",
+      "B": "A cryptographic protocol providing secure communication over networks",
+      "C": "A database",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS: cryptographic protocol for secure communication. Provides: encryption (confidentiality), authentication (verify server/client identity), integrity (detect tampering). Successor to SSL. Powers HTTPS.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is the difference between SSL and TLS?",
+    "options": {
+      "A": "They are completely different",
+      "B": "TLS is the successor to SSL; SSL is deprecated, TLS is current standard",
+      "C": "SSL is newer",
+      "D": "TLS is less secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSL (Secure Sockets Layer): original protocol, versions 1.0-3.0, all deprecated due to vulnerabilities. TLS: successor, versions 1.0-1.3. 'SSL' often used colloquially but TLS 1.2/1.3 is what's actually used.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What happens during a TLS handshake?",
+    "options": {
+      "A": "Data is transferred",
+      "B": "Client and server negotiate cipher suite, exchange keys, and establish encrypted session",
+      "C": "Files are compressed",
+      "D": "Users are authenticated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS handshake: ClientHello (supported ciphers) → ServerHello (chosen cipher, certificate) → Key exchange → Finished. Establishes shared secret for symmetric encryption. TLS 1.3 reduced to 1 round trip.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is a TLS certificate?",
+    "options": {
+      "A": "A graduation certificate",
+      "B": "A digital document binding a public key to an identity, signed by a Certificate Authority",
+      "C": "A password",
+      "D": "An encryption key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS certificate: contains public key, domain name, issuer (CA), validity period, signature. Browser verifies: certificate valid, CA trusted, domain matches. Enables authentication before encryption.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is a Certificate Authority (CA)?",
+    "options": {
+      "A": "A government agency",
+      "B": "A trusted entity that issues and signs digital certificates, vouching for identity",
+      "C": "A database",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CA: trusted third party. Verifies domain ownership, signs certificates. Browsers trust certain CAs (root certificates). Chain of trust: Root CA → Intermediate CA → Your certificate. Examples: Let's Encrypt, DigiCert.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is the purpose of the certificate chain?",
+    "options": {
+      "A": "To make certificates longer",
+      "B": "To establish trust from your certificate up to a trusted root CA",
+      "C": "To encrypt data",
+      "D": "To compress certificates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Certificate chain: Your cert → Intermediate CA → Root CA. Browser trusts root CAs. Verifies each signature up the chain. If any link invalid, connection rejected. Intermediate CAs limit root CA exposure.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is TLS termination?",
+    "options": {
+      "A": "Ending TLS support",
+      "B": "Decrypting TLS traffic at a proxy/load balancer, forwarding unencrypted to backend",
+      "C": "Starting TLS",
+      "D": "Renewing certificates"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS termination: load balancer handles TLS, backends receive plain HTTP. Benefits: offload CPU-intensive crypto, centralize certificate management. Tradeoff: traffic unencrypted internally (use mTLS or private network).",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is Perfect Forward Secrecy (PFS)?",
+    "options": {
+      "A": "Perfect encryption",
+      "B": "Using ephemeral keys so compromising long-term keys doesn't decrypt past sessions",
+      "C": "Faster encryption",
+      "D": "Longer keys"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PFS: each session uses unique ephemeral keys. If server's private key is later compromised, past recorded traffic can't be decrypted. Achieved with DHE or ECDHE key exchange. TLS 1.3 requires PFS.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is SNI (Server Name Indication)?",
+    "options": {
+      "A": "A security vulnerability",
+      "B": "TLS extension allowing client to specify hostname, enabling multiple certificates on one IP",
+      "C": "A certificate type",
+      "D": "An encryption algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SNI: client sends requested hostname in ClientHello. Server selects appropriate certificate. Enables: multiple HTTPS sites on one IP, virtual hosting with TLS. Without SNI, one cert per IP.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is Let's Encrypt?",
+    "options": {
+      "A": "A password manager",
+      "B": "A free, automated Certificate Authority providing TLS certificates",
+      "C": "A VPN service",
+      "D": "An encryption algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Let's Encrypt: free CA, automated certificate issuance via ACME protocol. Certificates valid 90 days (encourages automation). Democratized HTTPS—no cost barrier. Powers majority of web's TLS certificates.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What is the difference between TLS 1.2 and TLS 1.3?",
+    "options": {
+      "A": "No difference",
+      "B": "TLS 1.3: faster handshake (1-RTT), removed weak ciphers, mandatory PFS, improved security",
+      "C": "TLS 1.2 is newer",
+      "D": "TLS 1.3 is less secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TLS 1.3 improvements: 1-RTT handshake (vs 2-RTT), 0-RTT resumption option, removed RSA key exchange (PFS required), removed weak ciphers (MD5, SHA-1, RC4), simplified cipher suites. Faster and more secure.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "A website shows 'Not Secure' in the browser. What's the issue?",
+    "options": {
+      "A": "Server is slow",
+      "B": "Site is using HTTP instead of HTTPS, or has certificate problems",
+      "C": "Too much traffic",
+      "D": "Database is down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Not Secure: no TLS (HTTP), expired certificate, untrusted CA, domain mismatch, or mixed content. Fix: obtain valid certificate, configure HTTPS, redirect HTTP to HTTPS, fix mixed content warnings.",
+    "difficulty": "easy",
+    "category": "security"
+  }
+]

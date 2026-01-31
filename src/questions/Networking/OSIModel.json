@@ -1,0 +1,156 @@
+[
+  {
+    "question": "At which OSI layer do routers primarily operate?",
+    "options": {
+      "A": "Layer 2 - Data Link",
+      "B": "Layer 3 - Network",
+      "C": "Layer 4 - Transport",
+      "D": "Layer 7 - Application"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Routers operate at Layer 3 (Network), making forwarding decisions based on IP addresses. Switches operate at Layer 2 using MAC addresses.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A load balancer inspects HTTP headers to route requests to different backend services. At which OSI layer is it operating?",
+    "options": {
+      "A": "Layer 3 - Network",
+      "B": "Layer 4 - Transport",
+      "C": "Layer 7 - Application",
+      "D": "Layer 2 - Data Link"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Inspecting HTTP headers requires understanding application-level protocols, which is Layer 7. Layer 4 load balancers only see TCP/UDP ports, not HTTP content.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which OSI layers are typically handled by the operating system's network stack? (Choose all that apply)",
+    "options": {
+      "A": "Layer 1 - Physical",
+      "B": "Layer 3 - Network",
+      "C": "Layer 4 - Transport",
+      "D": "Layer 7 - Application"
+    },
+    "correct_answers": ["B", "C"],
+    "explanation": "The OS kernel handles Layer 3 (IP) and Layer 4 (TCP/UDP). Layer 1 is hardware (NICs, cables). Layer 7 is handled by applications. Layer 2 is split between hardware and drivers.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A firewall blocks traffic based on source/destination IP and port numbers. Which OSI layers is it inspecting?",
+    "options": {
+      "A": "Layers 3 and 4 only",
+      "B": "Layer 7 only",
+      "C": "Layers 2, 3, and 4",
+      "D": "All layers"
+    },
+    "correct_answers": ["A"],
+    "explanation": "IP addresses are Layer 3 (Network), port numbers are Layer 4 (Transport). This describes a stateful packet filter. Deep packet inspection (Layer 7) would examine application data.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "TLS/SSL encryption operates at which OSI layer?",
+    "options": {
+      "A": "Layer 4 - Transport",
+      "B": "Layer 5 - Session",
+      "C": "Layer 6 - Presentation",
+      "D": "Between Layer 4 and Layer 7 (often called Layer 5/6)"
+    },
+    "correct_answers": ["D"],
+    "explanation": "TLS sits between TCP (Layer 4) and application protocols (Layer 7). It's often described as Layer 5/6, handling session establishment and data encryption/presentation.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "Which statement about Layer 4 vs Layer 7 load balancing is correct?",
+    "options": {
+      "A": "Layer 4 is always faster because it inspects less data",
+      "B": "Layer 7 can route based on URL paths; Layer 4 cannot",
+      "C": "Layer 4 can terminate SSL; Layer 7 cannot",
+      "D": "Layer 7 is required for TCP load balancing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Layer 7 LBs understand HTTP and can route by URL, headers, cookies. Layer 4 only sees IP/port. Both can terminate SSL. Layer 4 handles TCP without understanding the application protocol.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A network issue causes packet loss. At which layer would you first investigate?",
+    "options": {
+      "A": "Layer 7 - Check application logs",
+      "B": "Layer 1/2 - Check physical connections and switch ports",
+      "C": "Layer 4 - Check TCP retransmissions",
+      "D": "Start from Layer 1 and work up"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Network troubleshooting typically starts at lower layers: physical connections (L1), link errors (L2), then routing (L3), then transport (L4). This bottom-up approach isolates the problem layer.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which protocols operate at Layer 4 (Transport)? (Choose all that apply)",
+    "options": {
+      "A": "TCP",
+      "B": "UDP",
+      "C": "HTTP",
+      "D": "IP"
+    },
+    "correct_answers": ["A", "B"],
+    "explanation": "TCP and UDP are Layer 4 transport protocols. HTTP is Layer 7 (Application). IP is Layer 3 (Network).",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "An API gateway performs request routing, authentication, and rate limiting. Which OSI layer best describes its operation?",
+    "options": {
+      "A": "Layer 3",
+      "B": "Layer 4",
+      "C": "Layer 7",
+      "D": "Layers 3-7"
+    },
+    "correct_answers": ["C"],
+    "explanation": "API gateways operate at Layer 7, understanding HTTP/HTTPS, parsing requests, checking auth tokens, and making routing decisions based on application-level data.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: The OSI model perfectly maps to how modern internet protocols are implemented.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The OSI model is a conceptual framework. Real protocols often span multiple layers or don't fit neatly. The TCP/IP model (4 layers) more accurately reflects internet protocol implementation.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A CDN caches content at edge locations. At which layer does the caching decision primarily occur?",
+    "options": {
+      "A": "Layer 3 - Based on IP geolocation",
+      "B": "Layer 4 - Based on connection state",
+      "C": "Layer 7 - Based on HTTP cache headers",
+      "D": "Layer 2 - Based on MAC addresses"
+    },
+    "correct_answers": ["C"],
+    "explanation": "CDN caching decisions use HTTP headers (Cache-Control, ETag, etc.) which are Layer 7. While routing to edge nodes may use IP geolocation (L3), the caching logic itself is application-layer.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which layer is responsible for end-to-end reliable delivery and flow control?",
+    "options": {
+      "A": "Layer 2 - Data Link",
+      "B": "Layer 3 - Network",
+      "C": "Layer 4 - Transport",
+      "D": "Layer 5 - Session"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Layer 4 (Transport) provides end-to-end communication. TCP specifically handles reliable delivery (acknowledgments, retransmissions) and flow control (windowing). Layer 3 only handles routing.",
+    "difficulty": "easy",
+    "category": "networking"
+  }
+]

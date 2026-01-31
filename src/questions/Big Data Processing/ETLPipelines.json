@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What does ETL stand for?",
+    "options": {
+      "A": "Easy Transfer Language",
+      "B": "Extract, Transform, Load—a data integration process",
+      "C": "Electronic Transfer Link",
+      "D": "Extended Table Logic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ETL: Extract (pull from sources), Transform (clean, enrich, aggregate), Load (write to destination). Traditional data warehousing pattern. Batch-oriented. Tools: Informatica, Talend, AWS Glue, Apache Spark.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the Extract phase in ETL?",
+    "options": {
+      "A": "Deleting data",
+      "B": "Reading data from source systems—databases, APIs, files, streams",
+      "C": "Writing to destination",
+      "D": "Transforming data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Extract: pull data from sources. Sources: OLTP databases, APIs, flat files, logs, SaaS apps. Challenges: different formats, access patterns, rate limits. Full extraction vs incremental (changed data only).",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What happens in the Transform phase?",
+    "options": {
+      "A": "Data is deleted",
+      "B": "Data is cleaned, validated, enriched, aggregated, and converted to target format",
+      "C": "Data is extracted",
+      "D": "Data is loaded"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Transform: data quality (null handling, deduplication), business rules (calculations, derivations), format conversion, joining datasets, aggregation. Most complex phase. Where business logic lives.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the Load phase in ETL?",
+    "options": {
+      "A": "Reading from source",
+      "B": "Writing transformed data to the target system—data warehouse, data lake, or database",
+      "C": "Transforming data",
+      "D": "Validating data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Load: write to destination. Strategies: full load (replace all), incremental (append/upsert), merge (SCD handling). Targets: data warehouse (Snowflake, Redshift), data lake (S3), operational DB.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is ELT and how does it differ from ETL?",
+    "options": {
+      "A": "Same as ETL",
+      "B": "Extract, Load, Transform—load raw data first, transform in the destination system",
+      "C": "A programming language",
+      "D": "A database type"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ELT: load raw data to destination, transform there. Modern approach with powerful cloud warehouses (Snowflake, BigQuery). Benefits: leverage destination compute, preserve raw data, faster initial load. dbt popularized this.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is incremental extraction?",
+    "options": {
+      "A": "Extract all data every time",
+      "B": "Extract only data that changed since the last extraction",
+      "C": "Extract random samples",
+      "D": "Extract in alphabetical order"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Incremental extraction: only changed/new records. Methods: timestamp column (updated_at > last_run), CDC (change data capture), sequence numbers. Reduces load on source, faster processing. Requires tracking state.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a Slowly Changing Dimension (SCD)?",
+    "options": {
+      "A": "A fast-changing table",
+      "B": "A technique for tracking historical changes in dimension data over time",
+      "C": "A database index",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SCD: handle dimension changes. Type 1: overwrite (no history). Type 2: new row with version (full history). Type 3: add column for previous value. Type 2 most common for analytics needing historical accuracy.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is data lineage in ETL?",
+    "options": {
+      "A": "Data encryption",
+      "B": "Tracking where data came from and how it was transformed through the pipeline",
+      "C": "Data compression",
+      "D": "Data deletion"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lineage: trace data origin and transformations. Answers: where did this number come from? What transformations applied? Critical for: debugging, compliance, impact analysis. Tools: Apache Atlas, DataHub.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is idempotency in ETL pipelines?",
+    "options": {
+      "A": "Running once only",
+      "B": "Running the same pipeline multiple times produces the same result",
+      "C": "Running faster",
+      "D": "Running in parallel"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Idempotent ETL: re-running doesn't create duplicates or incorrect data. Techniques: upsert instead of insert, partition replacement, checkpointing. Critical for: failure recovery, backfills, reprocessing.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a common ETL scheduling pattern?",
+    "options": {
+      "A": "Run continuously",
+      "B": "Batch jobs scheduled at regular intervals (hourly, daily) with dependency management",
+      "C": "Manual triggers only",
+      "D": "Random intervals"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ETL scheduling: cron-like schedules, DAG-based dependencies. Tools: Apache Airflow, AWS Step Functions, Prefect. Pattern: nightly batch after source systems close. Dependencies ensure correct order.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is data quality validation in ETL?",
+    "options": {
+      "A": "Skipping bad data",
+      "B": "Checking data against rules—completeness, accuracy, consistency—before loading",
+      "C": "Encrypting data",
+      "D": "Compressing data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data quality checks: null counts, uniqueness, referential integrity, value ranges, format validation. Fail pipeline or quarantine bad records. Tools: Great Expectations, dbt tests, custom assertions.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your e-commerce company needs to analyze yesterday's sales. What ETL approach would you use?",
+    "options": {
+      "A": "Real-time streaming",
+      "B": "Nightly batch ETL extracting previous day's transactions, transforming for analytics, loading to warehouse",
+      "C": "Manual data entry",
+      "D": "No ETL needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Daily sales analysis: classic batch ETL. Schedule: after midnight. Extract: yesterday's orders, products, customers. Transform: calculate metrics, join dimensions. Load: to warehouse. Query: morning dashboards ready.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  }
+]

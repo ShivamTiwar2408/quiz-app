@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a vector database?",
+    "options": {
+      "A": "A database for storing images",
+      "B": "A database optimized for storing and searching high-dimensional vectors (embeddings)",
+      "C": "A graphics rendering engine",
+      "D": "A traditional relational database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Vector databases store and index high-dimensional vectors (embeddings from ML models). Enable similarity search: find vectors closest to a query vector. Examples: Pinecone, Milvus, Weaviate, pgvector.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a vector embedding?",
+    "options": {
+      "A": "A type of encryption",
+      "B": "A numerical representation of data (text, images, etc.) in high-dimensional space where similar items are close together",
+      "C": "A compression algorithm",
+      "D": "A database index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Embeddings: ML models convert data to vectors. 'cat' and 'kitten' have similar vectors, far from 'car'. Dimensions: 100s to 1000s. Captures semantic meaning. Foundation for similarity search.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is similarity search in vector databases?",
+    "options": {
+      "A": "Finding exact matches",
+      "B": "Finding vectors closest to a query vector using distance metrics like cosine similarity or Euclidean distance",
+      "C": "SQL queries",
+      "D": "Full-text search"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Similarity search: given query vector, find k nearest neighbors. Distance metrics: cosine similarity (angle), Euclidean (straight-line), dot product. Returns semantically similar items, not exact matches.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What are common use cases for vector databases?",
+    "options": {
+      "A": "Semantic search and recommendations",
+      "B": "RAG (Retrieval Augmented Generation) for LLMs",
+      "C": "Image and audio similarity",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Vector DB use cases: semantic search (find similar documents), recommendations (similar products/content), RAG (retrieve context for LLMs), image search, anomaly detection, deduplication.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is ANN (Approximate Nearest Neighbor) search?",
+    "options": {
+      "A": "A neural network architecture",
+      "B": "Trading perfect accuracy for speed—finding approximately nearest vectors much faster than exact search",
+      "C": "A backup method",
+      "D": "A compression technique"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Exact nearest neighbor: O(n) scan all vectors. ANN: use indexes (HNSW, IVF) to find approximate results in O(log n). 95%+ recall with 100x+ speedup. Essential for large-scale vector search.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is HNSW (Hierarchical Navigable Small World)?",
+    "options": {
+      "A": "A social network",
+      "B": "A graph-based index structure for efficient approximate nearest neighbor search",
+      "C": "A database name",
+      "D": "A compression algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HNSW: builds a multi-layer graph. Higher layers: long-range connections for fast navigation. Lower layers: dense connections for accuracy. State-of-the-art ANN index. Used by most vector DBs.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is RAG (Retrieval Augmented Generation)?",
+    "options": {
+      "A": "A type of database",
+      "B": "Using vector search to retrieve relevant context, then feeding it to an LLM for generation",
+      "C": "A backup strategy",
+      "D": "A query language"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RAG: embed documents in vector DB, embed user query, retrieve similar documents, include in LLM prompt. Grounds LLM responses in your data. Reduces hallucinations. Key pattern for enterprise AI.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between cosine similarity and Euclidean distance?",
+    "options": {
+      "A": "They are the same",
+      "B": "Cosine: measures angle (direction); Euclidean: measures straight-line distance (magnitude matters)",
+      "C": "Euclidean is always better",
+      "D": "Cosine is faster"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cosine similarity: angle between vectors, ignores magnitude. Good for text (document length shouldn't matter). Euclidean: actual distance, magnitude matters. Choose based on whether magnitude is meaningful.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "Which of these is a vector database?",
+    "options": {
+      "A": "Pinecone",
+      "B": "Milvus",
+      "C": "Weaviate",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Pinecone: managed vector DB. Milvus: open-source, scalable. Weaviate: open-source with built-in vectorization. Also: Qdrant, Chroma, pgvector (PostgreSQL extension). Growing ecosystem.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "What is metadata filtering in vector databases?",
+    "options": {
+      "A": "Removing metadata",
+      "B": "Combining vector similarity search with traditional filters (e.g., category='electronics' AND similar to query)",
+      "C": "Encrypting metadata",
+      "D": "Compressing metadata"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Metadata filtering: hybrid queries. 'Find similar products WHERE category='electronics' AND price < 100'. Combines semantic similarity with structured filters. Essential for real applications.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What challenge do vector databases face with high-dimensional data?",
+    "options": {
+      "A": "No challenges",
+      "B": "Curse of dimensionality—distances become less meaningful, indexes less effective in very high dimensions",
+      "C": "Storage is free",
+      "D": "Queries are instant"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Curse of dimensionality: in very high dimensions, all points become roughly equidistant. ANN indexes lose effectiveness. Solutions: dimensionality reduction, better embedding models, specialized indexes.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "A company wants to build a 'find similar products' feature using product images. What's the approach?",
+    "options": {
+      "A": "Store images in a relational database",
+      "B": "Generate image embeddings with a vision model, store in vector DB, query with embedding of input image",
+      "C": "Use full-text search",
+      "D": "Compare file sizes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Image similarity: use vision model (CLIP, ResNet) to generate embeddings. Store in vector DB. Query: embed input image, find nearest neighbors. Returns visually similar products. No manual tagging needed.",
+    "difficulty": "medium",
+    "category": "databases"
+  }
+]

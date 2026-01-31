@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a data lake?",
+    "options": {
+      "A": "A body of water",
+      "B": "A centralized repository storing raw data in native format at any scale",
+      "C": "A database",
+      "D": "A backup system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lake: store everything in raw format—structured, semi-structured, unstructured. Schema-on-read (interpret when querying). Cheap storage (S3, ADLS). Enables diverse analytics. Contrast with data warehouse (schema-on-write).",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the difference between a data lake and a data warehouse?",
+    "options": {
+      "A": "They are the same",
+      "B": "Data lake: raw data, schema-on-read, any format; Data warehouse: processed data, schema-on-write, structured",
+      "C": "Data warehouse stores more data",
+      "D": "Data lake is faster"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lake: raw data, flexible schema, cheap storage, for data scientists. Data warehouse: curated data, defined schema, optimized for BI queries, for analysts. Different purposes, often used together.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is schema-on-read?",
+    "options": {
+      "A": "Defining schema when writing data",
+      "B": "Applying schema when reading/querying data, not when storing",
+      "C": "No schema ever",
+      "D": "Automatic schema detection"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Schema-on-read: store raw data, interpret structure when querying. Flexibility: same data, different schemas for different uses. Contrast: schema-on-write (warehouse) enforces structure at ingestion.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is a data swamp?",
+    "options": {
+      "A": "A wetland",
+      "B": "A data lake that became unusable due to poor governance, no metadata, and unclear data quality",
+      "C": "A type of database",
+      "D": "A backup location"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data swamp: data lake gone wrong. Symptoms: no one knows what data exists, no quality controls, no documentation, can't find or trust data. Prevention: data catalog, governance, quality checks, clear ownership.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What technologies are commonly used for data lakes?",
+    "options": {
+      "A": "Amazon S3 / Azure Data Lake Storage",
+      "B": "Apache Spark for processing",
+      "C": "Delta Lake / Apache Iceberg for table format",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Data lake stack: storage (S3, ADLS, GCS), processing (Spark, Presto, Athena), table formats (Delta Lake, Iceberg, Hudi), catalog (Glue, Hive Metastore). Ecosystem of tools working together.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is a data catalog in the context of data lakes?",
+    "options": {
+      "A": "A shopping catalog",
+      "B": "A metadata repository that helps users discover, understand, and govern data assets",
+      "C": "A backup system",
+      "D": "A compression tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data catalog: metadata management. Stores: what data exists, where it is, what it means, who owns it, data lineage. Enables discovery and governance. Examples: AWS Glue Catalog, Apache Atlas, Alation.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What types of data can a data lake store?",
+    "options": {
+      "A": "Only structured data",
+      "B": "Structured, semi-structured (JSON, XML), and unstructured (images, videos, logs)",
+      "C": "Only unstructured data",
+      "D": "Only text files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lake stores anything: structured (CSV, Parquet), semi-structured (JSON, Avro), unstructured (images, PDFs, logs). No format restrictions. Store now, figure out schema later. Maximum flexibility.",
+    "difficulty": "easy",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is data lake governance?",
+    "options": {
+      "A": "Government regulations",
+      "B": "Policies and processes for data quality, security, access control, and lifecycle management",
+      "C": "Deleting all data",
+      "D": "Ignoring data quality"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lake governance: who can access what, data quality standards, retention policies, compliance (GDPR, HIPAA), lineage tracking, classification. Without governance, lake becomes swamp.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the medallion architecture in data lakes?",
+    "options": {
+      "A": "Olympic medals",
+      "B": "Bronze (raw) → Silver (cleaned) → Gold (aggregated) layers organizing data by quality level",
+      "C": "A backup strategy",
+      "D": "A compression method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Medallion architecture: Bronze (raw ingestion), Silver (cleaned, validated, deduplicated), Gold (business-level aggregates, ready for BI). Progressive refinement. Clear data quality expectations per layer.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is Delta Lake?",
+    "options": {
+      "A": "A geographic location",
+      "B": "An open-source storage layer adding ACID transactions and versioning to data lakes",
+      "C": "A database",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Delta Lake: storage layer on data lakes. Adds: ACID transactions, schema enforcement, time travel (versioning), upserts/deletes. Makes data lakes more reliable. Competes with Apache Iceberg, Apache Hudi.",
+    "difficulty": "hard",
+    "category": "big data processing"
+  },
+  {
+    "question": "What is the cost advantage of data lakes?",
+    "options": {
+      "A": "No cost advantage",
+      "B": "Object storage (S3) is much cheaper than data warehouse storage; store everything affordably",
+      "C": "Data lakes are free",
+      "D": "Processing is free"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cost advantage: S3 ~$0.023/GB/month vs data warehouse ~$1000+/TB/month. Store petabytes affordably. Compute separate from storage (pay when processing). Keep raw data, don't discard.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  },
+  {
+    "question": "A company has diverse data: logs, IoT sensors, images, and transactional data. They need flexible analytics. Best approach?",
+    "options": {
+      "A": "Separate databases for each",
+      "B": "Data lake to store all raw data, with processing tools for different analytics needs",
+      "C": "Delete non-structured data",
+      "D": "Only keep transactional data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Diverse data + flexible analytics = data lake. Store everything in S3/ADLS. Use Spark for batch, Athena for SQL, SageMaker for ML. Schema-on-read allows different interpretations. Unified storage, diverse processing.",
+    "difficulty": "medium",
+    "category": "big data processing"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the key difference between a forward proxy and a reverse proxy?",
+    "options": {
+      "A": "Forward proxies are faster",
+      "B": "Forward proxy serves clients; reverse proxy serves servers",
+      "C": "Reverse proxies can't cache content",
+      "D": "Forward proxies only work with HTTPS"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Forward proxy sits in front of clients, making requests on their behalf (client knows about proxy). Reverse proxy sits in front of servers, receiving requests on their behalf (client doesn't know about backend servers).",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which are common use cases for a reverse proxy? (Choose all that apply)",
+    "options": {
+      "A": "Load balancing across backend servers",
+      "B": "SSL/TLS termination",
+      "C": "Hiding client IP addresses from websites",
+      "D": "Caching static content"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Reverse proxies handle load balancing, SSL termination, and caching for backend servers. Hiding client IPs is a forward proxy function—reverse proxies hide server IPs from clients.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A company wants employees to access the internet through a central point for security monitoring. Which type of proxy is appropriate?",
+    "options": {
+      "A": "Reverse proxy",
+      "B": "Forward proxy",
+      "C": "Transparent proxy",
+      "D": "Both B and C"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Forward proxy routes employee traffic through a central point. Transparent proxy does the same without client configuration. Both serve the use case of centralizing outbound traffic for monitoring.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is a transparent proxy?",
+    "options": {
+      "A": "A proxy that doesn't modify requests",
+      "B": "A proxy that intercepts traffic without client configuration",
+      "C": "A proxy that only handles encrypted traffic",
+      "D": "A proxy visible in network diagrams"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Transparent proxies intercept traffic at the network level without requiring client proxy settings. Clients are unaware their traffic is being proxied. Often used for content filtering or caching.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "An API gateway sits between clients and microservices. Is it functioning as a forward or reverse proxy?",
+    "options": {
+      "A": "Forward proxy",
+      "B": "Reverse proxy",
+      "C": "Neither",
+      "D": "Both"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API gateways are reverse proxies—they receive client requests and route them to appropriate backend services. Clients interact with the gateway, not directly with microservices.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which header does a reverse proxy typically add to preserve the original client IP?",
+    "options": {
+      "A": "X-Real-IP or X-Forwarded-For",
+      "B": "X-Proxy-Client",
+      "C": "Client-IP-Address",
+      "D": "Origin-IP"
+    },
+    "correct_answers": ["A"],
+    "explanation": "X-Forwarded-For (XFF) and X-Real-IP headers preserve original client IP when requests pass through proxies. Backend servers use these for logging, rate limiting, and geolocation.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: A CDN edge server acts as a reverse proxy.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "CDN edge servers are reverse proxies—they sit in front of origin servers, cache content, and serve requests on behalf of the origin. Clients connect to the CDN, not directly to the origin.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A security team wants to prevent data exfiltration by inspecting outbound HTTPS traffic. What proxy configuration is needed?",
+    "options": {
+      "A": "Reverse proxy with SSL termination",
+      "B": "Forward proxy with SSL inspection (MITM)",
+      "C": "Transparent proxy without SSL",
+      "D": "Reverse proxy with caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Inspecting outbound HTTPS requires a forward proxy that performs SSL interception—decrypting, inspecting, and re-encrypting traffic. Clients must trust the proxy's CA certificate.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "Which benefits does a reverse proxy provide for backend servers? (Choose all that apply)",
+    "options": {
+      "A": "Protection from direct internet exposure",
+      "B": "Centralized SSL certificate management",
+      "C": "Request rate limiting and throttling",
+      "D": "Automatic code deployment"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Reverse proxies shield backends from direct access, centralize SSL handling, and can implement rate limiting. Code deployment is a CI/CD function, not a proxy function.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A reverse proxy receives a request but all backend servers are unhealthy. What should it return?",
+    "options": {
+      "A": "200 OK with empty response",
+      "B": "502 Bad Gateway or 503 Service Unavailable",
+      "C": "404 Not Found",
+      "D": "Redirect to another service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "502 (Bad Gateway) indicates the proxy received an invalid response from upstream. 503 (Service Unavailable) indicates temporary unavailability. Both are appropriate when backends are down.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is proxy protocol used for?",
+    "options": {
+      "A": "Encrypting proxy traffic",
+      "B": "Passing original connection information through proxy chains",
+      "C": "Authenticating proxy users",
+      "D": "Compressing proxy responses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Proxy Protocol (HAProxy's specification) passes original client IP/port through TCP proxies that can't use HTTP headers. It's a connection-level header prepended to the TCP stream.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "A company uses a forward proxy for all outbound traffic. An application needs to bypass the proxy for internal services. What is this exception called?",
+    "options": {
+      "A": "Proxy whitelist",
+      "B": "Proxy bypass / no_proxy",
+      "C": "Direct routing",
+      "D": "Proxy tunneling"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Proxy bypass (configured via no_proxy environment variable or settings) specifies destinations that should be accessed directly without going through the proxy—typically internal networks.",
+    "difficulty": "medium",
+    "category": "networking"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is the primary difference between IPv4 and IPv6 addresses?",
+    "options": {
+      "A": "IPv4 is faster than IPv6",
+      "B": "IPv4 uses 32-bit addresses; IPv6 uses 128-bit addresses",
+      "C": "IPv6 doesn't support routing",
+      "D": "IPv4 is more secure than IPv6"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IPv4 uses 32-bit addresses (4.3 billion possible), while IPv6 uses 128-bit addresses (340 undecillion possible). IPv6 was created to address IPv4 address exhaustion.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which IP address range is reserved for private networks? (Choose all that apply)",
+    "options": {
+      "A": "10.0.0.0 - 10.255.255.255",
+      "B": "172.16.0.0 - 172.31.255.255",
+      "C": "192.168.0.0 - 192.168.255.255",
+      "D": "8.8.8.0 - 8.8.8.255"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "RFC 1918 defines private IP ranges: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. These are not routable on the public internet. 8.8.8.x is Google's public DNS.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What does CIDR notation /24 represent?",
+    "options": {
+      "A": "24 available IP addresses",
+      "B": "A subnet mask of 255.255.255.0 (256 addresses)",
+      "C": "24 network segments",
+      "D": "A connection speed of 24 Mbps"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CIDR /24 means 24 bits for network, 8 bits for hosts = 2^8 = 256 addresses (254 usable). The subnet mask is 255.255.255.0. CIDR replaced classful addressing for flexible allocation.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A company needs 500 IP addresses for a new office. What is the minimum CIDR block size needed?",
+    "options": {
+      "A": "/24 (256 addresses)",
+      "B": "/23 (512 addresses)",
+      "C": "/22 (1024 addresses)",
+      "D": "/25 (128 addresses)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "/24 provides 256 addresses (insufficient). /23 provides 512 addresses (sufficient). /22 provides 1024 (wasteful). Always choose the smallest block that meets requirements to conserve IP space.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is NAT (Network Address Translation) primarily used for?",
+    "options": {
+      "A": "Encrypting network traffic",
+      "B": "Allowing multiple devices to share a single public IP address",
+      "C": "Speeding up network connections",
+      "D": "Load balancing traffic"
+    },
+    "correct_answers": ["B"],
+    "explanation": "NAT translates private IP addresses to a public IP, allowing many devices to share one public address. This conserves IPv4 addresses and provides a layer of security by hiding internal IPs.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Which IP address is the loopback address used for testing local network stack?",
+    "options": {
+      "A": "0.0.0.0",
+      "B": "127.0.0.1",
+      "C": "255.255.255.255",
+      "D": "192.168.1.1"
+    },
+    "correct_answers": ["B"],
+    "explanation": "127.0.0.1 (localhost) is the loopback address—traffic sent here never leaves the host. 0.0.0.0 means 'all interfaces'. 255.255.255.255 is broadcast. 192.168.1.1 is a common private gateway.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "In a microservices architecture deployed on Kubernetes, why are pod IP addresses typically ephemeral?",
+    "options": {
+      "A": "To save memory",
+      "B": "Pods are recreated frequently, getting new IPs each time",
+      "C": "Kubernetes doesn't support static IPs",
+      "D": "For security through obscurity"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Pods are ephemeral—they're created, destroyed, and rescheduled frequently. Each new pod gets a new IP from the cluster's IP pool. This is why services/DNS are used for discovery, not direct IPs.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is the purpose of a subnet in network design?",
+    "options": {
+      "A": "To increase internet speed",
+      "B": "To divide a network into smaller, manageable segments",
+      "C": "To encrypt network traffic",
+      "D": "To compress data packets"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Subnets divide networks into smaller broadcast domains, improving security (isolation), performance (reduced broadcast traffic), and management (logical grouping of resources).",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A cloud VPC has CIDR 10.0.0.0/16. How many /24 subnets can be created within it?",
+    "options": {
+      "A": "16",
+      "B": "256",
+      "C": "512",
+      "D": "65,536"
+    },
+    "correct_answers": ["B"],
+    "explanation": "/16 has 16 bits for hosts. /24 has 8 bits for hosts. Difference is 8 bits = 2^8 = 256 possible /24 subnets within a /16 block.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: Two devices on different subnets can communicate directly without a router.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Devices on different subnets require a router (Layer 3 device) to forward traffic between them. Switches operate at Layer 2 and only forward within the same subnet/broadcast domain.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is an Elastic IP in cloud environments like AWS?",
+    "options": {
+      "A": "An IP that changes automatically",
+      "B": "A static public IP that can be remapped between instances",
+      "C": "A private IP for internal use",
+      "D": "An IP used only for load balancers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Elastic IPs are static public IPv4 addresses that you can allocate and associate with instances. They persist across instance stops/starts and can be remapped for failover scenarios.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which statement about IPv6 is correct?",
+    "options": {
+      "A": "IPv6 requires NAT for address conservation",
+      "B": "IPv6 addresses are written in hexadecimal with colons",
+      "C": "IPv6 is backward compatible with IPv4",
+      "D": "IPv6 has fewer security features than IPv4"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IPv6 uses hexadecimal notation (e.g., 2001:0db8::1). NAT is unnecessary due to vast address space. IPv6 isn't directly compatible with IPv4 (requires translation). IPv6 has built-in IPsec support.",
+    "difficulty": "medium",
+    "category": "networking"
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the Backend for Frontend (BFF) pattern?",
+    "options": {
+      "A": "A frontend framework",
+      "B": "A dedicated backend service tailored for each frontend type (web, mobile, etc.)",
+      "C": "A database pattern",
+      "D": "A caching strategy"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF: separate backend per frontend. Web BFF, iOS BFF, Android BFF. Each optimized for its client's needs. Coined by Sam Newman. Solves: one-size-fits-all API problem.",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What problem does BFF solve?",
+    "options": {
+      "A": "Database scaling",
+      "B": "Different frontends have different data needs—BFF provides tailored APIs for each",
+      "C": "Network latency",
+      "D": "Security vulnerabilities"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Problem: mobile needs minimal data (bandwidth), web needs rich data, TV needs different format. Generic API = over-fetching or under-fetching. BFF: each frontend gets exactly what it needs.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does BFF differ from API Gateway?",
+    "options": {
+      "A": "They are the same",
+      "B": "API Gateway routes requests; BFF contains client-specific business logic and data aggregation",
+      "C": "BFF is simpler",
+      "D": "API Gateway is per-client"
+    },
+    "correct_answers": ["B"],
+    "explanation": "API Gateway: routing, auth, rate limiting—generic concerns. BFF: client-specific logic, data transformation, aggregation tailored to frontend needs. BFF sits behind gateway or replaces it for specific clients.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "Who typically owns a BFF service?",
+    "options": {
+      "A": "Backend team only",
+      "B": "The frontend team that consumes it",
+      "C": "Operations team",
+      "D": "Database team"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF ownership: frontend team owns their BFF. They know their needs best. Reduces coordination overhead. Frontend team can evolve BFF without backend team bottleneck. Enables autonomy.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is a common anti-pattern when implementing BFF?",
+    "options": {
+      "A": "Having too few BFFs",
+      "B": "Putting too much business logic in BFF instead of keeping it in domain services",
+      "C": "Using REST",
+      "D": "Caching responses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anti-pattern: BFF becomes 'smart' with business logic. Should be: thin translation layer. Business logic belongs in domain services. BFF: aggregate, transform, adapt—not compute business rules.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does BFF help with mobile app performance?",
+    "options": {
+      "A": "It doesn't help mobile",
+      "B": "Reduces payload size, minimizes round trips, and optimizes for mobile constraints",
+      "C": "Increases battery usage",
+      "D": "Requires more bandwidth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mobile BFF optimizations: smaller payloads (mobile bandwidth), fewer round trips (latency), compressed responses, offline-friendly data structures, battery-conscious polling strategies. Tailored for mobile constraints.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is the trade-off of having multiple BFFs?",
+    "options": {
+      "A": "No trade-offs",
+      "B": "Code duplication across BFFs and increased operational complexity",
+      "C": "Faster development always",
+      "D": "Less flexibility"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF trade-offs: code duplication (similar logic in each BFF), more services to deploy/monitor, potential inconsistency between clients. Mitigation: shared libraries, clear boundaries, good documentation.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "When should you NOT use BFF?",
+    "options": {
+      "A": "Never use BFF",
+      "B": "When you have only one client type or clients have very similar needs",
+      "C": "When you have mobile apps",
+      "D": "When using microservices"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip BFF when: single client type, similar client needs, small team (overhead not worth it), simple API requirements. BFF adds complexity—only use when client diversity justifies it.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How does BFF handle authentication?",
+    "options": {
+      "A": "Each BFF has its own auth system",
+      "B": "BFF validates tokens and may transform auth context for downstream services",
+      "C": "BFF ignores authentication",
+      "D": "Authentication is handled only by frontend"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF auth: validates JWT/session from client, extracts user context, passes to downstream services (often as internal token or headers). May handle client-specific auth flows (OAuth for web, biometric for mobile).",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "What is GraphQL's relationship to BFF?",
+    "options": {
+      "A": "GraphQL replaces BFF entirely",
+      "B": "GraphQL can serve as a BFF, allowing clients to request exactly the data they need",
+      "C": "They are unrelated",
+      "D": "BFF requires GraphQL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GraphQL as BFF: clients specify exact data needs. Reduces over/under-fetching. Can replace multiple REST BFFs with single GraphQL endpoint. Trade-off: complexity, caching challenges. Netflix, Airbnb use this approach.",
+    "difficulty": "hard",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "How should BFFs communicate with backend services?",
+    "options": {
+      "A": "Direct database access",
+      "B": "Through well-defined service APIs, not bypassing service boundaries",
+      "C": "Shared memory",
+      "D": "File system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "BFF communication: call backend service APIs. Never bypass to databases directly. Maintains service encapsulation. Use: REST, gRPC, GraphQL federation. BFF is a client of backend services.",
+    "difficulty": "medium",
+    "category": "microservices-patterns"
+  },
+  {
+    "question": "Your company has web, iOS, and Android apps with very different data needs. What's the recommended approach?",
+    "options": {
+      "A": "One generic API for all",
+      "B": "Three BFFs—one per platform—each optimized for its client's specific needs",
+      "C": "No backend needed",
+      "D": "Direct database access from clients"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Three platforms, different needs = three BFFs. Web BFF: rich data, SEO support. iOS/Android BFFs: optimized payloads, offline support. Each team owns their BFF. Shared backend services underneath.",
+    "difficulty": "easy",
+    "category": "microservices-patterns"
+  }
+]

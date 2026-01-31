@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is Single Sign-On (SSO)?",
+    "options": {
+      "A": "A single password for all accounts",
+      "B": "An authentication scheme allowing users to access multiple applications with one set of credentials",
+      "C": "A type of encryption",
+      "D": "A database feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO: authenticate once, access multiple applications. User logs into identity provider (IdP), receives token/session valid across all connected apps. Improves UX, reduces password fatigue, centralizes security.",
+    "difficulty": "easy",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What are the main benefits of SSO?",
+    "options": {
+      "A": "Faster databases",
+      "B": "Improved user experience, reduced password fatigue, centralized access control, easier compliance",
+      "C": "Better network speed",
+      "D": "Cheaper hosting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO benefits: UX (one login), security (fewer passwords to manage/forget), IT efficiency (centralized provisioning/deprovisioning), compliance (audit trail), reduced help desk calls (password resets).",
+    "difficulty": "easy",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is an Identity Provider (IdP) in SSO?",
+    "options": {
+      "A": "A database",
+      "B": "The central service that authenticates users and issues tokens for accessing other applications",
+      "C": "A load balancer",
+      "D": "A caching service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Identity Provider: authenticates users, manages identities, issues tokens/assertions. Examples: Okta, Azure AD, Auth0, Google Workspace. Service Providers (apps) trust IdP's authentication decisions.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is a Service Provider (SP) in SSO?",
+    "options": {
+      "A": "The identity database",
+      "B": "An application that relies on the Identity Provider for authentication",
+      "C": "A network provider",
+      "D": "A cloud vendor"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service Provider: application trusting IdP for auth. Doesn't manage passwords itself. Receives tokens/assertions from IdP, validates them, grants access. Examples: Salesforce, Slack, AWS Console as SPs.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What protocols are commonly used for SSO?",
+    "options": {
+      "A": "HTTP only",
+      "B": "SAML, OAuth 2.0/OIDC, Kerberos",
+      "C": "FTP and SMTP",
+      "D": "TCP and UDP"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO protocols: SAML (enterprise, XML-based), OAuth 2.0 + OIDC (modern, JSON/JWT), Kerberos (Windows domain). SAML: browser-based enterprise. OIDC: mobile-friendly, APIs. Choice depends on ecosystem.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is the difference between SSO and federated identity?",
+    "options": {
+      "A": "They are the same",
+      "B": "SSO is within one organization; federation extends trust across organizational boundaries",
+      "C": "Federation is simpler",
+      "D": "SSO requires more servers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO: single org, multiple apps. Federation: multiple orgs trust each other's identities. Example: company A employees access company B's app using company A credentials. Federation enables cross-org SSO.",
+    "difficulty": "hard",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is the security risk of SSO?",
+    "options": {
+      "A": "Too many passwords",
+      "B": "Single point of compromise—if IdP credentials are stolen, attacker accesses all connected apps",
+      "C": "Slower authentication",
+      "D": "Higher costs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO risk: one key opens all doors. Compromised IdP credentials = access to everything. Mitigation: MFA on IdP, strong password policies, session timeouts, anomaly detection, conditional access policies.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is SP-initiated SSO?",
+    "options": {
+      "A": "IdP starts the login",
+      "B": "User accesses application first, which redirects to IdP for authentication",
+      "C": "No redirection needed",
+      "D": "Direct database login"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SP-initiated: user goes to app → app redirects to IdP → user authenticates → IdP redirects back with token → app grants access. Most common flow. User bookmarks app URL directly.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is IdP-initiated SSO?",
+    "options": {
+      "A": "Application starts login",
+      "B": "User logs into IdP portal first, then clicks app link to access without additional login",
+      "C": "No authentication needed",
+      "D": "API-based login"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IdP-initiated: user logs into IdP portal (Okta dashboard, Azure MyApps) → clicks app tile → IdP sends token to app → access granted. Common in enterprise portals. User starts from central dashboard.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "What is Single Logout (SLO)?",
+    "options": {
+      "A": "Logging out of one app",
+      "B": "Logging out of all SSO-connected applications with a single action",
+      "C": "Automatic session timeout",
+      "D": "Password reset"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Single Logout: logout from IdP terminates sessions in all SPs. Challenges: not all apps support it, timing issues, some sessions may persist. Important for: shared computers, security-sensitive environments.",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "How does SSO improve security despite being a single point of access?",
+    "options": {
+      "A": "It doesn't improve security",
+      "B": "Enables stronger auth (MFA) at one point, reduces password reuse, centralizes monitoring",
+      "C": "Uses more encryption",
+      "D": "Requires more servers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SSO security benefits: enforce MFA at IdP (one place), eliminate weak app-specific passwords, reduce password reuse across sites, centralized audit logs, faster deprovisioning (disable IdP = disable all access).",
+    "difficulty": "medium",
+    "category": "api-fundamentals"
+  },
+  {
+    "question": "Your company has 50 internal applications and employees complain about managing multiple passwords. What solution?",
+    "options": {
+      "A": "Use the same password everywhere",
+      "B": "Implement SSO with a central Identity Provider like Okta or Azure AD",
+      "C": "Remove authentication",
+      "D": "Use password managers only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Enterprise SSO solution: deploy IdP (Okta, Azure AD, OneLogin), integrate all 50 apps as SPs. Users authenticate once to IdP, access all apps. Add MFA for security. Centralized user management, audit trails.",
+    "difficulty": "easy",
+    "category": "api-fundamentals"
+  }
+]

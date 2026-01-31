@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is denormalization?",
+    "options": {
+      "A": "Removing all data",
+      "B": "Intentionally adding redundancy to a database to improve read performance at the cost of write complexity",
+      "C": "Normalizing data",
+      "D": "Encrypting data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Denormalization: duplicate data to avoid joins. Example: store customer_name in orders table instead of joining to customers. Faster reads, but updates must maintain consistency across copies.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "When should you consider denormalization?",
+    "options": {
+      "A": "Always",
+      "B": "When read performance is critical and joins are a bottleneck, after exhausting other optimizations",
+      "C": "Never",
+      "D": "Before creating any indexes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Denormalize when: reads vastly outnumber writes, joins are proven bottleneck, indexes aren't enough. Try first: proper indexes, query optimization, caching. Denormalization is a last resort with tradeoffs.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the main tradeoff of denormalization?",
+    "options": {
+      "A": "Faster writes",
+      "B": "Faster reads but more complex writes and risk of data inconsistency",
+      "C": "Less storage",
+      "D": "Simpler schema"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Denormalization tradeoffs: faster reads (no joins), but: more storage, complex updates (must update all copies), risk of inconsistency if updates miss a copy. Requires careful application logic.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a common denormalization technique?",
+    "options": {
+      "A": "Adding foreign keys",
+      "B": "Storing computed aggregates (e.g., order_count in customer table)",
+      "C": "Removing all indexes",
+      "D": "Encrypting columns"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Common techniques: store aggregates (total_orders, last_order_date), duplicate frequently-joined columns, pre-join tables into summary tables. Avoid expensive COUNT(*) or JOIN on every read.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "How do you maintain consistency in a denormalized database?",
+    "options": {
+      "A": "It's automatic",
+      "B": "Application logic, triggers, or eventual consistency mechanisms must update all copies",
+      "C": "Delete redundant data",
+      "D": "Use only one table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consistency options: application code updates all copies in transaction, database triggers auto-update, async jobs reconcile (eventual consistency). Each has tradeoffs. Must be deliberate.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the difference between normalization and denormalization?",
+    "options": {
+      "A": "They are the same",
+      "B": "Normalization: eliminate redundancy, ensure integrity; Denormalization: add redundancy for read performance",
+      "C": "Normalization is faster",
+      "D": "Denormalization uses less storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Normalization: organize data to reduce redundancy, enforce integrity through relationships. Denormalization: reverse—add redundancy to speed reads. Start normalized, denormalize selectively based on needs.",
+    "difficulty": "easy",
+    "category": "database scaling"
+  },
+  {
+    "question": "An e-commerce site shows product listings with seller name. The join to sellers table is slow. What's a denormalization approach?",
+    "options": {
+      "A": "Remove seller information",
+      "B": "Store seller_name directly in products table, update when seller changes name",
+      "C": "Create more indexes on sellers",
+      "D": "Use a slower database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Denormalize: add seller_name to products. Reads: no join needed. Writes: when seller updates name, must update all their products. Tradeoff acceptable if seller name changes rarely, reads are frequent.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a summary table?",
+    "options": {
+      "A": "A table with short text",
+      "B": "A pre-computed table storing aggregated or joined data for fast querying",
+      "C": "A backup table",
+      "D": "A temporary table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Summary table: pre-compute expensive queries. Example: daily_sales_summary with date, product_id, total_sales. Updated periodically or via triggers. Dashboard queries hit summary, not raw transactions.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is the risk of over-denormalization?",
+    "options": {
+      "A": "Faster queries",
+      "B": "Data inconsistency, complex update logic, storage bloat, maintenance nightmare",
+      "C": "Simpler code",
+      "D": "Better security"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Over-denormalization risks: data gets out of sync, every write touches many places, storage explodes, schema becomes unmaintainable. Denormalize surgically for specific bottlenecks, not everywhere.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  },
+  {
+    "question": "How does denormalization relate to NoSQL databases?",
+    "options": {
+      "A": "NoSQL doesn't support denormalization",
+      "B": "NoSQL databases often embrace denormalization by design—data modeled for query patterns, not normalization",
+      "C": "NoSQL is always normalized",
+      "D": "They are unrelated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "NoSQL philosophy: model data for access patterns, not normalization. Document DBs embed related data. Key-value stores duplicate for different access patterns. Denormalization is the norm, not exception.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "What is a materialized view and how does it relate to denormalization?",
+    "options": {
+      "A": "A type of index",
+      "B": "A stored query result that's periodically refreshed—a database-managed form of denormalization",
+      "C": "A backup mechanism",
+      "D": "A security feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Materialized view: database stores query results physically. Refreshed on schedule or on change. Like denormalization but database-managed. Simpler than manual summary tables. Not all DBs support them.",
+    "difficulty": "hard",
+    "category": "database scaling"
+  },
+  {
+    "question": "A reporting dashboard runs slow aggregate queries on a transactional database. Best approach?",
+    "options": {
+      "A": "Run reports more often",
+      "B": "Create summary tables or materialized views updated periodically, query those instead",
+      "C": "Delete old data",
+      "D": "Use a slower network"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Reporting pattern: pre-compute aggregates in summary tables. Update hourly/daily. Dashboard queries summary (fast) not raw data (slow). Separates OLTP (transactions) from OLAP (analytics) concerns.",
+    "difficulty": "medium",
+    "category": "database scaling"
+  }
+]

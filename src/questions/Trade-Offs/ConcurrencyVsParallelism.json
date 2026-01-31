@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is the difference between concurrency and parallelism?",
+    "options": {
+      "A": "They are the same",
+      "B": "Concurrency: dealing with multiple tasks at once; Parallelism: executing multiple tasks simultaneously",
+      "C": "Parallelism is slower",
+      "D": "Concurrency requires multiple CPUs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Concurrency: structure (managing multiple tasks, may interleave). Parallelism: execution (actually running simultaneously). Concurrency on 1 CPU: time-slicing. Parallelism requires multiple cores. Rob Pike: 'Concurrency is not parallelism.'",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Can you have concurrency without parallelism?",
+    "options": {
+      "A": "No, they always go together",
+      "B": "Yes—single CPU can handle concurrent tasks through time-slicing",
+      "C": "Only in theory",
+      "D": "Only with special hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Concurrency without parallelism: single-core CPU runs multiple threads via context switching. Tasks interleave, not simultaneous. Example: Node.js event loop—concurrent I/O on single thread, not parallel.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Can you have parallelism without concurrency?",
+    "options": {
+      "A": "Yes, always",
+      "B": "Technically no—parallel execution implies concurrent structure",
+      "C": "Only in databases",
+      "D": "Only with GPUs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Parallelism implies concurrency: if tasks run simultaneously, they're being managed concurrently. However, you can have embarrassingly parallel tasks with minimal coordination (SIMD operations, map over array).",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is a thread?",
+    "options": {
+      "A": "A string",
+      "B": "A lightweight unit of execution within a process that shares memory with other threads",
+      "C": "A network connection",
+      "D": "A file"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Thread: execution unit within process. Shares: memory, file handles with other threads. Has own: stack, registers, program counter. Enables: concurrency within process. Challenges: synchronization, race conditions.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is a race condition?",
+    "options": {
+      "A": "A fast program",
+      "B": "A bug where program behavior depends on the timing of concurrent operations",
+      "C": "A performance optimization",
+      "D": "A type of loop"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Race condition: outcome depends on execution order. Example: two threads increment counter without synchronization—may lose updates. Causes: shared mutable state, missing locks. Hard to reproduce, debug.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is a deadlock?",
+    "options": {
+      "A": "A crashed program",
+      "B": "A situation where two or more threads are blocked forever, each waiting for the other",
+      "C": "A slow program",
+      "D": "A memory leak"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Deadlock: circular wait. Thread A holds lock 1, waits for lock 2. Thread B holds lock 2, waits for lock 1. Neither progresses. Prevention: lock ordering, timeouts, deadlock detection. Four conditions: mutual exclusion, hold and wait, no preemption, circular wait.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the Global Interpreter Lock (GIL)?",
+    "options": {
+      "A": "A security feature",
+      "B": "A mutex in CPython that prevents multiple threads from executing Python bytecode simultaneously",
+      "C": "A database lock",
+      "D": "A file lock"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GIL: CPython limitation. Only one thread executes Python at a time. Impact: CPU-bound code doesn't benefit from threads. Workarounds: multiprocessing, C extensions, async I/O. I/O-bound code still benefits from threads.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "When should you use threads vs processes?",
+    "options": {
+      "A": "Always use threads",
+      "B": "Threads: shared memory, lower overhead; Processes: isolation, true parallelism, fault tolerance",
+      "C": "Always use processes",
+      "D": "They are interchangeable"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Threads: lightweight, shared memory (easy communication), but shared state risks. Processes: isolated memory (safer), true parallelism (no GIL), but higher overhead, IPC needed. CPU-bound: processes. I/O-bound: threads or async.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is async/await concurrency?",
+    "options": {
+      "A": "Multi-threading",
+      "B": "Cooperative concurrency where tasks voluntarily yield control at await points",
+      "C": "Parallel processing",
+      "D": "Synchronous execution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Async/await: single-threaded concurrency. Tasks yield at await (I/O operations). Event loop schedules other tasks. No thread overhead, no race conditions on shared state. Perfect for I/O-bound: web servers, API clients.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is Amdahl's Law?",
+    "options": {
+      "A": "A programming rule",
+      "B": "A formula showing that speedup from parallelism is limited by the sequential portion of code",
+      "C": "A memory law",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Amdahl's Law: speedup = 1 / (S + P/N). S = sequential fraction, P = parallel fraction, N = processors. If 10% is sequential, max speedup = 10x regardless of cores. Identifies parallelization limits.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is the actor model?",
+    "options": {
+      "A": "A movie concept",
+      "B": "A concurrency model where actors communicate via messages, avoiding shared state",
+      "C": "A database model",
+      "D": "A UI pattern"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Actor model: actors are independent units with private state. Communicate only via async messages. No shared memory = no locks, no race conditions. Used in: Erlang, Akka, Orleans. Great for distributed systems.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Your web server handles 10,000 concurrent connections but mostly waits for database responses. What's the best approach?",
+    "options": {
+      "A": "10,000 threads",
+      "B": "Async I/O with event loop—handles many connections with few threads",
+      "C": "10,000 processes",
+      "D": "Sequential processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "I/O-bound, high concurrency = async I/O. Event loop handles thousands of connections with minimal threads. While waiting for DB, serve other requests. Node.js, Python asyncio, Go goroutines excel here. Threads would waste memory.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  }
+]

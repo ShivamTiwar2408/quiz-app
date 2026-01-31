@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a stream processing engine?",
+    "options": {
+      "A": "A video streaming service",
+      "B": "A system that processes data continuously as it arrives, rather than in batches",
+      "C": "A database",
+      "D": "A file system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stream processing: continuous data processing. Events processed as they arrive. Low latency (milliseconds to seconds). Examples: Apache Flink, Kafka Streams, Apache Spark Streaming, Amazon Kinesis.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the difference between true streaming and micro-batching?",
+    "options": {
+      "A": "They are the same",
+      "B": "True streaming processes each event individually; micro-batching collects events into small batches",
+      "C": "Micro-batching is faster",
+      "D": "True streaming uses more memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "True streaming (Flink): process each event as it arrives. Micro-batching (Spark Streaming): collect events for short interval (100ms-seconds), process as mini-batch. Trade-off: latency vs throughput.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is Apache Flink?",
+    "options": {
+      "A": "A database",
+      "B": "A distributed stream processing framework with true event-at-a-time processing",
+      "C": "A message queue",
+      "D": "A visualization tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Apache Flink: true streaming engine. Features: exactly-once semantics, event time processing, stateful computations, low latency. Used by: Alibaba, Netflix, Uber. Strong for complex event processing.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is event time vs processing time?",
+    "options": {
+      "A": "Same thing",
+      "B": "Event time: when event occurred; Processing time: when event is processed by the system",
+      "C": "Event time is always later",
+      "D": "Processing time is more accurate"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Event time: timestamp in event (when it happened). Processing time: wall clock when processed. Event time: correct for analytics (handles late data). Processing time: simpler but can give wrong results with delays.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is a watermark in stream processing?",
+    "options": {
+      "A": "A logo on data",
+      "B": "A marker indicating that no events with timestamp earlier than the watermark will arrive",
+      "C": "A data quality metric",
+      "D": "A security feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Watermark: progress indicator for event time. Watermark(t) means: all events with timestamp < t have arrived. Triggers window computations. Handles out-of-order events. Trade-off: lateness tolerance vs latency.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is stateful stream processing?",
+    "options": {
+      "A": "Processing without memory",
+      "B": "Maintaining state across events—counters, aggregations, session data",
+      "C": "Stateless processing",
+      "D": "Batch processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateful processing: maintain state between events. Examples: running counts, session windows, pattern detection. Challenges: state management, fault tolerance, scaling. Flink excels at stateful processing.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is exactly-once semantics in stream processing?",
+    "options": {
+      "A": "Process each event once",
+      "B": "Guarantee that each event affects the output exactly once, even with failures",
+      "C": "Deliver each event once",
+      "D": "Store each event once"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Exactly-once: despite failures, each event contributes to output exactly once. Achieved via: checkpointing, transactional sinks, idempotent operations. Flink, Kafka Streams support this. Critical for financial applications.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is windowing in stream processing?",
+    "options": {
+      "A": "Opening windows",
+      "B": "Grouping events into finite sets for aggregation—tumbling, sliding, session windows",
+      "C": "Filtering events",
+      "D": "Sorting events"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Windowing: bound infinite stream. Tumbling: fixed, non-overlapping (every 5 min). Sliding: overlapping (5 min window, 1 min slide). Session: activity-based gaps. Enables aggregations on streams.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is Kafka Streams?",
+    "options": {
+      "A": "A separate cluster",
+      "B": "A lightweight stream processing library that runs within your application, using Kafka for input/output",
+      "C": "A database",
+      "D": "A visualization tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kafka Streams: library, not cluster. Runs in your JVM app. Uses Kafka for: input, output, state stores. Benefits: simple deployment, no separate cluster, exactly-once. Good for: Kafka-centric architectures.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is checkpointing in stream processing?",
+    "options": {
+      "A": "Stopping processing",
+      "B": "Periodically saving state to durable storage for fault tolerance and recovery",
+      "C": "Validating data",
+      "D": "Logging events"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Checkpointing: snapshot state periodically. On failure: restore from checkpoint, replay from that point. Flink: asynchronous barrier-based checkpointing. Enables exactly-once without stopping processing.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "When would you choose Flink over Spark Streaming?",
+    "options": {
+      "A": "Never",
+      "B": "When you need true event-at-a-time processing, lower latency, or complex event processing",
+      "C": "When you have batch workloads",
+      "D": "When you need SQL only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Choose Flink: sub-second latency requirements, complex event processing, sophisticated windowing, event time processing critical. Choose Spark: unified batch+stream, existing Spark ecosystem, simpler use cases.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your fraud detection system needs to process transactions and detect patterns within 100ms. Which approach?",
+    "options": {
+      "A": "Batch processing",
+      "B": "True streaming engine like Flink with stateful pattern detection",
+      "C": "Database queries",
+      "D": "Manual review"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Real-time fraud detection: Flink ideal. True streaming for low latency. Stateful processing for pattern detection (velocity checks, behavioral analysis). Complex event processing for rule matching. Sub-100ms achievable.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  }
+]

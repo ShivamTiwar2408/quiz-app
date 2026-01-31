@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is database sharding?",
+    "options": {
+      "A": "Creating backup copies of the database",
+      "B": "Splitting data across multiple database instances based on a shard key",
+      "C": "Encrypting database contents",
+      "D": "Compressing database storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sharding horizontally partitions data across multiple database instances (shards). Each shard holds a subset of data determined by the shard key. This enables horizontal scaling for large datasets.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "Which is the most critical decision when implementing sharding?",
+    "options": {
+      "A": "Choosing the database vendor",
+      "B": "Selecting the shard key",
+      "C": "Deciding the number of shards",
+      "D": "Choosing the server hardware"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The shard key determines data distribution and query routing. A poor shard key causes hot spots, cross-shard queries, or uneven distribution. It's difficult to change later, making it the most critical decision.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "An e-commerce database is sharded by customer_id. What happens when querying all orders for a specific product?",
+    "options": {
+      "A": "Query goes to one shard",
+      "B": "Query must scan all shards (scatter-gather)",
+      "C": "Query fails",
+      "D": "Query is automatically optimized"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Product queries don't align with customer_id sharding. The query must scatter to all shards and gather results. This is expensive. Shard key should align with common query patterns.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a 'hot shard' problem?",
+    "options": {
+      "A": "A shard with hardware overheating",
+      "B": "A shard receiving disproportionately high traffic",
+      "C": "A shard with corrupted data",
+      "D": "A shard that's too large"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Hot shards occur when the shard key causes uneven distribution—one shard handles much more traffic than others. This negates sharding benefits and can cause that shard to become a bottleneck.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Which shard key would likely cause hot spots for a social media application?",
+    "options": {
+      "A": "user_id (uniformly distributed)",
+      "B": "post_date (recent dates get most traffic)",
+      "C": "random UUID",
+      "D": "hash(user_id)"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sharding by date concentrates recent data (most accessed) on one shard. User_id, random UUID, and hashed keys distribute more evenly. Time-based sharding works for archival but not active data.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between sharding and replication?",
+    "options": {
+      "A": "They are the same thing",
+      "B": "Sharding splits data across nodes; replication copies data across nodes",
+      "C": "Replication is for reads; sharding is for writes only",
+      "D": "Sharding is automatic; replication is manual"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sharding partitions data—each shard has different data. Replication copies data—each replica has the same data. They're often combined: each shard is replicated for availability.",
+    "difficulty": "easy",
+    "category": "databases"
+  },
+  {
+    "question": "Which challenges does sharding introduce? (Choose all that apply)",
+    "options": {
+      "A": "Cross-shard queries become expensive",
+      "B": "Transactions across shards are complex",
+      "C": "Resharding (changing shard count) is difficult",
+      "D": "Read performance always decreases"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Sharding complicates cross-shard operations (queries, transactions) and resharding. Read performance typically improves (less data per shard) unless queries span shards.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "A database uses range-based sharding on user_id (1-1000 → Shard1, 1001-2000 → Shard2). What is a potential issue?",
+    "options": {
+      "A": "Queries are slower",
+      "B": "New users concentrate on the latest shard, causing imbalance",
+      "C": "Range queries don't work",
+      "D": "Data is duplicated"
+    },
+    "correct_answers": ["B"],
+    "explanation": "With sequential IDs and range sharding, new users always go to the highest shard. That shard handles all new user traffic while older shards are underutilized. Hash-based sharding distributes more evenly.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "True or False: Once a database is sharded, adding more shards is straightforward.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Resharding requires redistributing data across new shards while maintaining availability. This is complex and often requires careful planning, data migration, and application changes. Some systems (Vitess, CockroachDB) automate this.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is 'consistent hashing' in the context of sharding?",
+    "options": {
+      "A": "Ensuring all shards have identical data",
+      "B": "A technique that minimizes data movement when shards are added/removed",
+      "C": "Verifying data integrity across shards",
+      "D": "Encrypting shard keys"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consistent hashing maps keys to shards such that adding/removing a shard only affects a small portion of keys. This minimizes data redistribution compared to modulo-based sharding.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "A multi-tenant SaaS application considers sharding by tenant_id. What is an advantage of this approach?",
+    "options": {
+      "A": "Cross-tenant queries are efficient",
+      "B": "Tenant data isolation and per-tenant scaling",
+      "C": "Simpler backup procedures",
+      "D": "Reduced storage costs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tenant-based sharding isolates tenant data (security/compliance benefit) and allows scaling individual tenants. Large tenants can have dedicated shards. Cross-tenant queries become harder, not easier.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Which strategy helps handle cross-shard transactions?",
+    "options": {
+      "A": "Avoid them through data model design",
+      "B": "Two-phase commit (2PC)",
+      "C": "Saga pattern with compensating transactions",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "All strategies are valid: design to minimize cross-shard transactions, use 2PC for strong consistency (with performance cost), or use sagas for eventual consistency. The choice depends on consistency requirements.",
+    "difficulty": "hard",
+    "category": "databases"
+  }
+]

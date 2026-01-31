@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What are metrics in observability?",
+    "options": {
+      "A": "Log messages",
+      "B": "Numerical measurements collected over time representing system behavior",
+      "C": "Error messages",
+      "D": "User feedback"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Metrics: numerical time-series data. Examples: request count, latency percentiles, CPU usage, error rate. Aggregatable, efficient to store, good for dashboards and alerting. One of three observability pillars.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What are the four golden signals for monitoring?",
+    "options": {
+      "A": "CPU, Memory, Disk, Network",
+      "B": "Latency, Traffic, Errors, Saturation",
+      "C": "Read, Write, Delete, Update",
+      "D": "Start, Stop, Pause, Resume"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Four Golden Signals (Google SRE): Latency (request duration), Traffic (demand), Errors (failure rate), Saturation (resource utilization). If you monitor only four things, monitor these.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the difference between a counter and a gauge metric?",
+    "options": {
+      "A": "They are the same",
+      "B": "Counter: only increases (requests, errors); Gauge: can go up or down (temperature, queue size)",
+      "C": "Gauge only increases",
+      "D": "Counter can decrease"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Counter: cumulative, only increases (or resets). Use for: request count, errors, bytes sent. Gauge: current value, can increase/decrease. Use for: temperature, memory usage, active connections.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is a histogram metric?",
+    "options": {
+      "A": "A bar chart",
+      "B": "A metric that tracks the distribution of values in configurable buckets",
+      "C": "A counter",
+      "D": "A log message"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Histogram: tracks value distribution. Buckets: <10ms, <50ms, <100ms, <500ms, etc. Enables: percentile calculation (p50, p95, p99), understanding distribution not just average. Essential for latency.",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is Prometheus?",
+    "options": {
+      "A": "A Greek god",
+      "B": "An open-source monitoring system with time-series database and query language",
+      "C": "A database",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Prometheus: pull-based monitoring. Scrapes /metrics endpoints. Time-series DB. PromQL query language. Alertmanager for alerts. CNCF project. De facto standard for Kubernetes monitoring.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the RED method for microservices monitoring?",
+    "options": {
+      "A": "A color scheme",
+      "B": "Rate (requests/sec), Errors (failed requests), Duration (latency)",
+      "C": "Read, Edit, Delete",
+      "D": "A backup method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RED method: Rate (throughput), Errors (error rate), Duration (latency). Request-centric, perfect for microservices. Complements USE method (resource-centric). Simple, effective.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the USE method for resource monitoring?",
+    "options": {
+      "A": "A usage guide",
+      "B": "Utilization, Saturation, Errors for each resource (CPU, memory, disk, network)",
+      "C": "A programming method",
+      "D": "A testing method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "USE method: for each resource, measure Utilization (% busy), Saturation (queue length), Errors. Resource-centric. Good for infrastructure. Complements RED (request-centric).",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is metric cardinality and why does it matter?",
+    "options": {
+      "A": "Number of metrics",
+      "B": "Number of unique label combinations; high cardinality causes storage and performance issues",
+      "C": "Metric accuracy",
+      "D": "Metric size"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cardinality: unique time-series count. Labels like user_id create millions of series. High cardinality: storage explosion, slow queries, memory pressure. Avoid high-cardinality labels (use logs instead).",
+    "difficulty": "hard",
+    "category": "observability"
+  },
+  {
+    "question": "What is instrumentation in the context of metrics?",
+    "options": {
+      "A": "Playing music",
+      "B": "Adding code to emit metrics from your application",
+      "C": "Removing metrics",
+      "D": "Encrypting metrics"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Instrumentation: adding metric collection to code. Libraries: Prometheus client, Micrometer, StatsD. Instrument: request handlers (latency, count), business logic (orders processed), resources (pool sizes).",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the difference between push and pull metrics collection?",
+    "options": {
+      "A": "No difference",
+      "B": "Push: app sends to collector; Pull: collector scrapes from app endpoints",
+      "C": "Push is always better",
+      "D": "Pull is always better"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Push (StatsD, Datadog agent): app sends metrics. Pull (Prometheus): collector scrapes /metrics. Pull: simpler apps, collector controls rate. Push: works through firewalls, short-lived jobs.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What percentiles should you track for latency?",
+    "options": {
+      "A": "Only average",
+      "B": "p50 (median), p95, p99, and sometimes p99.9",
+      "C": "Only maximum",
+      "D": "Only minimum"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Latency percentiles: p50 (typical user), p95 (most users), p99 (tail latency), p99.9 (worst case). Average hides outliers. p99 often 10x p50. SLOs typically target p95 or p99.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "A service has average latency of 50ms but users complain it's slow. What metric would reveal the issue?",
+    "options": {
+      "A": "Average latency",
+      "B": "p99 latency—likely shows high tail latency affecting some users",
+      "C": "Request count",
+      "D": "CPU usage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Average hides tail latency. p50=50ms, p99=2000ms means 1% of users wait 2 seconds. Those users complain. Always track percentiles, not just average. p99 reveals the real user experience.",
+    "difficulty": "medium",
+    "category": "observability"
+  }
+]

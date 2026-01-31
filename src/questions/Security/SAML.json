@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is SAML?",
+    "options": {
+      "A": "A programming language",
+      "B": "Security Assertion Markup Language—an XML-based standard for exchanging authentication and authorization data",
+      "C": "A database",
+      "D": "A network protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML: XML-based standard for SSO. Exchanges authentication/authorization data between identity provider (IdP) and service provider (SP). Enables: enterprise SSO, federated identity. Version 2.0 most common.",
+    "difficulty": "easy",
+    "category": "security"
+  },
+  {
+    "question": "What are the three main components in SAML?",
+    "options": {
+      "A": "Client, server, database",
+      "B": "Principal (user), Identity Provider (IdP), Service Provider (SP)",
+      "C": "Frontend, backend, API",
+      "D": "Request, response, token"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML components: Principal (user wanting access), Identity Provider (authenticates user, issues assertions—Okta, Azure AD), Service Provider (application relying on IdP for authentication—Salesforce, AWS).",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is a SAML assertion?",
+    "options": {
+      "A": "A code statement",
+      "B": "An XML document containing authentication and attribute statements about a user",
+      "C": "A database record",
+      "D": "A log entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML assertion: XML document from IdP. Contains: authentication statement (user authenticated at time X), attribute statement (user's email, groups, roles), conditions (validity period, audience).",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is the SAML SP-initiated flow?",
+    "options": {
+      "A": "IdP starts the process",
+      "B": "User accesses SP first, SP redirects to IdP for authentication, then back to SP with assertion",
+      "C": "No redirection needed",
+      "D": "Direct database authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SP-initiated flow: 1) User accesses SP, 2) SP generates AuthnRequest, redirects to IdP, 3) User authenticates at IdP, 4) IdP sends SAML Response with assertion to SP, 5) SP grants access. Most common flow.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is the SAML IdP-initiated flow?",
+    "options": {
+      "A": "SP starts the process",
+      "B": "User authenticates at IdP first, then IdP sends assertion directly to SP",
+      "C": "No authentication needed",
+      "D": "API-based flow"
+    },
+    "correct_answers": ["B"],
+    "explanation": "IdP-initiated flow: 1) User logs into IdP portal, 2) Clicks application link, 3) IdP sends unsolicited SAML Response to SP, 4) SP grants access. Used in: enterprise portals, app launchers.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "How is a SAML assertion secured?",
+    "options": {
+      "A": "Plain text",
+      "B": "XML digital signatures and optionally encryption",
+      "C": "Password protection",
+      "D": "Compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML security: XML Signature (proves assertion from IdP, not tampered), XML Encryption (optional, protects sensitive attributes). SP validates signature using IdP's public certificate. Prevents forgery.",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is SAML metadata?",
+    "options": {
+      "A": "User data",
+      "B": "XML documents describing IdP and SP configurations—endpoints, certificates, supported bindings",
+      "C": "Log files",
+      "D": "Database schema"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML metadata: configuration exchange format. Contains: entity ID, SSO endpoints, certificates, supported bindings. Simplifies setup: import metadata instead of manual configuration. Auto-updates possible.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "SAML vs OAuth 2.0: what's the main difference?",
+    "options": {
+      "A": "They are the same",
+      "B": "SAML is for authentication/SSO; OAuth is for authorization/API access",
+      "C": "OAuth is older",
+      "D": "SAML is simpler"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML: authentication focus, enterprise SSO, XML-based, browser-based. OAuth: authorization focus, API access, JSON-based, mobile-friendly. Often combined: SAML for SSO, OAuth for API. OIDC bridges both.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is Single Logout (SLO) in SAML?",
+    "options": {
+      "A": "Logging out of one application",
+      "B": "Logging out of all applications in a single action through the IdP",
+      "C": "Automatic logout",
+      "D": "Session timeout"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Single Logout: logout from IdP → logout from all SPs. IdP sends LogoutRequest to each SP. Challenges: not all SPs support it, timing issues, browser limitations. Often optional in implementations.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "What is a SAML binding?",
+    "options": {
+      "A": "A book binding",
+      "B": "The method of transporting SAML messages—HTTP Redirect, HTTP POST, SOAP",
+      "C": "A database connection",
+      "D": "A code library"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SAML bindings: transport mechanisms. HTTP Redirect: URL parameters (size limited). HTTP POST: form submission (larger messages). SOAP: web services. HTTP POST most common for assertions (larger, signed).",
+    "difficulty": "hard",
+    "category": "security"
+  },
+  {
+    "question": "What is the Assertion Consumer Service (ACS)?",
+    "options": {
+      "A": "A customer service",
+      "B": "The SP endpoint that receives and processes SAML assertions from the IdP",
+      "C": "A logging service",
+      "D": "A database service"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ACS: SP's endpoint for receiving SAML Response. IdP posts assertion here. SP validates signature, extracts user info, creates session. URL configured in IdP. Critical security: validate ACS URL.",
+    "difficulty": "medium",
+    "category": "security"
+  },
+  {
+    "question": "Your enterprise needs SSO across multiple internal applications with existing Active Directory. What's the best approach?",
+    "options": {
+      "A": "Separate passwords for each app",
+      "B": "SAML-based SSO with Azure AD or ADFS as the Identity Provider",
+      "C": "OAuth only",
+      "D": "No authentication"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Enterprise SSO: SAML with AD integration. Azure AD or ADFS as IdP, authenticates against AD. Each app is SP. Users login once to AD, access all apps. Centralized: user management, audit, policy enforcement.",
+    "difficulty": "easy",
+    "category": "security"
+  }
+]

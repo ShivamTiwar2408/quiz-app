@@ -1,0 +1,158 @@
+[
+  {
+    "question": "Why was Raft created as an alternative to Paxos?",
+    "options": {
+      "A": "Paxos was too slow",
+      "B": "To provide an understandable consensus algorithm that's easier to implement correctly",
+      "C": "Paxos was patented",
+      "D": "Raft uses less memory"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Raft was designed for understandability. Paxos is notoriously hard to understand and implement. Raft decomposes consensus into leader election, log replication, and safety—each easier to reason about.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What are the three states a Raft node can be in?",
+    "options": {
+      "A": "Active, Passive, Standby",
+      "B": "Leader, Follower, Candidate",
+      "C": "Primary, Secondary, Arbiter",
+      "D": "Master, Slave, Observer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Follower: passive, responds to leader/candidates. Candidate: during election, requests votes. Leader: handles all client requests, replicates log. Only one leader per term.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'term' in Raft?",
+    "options": {
+      "A": "A vocabulary word",
+      "B": "A logical time period; each term has at most one leader, terms increase monotonically",
+      "C": "A network connection",
+      "D": "A database table"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Terms are logical clocks in Raft. Each term: starts with election, has at most one leader. If a node sees a higher term, it updates and becomes follower. Stale leaders are detected via term comparison.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does Raft leader election work?",
+    "options": {
+      "A": "Random selection",
+      "B": "Follower times out, becomes candidate, requests votes; wins with majority",
+      "C": "The oldest node becomes leader",
+      "D": "Manual administrator selection"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Election: follower's election timeout expires → becomes candidate → increments term → votes for self → sends RequestVote to others. Wins with majority votes. Randomized timeouts prevent split votes.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the purpose of the heartbeat in Raft?",
+    "options": {
+      "A": "To check node health only",
+      "B": "Leader sends periodic heartbeats to maintain authority and prevent new elections",
+      "C": "To synchronize clocks",
+      "D": "To encrypt data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Leader sends empty AppendEntries (heartbeats) regularly. Followers reset election timeout on receiving heartbeat. If no heartbeat before timeout, follower assumes leader failed and starts election.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does Raft ensure log consistency across nodes?",
+    "options": {
+      "A": "Logs are stored centrally",
+      "B": "Leader's log is authoritative; followers must match leader's log to accept new entries",
+      "C": "Each node has independent logs",
+      "D": "Logs are not used in Raft"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log Matching Property: if two logs have entry with same index and term, all preceding entries are identical. Leader includes prevLogIndex and prevLogTerm in AppendEntries; followers reject if mismatch.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "When is a log entry considered 'committed' in Raft?",
+    "options": {
+      "A": "When the leader writes it",
+      "B": "When replicated to a majority of nodes and leader advances commit index",
+      "C": "When all nodes have it",
+      "D": "Immediately upon client request"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Entry is committed when: stored on majority of servers AND leader has advanced commitIndex. Committed entries are durable—guaranteed to eventually appear in all nodes' logs. Safe to apply to state machine.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What happens if a Raft follower's log diverges from the leader's?",
+    "options": {
+      "A": "The follower becomes leader",
+      "B": "Leader finds the latest matching entry and overwrites follower's conflicting entries",
+      "C": "Both logs are merged",
+      "D": "The system crashes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Leader decrements nextIndex for that follower until finding a match. Then sends entries from that point. Follower deletes conflicting entries and appends leader's. Leader's log always wins.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the 'election restriction' in Raft?",
+    "options": {
+      "A": "Only certain nodes can be elected",
+      "B": "A candidate must have a log at least as up-to-date as the voter's to receive their vote",
+      "C": "Elections happen at fixed times",
+      "D": "Only one election per day"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Voter denies vote if candidate's log is less up-to-date (compare last log term, then length). This ensures the elected leader has all committed entries. Critical for safety.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which systems use Raft for consensus?",
+    "options": {
+      "A": "etcd",
+      "B": "Consul",
+      "C": "CockroachDB",
+      "D": "TiKV"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "Raft is widely adopted: etcd (Kubernetes), Consul (HashiCorp), CockroachDB, TiKV (TiDB), RethinkDB. Its understandability made it the go-to choice for new distributed systems.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does Raft handle network partitions?",
+    "options": {
+      "A": "It ignores them",
+      "B": "The partition with majority continues; minority partition can't elect leader or commit",
+      "C": "Both partitions continue independently",
+      "D": "The system shuts down"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Majority partition: can elect leader, commit entries. Minority: can't form quorum, no commits, may elect candidate but can't win. On heal, minority nodes catch up from majority's leader.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a key difference between Raft and Paxos?",
+    "options": {
+      "A": "Raft is slower",
+      "B": "Raft uses strong leader—all writes go through leader; Paxos allows any proposer",
+      "C": "Paxos is easier to understand",
+      "D": "Raft doesn't provide consensus"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Raft: strong leader model, all client requests through leader, simplifies reasoning. Paxos: any node can propose, more flexible but complex. Raft's leader-centric design aids understandability.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

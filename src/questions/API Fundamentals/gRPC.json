@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is gRPC and what does it stand for?",
+    "options": {
+      "A": "Google Remote Procedure Call - a high-performance RPC framework",
+      "B": "General REST Protocol Communication",
+      "C": "Graph Remote Protocol Call",
+      "D": "Generic Request Processing Client"
+    },
+    "correct_answers": ["A"],
+    "explanation": "gRPC is Google's open-source RPC framework using HTTP/2 and Protocol Buffers. It enables efficient, strongly-typed communication between services, popular in microservices architectures.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "What serialization format does gRPC use by default?",
+    "options": {
+      "A": "JSON",
+      "B": "XML",
+      "C": "Protocol Buffers (protobuf)",
+      "D": "MessagePack"
+    },
+    "correct_answers": ["C"],
+    "explanation": "gRPC uses Protocol Buffers—a binary serialization format that's smaller and faster than JSON/XML. Schemas are defined in .proto files and compiled to generate client/server code.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which gRPC communication patterns are supported? (Choose all that apply)",
+    "options": {
+      "A": "Unary (single request, single response)",
+      "B": "Server streaming (single request, stream of responses)",
+      "C": "Client streaming (stream of requests, single response)",
+      "D": "Bidirectional streaming (streams in both directions)"
+    },
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "gRPC supports all four patterns: unary (like REST), server streaming (e.g., live feeds), client streaming (e.g., file upload), and bidirectional streaming (e.g., chat). This flexibility exceeds REST's request-response model.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Why is gRPC generally faster than REST with JSON?",
+    "options": {
+      "A": "gRPC uses faster servers",
+      "B": "Binary protobuf is smaller and faster to serialize than text-based JSON",
+      "C": "gRPC skips network transmission",
+      "D": "REST is intentionally slow"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Protocol Buffers are binary (smaller payloads), have schema-based serialization (faster parsing), and gRPC uses HTTP/2 (multiplexing, header compression). Combined, these provide significant performance gains.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is a .proto file in gRPC?",
+    "options": {
+      "A": "A prototype implementation",
+      "B": "A schema definition file that defines services and message types",
+      "C": "A protocol configuration file",
+      "D": "A production deployment file"
+    },
+    "correct_answers": ["B"],
+    "explanation": ".proto files define the API contract: message types (like structs), services (like interfaces), and RPC methods. The protoc compiler generates client and server code in multiple languages from this schema.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A team is building a public API for third-party developers. Should they use gRPC or REST?",
+    "options": {
+      "A": "Always gRPC for performance",
+      "B": "REST is typically better for public APIs due to wider tooling support and browser compatibility",
+      "C": "Neither, use GraphQL",
+      "D": "gRPC because it's newer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "REST is more accessible for public APIs: works in browsers, curl, any HTTP client. gRPC requires specific client libraries and doesn't work directly in browsers. gRPC excels for internal service-to-service communication.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "How does gRPC handle backward compatibility when schemas change?",
+    "options": {
+      "A": "It doesn't support schema changes",
+      "B": "Field numbers in protobuf enable adding/deprecating fields without breaking clients",
+      "C": "All clients must update simultaneously",
+      "D": "Version numbers in URLs like REST"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Protobuf uses field numbers, not names, for serialization. New fields get new numbers; old clients ignore unknown fields. Removing fields (by number) is safe if old numbers aren't reused. This enables gradual evolution.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "What HTTP version does gRPC require?",
+    "options": {
+      "A": "HTTP/1.1",
+      "B": "HTTP/2",
+      "C": "HTTP/3",
+      "D": "Any HTTP version"
+    },
+    "correct_answers": ["B"],
+    "explanation": "gRPC requires HTTP/2 for multiplexing (multiple requests over one connection), bidirectional streaming, and header compression. This is why gRPC doesn't work directly in browsers (limited HTTP/2 support).",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "True or False: gRPC can only be used between services written in the same programming language.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "gRPC is language-agnostic. The .proto schema compiles to client/server code in many languages (Go, Java, Python, C++, etc.). A Go service can communicate with a Python service seamlessly.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "What is gRPC-Web and why does it exist?",
+    "options": {
+      "A": "A web framework built on gRPC",
+      "B": "A protocol that enables browsers to communicate with gRPC services via a proxy",
+      "C": "A web-based gRPC testing tool",
+      "D": "gRPC documentation website"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Browsers can't make native gRPC calls (HTTP/2 limitations). gRPC-Web is a protocol where browsers make HTTP/1.1 requests to a proxy (like Envoy) that translates to gRPC for backend services.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "Which scenarios are ideal for gRPC? (Choose all that apply)",
+    "options": {
+      "A": "Microservices communication within a data center",
+      "B": "Public APIs for mobile apps",
+      "C": "Real-time bidirectional communication",
+      "D": "Low-latency, high-throughput internal services"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "gRPC excels at internal service communication, streaming, and high-performance scenarios. Public mobile APIs can use gRPC but REST is often simpler. Browser-based public APIs typically use REST or GraphQL.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "How does gRPC handle errors compared to REST?",
+    "options": {
+      "A": "gRPC uses HTTP status codes like REST",
+      "B": "gRPC has its own status codes (OK, CANCELLED, INVALID_ARGUMENT, etc.)",
+      "C": "gRPC doesn't have error handling",
+      "D": "gRPC uses exceptions only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "gRPC defines its own status codes (16 codes like OK, NOT_FOUND, INTERNAL) that map to but differ from HTTP codes. This provides consistent error semantics across languages and transports.",
+    "difficulty": "medium",
+    "category": "api design"
+  }
+]

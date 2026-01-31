@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A startup's monolithic application handles 1,000 requests/second on a single server. Traffic is expected to grow 10x in 6 months. The team debates between upgrading to a more powerful server vs. adding more servers. Which factors favor horizontal scaling in this scenario? (Choose all that apply)",
+    "options": {
+      "A": "The application is stateless and can run on multiple instances",
+      "B": "The team wants to avoid single points of failure",
+      "C": "The database is the primary bottleneck",
+      "D": "Cost-effectiveness at higher scale"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Horizontal scaling works well for stateless apps, eliminates SPOF, and is often more cost-effective at scale. If the database is the bottleneck, adding app servers won't help—you'd need to scale the database layer.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "An e-commerce platform experiences 50x traffic spikes during flash sales. Which scaling approach allows the system to handle these temporary spikes most cost-effectively?",
+    "options": {
+      "A": "Permanently provisioning for peak capacity",
+      "B": "Vertical scaling with reserved instances",
+      "C": "Horizontal auto-scaling with on-demand instances",
+      "D": "Manual horizontal scaling before each sale"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Auto-scaling horizontally with on-demand instances handles temporary spikes without paying for idle capacity. Permanent provisioning wastes resources; manual scaling is error-prone and slow.",
+    "difficulty": "easy",
+    "category": "scalability"
+  },
+  {
+    "question": "A video processing service needs to scale. Each video transcoding job requires 32GB RAM and 8 CPU cores, and jobs cannot be parallelized. What is the most appropriate scaling strategy?",
+    "options": {
+      "A": "Horizontal scaling with small instances",
+      "B": "Vertical scaling with larger instances",
+      "C": "Horizontal scaling with large instances",
+      "D": "Serverless functions"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Since individual jobs need significant resources and can't be split, you need large instances. But to handle multiple concurrent jobs, you scale horizontally with multiple large instances. Pure vertical scaling limits concurrency.",
+    "difficulty": "hard",
+    "category": "scalability"
+  },
+  {
+    "question": "Which statements about vertical scaling are TRUE? (Choose all that apply)",
+    "options": {
+      "A": "It has an upper limit based on available hardware",
+      "B": "It typically requires application code changes",
+      "C": "It can be done with zero downtime in most cases",
+      "D": "It maintains a single point of failure"
+    },
+    "correct_answers": ["A", "D"],
+    "explanation": "Vertical scaling is limited by maximum available hardware and keeps the SPOF. It usually doesn't require code changes (that's an advantage), and often requires downtime for hardware upgrades.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "A social media app stores user sessions in memory on each application server. The team wants to horizontally scale the app tier. What must they address first?",
+    "options": {
+      "A": "Database connection pooling",
+      "B": "Session state management",
+      "C": "DNS configuration",
+      "D": "SSL certificate distribution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In-memory sessions make the app stateful—users would lose their session if routed to a different server. They must externalize session storage (Redis, database) or use sticky sessions before horizontal scaling works correctly.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "A database is the bottleneck in a read-heavy application (95% reads, 5% writes). Which scaling strategies are most effective? (Choose all that apply)",
+    "options": {
+      "A": "Add read replicas",
+      "B": "Implement caching layer",
+      "C": "Shard the database",
+      "D": "Vertically scale the primary database"
+    },
+    "correct_answers": ["A", "B"],
+    "explanation": "For read-heavy workloads, read replicas and caching directly address the bottleneck. Sharding helps write scaling but adds complexity. Vertical scaling has limits and doesn't distribute load.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "An application currently runs on a single 64-core server at 80% CPU utilization. The team is considering scaling options. If they switch to horizontal scaling with 8-core instances, approximately how many instances would they need to handle the same load?",
+    "options": {
+      "A": "6-7 instances",
+      "B": "8 instances",
+      "C": "10-12 instances",
+      "D": "Cannot be determined without more information"
+    },
+    "correct_answers": ["D"],
+    "explanation": "CPU cores don't scale linearly across instances due to coordination overhead, network latency, load balancer overhead, and application-specific factors. The actual number depends on the workload characteristics.",
+    "difficulty": "hard",
+    "category": "scalability"
+  },
+  {
+    "question": "Which is a key disadvantage of horizontal scaling compared to vertical scaling?",
+    "options": {
+      "A": "Higher hardware costs at small scale",
+      "B": "Increased operational complexity",
+      "C": "Limited by hardware availability",
+      "D": "Requires application downtime"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Horizontal scaling introduces complexity: load balancing, distributed state management, network communication, deployment coordination, and monitoring across instances. Vertical scaling is simpler operationally.",
+    "difficulty": "easy",
+    "category": "scalability"
+  },
+  {
+    "question": "A system architect proposes 'scale cube' dimensions for a growing application. Which represents scaling by splitting different functionalities?",
+    "options": {
+      "A": "X-axis: horizontal duplication",
+      "B": "Y-axis: functional decomposition",
+      "C": "Z-axis: data partitioning",
+      "D": "W-axis: geographic distribution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The scale cube defines: X-axis (cloning/horizontal scaling), Y-axis (functional decomposition into services), Z-axis (data partitioning/sharding). There is no W-axis in the standard model.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "True or False: Horizontal scaling always provides better cost efficiency than vertical scaling at any scale.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "At small scale, vertical scaling can be more cost-effective due to lower operational overhead. Horizontal scaling becomes more economical at larger scales where hardware limits are reached and commodity hardware provides better price/performance.",
+    "difficulty": "easy",
+    "category": "scalability"
+  },
+  {
+    "question": "A gaming company needs to scale their matchmaking service that maintains player state during matching. Which approach best balances scalability with state management?",
+    "options": {
+      "A": "Vertical scaling to keep all state in one place",
+      "B": "Horizontal scaling with sticky sessions",
+      "C": "Horizontal scaling with externalized state store",
+      "D": "Serverless functions with in-memory state"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Externalizing state (to Redis, etc.) allows true horizontal scaling without sticky session limitations. Sticky sessions create uneven load distribution; vertical scaling has limits; serverless with in-memory state loses state between invocations.",
+    "difficulty": "medium",
+    "category": "scalability"
+  },
+  {
+    "question": "Which scenarios indicate that an application has reached the limits of vertical scaling? (Choose all that apply)",
+    "options": {
+      "A": "The largest available instance type is fully utilized",
+      "B": "Adding more RAM no longer improves performance",
+      "C": "The application is I/O bound on a single disk",
+      "D": "License costs scale linearly with CPU cores"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Hardware limits (max instance size), diminishing returns (more RAM not helping), and I/O bottlenecks on single resources all indicate vertical scaling limits. License costs are a business concern, not a technical scaling limit.",
+    "difficulty": "medium",
+    "category": "scalability"
+  }
+]

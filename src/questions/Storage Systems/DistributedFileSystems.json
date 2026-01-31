@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a distributed file system?",
+    "options": {
+      "A": "A file system on one computer",
+      "B": "A file system that stores data across multiple machines, appearing as a single unified system",
+      "C": "A backup system",
+      "D": "A compression tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Distributed file system: spreads files across multiple servers, provides single namespace. Handles: replication, fault tolerance, load balancing. Examples: HDFS, GFS, Ceph, GlusterFS.",
+    "difficulty": "easy",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is HDFS (Hadoop Distributed File System)?",
+    "options": {
+      "A": "A local file system",
+      "B": "A distributed file system designed for large files and batch processing, inspired by Google File System",
+      "C": "A database",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HDFS: designed for big data. Features: large block size (128MB default), write-once-read-many, optimized for throughput not latency, runs on commodity hardware. Foundation of Hadoop ecosystem.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "What are the main components of HDFS?",
+    "options": {
+      "A": "Only DataNodes",
+      "B": "NameNode (metadata, namespace) and DataNodes (actual data storage)",
+      "C": "Only NameNode",
+      "D": "Clients only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HDFS architecture: NameNode (single master, stores metadata—file names, block locations), DataNodes (workers, store actual data blocks). Client contacts NameNode for metadata, then DataNodes for data.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "How does HDFS achieve fault tolerance?",
+    "options": {
+      "A": "RAID on each server",
+      "B": "Block replication—each block stored on multiple DataNodes (default 3 replicas)",
+      "C": "No fault tolerance",
+      "D": "Backup tapes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HDFS replication: each 128MB block replicated to 3 DataNodes (configurable). Rack-aware placement: replicas on different racks. If DataNode fails, data still available. NameNode tracks replica locations.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is the NameNode single point of failure problem in HDFS?",
+    "options": {
+      "A": "There is no problem",
+      "B": "If NameNode fails, entire cluster is unavailable since it holds all metadata",
+      "C": "DataNodes fail",
+      "D": "Network issues"
+    },
+    "correct_answers": ["B"],
+    "explanation": "NameNode SPOF: all metadata in one place. If it fails, cluster is down. Solutions: Secondary NameNode (checkpoint, not hot standby), HDFS HA (active/standby NameNodes with shared storage).",
+    "difficulty": "hard",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is Google File System (GFS)?",
+    "options": {
+      "A": "A Windows file system",
+      "B": "Google's distributed file system that inspired HDFS, designed for large-scale data processing",
+      "C": "A local file system",
+      "D": "A database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GFS: Google's 2003 paper. Designed for: large files, append-heavy workloads, commodity hardware failures. Master + chunkservers architecture. Inspired HDFS and influenced distributed storage design.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is Ceph?",
+    "options": {
+      "A": "A programming language",
+      "B": "A unified distributed storage system providing object, block, and file storage",
+      "C": "A database",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Ceph: unified storage platform. Provides: object storage (S3-compatible), block storage (RBD for VMs), file system (CephFS). No single point of failure. Uses CRUSH algorithm for data placement.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is the difference between HDFS and object storage like S3?",
+    "options": {
+      "A": "They are the same",
+      "B": "HDFS: file system semantics, optimized for batch processing; S3: object storage, HTTP API, better for random access",
+      "C": "S3 is faster for everything",
+      "D": "HDFS is cloud-only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HDFS: POSIX-like, large sequential reads, Hadoop integration, on-premise. S3: flat namespace, HTTP REST API, any file size, managed service, better for diverse workloads. Different use cases.",
+    "difficulty": "hard",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is data locality in distributed file systems?",
+    "options": {
+      "A": "Data stored locally on laptop",
+      "B": "Moving computation to where data resides rather than moving data to computation",
+      "C": "Encrypting local data",
+      "D": "Backing up locally"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data locality: 'move compute to data'. HDFS + MapReduce: schedule tasks on nodes that have the data blocks. Avoids network transfer of large datasets. Key optimization for big data processing.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is rack awareness in HDFS?",
+    "options": {
+      "A": "Organizing server racks",
+      "B": "Placing block replicas on different racks to survive rack failures and optimize network usage",
+      "C": "A monitoring feature",
+      "D": "A security feature"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rack awareness: HDFS knows rack topology. Default: 2 replicas on one rack, 1 on another. Survives rack failure (power, switch). Reads prefer local rack. Balances fault tolerance and network efficiency.",
+    "difficulty": "hard",
+    "category": "storage systems"
+  },
+  {
+    "question": "What is GlusterFS?",
+    "options": {
+      "A": "A database",
+      "B": "A scalable distributed file system that aggregates storage from multiple servers",
+      "C": "A message queue",
+      "D": "A load balancer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GlusterFS: scale-out NAS. Aggregates commodity storage into single namespace. No metadata server (unlike HDFS). Uses elastic hashing for file placement. Good for: file sharing, media streaming, VMs.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  },
+  {
+    "question": "A company needs to store and process 10PB of log data for batch analytics. Best storage choice?",
+    "options": {
+      "A": "Local SSD",
+      "B": "HDFS or cloud object storage (S3) with processing framework like Spark",
+      "C": "Single NFS server",
+      "D": "USB drives"
+    },
+    "correct_answers": ["B"],
+    "explanation": "10PB batch analytics: HDFS (on-premise, data locality with Spark/MapReduce) or S3 (managed, Spark can read directly). Both handle scale, provide fault tolerance. Single server can't handle this volume.",
+    "difficulty": "medium",
+    "category": "storage systems"
+  }
+]

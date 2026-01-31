@@ -1,0 +1,156 @@
+[
+  {
+    "question": "A user types 'www.example.com' in their browser. What is the correct order of DNS resolution?",
+    "options": {
+      "A": "Root → TLD → Authoritative → Local cache",
+      "B": "Local cache → Recursive resolver → Root → TLD → Authoritative",
+      "C": "Authoritative → TLD → Root → Local cache",
+      "D": "Browser → OS → Router → ISP"
+    },
+    "correct_answers": ["B"],
+    "explanation": "DNS resolution checks local cache first, then queries recursive resolver, which queries root servers → TLD servers (.com) → authoritative servers for the domain, caching results along the way.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is the purpose of DNS TTL (Time To Live)?",
+    "options": {
+      "A": "To limit how long a DNS server can operate",
+      "B": "To specify how long DNS records can be cached",
+      "C": "To set the maximum number of DNS hops",
+      "D": "To encrypt DNS queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TTL tells resolvers how long to cache a DNS record before re-querying. Lower TTL enables faster propagation of changes but increases DNS query load.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A company wants to use DNS for load balancing across multiple servers. Which DNS record type and technique would they use?",
+    "options": {
+      "A": "Single A record pointing to a load balancer",
+      "B": "Multiple A records with round-robin",
+      "C": "CNAME record to a load balancer",
+      "D": "MX record with priorities"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Multiple A records for the same domain enable DNS round-robin—resolvers return records in rotating order, distributing traffic. This is simple but lacks health checking.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is the difference between an A record and a CNAME record?",
+    "options": {
+      "A": "A records are for IPv4; CNAME is for IPv6",
+      "B": "A records map names to IPs; CNAME maps names to other names",
+      "C": "A records are faster; CNAME records are more secure",
+      "D": "A records are for websites; CNAME is for email"
+    },
+    "correct_answers": ["B"],
+    "explanation": "A records map domain names directly to IPv4 addresses. CNAME (Canonical Name) creates an alias pointing to another domain name, which then resolves to an IP.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A website migration requires changing IP addresses. The current DNS TTL is 24 hours. What is the recommended approach?",
+    "options": {
+      "A": "Change the IP immediately; users will refresh eventually",
+      "B": "Lower TTL well before migration, then change IP, then restore TTL",
+      "C": "Keep both old and new IPs active indefinitely",
+      "D": "Use CNAME instead of A records"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lower TTL before migration (e.g., to 5 minutes) so caches expire quickly. After migration and verification, restore higher TTL to reduce DNS load. This minimizes transition issues.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "Which DNS record types are used for email delivery? (Choose all that apply)",
+    "options": {
+      "A": "MX (Mail Exchange)",
+      "B": "SPF (via TXT record)",
+      "C": "DKIM (via TXT record)",
+      "D": "A record"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "MX records specify mail servers. SPF and DKIM (stored in TXT records) authenticate email senders. A records might be used for the mail server's IP but aren't email-specific.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is DNS cache poisoning?",
+    "options": {
+      "A": "Overloading DNS servers with queries",
+      "B": "Injecting false DNS records into resolver caches",
+      "C": "Encrypting DNS traffic",
+      "D": "Setting very long TTL values"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache poisoning attacks inject malicious DNS responses, causing resolvers to cache incorrect IP addresses. Users are then directed to attacker-controlled servers. DNSSEC helps prevent this.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "A global application wants to direct users to the nearest data center. Which DNS feature enables this?",
+    "options": {
+      "A": "Round-robin DNS",
+      "B": "GeoDNS / Geographic routing",
+      "C": "DNS over HTTPS",
+      "D": "Reverse DNS"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GeoDNS returns different IP addresses based on the querying resolver's location, directing users to geographically closer servers. This reduces latency for global applications.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "Why might a CNAME record at the zone apex (e.g., example.com without www) cause problems?",
+    "options": {
+      "A": "CNAME records are slower than A records",
+      "B": "DNS standards prohibit CNAME at apex when other records exist",
+      "C": "Browsers don't support CNAME",
+      "D": "CNAME records can't point to external domains"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RFC 1034 prohibits CNAME coexisting with other records. Zone apex typically needs SOA and NS records, making CNAME invalid there. ALIAS/ANAME records (provider-specific) work around this.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "question": "True or False: DNS queries are encrypted by default.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Traditional DNS (port 53) is unencrypted, allowing eavesdropping and manipulation. DNS over HTTPS (DoH) and DNS over TLS (DoT) provide encryption but aren't universally deployed.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "question": "A company's website becomes unreachable. Investigation shows DNS is resolving to the wrong IP. What could cause this? (Choose all that apply)",
+    "options": {
+      "A": "DNS cache poisoning attack",
+      "B": "Incorrect DNS record update",
+      "C": "Stale cache with old IP after migration",
+      "D": "DDoS attack on web servers"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Wrong IP resolution can result from poisoning attacks, misconfiguration, or cached stale records. DDoS would make the correct IP unreachable but wouldn't change DNS resolution.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "question": "What is the purpose of a DNS recursive resolver?",
+    "options": {
+      "A": "To store authoritative records for a domain",
+      "B": "To perform the full DNS lookup on behalf of clients",
+      "C": "To encrypt DNS queries",
+      "D": "To register new domain names"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Recursive resolvers (like 8.8.8.8 or ISP DNS) handle the full resolution process—querying root, TLD, and authoritative servers—so clients only need one query. They also cache results.",
+    "difficulty": "medium",
+    "category": "networking"
+  }
+]

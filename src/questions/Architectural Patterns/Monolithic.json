@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is monolithic architecture?",
+    "options": {
+      "A": "Multiple small services",
+      "B": "A single deployable unit containing all application functionality",
+      "C": "A database design",
+      "D": "A network topology"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monolithic: entire application as one unit. All features in single codebase, single deployment, single process. Traditional approach. Examples: early eBay, early Amazon, many enterprise apps.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a key advantage of monolithic architecture?",
+    "options": {
+      "A": "Easier to scale horizontally",
+      "B": "Simpler development, testing, and deployment—especially for smaller teams",
+      "C": "Better fault isolation",
+      "D": "Independent service deployment"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monolith advantages: simple deployment (one artifact), easy debugging (single process), no network latency between components, simpler transactions, lower operational complexity. Great for startups and MVPs.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the 'big ball of mud' problem in monoliths?",
+    "options": {
+      "A": "Physical server issues",
+      "B": "Code becomes tangled and interdependent over time, making changes risky and difficult",
+      "C": "Too much documentation",
+      "D": "Network congestion"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Big ball of mud: no clear boundaries, everything depends on everything. Change one thing, break another. Symptoms: fear of refactoring, long regression testing, 'don't touch that code'. Technical debt accumulation.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does a monolith typically scale?",
+    "options": {
+      "A": "Scale individual components",
+      "B": "Vertical scaling (bigger server) or horizontal scaling (multiple identical instances)",
+      "C": "Cannot scale",
+      "D": "Only through caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monolith scaling: vertical (more CPU/RAM) or horizontal (clone entire app behind load balancer). Problem: can't scale components independently. CPU-heavy feature? Scale everything. Wasteful but simple.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the deployment challenge with monolithic applications?",
+    "options": {
+      "A": "Too fast to deploy",
+      "B": "Any change requires redeploying the entire application, increasing risk and downtime",
+      "C": "No deployment needed",
+      "D": "Automatic deployment"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Deployment risk: small bug fix = redeploy everything. Long build times, extensive testing needed. Coordination required across teams. Deployment windows become bottlenecks. Rollback = rollback everything.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is a modular monolith?",
+    "options": {
+      "A": "Multiple microservices",
+      "B": "A monolith with well-defined internal module boundaries that could later become services",
+      "C": "A distributed database",
+      "D": "A type of container"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Modular monolith: best of both worlds. Clear module boundaries, defined interfaces, but single deployment. Easier to maintain than spaghetti monolith. Can evolve to microservices if needed. Shopify uses this.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "When is monolithic architecture the right choice?",
+    "options": {
+      "A": "Never",
+      "B": "For startups, MVPs, small teams, and when domain boundaries are unclear",
+      "C": "Only for large enterprises",
+      "D": "Only for real-time systems"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monolith fits: early-stage products (speed to market), small teams (less coordination), unclear domains (easier to refactor), simple applications. Start monolith, extract services when pain points emerge.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the technology stack limitation of monoliths?",
+    "options": {
+      "A": "Can use any technology",
+      "B": "Typically locked to one language/framework for the entire application",
+      "C": "Must use multiple languages",
+      "D": "No limitations"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Tech stack lock-in: entire app in one language. Can't use Python for ML, Go for performance-critical parts. Upgrading framework affects everything. Microservices allow polyglot—right tool for each job.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "How does team scaling work with monolithic architecture?",
+    "options": {
+      "A": "Unlimited team size",
+      "B": "Becomes difficult as teams grow—merge conflicts, coordination overhead, unclear ownership",
+      "C": "Teams work independently",
+      "D": "No team coordination needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Team scaling challenges: shared codebase = merge conflicts, stepping on toes. Unclear ownership. Long CI/CD queues. Conway's Law: org structure mirrors architecture. Large teams → pressure to split.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What is the 'monolith first' approach?",
+    "options": {
+      "A": "Always stay monolithic",
+      "B": "Start with a monolith, then extract microservices as you understand the domain better",
+      "C": "Build microservices first",
+      "D": "Avoid monoliths entirely"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Monolith first (Martin Fowler): premature microservices = wrong boundaries. Start monolith, learn domain, identify seams, extract services. Easier to split monolith than merge bad microservices.",
+    "difficulty": "medium",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "What happens when a monolith crashes?",
+    "options": {
+      "A": "Only affected feature stops",
+      "B": "The entire application becomes unavailable",
+      "C": "Automatic recovery",
+      "D": "Other instances take over seamlessly"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Single point of failure: one bug can crash entire app. Memory leak in one feature = everything down. Mitigation: multiple instances, health checks, auto-restart. But bug affects all instances equally.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  },
+  {
+    "question": "Your startup has 5 developers building an MVP. Should you use monolithic or microservices architecture?",
+    "options": {
+      "A": "Microservices for future scalability",
+      "B": "Monolith—simpler, faster development, appropriate for team size and stage",
+      "C": "Serverless only",
+      "D": "Peer-to-peer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Startup MVP: monolith wins. Speed to market critical. Small team can't handle microservices operational complexity. Domain not yet understood. Build monolith, validate product, refactor later if successful.",
+    "difficulty": "easy",
+    "category": "architectural-patterns"
+  }
+]

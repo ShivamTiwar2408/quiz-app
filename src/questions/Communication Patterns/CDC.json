@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is Change Data Capture (CDC)?",
+    "options": {
+      "A": "Backing up databases periodically",
+      "B": "Capturing and streaming database changes (inserts, updates, deletes) in real-time",
+      "C": "Compressing database logs",
+      "D": "Encrypting data at rest"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDC captures row-level changes from database transaction logs and streams them to other systems. It enables real-time data synchronization, event-driven architectures, and maintaining derived data stores.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which use cases benefit from CDC? (Choose all that apply)",
+    "options": {
+      "A": "Keeping search index synchronized with database",
+      "B": "Real-time analytics dashboards",
+      "C": "Microservices data synchronization",
+      "D": "Static website hosting"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "CDC enables: search index sync (Elasticsearch mirrors DB), real-time analytics (stream changes to data warehouse), microservices sync (propagate changes across services). Static hosting doesn't involve data changes.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How does CDC typically capture changes?",
+    "options": {
+      "A": "Polling the database every second",
+      "B": "Reading database transaction/write-ahead logs",
+      "C": "Application code sends events manually",
+      "D": "Comparing database snapshots"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDC reads transaction logs (WAL in Postgres, binlog in MySQL). This captures all changes with minimal database impact, preserves order, and doesn't require application changes. Log-based CDC is most reliable.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is the main advantage of CDC over application-level event publishing?",
+    "options": {
+      "A": "CDC is faster",
+      "B": "CDC captures ALL changes including direct DB modifications and ensures consistency",
+      "C": "CDC uses less storage",
+      "D": "CDC doesn't require a database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDC captures everything from the log—including direct SQL updates, migrations, and fixes. Application events miss changes made outside the app. CDC also ensures transactional consistency with the database.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A team uses CDC to sync orders from PostgreSQL to Elasticsearch. What tool is commonly used?",
+    "options": {
+      "A": "Apache Kafka only",
+      "B": "Debezium",
+      "C": "Redis",
+      "D": "Nginx"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Debezium is a popular open-source CDC platform. It reads database logs (Postgres, MySQL, MongoDB, etc.) and streams changes to Kafka. From Kafka, changes flow to Elasticsearch, data warehouses, etc.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What challenge does CDC face with schema changes?",
+    "options": {
+      "A": "CDC doesn't support schema changes",
+      "B": "Schema changes must be propagated to downstream consumers",
+      "C": "Schema changes break the database",
+      "D": "CDC automatically updates all schemas"
+    },
+    "correct_answers": ["B"],
+    "explanation": "When source schema changes (new column, type change), downstream consumers must handle it. Schema registries and compatible evolution strategies help. Breaking changes require coordinated updates.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "True or False: CDC adds significant load to the source database.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log-based CDC reads transaction logs, which databases already maintain. Impact is minimal—no additional queries or locks on tables. This is a key advantage over polling-based approaches.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is 'initial snapshot' in CDC?",
+    "options": {
+      "A": "First photo of the database server",
+      "B": "Capturing existing data before streaming ongoing changes",
+      "C": "Backing up CDC logs",
+      "D": "Resetting the database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Before streaming changes, CDC typically takes an initial snapshot of existing data. This ensures downstream systems have complete data, not just changes from when CDC started.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Which guarantees does log-based CDC typically provide? (Choose all that apply)",
+    "options": {
+      "A": "Exactly-once delivery",
+      "B": "Change ordering within a table",
+      "C": "Transactional consistency",
+      "D": "Zero latency"
+    },
+    "correct_answers": ["B", "C"],
+    "explanation": "Log-based CDC preserves order (logs are sequential) and transactional consistency (changes appear as committed). Exactly-once requires additional handling; there's always some latency (typically seconds).",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A CDC pipeline falls behind and has hours of lag. What's the risk?",
+    "options": {
+      "A": "No risk—CDC will catch up",
+      "B": "Downstream systems show stale data; logs may be purged before processing",
+      "C": "Database will crash",
+      "D": "CDC automatically speeds up"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDC lag means downstream systems are stale. Worse, databases purge old logs (retention period). If CDC falls too far behind, logs may be deleted, requiring re-snapshot. Monitor lag closely.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "How does CDC help implement the Outbox Pattern?",
+    "options": {
+      "A": "CDC replaces the outbox pattern",
+      "B": "CDC captures outbox table changes and publishes them as events",
+      "C": "CDC stores events in the outbox",
+      "D": "They are unrelated patterns"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Outbox pattern writes events to an outbox table in the same transaction as data changes. CDC captures outbox table changes and publishes them to message broker. This ensures atomic event publishing.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What information does a CDC change event typically contain?",
+    "options": {
+      "A": "Only the new values",
+      "B": "Operation type, before/after values, metadata (timestamp, transaction ID)",
+      "C": "Only the primary key",
+      "D": "Database connection string"
+    },
+    "correct_answers": ["B"],
+    "explanation": "CDC events include: operation (INSERT/UPDATE/DELETE), before values (for updates/deletes), after values (for inserts/updates), and metadata (timestamp, transaction ID, source info). This enables full reconstruction.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  }
+]

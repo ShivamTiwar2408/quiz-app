@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a Bloom filter used for in databases?",
+    "options": {
+      "A": "Sorting data",
+      "B": "Quickly checking if an element is definitely NOT in a set",
+      "C": "Compressing data",
+      "D": "Encrypting queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filter is a probabilistic data structure. It can say 'definitely not in set' (no false negatives) or 'possibly in set' (false positives possible). Used to avoid expensive disk lookups for non-existent keys.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How do Bloom filters help LSM-tree databases like Cassandra?",
+    "options": {
+      "A": "They compress SSTables",
+      "B": "They avoid reading SSTables that definitely don't contain the requested key",
+      "C": "They sort data faster",
+      "D": "They replicate data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LSM-trees have multiple SSTables. Without Bloom filters, a read might check all SSTables. Bloom filter for each SSTable quickly eliminates those that definitely don't have the key, reducing disk I/O.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is a B-tree?",
+    "options": {
+      "A": "A binary tree for sorting",
+      "B": "A self-balancing tree optimized for disk-based storage with high fanout",
+      "C": "A tree for storing binary data",
+      "D": "A backup tree structure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "B-tree is a self-balancing tree with high fanout (many children per node). Optimized for disk: each node fits a disk page, minimizing I/O. Foundation of most relational database indexes.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Why are B-trees preferred over binary trees for database indexes?",
+    "options": {
+      "A": "B-trees use less memory",
+      "B": "B-trees have lower height due to high fanout, reducing disk I/O",
+      "C": "B-trees are simpler to implement",
+      "D": "Binary trees don't support range queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "B-trees have high fanout (hundreds of children per node), keeping tree height low (typically 3-4 levels for millions of records). Each level = one disk read. Binary trees would be much deeper, requiring more I/O.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is an LSM-tree (Log-Structured Merge-tree)?",
+    "options": {
+      "A": "A tree for logging errors",
+      "B": "A write-optimized structure that buffers writes in memory and periodically merges to disk",
+      "C": "A tree for storing logs",
+      "D": "A backup structure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LSM-tree optimizes writes: data goes to in-memory buffer (memtable), then flushes to immutable sorted files (SSTables) on disk. Background compaction merges SSTables. Used by Cassandra, RocksDB, LevelDB.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Which workload pattern benefits most from LSM-trees?",
+    "options": {
+      "A": "Read-heavy with random access",
+      "B": "Write-heavy with sequential writes",
+      "C": "Equal reads and writes",
+      "D": "Archival storage"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LSM-trees excel at write-heavy workloads: all writes are sequential (append to log/memtable), avoiding random disk I/O. Reads may need to check multiple SSTables, making them slower than B-trees for reads.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is 'write amplification' in LSM-trees?",
+    "options": {
+      "A": "Writing data louder",
+      "B": "Data being written multiple times due to compaction",
+      "C": "Amplifying write speed",
+      "D": "Writing to multiple replicas"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Write amplification: data is written multiple times—first to memtable/WAL, then to SSTable, then rewritten during compaction. A single logical write may result in 10-30x physical writes. Trade-off for write optimization.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between B-tree and B+ tree?",
+    "options": {
+      "A": "B+ tree stores data only in leaf nodes; B-tree stores in all nodes",
+      "B": "B+ tree is faster",
+      "C": "B-tree is newer",
+      "D": "No difference"
+    },
+    "correct_answers": ["A"],
+    "explanation": "B+ tree stores actual data only in leaf nodes; internal nodes contain only keys for navigation. Leaves are linked for efficient range scans. Most database indexes use B+ trees, not pure B-trees.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "True or False: Bloom filters can have false negatives.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filters never have false negatives: if it says 'not in set', the element is definitely not there. They can have false positives: 'possibly in set' might be wrong. This property makes them useful for filtering.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is compaction in LSM-tree databases?",
+    "options": {
+      "A": "Compressing data",
+      "B": "Merging multiple SSTables into fewer, larger ones while removing duplicates and deleted data",
+      "C": "Reducing database size",
+      "D": "Backing up data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Compaction merges SSTables: combines sorted files, removes obsolete versions and tombstones (deleted data), and produces fewer, larger files. Essential for read performance and space reclamation in LSM-trees.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "Which databases use LSM-trees? (Choose all that apply)",
+    "options": {
+      "A": "Apache Cassandra",
+      "B": "RocksDB",
+      "C": "PostgreSQL",
+      "D": "LevelDB"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Cassandra, RocksDB, and LevelDB use LSM-trees for write optimization. PostgreSQL uses B-trees for indexes. LSM-trees are common in NoSQL and embedded databases optimized for write-heavy workloads.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a 'tombstone' in LSM-tree databases?",
+    "options": {
+      "A": "A backup marker",
+      "B": "A marker indicating a deleted record, removed during compaction",
+      "C": "A corrupted record",
+      "D": "An index entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LSM-trees are append-only; deletes write a tombstone marker. During reads, tombstones indicate deleted data. Compaction removes tombstones and the data they mark, reclaiming space.",
+    "difficulty": "medium",
+    "category": "databases"
+  }
+]

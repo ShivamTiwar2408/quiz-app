@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is Lambda Architecture?",
+    "options": {
+      "A": "AWS Lambda functions",
+      "B": "A data processing architecture with batch layer, speed layer, and serving layer",
+      "C": "A programming paradigm",
+      "D": "A database design"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lambda Architecture (Nathan Marz): handles massive data with both batch and real-time processing. Batch layer: complete, accurate. Speed layer: low-latency, approximate. Serving layer: merges both for queries.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the batch layer in Lambda Architecture?",
+    "options": {
+      "A": "Real-time processing",
+      "B": "Processes all historical data to produce accurate batch views",
+      "C": "User interface",
+      "D": "Caching layer"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Batch layer: processes complete dataset. Immutable, append-only master data. Recomputes views from scratch. Accurate but high latency (hours). Technologies: Hadoop MapReduce, Spark batch.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the speed layer in Lambda Architecture?",
+    "options": {
+      "A": "Faster batch processing",
+      "B": "Processes recent data in real-time to compensate for batch layer latency",
+      "C": "Network optimization",
+      "D": "Caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Speed layer: real-time processing of recent data. Low latency, incremental updates. Views expire when batch catches up. Technologies: Storm, Spark Streaming, Flink. Trades accuracy for speed.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the serving layer in Lambda Architecture?",
+    "options": {
+      "A": "Web server",
+      "B": "Indexes and exposes batch and speed layer outputs for low-latency queries",
+      "C": "Data storage",
+      "D": "ETL processing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Serving layer: merges batch views + real-time views. Responds to queries. Technologies: Druid, Cassandra, HBase. Query = batch_result + speed_result. Provides complete, up-to-date answers.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the main criticism of Lambda Architecture?",
+    "options": {
+      "A": "Too simple",
+      "B": "Complexity of maintaining two separate codebases for batch and speed layers",
+      "C": "Too fast",
+      "D": "Not scalable"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lambda criticism: dual codebase (batch logic + streaming logic). Same computation, different implementations. Maintenance burden, potential inconsistencies. Led to Kappa Architecture alternative.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does Lambda Architecture handle late-arriving data?",
+    "options": {
+      "A": "Discards it",
+      "B": "Batch layer reprocesses all data, eventually incorporating late arrivals",
+      "C": "Speed layer handles it",
+      "D": "Requires manual intervention"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Late data handling: batch layer recomputes from master dataset. Late data in master → next batch run includes it. Speed layer may miss it, but batch corrects. Eventually consistent.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the master dataset in Lambda Architecture?",
+    "options": {
+      "A": "A cache",
+      "B": "An immutable, append-only store of all raw data—the source of truth",
+      "C": "A temporary table",
+      "D": "A backup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Master dataset: immutable, append-only. Contains all raw events ever received. Source of truth. Batch layer reads from it. Can always recompute any view. Stored in HDFS, S3, etc.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What technologies are commonly used for the batch layer?",
+    "options": {
+      "A": "Redis",
+      "B": "Hadoop MapReduce, Apache Spark batch, Hive",
+      "C": "Kafka",
+      "D": "Nginx"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Batch layer technologies: Hadoop MapReduce (original), Spark batch (faster), Hive (SQL interface). Process large datasets, produce batch views. Run periodically (hourly, daily).",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What technologies are commonly used for the speed layer?",
+    "options": {
+      "A": "Hadoop",
+      "B": "Apache Storm, Spark Streaming, Apache Flink, Kafka Streams",
+      "C": "MySQL",
+      "D": "Nginx"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Speed layer technologies: Storm (original), Spark Streaming, Flink (modern), Kafka Streams. Process events as they arrive. Sub-second latency. Incremental view updates.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How do batch and speed layer views get merged?",
+    "options": {
+      "A": "Automatically by database",
+      "B": "Query time merge—serving layer combines batch view with speed layer increments",
+      "C": "They don't merge",
+      "D": "Manual process"
+    },
+    "correct_answers": ["B"],
+    "explanation": "View merging: at query time. Batch view (complete but stale) + speed view (recent increments). Example: total_count = batch_count + realtime_count. Serving layer handles merge logic.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "When is Lambda Architecture a good choice?",
+    "options": {
+      "A": "Simple applications",
+      "B": "When you need both historical accuracy and real-time insights on massive datasets",
+      "C": "Small data only",
+      "D": "When latency doesn't matter"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lambda fits: massive scale, need both accurate historical analysis and real-time dashboards. Examples: social media analytics, IoT monitoring, fraud detection. Trade-off: complexity for completeness.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your analytics platform needs accurate daily reports AND real-time dashboards. What architecture?",
+    "options": {
+      "A": "Batch only",
+      "B": "Lambda Architecture—batch layer for accurate reports, speed layer for real-time dashboards",
+      "C": "Stream only",
+      "D": "No processing needed"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Dual requirement = Lambda. Batch: nightly job computes accurate aggregates for reports. Speed: streaming updates real-time dashboard. Serving: queries merge both. Complete and timely.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  }
+]

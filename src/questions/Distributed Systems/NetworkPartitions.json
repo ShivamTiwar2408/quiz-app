@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a network partition in distributed systems?",
+    "options": {
+      "A": "Dividing network bandwidth equally",
+      "B": "A failure where some nodes cannot communicate with others",
+      "C": "Partitioning data across servers",
+      "D": "Network security segmentation"
+    },
+    "correct_answers": ["B"],
+    "explanation": "A network partition occurs when network failures prevent some nodes from communicating with others, splitting the cluster into isolated groups. Each group may continue operating independently, causing consistency issues.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "According to the CAP theorem, what must a system choose during a network partition?",
+    "options": {
+      "A": "Speed or security",
+      "B": "Consistency or availability",
+      "C": "Cost or performance",
+      "D": "Simplicity or features"
+    },
+    "correct_answers": ["B"],
+    "explanation": "During a partition, a system must choose: remain consistent (reject requests that can't be verified across partitions) or remain available (serve requests with potentially stale/inconsistent data).",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A database cluster experiences a network partition. The minority partition has 2 of 5 nodes. What should happen in a CP system?",
+    "options": {
+      "A": "Both partitions continue accepting writes",
+      "B": "The minority partition stops accepting writes to maintain consistency",
+      "C": "All nodes shut down",
+      "D": "The minority partition becomes read-only automatically"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In CP systems, the minority partition cannot achieve quorum (3 of 5 needed). It must stop accepting writes to prevent split-brain inconsistency. The majority partition continues operating normally.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a 'partial partition' in distributed systems?",
+    "options": {
+      "A": "A partition affecting only some data",
+      "B": "When some nodes can communicate with some but not all other nodes",
+      "C": "A partition that heals quickly",
+      "D": "A partition in part of the network"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partial partition: Node A can reach B, B can reach C, but A cannot reach C. More complex than full partition. Can cause subtle bugs where different nodes have different views of cluster membership.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How do distributed systems typically detect network partitions?",
+    "options": {
+      "A": "Manual monitoring only",
+      "B": "Heartbeat timeouts and failure detectors",
+      "C": "Checking network cables",
+      "D": "User reports"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Nodes send periodic heartbeats. If heartbeats aren't received within timeout, the node is considered unreachable. Failure detectors (like Phi Accrual) provide probabilistic detection with tunable sensitivity.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "True or False: Network partitions are rare in modern cloud environments.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Network partitions happen regularly in production: switch failures, cable issues, misconfiguration, cloud provider issues. Studies show partitions occur in all major cloud providers. Systems must be designed to handle them.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'partition tolerance' in the CAP theorem?",
+    "options": {
+      "A": "The system can be partitioned into smaller systems",
+      "B": "The system continues operating despite network partitions",
+      "C": "The system tolerates slow partitions",
+      "D": "The system can partition data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partition tolerance means the system continues to function when network partitions occur. In distributed systems, partitions are inevitable, so partition tolerance is effectively required—leaving the C vs A choice.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A microservices system experiences a partition between Service A and Service B. What pattern helps Service A continue functioning?",
+    "options": {
+      "A": "Tight coupling",
+      "B": "Circuit breaker with fallback",
+      "C": "Synchronous calls with long timeout",
+      "D": "Ignoring the partition"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Circuit breaker detects failures and stops calling the unreachable service. Fallback provides degraded functionality (cached data, default response). This prevents cascade failures and maintains partial availability.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What happens when a network partition heals?",
+    "options": {
+      "A": "Everything automatically returns to normal",
+      "B": "Conflicting updates from both partitions must be reconciled",
+      "C": "All data is lost",
+      "D": "The system must be restarted"
+    },
+    "correct_answers": ["B"],
+    "explanation": "If both partitions accepted writes (AP system), there may be conflicting updates. Reconciliation strategies: last-write-wins, merge (CRDTs), or manual conflict resolution. This is a key challenge in distributed systems.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which strategies help systems handle network partitions? (Choose all that apply)",
+    "options": {
+      "A": "Quorum-based decisions",
+      "B": "Asynchronous replication with conflict resolution",
+      "C": "Single-node architecture",
+      "D": "Graceful degradation"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Quorum ensures majority agreement (CP). Async replication with conflict resolution allows availability (AP). Graceful degradation maintains partial functionality. Single-node avoids distribution but isn't scalable/available.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'asymmetric partition'?",
+    "options": {
+      "A": "Partitions of different sizes",
+      "B": "When A can send to B but B cannot send to A",
+      "C": "Partitions in asymmetric encryption",
+      "D": "Unequal data distribution"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Asymmetric partition: one-way communication failure. A's messages reach B, but B's don't reach A. A thinks B is down; B thinks A is fine. This can cause subtle bugs in leader election and consensus.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "A distributed database uses synchronous replication. During a partition, what is the tradeoff?",
+    "options": {
+      "A": "No tradeoff, synchronous replication handles partitions",
+      "B": "Writes block until partition heals, sacrificing availability for consistency",
+      "C": "Data is automatically compressed",
+      "D": "Read performance improves"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Synchronous replication requires acknowledgment from replicas. During partition, writes to unreachable replicas block indefinitely or timeout. This maintains consistency but sacrifices availability—classic CP behavior.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

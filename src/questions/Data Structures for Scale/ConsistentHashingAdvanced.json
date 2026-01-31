@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a Merkle tree?",
+    "options": {
+      "A": "A tree for storing names",
+      "B": "A hash tree where each leaf is a hash of data and each non-leaf is a hash of its children",
+      "C": "A binary search tree",
+      "D": "A file system structure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle tree: leaves contain hashes of data blocks, parent nodes contain hashes of children. Root hash represents entire dataset. Enables efficient verification—changing any data changes the root hash.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "How do Merkle trees help in distributed systems?",
+    "options": {
+      "A": "They compress data",
+      "B": "They enable efficient comparison and synchronization of large datasets",
+      "C": "They encrypt data",
+      "D": "They sort data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Merkle trees enable efficient sync: compare root hashes to detect differences, then traverse tree to find exactly which data differs. Used in databases (Cassandra anti-entropy), blockchain, and file sync (Git).",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is HyperLogLog?",
+    "options": {
+      "A": "A logging framework",
+      "B": "A probabilistic data structure for estimating cardinality (count of unique elements)",
+      "C": "A database type",
+      "D": "A sorting algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog estimates unique element count using minimal memory (~12KB for billions of elements). Probabilistic—has small error (~0.81%). Used for counting unique visitors, distinct values at scale.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "When would you use HyperLogLog instead of exact counting?",
+    "options": {
+      "A": "When exact count is required",
+      "B": "When counting unique elements at massive scale where small error is acceptable",
+      "C": "For small datasets",
+      "D": "For sorting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HyperLogLog for massive scale: counting unique visitors across billions of events, distinct IPs, unique search queries. Exact counting would require storing all values (huge memory). HLL trades accuracy for efficiency.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Geohash?",
+    "options": {
+      "A": "A hash of geographic data",
+      "B": "A system that encodes geographic coordinates into a short string, enabling proximity searches",
+      "C": "A map visualization",
+      "D": "A GPS protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Geohash encodes latitude/longitude into a string (e.g., 'u4pruydqqvj'). Nearby locations share prefixes. Enables efficient proximity queries: find all locations starting with 'u4pru'. Used in location-based services.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Quadtree?",
+    "options": {
+      "A": "A tree with four roots",
+      "B": "A tree that recursively divides 2D space into four quadrants for spatial indexing",
+      "C": "A tree with four levels",
+      "D": "A database index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Quadtree divides 2D space into four quadrants recursively. Each node has four children. Efficient for spatial queries: finding points in a region, nearest neighbor. Used in maps, games, image processing.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is a Skip List?",
+    "options": {
+      "A": "A list that skips elements",
+      "B": "A probabilistic data structure with multiple levels of linked lists for O(log n) search",
+      "C": "A compressed list",
+      "D": "A sorted array"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Skip list: multiple levels of linked lists. Higher levels skip more elements, enabling binary search-like O(log n) operations. Simpler than balanced trees. Used in Redis sorted sets, LevelDB.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What is Count-Min Sketch?",
+    "options": {
+      "A": "A drawing tool",
+      "B": "A probabilistic data structure for estimating frequency of elements in a stream",
+      "C": "A counting algorithm",
+      "D": "A database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Count-Min Sketch estimates how often elements appear in a data stream using sub-linear space. May overestimate (never underestimate). Used for: heavy hitters detection, frequency estimation at scale.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "True or False: Bloom filters can tell you exactly which elements are in a set.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bloom filters only answer membership queries (is X in set?), not enumeration. They can't list elements. Also, they have false positives—'probably yes' or 'definitely no'. Trade-off for space efficiency.",
+    "difficulty": "easy",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "Which data structures are probabilistic? (Choose all that apply)",
+    "options": {
+      "A": "Bloom filter",
+      "B": "HyperLogLog",
+      "C": "Count-Min Sketch",
+      "D": "B-tree"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Probabilistic structures trade accuracy for space/time: Bloom filter (membership), HyperLogLog (cardinality), Count-Min Sketch (frequency). B-tree is deterministic—exact results, more space.",
+    "difficulty": "medium",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "What problem does consistent hashing with virtual nodes solve?",
+    "options": {
+      "A": "Data encryption",
+      "B": "Uneven data distribution when nodes have different capacities",
+      "C": "Network latency",
+      "D": "Database queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Virtual nodes: each physical node has multiple positions on the hash ring. More virtual nodes = more data. Enables: proportional distribution based on capacity, smoother rebalancing when nodes change.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  },
+  {
+    "question": "A system needs to find the top 100 most frequent items in a stream of billions of events. Which approach is most practical?",
+    "options": {
+      "A": "Store all events and count",
+      "B": "Use Count-Min Sketch with a heap for top-k tracking",
+      "C": "Random sampling",
+      "D": "Ignore the requirement"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Count-Min Sketch estimates frequencies in constant space. Combined with a min-heap tracking top-k, efficiently finds heavy hitters. Storing all events is impractical at billions scale. Sampling might miss important items.",
+    "difficulty": "hard",
+    "category": "data structures for scale"
+  }
+]

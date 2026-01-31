@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is structured logging?",
+    "options": {
+      "A": "Logging to a database",
+      "B": "Logging in a consistent, machine-parseable format like JSON with key-value pairs",
+      "C": "Logging in paragraphs",
+      "D": "Encrypted logging"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Structured logging: JSON or key-value format. {\"level\":\"error\",\"message\":\"Failed\",\"user_id\":123,\"duration_ms\":45}. Benefits: searchable, filterable, aggregatable. Essential for log aggregation systems.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What are the standard log levels and when to use each?",
+    "options": {
+      "A": "Only ERROR and INFO",
+      "B": "DEBUG (development), INFO (normal operations), WARN (potential issues), ERROR (failures)",
+      "C": "Numbers 1-10",
+      "D": "Colors"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log levels: TRACE (very detailed), DEBUG (development), INFO (normal events), WARN (potential problems), ERROR (failures), FATAL (system crash). Production typically INFO+. Use appropriately—too much noise hides issues.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What should you NOT log?",
+    "options": {
+      "A": "Error messages",
+      "B": "Sensitive data—passwords, tokens, PII, credit card numbers",
+      "C": "Timestamps",
+      "D": "Request IDs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Never log: passwords, API keys, tokens, SSN, credit cards, health data. Compliance: GDPR, PCI-DSS, HIPAA. Mask or hash if needed for debugging. Log references (user_id) not values (email).",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is log context and why is it important?",
+    "options": {
+      "A": "Log file location",
+      "B": "Additional metadata (request ID, user ID, service name) attached to every log entry",
+      "C": "Log encryption",
+      "D": "Log compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log context: metadata for correlation. Include: request_id, user_id, service_name, environment, version. Enables: filtering by user, tracing requests across services. Use MDC/thread-local storage.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the recommended approach for logging in high-throughput systems?",
+    "options": {
+      "A": "Log everything synchronously",
+      "B": "Asynchronous logging with buffering to avoid blocking application threads",
+      "C": "Disable logging",
+      "D": "Log to console only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "High-throughput logging: async appenders, buffered writes. Synchronous logging blocks threads, impacts latency. Trade-off: may lose recent logs on crash. Use: Log4j2 async, Logback async appender.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is log sampling and when should you use it?",
+    "options": {
+      "A": "Taking log backups",
+      "B": "Logging only a percentage of events to reduce volume while maintaining visibility",
+      "C": "Encrypting logs",
+      "D": "Compressing logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log sampling: log 1% of requests, 100% of errors. Use when: high volume, cost concerns, performance impact. Ensure: always log errors, sample success cases. Maintain statistical significance.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What makes a good log message?",
+    "options": {
+      "A": "As short as possible",
+      "B": "Actionable, includes context, explains what happened and relevant data",
+      "C": "Technical jargon only",
+      "D": "Stack traces only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Good log message: what happened, why it matters, relevant context. Bad: 'Error occurred'. Good: 'Payment failed for order_id=123, reason=card_declined, amount=99.99'. Enable debugging without code access.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is log rotation?",
+    "options": {
+      "A": "Spinning log files",
+      "B": "Automatically archiving old logs and creating new files to manage disk space",
+      "C": "Encrypting logs",
+      "D": "Deleting all logs"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Log rotation: prevent disk full. Strategies: size-based (rotate at 100MB), time-based (daily). Archive: compress old logs, delete after retention period. Tools: logrotate, built-in framework support.",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "What is the ELK stack for logging?",
+    "options": {
+      "A": "A programming language",
+      "B": "Elasticsearch (storage/search), Logstash (processing), Kibana (visualization)",
+      "C": "A database",
+      "D": "A monitoring tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ELK stack: Elasticsearch (store, index, search logs), Logstash (collect, parse, transform), Kibana (visualize, dashboard, explore). Popular open-source log management. Alternative: EFK (Fluentd instead of Logstash).",
+    "difficulty": "easy",
+    "category": "observability"
+  },
+  {
+    "question": "How should exceptions be logged?",
+    "options": {
+      "A": "Message only",
+      "B": "Full stack trace at ERROR level with context, but avoid logging expected exceptions as errors",
+      "C": "Never log exceptions",
+      "D": "Stack trace only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Exception logging: include stack trace for unexpected errors. Add context (what operation, what input). Don't log expected exceptions (validation) as ERROR—use WARN or INFO. Avoid logging and rethrowing (duplicate logs).",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "What is the purpose of correlation IDs in logging?",
+    "options": {
+      "A": "Security",
+      "B": "Tracing a single request across multiple services and log entries",
+      "C": "Compression",
+      "D": "Encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Correlation ID: unique ID per request, propagated across services. Include in every log. Enables: find all logs for one request, trace distributed transactions. Generate at edge, pass in headers.",
+    "difficulty": "medium",
+    "category": "observability"
+  },
+  {
+    "question": "Your service processes 10,000 requests/second. How do you manage logging costs?",
+    "options": {
+      "A": "Disable all logging",
+      "B": "Sample success logs, always log errors, use structured logging for efficient storage",
+      "C": "Log everything to console",
+      "D": "Log only to local files"
+    },
+    "correct_answers": ["B"],
+    "explanation": "High-volume logging strategy: sample success (1-10%), 100% errors/warnings, structured format (compress well), appropriate retention, async logging. Balance: visibility vs cost vs performance.",
+    "difficulty": "medium",
+    "category": "observability"
+  }
+]

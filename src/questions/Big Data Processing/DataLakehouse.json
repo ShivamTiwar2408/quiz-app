@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a data lakehouse?",
+    "options": {
+      "A": "A house by a lake",
+      "B": "An architecture combining data lake flexibility with data warehouse reliability and performance",
+      "C": "A type of database",
+      "D": "A caching system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data lakehouse: best of both worlds. Lake: cheap storage, any format, ML workloads. Warehouse: ACID transactions, schema enforcement, fast SQL. Technologies: Delta Lake, Apache Iceberg, Apache Hudi.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What problem does the lakehouse architecture solve?",
+    "options": {
+      "A": "Storage costs",
+      "B": "The two-tier architecture problem—maintaining separate lake and warehouse with data duplication",
+      "C": "Network latency",
+      "D": "Security issues"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Traditional: data lake → ETL → data warehouse. Problems: data duplication, staleness, complexity, cost. Lakehouse: single copy of data, supports both BI and ML workloads. Simplified architecture.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is Delta Lake?",
+    "options": {
+      "A": "A geographic feature",
+      "B": "An open-source storage layer that brings ACID transactions to data lakes",
+      "C": "A database vendor",
+      "D": "A file format"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Delta Lake: Databricks open-source project. Adds to Parquet: ACID transactions, schema enforcement, time travel, audit history. Enables lakehouse on existing data lakes. Spark integration.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is Apache Iceberg?",
+    "options": {
+      "A": "A cold storage system",
+      "B": "An open table format for large analytic datasets with ACID guarantees",
+      "C": "A message queue",
+      "D": "A visualization tool"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Apache Iceberg: Netflix-originated table format. Features: hidden partitioning, schema evolution, time travel, snapshot isolation. Engine-agnostic: works with Spark, Trino, Flink. Competing with Delta Lake.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is time travel in lakehouse context?",
+    "options": {
+      "A": "Science fiction",
+      "B": "Ability to query historical versions of data as it existed at a specific point in time",
+      "C": "Faster queries",
+      "D": "Data compression"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Time travel: query data at any past version. SELECT * FROM table VERSION AS OF timestamp. Use cases: audit, debugging, reproducible ML training, recovering from mistakes. Enabled by versioned metadata.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does lakehouse achieve ACID transactions on object storage?",
+    "options": {
+      "A": "It can't",
+      "B": "Through metadata layers that track file versions and use optimistic concurrency control",
+      "C": "By using traditional databases",
+      "D": "Through file locking"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ACID on object storage: metadata (transaction log) tracks which files are valid. Writes create new files, update metadata atomically. Readers see consistent snapshot. No file modification—append-only.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is schema evolution in lakehouse?",
+    "options": {
+      "A": "Changing database vendors",
+      "B": "Ability to modify table schema (add columns, change types) without rewriting data",
+      "C": "Schema deletion",
+      "D": "Schema backup"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Schema evolution: add columns, rename, widen types without full rewrite. Metadata tracks schema versions. Old files read with old schema, new files with new. Backward/forward compatibility. Critical for agile data.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is the medallion architecture in lakehouse?",
+    "options": {
+      "A": "Award system",
+      "B": "Bronze (raw), Silver (cleaned), Gold (aggregated) data layers for progressive refinement",
+      "C": "Metal storage",
+      "D": "Security levels"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Medallion architecture: Bronze = raw ingestion, Silver = cleaned/conformed, Gold = business-level aggregates. Progressive quality improvement. Each layer is queryable. Common Databricks pattern.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "How does lakehouse support machine learning workloads?",
+    "options": {
+      "A": "It doesn't support ML",
+      "B": "Direct access to raw data in open formats, versioning for reproducibility, feature store integration",
+      "C": "Only through export",
+      "D": "Requires separate system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Lakehouse ML benefits: access raw data (images, text) directly, time travel for reproducible training, feature tables with versioning, no ETL to separate ML platform. Unified analytics and ML.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "What is data compaction in lakehouse?",
+    "options": {
+      "A": "Deleting data",
+      "B": "Combining many small files into fewer larger files for better query performance",
+      "C": "Compressing data",
+      "D": "Encrypting data"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Compaction: streaming writes create many small files. Small files = slow queries (file overhead). Compaction merges into optimal-sized files. Background process. OPTIMIZE command in Delta Lake.",
+    "difficulty": "medium",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Lakehouse vs traditional data warehouse: when choose warehouse?",
+    "options": {
+      "A": "Never choose warehouse",
+      "B": "When you need mature BI tooling, simpler operations, and primarily structured SQL workloads",
+      "C": "When you have unstructured data",
+      "D": "When you need ML"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Choose warehouse: mature ecosystem, simpler ops, strong BI tool integration, primarily SQL users. Choose lakehouse: mixed workloads (SQL + ML), unstructured data, cost-sensitive, want single platform.",
+    "difficulty": "hard",
+    "category": "big-data-processing"
+  },
+  {
+    "question": "Your company has both BI analysts using SQL and data scientists using Python/Spark. What architecture fits best?",
+    "options": {
+      "A": "Separate warehouse and lake",
+      "B": "Lakehouse—single platform supporting both SQL analytics and ML workloads",
+      "C": "Only data lake",
+      "D": "Only data warehouse"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Mixed workloads = lakehouse sweet spot. BI analysts: SQL on curated tables. Data scientists: Spark/Python on raw + processed data. Single source of truth. No data movement between systems.",
+    "difficulty": "easy",
+    "category": "big-data-processing"
+  }
+]

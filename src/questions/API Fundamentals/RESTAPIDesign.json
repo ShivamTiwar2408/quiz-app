@@ -1,0 +1,156 @@
+[
+  {
+    "question": "Which HTTP method should be used to create a new resource in a RESTful API?",
+    "options": {
+      "A": "GET",
+      "B": "POST",
+      "C": "PUT",
+      "D": "PATCH"
+    },
+    "correct_answers": ["B"],
+    "explanation": "POST creates new resources. GET retrieves, PUT replaces entirely, PATCH partially updates. POST to a collection endpoint (e.g., /users) creates a new resource.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "What is the difference between PUT and PATCH in REST?",
+    "options": {
+      "A": "PUT is faster than PATCH",
+      "B": "PUT replaces the entire resource; PATCH updates specific fields",
+      "C": "PATCH is for creating; PUT is for updating",
+      "D": "They are interchangeable"
+    },
+    "correct_answers": ["B"],
+    "explanation": "PUT replaces the entire resource (must send complete representation). PATCH applies partial modifications (send only changed fields). Using PUT for partial updates can accidentally null omitted fields.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "Which REST endpoint design follows best practices for getting a specific user?",
+    "options": {
+      "A": "GET /getUser?id=123",
+      "B": "GET /users/123",
+      "C": "POST /users/get/123",
+      "D": "GET /user?action=get&id=123"
+    },
+    "correct_answers": ["B"],
+    "explanation": "RESTful URLs use nouns (resources) not verbs. /users/123 identifies the resource; the HTTP method (GET) specifies the action. Query parameters are for filtering, not resource identification.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which HTTP status codes indicate client errors? (Choose all that apply)",
+    "options": {
+      "A": "400 Bad Request",
+      "B": "401 Unauthorized",
+      "C": "404 Not Found",
+      "D": "500 Internal Server Error"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "4xx codes are client errors: 400 (bad request), 401 (authentication required), 404 (resource not found). 500 is a server error—the server failed, not the client's fault.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "An API returns 201 Created. What should the response include?",
+    "options": {
+      "A": "Nothing, just the status code",
+      "B": "Location header with the new resource's URL",
+      "C": "Error message",
+      "D": "Redirect to login page"
+    },
+    "correct_answers": ["B"],
+    "explanation": "201 Created should include a Location header pointing to the newly created resource (e.g., Location: /users/456). The response body often includes the created resource representation.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What does HATEOAS stand for and what does it enable?",
+    "options": {
+      "A": "HTTP Authentication Token Exchange - enables secure auth",
+      "B": "Hypermedia As The Engine Of Application State - enables API discoverability",
+      "C": "High Availability Through Elastic Auto Scaling - enables scaling",
+      "D": "Hypertext Application Transfer Over Secure Sockets - enables encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HATEOAS means responses include links to related actions/resources, allowing clients to navigate the API dynamically without hardcoding URLs. It's the highest level of REST maturity.",
+    "difficulty": "hard",
+    "category": "api design"
+  },
+  {
+    "question": "Which is the correct way to version a REST API?",
+    "options": {
+      "A": "Only URL path versioning (/v1/users) is correct",
+      "B": "Only header versioning (Accept: application/vnd.api.v1+json) is correct",
+      "C": "Multiple approaches exist; URL path and header versioning are both common",
+      "D": "REST APIs should never be versioned"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Both URL versioning (/v1/) and header versioning are valid approaches with tradeoffs. URL is more visible/cacheable; headers are more 'pure' REST. Query param versioning (?v=1) is less common.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "A REST API needs to return a filtered list of users. Which approach is most RESTful?",
+    "options": {
+      "A": "POST /users/filter with filter criteria in body",
+      "B": "GET /users?status=active&role=admin",
+      "C": "GET /filterUsers/active/admin",
+      "D": "GET /users/filter/status/active/role/admin"
+    },
+    "correct_answers": ["B"],
+    "explanation": "GET with query parameters is RESTful for filtering collections. POST for filtering violates REST (GET for retrieval). Embedding filters in URL path conflates filtering with resource identification.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "True or False: A RESTful API must use JSON for request and response bodies.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "REST is format-agnostic. While JSON is most common, REST APIs can use XML, YAML, or other formats. Content-Type and Accept headers negotiate the format.",
+    "difficulty": "easy",
+    "category": "api design"
+  },
+  {
+    "question": "Which HTTP methods are idempotent? (Choose all that apply)",
+    "options": {
+      "A": "GET",
+      "B": "POST",
+      "C": "PUT",
+      "D": "DELETE"
+    },
+    "correct_answers": ["A", "C", "D"],
+    "explanation": "Idempotent methods produce the same result regardless of how many times called. GET (read), PUT (replace), DELETE (remove) are idempotent. POST (create) is not—each call may create a new resource.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "An API endpoint sometimes takes 30 seconds to process. What is the best approach?",
+    "options": {
+      "A": "Increase timeout and make client wait",
+      "B": "Return 202 Accepted with a status URL for polling",
+      "C": "Return partial results immediately",
+      "D": "Split into multiple synchronous calls"
+    },
+    "correct_answers": ["B"],
+    "explanation": "202 Accepted indicates the request is processing asynchronously. The response includes a URL to check status. This prevents timeouts and allows the client to continue other work.",
+    "difficulty": "medium",
+    "category": "api design"
+  },
+  {
+    "question": "What is the purpose of the ETag header in REST APIs?",
+    "options": {
+      "A": "To encrypt the response",
+      "B": "To enable conditional requests and caching",
+      "C": "To identify the API version",
+      "D": "To authenticate the client"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ETag is a resource version identifier. Clients can use If-None-Match (caching) or If-Match (optimistic concurrency) headers with ETags to avoid unnecessary transfers or prevent conflicting updates.",
+    "difficulty": "hard",
+    "category": "api design"
+  }
+]

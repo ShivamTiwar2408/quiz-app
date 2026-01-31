@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is a stateless service?",
+    "options": {
+      "A": "A service that stores all data",
+      "B": "A service that doesn't retain client state between requests",
+      "C": "A service without a database",
+      "D": "A service that never changes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateless service treats each request independently—no memory of previous requests. All needed information comes with the request. Any instance can handle any request. Easier to scale horizontally.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is a stateful service?",
+    "options": {
+      "A": "A service in a specific US state",
+      "B": "A service that maintains client state between requests",
+      "C": "A service with many features",
+      "D": "A service that logs everything"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateful service remembers previous interactions—maintains session data, connection state, or cached context. Requests may depend on previous requests. Requires routing to same instance or shared state.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which are advantages of stateless services? (Choose all that apply)",
+    "options": {
+      "A": "Easy horizontal scaling",
+      "B": "Simple load balancing—any instance can handle any request",
+      "C": "Better fault tolerance—instance failure doesn't lose state",
+      "D": "Lower latency for all operations"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Stateless advantages: easy scaling (add instances), simple load balancing (no sticky sessions), fault tolerance (restart instance, no state lost). Latency may actually be higher if state must be fetched each request.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which are advantages of stateful services? (Choose all that apply)",
+    "options": {
+      "A": "Lower latency when state is needed—no external fetch",
+      "B": "Simpler for certain use cases (WebSocket connections, gaming)",
+      "C": "Easier horizontal scaling",
+      "D": "Can maintain long-lived connections efficiently"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Stateful advantages: lower latency (state in memory), natural fit for connections (WebSockets, gaming), efficient for state-heavy operations. NOT easier to scale—scaling stateful services is complex.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How can stateful services be scaled?",
+    "options": {
+      "A": "They cannot be scaled",
+      "B": "Sticky sessions, state externalization, or partitioning by key",
+      "C": "Only vertical scaling",
+      "D": "By removing all state"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateful scaling options: sticky sessions (route user to same instance), externalize state (Redis, database), partition by key (user X always goes to instance Y). Each has trade-offs in complexity and performance.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A web application stores user sessions in memory on each server. What problem does this create?",
+    "options": {
+      "A": "No problem",
+      "B": "Users lose session if routed to different server or server restarts",
+      "C": "Sessions are too secure",
+      "D": "Database overload"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In-memory sessions make the app stateful. If load balancer routes user to different server, session is lost. If server restarts, all sessions lost. Solutions: sticky sessions, external session store (Redis), or stateless tokens.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What is session affinity (sticky sessions)?",
+    "options": {
+      "A": "Sessions that stick to users",
+      "B": "Load balancer routing all requests from a user to the same server instance",
+      "C": "Permanent sessions",
+      "D": "Session encryption"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Sticky sessions: load balancer ensures user's requests go to same instance (using cookies, IP). Enables stateful services but creates uneven load distribution and problems when instances fail.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "True or False: REST APIs should be stateless.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "REST constraint: statelessness. Each request contains all information needed—server doesn't store client state between requests. Enables scalability, caching, and reliability. Authentication via tokens, not server-side sessions.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "Which services are typically stateful? (Choose all that apply)",
+    "options": {
+      "A": "WebSocket servers",
+      "B": "Databases",
+      "C": "Stateless REST APIs",
+      "D": "Real-time gaming servers"
+    },
+    "correct_answers": ["A", "B", "D"],
+    "explanation": "Stateful services: WebSocket servers (maintain connections), databases (store data), gaming servers (game state). REST APIs should be stateless by design—state in external stores or tokens.",
+    "difficulty": "easy",
+    "category": "trade-offs"
+  },
+  {
+    "question": "How does externalizing state help with scaling?",
+    "options": {
+      "A": "It doesn't help",
+      "B": "Services become stateless; state is in shared store accessible by any instance",
+      "C": "It reduces state",
+      "D": "It encrypts state"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Externalizing state (to Redis, database): services become stateless, any instance can handle any request by fetching state from shared store. Enables horizontal scaling. Trade-off: added latency for state access.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  },
+  {
+    "question": "A chat application needs to maintain WebSocket connections. What's the best approach?",
+    "options": {
+      "A": "Make it completely stateless",
+      "B": "Accept stateful nature; use pub/sub for cross-instance messaging",
+      "C": "Use HTTP polling instead",
+      "D": "Limit to single server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebSocket connections are inherently stateful. Accept this; scale using pub/sub (Redis) to broadcast messages across instances. Each instance manages its connections; pub/sub coordinates cross-instance communication.",
+    "difficulty": "hard",
+    "category": "trade-offs"
+  },
+  {
+    "question": "What happens to in-flight requests when a stateful server instance crashes?",
+    "options": {
+      "A": "They complete normally",
+      "B": "Requests fail; state is lost unless externalized or replicated",
+      "C": "They are automatically retried",
+      "D": "Nothing happens"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Stateful instance crash: in-flight requests fail, in-memory state is lost. Users may need to re-authenticate, reconnect, or lose work. Mitigation: replicate state, checkpoint to external store, or design for recovery.",
+    "difficulty": "medium",
+    "category": "trade-offs"
+  }
+]

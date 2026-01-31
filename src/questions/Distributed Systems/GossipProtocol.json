@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a gossip protocol in distributed systems?",
+    "options": {
+      "A": "A protocol for sending encrypted messages",
+      "B": "A peer-to-peer communication protocol where nodes randomly exchange information with neighbors",
+      "C": "A centralized messaging system",
+      "D": "A database query protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip (epidemic) protocols: each node periodically selects random peers and exchanges state. Information spreads like a rumor or disease—probabilistically reaching all nodes. Decentralized and fault-tolerant.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What are common use cases for gossip protocols?",
+    "options": {
+      "A": "Membership detection and failure detection",
+      "B": "Disseminating configuration updates",
+      "C": "Database replication",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "Gossip is used for: cluster membership (who's alive), failure detection (heartbeat gossip), data dissemination (config, metadata), aggregate computation (counting nodes). Cassandra, Consul, SWIM all use gossip.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does information spread in a gossip protocol?",
+    "options": {
+      "A": "Through a central server",
+      "B": "Exponentially—each round doubles informed nodes until saturation",
+      "C": "Linearly—one node at a time",
+      "D": "Instantly to all nodes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip spreads exponentially: 1→2→4→8→... In O(log n) rounds, information reaches all n nodes with high probability. Like a viral spread—fast convergence despite being probabilistic.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the 'fanout' parameter in gossip protocols?",
+    "options": {
+      "A": "The number of nodes in the cluster",
+      "B": "The number of random peers each node contacts per gossip round",
+      "C": "The message size",
+      "D": "The network bandwidth"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Fanout (typically 2-4): how many peers to gossip with each round. Higher fanout = faster spread but more bandwidth. Even fanout=2 achieves O(log n) convergence. Tunable tradeoff.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the advantage of gossip over centralized broadcast?",
+    "options": {
+      "A": "Gossip is faster",
+      "B": "No single point of failure; scales well; tolerates node failures and network partitions",
+      "C": "Gossip uses less bandwidth",
+      "D": "Gossip is more secure"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip advantages: no SPOF (decentralized), scales to thousands of nodes, tolerates failures (probabilistic redundancy), works across partitions. Tradeoff: eventual consistency, not instant.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is 'anti-entropy' in the context of gossip?",
+    "options": {
+      "A": "Cooling the servers",
+      "B": "A process where nodes compare and reconcile their data to ensure consistency",
+      "C": "Encrypting gossip messages",
+      "D": "Removing old nodes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Anti-entropy: nodes periodically compare their data (using Merkle trees, checksums) and exchange differences. Ensures replicas converge even if some gossip messages were lost. Background consistency repair.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How does gossip-based failure detection work?",
+    "options": {
+      "A": "A central monitor checks all nodes",
+      "B": "Nodes gossip heartbeats; if a node's heartbeat isn't updated for a threshold, it's suspected failed",
+      "C": "Nodes ping a DNS server",
+      "D": "Failure detection is not possible with gossip"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Each node maintains heartbeat counters for all nodes. Gossip spreads heartbeat updates. If node X's heartbeat hasn't increased in T seconds, X is suspected dead. Distributed, no single detector.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is the SWIM protocol?",
+    "options": {
+      "A": "A swimming pool management system",
+      "B": "Scalable Weakly-consistent Infection-style Membership—an efficient gossip-based membership protocol",
+      "C": "A database protocol",
+      "D": "A load balancing algorithm"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SWIM: efficient membership protocol using gossip. Combines direct probing with indirect probing (ask peers to probe suspect). O(1) message overhead per node. Used in Consul, Serf.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "What is a disadvantage of gossip protocols?",
+    "options": {
+      "A": "They require a central server",
+      "B": "Eventual consistency—information takes time to propagate; no strong ordering guarantees",
+      "C": "They don't scale",
+      "D": "They can't handle failures"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip tradeoffs: eventual (not immediate) consistency, probabilistic (not guaranteed) delivery, no ordering guarantees, some bandwidth overhead. Not suitable when you need strong consistency or immediate propagation.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  },
+  {
+    "question": "Which database uses gossip for cluster membership and failure detection?",
+    "options": {
+      "A": "MySQL",
+      "B": "Apache Cassandra",
+      "C": "SQLite",
+      "D": "Microsoft Access"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cassandra uses gossip extensively: cluster membership, failure detection, schema propagation, token metadata. Each node gossips with 1-3 random nodes per second. Enables Cassandra's masterless architecture.",
+    "difficulty": "easy",
+    "category": "distributed systems"
+  },
+  {
+    "question": "How can gossip protocols handle 'rumor mongering' efficiently?",
+    "options": {
+      "A": "By using a central coordinator",
+      "B": "Nodes stop gossiping about old information after it's likely spread to everyone",
+      "C": "By encrypting all messages",
+      "D": "By using larger messages"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Rumor mongering optimization: track how many times info was gossiped. After k rounds (or if peers already have it), stop spreading. Prevents indefinite bandwidth waste on old news.",
+    "difficulty": "hard",
+    "category": "distributed systems"
+  },
+  {
+    "question": "In a 1000-node cluster using gossip with fanout=3, approximately how many rounds to reach all nodes?",
+    "options": {
+      "A": "1000 rounds",
+      "B": "About 10-15 rounds (O(log n))",
+      "C": "1 round",
+      "D": "500 rounds"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Gossip convergence: O(log n) rounds. With n=1000, log₂(1000)≈10. With fanout=3, even faster. In practice, ~10-15 rounds to reach all nodes with high probability. Remarkably efficient.",
+    "difficulty": "medium",
+    "category": "distributed systems"
+  }
+]

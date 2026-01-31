@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What triggers cache eviction?",
+    "options": {
+      "A": "User request",
+      "B": "Cache reaching capacity and needing space for new entries",
+      "C": "Database update",
+      "D": "Server restart"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Eviction occurs when cache is full and new data needs to be stored. The eviction policy determines which existing entries to remove. TTL expiration is different from capacity-based eviction.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "What does LRU (Least Recently Used) eviction policy remove?",
+    "options": {
+      "A": "The oldest entry by creation time",
+      "B": "The entry accessed longest ago",
+      "C": "The smallest entry",
+      "D": "A random entry"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LRU evicts the entry that hasn't been accessed for the longest time, assuming recently accessed data is more likely to be accessed again. It tracks access time, not creation time.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "How does LFU (Least Frequently Used) differ from LRU?",
+    "options": {
+      "A": "LFU is faster",
+      "B": "LFU evicts based on access count; LRU evicts based on recency",
+      "C": "LFU uses more memory",
+      "D": "LFU only works with distributed caches"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LFU tracks how often each entry is accessed and evicts the least frequently used. LRU tracks when entries were last accessed. LFU favors consistently popular items; LRU favors recently accessed items.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A cache uses FIFO (First In, First Out) eviction. What is a potential problem?",
+    "options": {
+      "A": "It's too slow",
+      "B": "It may evict frequently accessed items just because they were added early",
+      "C": "It requires too much memory",
+      "D": "It doesn't work with TTL"
+    },
+    "correct_answers": ["B"],
+    "explanation": "FIFO ignores access patterns—a heavily used item added early gets evicted before a rarely used item added later. LRU/LFU consider actual usage, making them generally more effective.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "Which eviction policy is best for a cache where some items are accessed in bursts but rarely otherwise?",
+    "options": {
+      "A": "LRU",
+      "B": "LFU",
+      "C": "LRU with frequency consideration (e.g., LRFU)",
+      "D": "FIFO"
+    },
+    "correct_answers": ["C"],
+    "explanation": "Pure LFU would keep burst items too long after the burst. Pure LRU might evict them during the burst. Hybrid policies like LRFU balance recency and frequency for varied access patterns.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "What is the 'cache pollution' problem?",
+    "options": {
+      "A": "Cache data becoming corrupted",
+      "B": "Infrequently used items filling cache and evicting useful items",
+      "C": "Cache servers overheating",
+      "D": "Too many cache misses"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cache pollution occurs when one-time or rarely-reused data fills the cache, evicting frequently accessed items. This reduces hit rate. Scan-resistant policies help prevent pollution.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "True or False: LRU is always the best eviction policy.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "LRU works well for many workloads but not all. Sequential scans can pollute LRU caches. LFU may be better for stable popularity patterns. The best policy depends on access patterns.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "A database query cache uses LRU. A batch job scans the entire table once. What happens?",
+    "options": {
+      "A": "Cache performance improves",
+      "B": "The scan evicts frequently used queries, degrading cache effectiveness",
+      "C": "Nothing, batch jobs don't affect cache",
+      "D": "The cache automatically resizes"
+    },
+    "correct_answers": ["B"],
+    "explanation": "The sequential scan accesses many rows once, making them 'recently used' and evicting actually-useful cached queries. This is the classic LRU scan problem. Scan-resistant policies address this.",
+    "difficulty": "hard",
+    "category": "caching"
+  },
+  {
+    "question": "What is TTL-based eviction?",
+    "options": {
+      "A": "Evicting entries when cache is full",
+      "B": "Evicting entries after a specified time period regardless of access",
+      "C": "Evicting the largest entries first",
+      "D": "Evicting entries based on priority"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TTL eviction removes entries after a set time, ensuring data freshness. It's independent of capacity-based eviction (LRU/LFU). Both can coexist—TTL for freshness, LRU for capacity.",
+    "difficulty": "easy",
+    "category": "caching"
+  },
+  {
+    "question": "Which factors should influence eviction policy selection? (Choose all that apply)",
+    "options": {
+      "A": "Access pattern (temporal locality vs frequency)",
+      "B": "Memory constraints",
+      "C": "Data freshness requirements",
+      "D": "Programming language of the application"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Access patterns determine LRU vs LFU effectiveness. Memory constraints affect how aggressively to evict. Freshness needs influence TTL settings. Programming language is irrelevant to eviction policy.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "What is 'random eviction' and when might it be appropriate?",
+    "options": {
+      "A": "Evicting entries randomly; never appropriate",
+      "B": "Evicting entries randomly; appropriate when access is uniform",
+      "C": "Evicting entries randomly; always the best choice",
+      "D": "Evicting entries randomly; only for testing"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Random eviction is simple and has low overhead. When access patterns are uniform (no hot items), random performs similarly to LRU/LFU with less complexity. It's used in some CPU caches.",
+    "difficulty": "medium",
+    "category": "caching"
+  },
+  {
+    "question": "A cache implements 'two-queue' or 'segmented LRU'. What problem does this solve?",
+    "options": {
+      "A": "Reducing memory usage",
+      "B": "Protecting frequently accessed items from being evicted by one-time accesses",
+      "C": "Improving cache write speed",
+      "D": "Enabling distributed caching"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Segmented LRU uses multiple queues—new items enter a probationary queue and only move to protected queue on re-access. This prevents one-time scans from evicting valuable cached data.",
+    "difficulty": "hard",
+    "category": "caching"
+  }
+]

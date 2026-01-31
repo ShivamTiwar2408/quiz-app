@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is a wide-column database?",
+    "options": {
+      "A": "A database with very wide monitors",
+      "B": "A NoSQL database that stores data in rows with dynamic columns, organized by column families",
+      "C": "A relational database with many columns",
+      "D": "A file storage system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Wide-column stores: rows identified by key, columns grouped into families. Each row can have different columns. Optimized for reading/writing large amounts of data. Examples: Cassandra, HBase, Bigtable.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a column family in wide-column databases?",
+    "options": {
+      "A": "A group of related tables",
+      "B": "A logical grouping of columns that are often accessed together and stored together on disk",
+      "C": "A backup strategy",
+      "D": "A type of index"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Column family: columns grouped for storage and access. Data in same family stored together on disk. Design column families based on access patterns—columns accessed together should be in same family.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "How does a wide-column store differ from a relational database?",
+    "options": {
+      "A": "They are the same",
+      "B": "Wide-column: sparse data (rows have different columns), no joins, optimized for scale; Relational: fixed schema, joins, ACID",
+      "C": "Relational databases are faster",
+      "D": "Wide-column stores don't support queries"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Wide-column: flexible columns per row, no joins (denormalized), horizontal scaling, eventual consistency. Relational: fixed schema, joins, vertical scaling, strong consistency. Different tradeoffs.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is Apache Cassandra optimized for?",
+    "options": {
+      "A": "Complex joins and transactions",
+      "B": "High write throughput, horizontal scaling, and high availability across data centers",
+      "C": "Small datasets",
+      "D": "Single-node deployments"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cassandra: masterless architecture, linear scalability, multi-datacenter replication, high write throughput. Designed for: time-series, IoT, messaging, any write-heavy workload at scale.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is the data model hierarchy in Cassandra?",
+    "options": {
+      "A": "Database → Table → Row",
+      "B": "Keyspace → Table → Partition → Row",
+      "C": "Schema → Collection → Document",
+      "D": "Bucket → Object"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cassandra hierarchy: Keyspace (like database, defines replication), Table, Partition (rows with same partition key, unit of distribution), Row (within partition). Partition key design is critical.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is Google Bigtable?",
+    "options": {
+      "A": "A relational database",
+      "B": "Google's wide-column store that inspired HBase and influenced Cassandra",
+      "C": "A file system",
+      "D": "A message queue"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Bigtable: Google's 2006 paper described their wide-column store. Inspired HBase (open-source Bigtable on Hadoop) and influenced Cassandra. Powers Google Search, Maps, Gmail. Now available as Cloud Bigtable.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "When would you choose a wide-column database?",
+    "options": {
+      "A": "Small datasets with complex relationships",
+      "B": "Time-series data, IoT, write-heavy workloads, large-scale analytics",
+      "C": "Simple key-value caching",
+      "D": "Document storage with flexible schemas"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Wide-column excels at: time-series (sensor data, logs), write-heavy workloads, large-scale analytics, data with natural row keys. Not ideal for: complex queries, small datasets, strong consistency needs.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "What is a partition key in Cassandra?",
+    "options": {
+      "A": "A backup identifier",
+      "B": "The part of the primary key that determines which node stores the data",
+      "C": "An encryption key",
+      "D": "A foreign key"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Partition key: hashed to determine data placement. All rows with same partition key stored together on same nodes. Critical for: data distribution, query performance. Bad partition keys cause hot spots.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is the difference between HBase and Cassandra?",
+    "options": {
+      "A": "They are identical",
+      "B": "HBase: master-slave, strong consistency, Hadoop ecosystem; Cassandra: masterless, tunable consistency, independent",
+      "C": "Cassandra requires Hadoop",
+      "D": "HBase is a document database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "HBase: runs on HDFS, master-slave (RegionServers), strong consistency, good for Hadoop integration. Cassandra: masterless (peer-to-peer), tunable consistency, better availability, independent deployment.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What is a clustering column in Cassandra?",
+    "options": {
+      "A": "A column that clusters servers",
+      "B": "Part of primary key that determines sort order within a partition",
+      "C": "A type of index",
+      "D": "A replication setting"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Clustering columns: define sort order within partition. PRIMARY KEY ((partition_key), clustering_col). Enables efficient range queries within partition. Example: time-series sorted by timestamp.",
+    "difficulty": "hard",
+    "category": "databases"
+  },
+  {
+    "question": "What consistency levels does Cassandra support?",
+    "options": {
+      "A": "Only strong consistency",
+      "B": "Tunable: ONE, QUORUM, ALL, LOCAL_QUORUM, etc.",
+      "C": "Only eventual consistency",
+      "D": "No consistency guarantees"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Cassandra: tunable consistency per query. ONE (fastest, least consistent), QUORUM (majority), ALL (slowest, strongest), LOCAL_QUORUM (datacenter-aware). Balance latency vs consistency per use case.",
+    "difficulty": "medium",
+    "category": "databases"
+  },
+  {
+    "question": "A company needs to store billions of IoT sensor readings with queries by device and time range. Best choice?",
+    "options": {
+      "A": "MySQL",
+      "B": "Cassandra or HBase with device_id as partition key and timestamp as clustering column",
+      "C": "Redis",
+      "D": "MongoDB"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Wide-column ideal for time-series: partition by device_id (distributes data), cluster by timestamp (enables range queries). Cassandra/HBase handle billions of rows, high write throughput, efficient time-range scans.",
+    "difficulty": "hard",
+    "category": "databases"
+  }
+]

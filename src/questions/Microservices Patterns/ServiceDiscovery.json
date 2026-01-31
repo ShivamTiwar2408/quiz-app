@@ -1,0 +1,156 @@
+[
+  {
+    "question": "What is service discovery?",
+    "options": {
+      "A": "Finding bugs in services",
+      "B": "Mechanism for services to find network locations of other services dynamically",
+      "C": "Discovering new features",
+      "D": "Database discovery"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service discovery enables services to find each other without hardcoded addresses. In dynamic environments (containers, auto-scaling), service instances come and go—discovery provides current locations.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Why is service discovery needed in microservices?",
+    "options": {
+      "A": "Services have static IP addresses",
+      "B": "Service instances are dynamic—IPs change with scaling, deployments, failures",
+      "C": "To reduce network traffic",
+      "D": "For database connections only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "In cloud/container environments, service instances are ephemeral. Auto-scaling adds/removes instances, deployments replace instances, failures occur. Hardcoded IPs don't work—discovery provides dynamic resolution.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What are the two main service discovery patterns?",
+    "options": {
+      "A": "Fast and slow",
+      "B": "Client-side discovery and server-side discovery",
+      "C": "Internal and external",
+      "D": "Sync and async"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client-side: client queries registry, chooses instance, connects directly. Server-side: client calls load balancer/router, which queries registry and routes request. Different trade-offs in complexity and control.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "In client-side discovery, what does the client do?",
+    "options": {
+      "A": "Connect to hardcoded address",
+      "B": "Query service registry, select an instance, make direct request",
+      "C": "Wait for server to connect",
+      "D": "Use DNS only"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client-side discovery: client queries registry for available instances, applies load balancing logic (round-robin, random), connects directly to chosen instance. Client has more control but more complexity.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "In server-side discovery, what routes requests?",
+    "options": {
+      "A": "The client",
+      "B": "A load balancer or API gateway that queries the registry",
+      "C": "The database",
+      "D": "DNS server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Server-side discovery: load balancer/gateway sits between client and services. It queries registry, selects instance, routes request. Client only knows gateway address—simpler client, but gateway is a potential bottleneck.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is a service registry?",
+    "options": {
+      "A": "A database of user registrations",
+      "B": "A database of available service instances and their network locations",
+      "C": "A code repository",
+      "D": "A logging system"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Service registry is the central database of service instances: which services exist, their instances, network locations (IP:port), health status. Services register on startup, deregister on shutdown.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "Which are common service registry implementations? (Choose all that apply)",
+    "options": {
+      "A": "Consul",
+      "B": "Eureka (Netflix)",
+      "C": "etcd",
+      "D": "MySQL"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Service registries: Consul (HashiCorp), Eureka (Netflix OSS), etcd (Kubernetes), ZooKeeper. These are purpose-built for service discovery with health checking. MySQL is a general database, not a service registry.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How do services register with the registry?",
+    "options": {
+      "A": "Manual configuration only",
+      "B": "Self-registration on startup or third-party registration by deployment platform",
+      "C": "Automatic detection",
+      "D": "Email notification"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Two approaches: Self-registration (service registers itself on startup, sends heartbeats) or Third-party registration (deployment platform like Kubernetes registers services). Both ensure registry stays current.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What happens if a service instance crashes without deregistering?",
+    "options": {
+      "A": "Registry keeps it forever",
+      "B": "Health checks detect failure; registry removes unhealthy instance",
+      "C": "Other services crash",
+      "D": "Nothing—it's not a problem"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Registries use health checks (heartbeats, HTTP probes). If instance stops responding, it's marked unhealthy and removed. This handles crashes, network partitions, and hung processes. Essential for reliability.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "True or False: DNS can be used for service discovery.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["A"],
+    "explanation": "DNS-based discovery is possible: services register DNS records, clients resolve service names. Kubernetes uses DNS. Limitations: DNS caching can serve stale records, limited health checking. Works for simpler cases.",
+    "difficulty": "easy",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "What is the main advantage of client-side discovery over server-side?",
+    "options": {
+      "A": "Simpler client implementation",
+      "B": "No additional network hop; client can implement custom load balancing",
+      "C": "Better security",
+      "D": "Lower cost"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Client-side discovery: direct connection (no gateway hop), client controls load balancing strategy. Trade-off: more complex client, must implement discovery logic in every client language.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  },
+  {
+    "question": "How does Kubernetes handle service discovery?",
+    "options": {
+      "A": "It doesn't support service discovery",
+      "B": "Built-in DNS and Service resources that provide stable endpoints",
+      "C": "External registry required",
+      "D": "Manual IP configuration"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Kubernetes has built-in discovery: Service resources provide stable DNS names and IPs, kube-dns/CoreDNS resolves service names, endpoints are automatically updated as pods scale. No external registry needed.",
+    "difficulty": "medium",
+    "category": "microservices patterns"
+  }
+]

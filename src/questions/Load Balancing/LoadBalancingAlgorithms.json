@@ -1,0 +1,156 @@
+[
+  {
+    "question": "Which load balancing algorithm distributes requests evenly in sequence across all servers?",
+    "options": {
+      "A": "Least connections",
+      "B": "Round-robin",
+      "C": "IP hash",
+      "D": "Random"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Round-robin sends requests to servers in rotation: 1, 2, 3, 1, 2, 3... It's simple and works well when servers have equal capacity and requests have similar processing times.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "A backend has servers with different capacities: Server A can handle 3x the load of Server B. Which algorithm best utilizes this?",
+    "options": {
+      "A": "Round-robin",
+      "B": "Weighted round-robin",
+      "C": "Least connections",
+      "D": "Random"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Weighted round-robin assigns weights to servers (e.g., A=3, B=1), sending proportionally more traffic to higher-capacity servers. Plain round-robin would underutilize Server A.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which algorithm is best when request processing times vary significantly?",
+    "options": {
+      "A": "Round-robin",
+      "B": "Least connections",
+      "C": "IP hash",
+      "D": "Random"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least connections routes to the server with fewest active connections. When processing times vary, this prevents slow requests from causing one server to accumulate a backlog.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A gaming application needs players from the same IP to always connect to the same server for session consistency. Which algorithm achieves this?",
+    "options": {
+      "A": "Round-robin",
+      "B": "Least connections",
+      "C": "IP hash / Source IP affinity",
+      "D": "Weighted random"
+    },
+    "correct_answers": ["C"],
+    "explanation": "IP hash uses the client's IP address to deterministically select a server. The same IP always maps to the same server, providing session persistence without cookies.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is a disadvantage of the IP hash algorithm?",
+    "options": {
+      "A": "It's computationally expensive",
+      "B": "Users behind NAT/proxy share an IP, causing uneven distribution",
+      "C": "It doesn't work with HTTPS",
+      "D": "It requires sticky session cookies"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Many users behind corporate NAT or proxies share the same public IP. IP hash would send all of them to the same server, causing uneven load distribution.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which load balancing algorithms provide session persistence? (Choose all that apply)",
+    "options": {
+      "A": "IP hash",
+      "B": "Round-robin",
+      "C": "Cookie-based persistence",
+      "D": "Least connections"
+    },
+    "correct_answers": ["A", "C"],
+    "explanation": "IP hash and cookie-based persistence ensure the same client reaches the same server. Round-robin and least connections distribute without client affinity.",
+    "difficulty": "easy",
+    "category": "load balancing"
+  },
+  {
+    "question": "A load balancer uses 'least response time' algorithm. What does it optimize for?",
+    "options": {
+      "A": "Server with lowest CPU usage",
+      "B": "Server that responded fastest to recent health checks",
+      "C": "Server with most available memory",
+      "D": "Server with fewest total requests"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least response time routes to servers responding fastest, combining connection count with response latency. It adapts to real-time server performance rather than just connection count.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "True or False: Round-robin is always the best algorithm for evenly distributing load.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Round-robin distributes requests evenly but not necessarily load. If some requests take longer, servers can become unbalanced. Least connections often provides better actual load distribution.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "A microservices architecture uses service mesh with client-side load balancing. Which algorithm works well for this?",
+    "options": {
+      "A": "Hardware-based round-robin",
+      "B": "P2C (Power of Two Choices)",
+      "C": "DNS round-robin",
+      "D": "Centralized least connections"
+    },
+    "correct_answers": ["B"],
+    "explanation": "P2C randomly picks two servers and chooses the one with fewer connections. It's efficient for distributed/client-side LB—no central state needed, yet better than random.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "Which factors should influence load balancing algorithm selection? (Choose all that apply)",
+    "options": {
+      "A": "Whether servers have equal capacity",
+      "B": "Whether session persistence is required",
+      "C": "Variability in request processing time",
+      "D": "The programming language of backend services"
+    },
+    "correct_answers": ["A", "B", "C"],
+    "explanation": "Server capacity affects weighted vs unweighted algorithms. Session needs affect persistence algorithms. Processing time variability affects round-robin vs least-connections. Programming language is irrelevant.",
+    "difficulty": "medium",
+    "category": "load balancing"
+  },
+  {
+    "question": "What is 'consistent hashing' in the context of load balancing?",
+    "options": {
+      "A": "Ensuring all servers receive exactly equal traffic",
+      "B": "A hash-based algorithm that minimizes redistribution when servers change",
+      "C": "Verifying request integrity with checksums",
+      "D": "Encrypting the load balancing decisions"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Consistent hashing maps requests to servers such that adding/removing a server only affects a small portion of requests. It's useful for caching layers where redistribution causes cache misses.",
+    "difficulty": "hard",
+    "category": "load balancing"
+  },
+  {
+    "question": "A load balancer is configured with 'least bandwidth' algorithm. What does it measure?",
+    "options": {
+      "A": "Server with lowest network interface speed",
+      "B": "Server currently serving least amount of traffic (Mbps)",
+      "C": "Server with smallest response sizes",
+      "D": "Server with lowest latency"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Least bandwidth routes to the server currently handling the least traffic volume (bytes/second). Useful when requests vary significantly in response size (e.g., file downloads).",
+    "difficulty": "medium",
+    "category": "load balancing"
+  }
+]

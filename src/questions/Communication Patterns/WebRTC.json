@@ -1,0 +1,158 @@
+[
+  {
+    "question": "What is WebRTC?",
+    "options": {
+      "A": "A web framework",
+      "B": "A technology enabling real-time peer-to-peer communication (audio, video, data) in browsers",
+      "C": "A database",
+      "D": "A server technology"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebRTC (Web Real-Time Communication): browser API for peer-to-peer audio, video, and data. No plugins needed. Powers: video calls, screen sharing, file transfer, gaming. Direct browser-to-browser communication.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What makes WebRTC different from WebSockets?",
+    "options": {
+      "A": "They are the same",
+      "B": "WebRTC is peer-to-peer and optimized for media; WebSockets go through a server",
+      "C": "WebSockets are faster",
+      "D": "WebRTC requires plugins"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebRTC: peer-to-peer (direct between browsers), optimized for real-time media (adaptive bitrate, jitter buffers). WebSockets: client-server, general-purpose bidirectional. Different use cases.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a signaling server in WebRTC?",
+    "options": {
+      "A": "A traffic light",
+      "B": "A server that helps peers discover each other and exchange connection information",
+      "C": "A media server",
+      "D": "A database server"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Signaling server: coordinates connection setup. Exchanges: SDP (session description), ICE candidates (network paths). Not part of WebRTC spec—use WebSockets, HTTP, etc. Once connected, peers communicate directly.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is ICE in WebRTC?",
+    "options": {
+      "A": "Frozen water",
+      "B": "Interactive Connectivity Establishment—a framework for finding the best path between peers",
+      "C": "A video codec",
+      "D": "An encryption method"
+    },
+    "correct_answers": ["B"],
+    "explanation": "ICE: finds network path between peers. Gathers candidates: local IP, server-reflexive (STUN), relay (TURN). Tests connectivity. Handles NAT traversal. Essential for peer-to-peer in real networks.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is STUN in WebRTC?",
+    "options": {
+      "A": "A shocking experience",
+      "B": "Session Traversal Utilities for NAT—helps discover public IP and port for NAT traversal",
+      "C": "A video format",
+      "D": "A database"
+    },
+    "correct_answers": ["B"],
+    "explanation": "STUN server: tells client its public IP/port (as seen from outside NAT). Client uses this for ICE candidates. Lightweight, stateless. Works when NAT allows direct connection. Free STUN servers available.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is TURN in WebRTC?",
+    "options": {
+      "A": "A direction change",
+      "B": "Traversal Using Relays around NAT—relays traffic when direct connection isn't possible",
+      "C": "A video codec",
+      "D": "A signaling protocol"
+    },
+    "correct_answers": ["B"],
+    "explanation": "TURN server: relays media when direct connection fails (symmetric NAT, firewalls). All traffic goes through TURN. More expensive (bandwidth), but ensures connectivity. Fallback when STUN fails.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is SDP in WebRTC?",
+    "options": {
+      "A": "A political party",
+      "B": "Session Description Protocol—describes media capabilities, codecs, and connection information",
+      "C": "A video format",
+      "D": "A database query"
+    },
+    "correct_answers": ["B"],
+    "explanation": "SDP: text format describing session. Contains: media types, codecs, encryption keys, ICE candidates. Exchanged via signaling. Offer/answer model: caller sends offer, callee sends answer. Negotiates capabilities.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What are common use cases for WebRTC?",
+    "options": {
+      "A": "Video conferencing (Zoom, Google Meet)",
+      "B": "Screen sharing and remote desktop",
+      "C": "Peer-to-peer file sharing",
+      "D": "All of the above"
+    },
+    "correct_answers": ["D"],
+    "explanation": "WebRTC use cases: video calls (Zoom, Meet, Teams), screen sharing, P2P file transfer, online gaming, IoT communication, live streaming (low latency). Any real-time browser communication.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  },
+  {
+    "question": "Is WebRTC encrypted?",
+    "options": {
+      "A": "No, it's plain text",
+      "B": "Yes—DTLS for data channels, SRTP for media; encryption is mandatory",
+      "C": "Only optionally",
+      "D": "Only for video"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebRTC security: encryption mandatory. DTLS (Datagram TLS) for data channels. SRTP (Secure RTP) for media. Keys exchanged via DTLS-SRTP. End-to-end encrypted by default. Can't disable.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is a data channel in WebRTC?",
+    "options": {
+      "A": "A TV channel",
+      "B": "A peer-to-peer channel for sending arbitrary data (text, files, game state)",
+      "C": "A database connection",
+      "D": "A video stream"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Data channel: P2P data transfer. Like WebSocket but peer-to-peer. Configurable: reliable/unreliable, ordered/unordered. Use cases: chat, file transfer, game state sync. Low latency, no server relay.",
+    "difficulty": "medium",
+    "category": "communication patterns"
+  },
+  {
+    "question": "What is the challenge of scaling WebRTC for large video conferences?",
+    "options": {
+      "A": "No challenges",
+      "B": "Peer-to-peer doesn't scale—need SFU or MCU servers to relay/mix streams",
+      "C": "WebRTC is always scalable",
+      "D": "Just add more browsers"
+    },
+    "correct_answers": ["B"],
+    "explanation": "Scaling challenge: P2P mesh doesn't scale (n² connections). Solutions: SFU (Selective Forwarding Unit)—server relays streams, each client sends once. MCU (Multipoint Control Unit)—server mixes into one stream. Most use SFU.",
+    "difficulty": "hard",
+    "category": "communication patterns"
+  },
+  {
+    "question": "A company wants to build a video calling feature in their web app. What technology enables this without plugins?",
+    "options": {
+      "A": "Flash",
+      "B": "WebRTC—native browser support for real-time video/audio",
+      "C": "Java Applets",
+      "D": "Silverlight"
+    },
+    "correct_answers": ["B"],
+    "explanation": "WebRTC: native in all modern browsers (Chrome, Firefox, Safari, Edge). No plugins. getUserMedia for camera/mic access, RTCPeerConnection for P2P. Standard approach for browser-based video calling.",
+    "difficulty": "easy",
+    "category": "communication patterns"
+  }
+]
