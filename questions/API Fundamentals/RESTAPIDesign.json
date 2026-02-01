@@ -2,26 +2,26 @@
   {
     "question": "Which HTTP method should be used to create a new resource in a RESTful API?",
     "options": {
-      "A": "GET",
-      "B": "POST",
-      "C": "PUT",
-      "D": "PATCH"
+      "A": "GET - retrieves or creates resources as needed",
+      "B": "POST - creates new resources",
+      "C": "PUT - creates or updates resources",
+      "D": "PATCH - creates resources with partial data"
     },
     "correct_answers": ["B"],
-    "explanation": "POST creates new resources. GET retrieves, PUT replaces entirely, PATCH partially updates. POST to a collection endpoint (e.g., /users) creates a new resource.",
+    "explanation": "POST creates new resources. GET retrieves (and must be safe/idempotent), PUT replaces entirely (idempotent), PATCH partially updates. POST to a collection endpoint (e.g., POST /users) creates a new resource with server-assigned ID. While PUT can create if you know the ID upfront (PUT /users/123), POST is the standard for creation when the server assigns identifiers. Stripe's API uses POST /v1/customers to create customers.",
     "difficulty": "easy",
     "category": "api design"
   },
   {
     "question": "What is the difference between PUT and PATCH in REST?",
     "options": {
-      "A": "PUT is faster than PATCH",
+      "A": "PUT is for creating; PATCH is for updating existing resources",
       "B": "PUT replaces the entire resource; PATCH updates specific fields",
-      "C": "PATCH is for creating; PUT is for updating",
-      "D": "They are interchangeable"
+      "C": "PUT is idempotent; PATCH is not idempotent",
+      "D": "PUT requires authentication; PATCH does not"
     },
     "correct_answers": ["B"],
-    "explanation": "PUT replaces the entire resource (must send complete representation). PATCH applies partial modifications (send only changed fields). Using PUT for partial updates can accidentally null omitted fields.",
+    "explanation": "PUT replaces the entire resource (must send complete representation). PATCH applies partial modifications (send only changed fields). Using PUT for partial updates can accidentally null omitted fields—a common bug. GitHub's API uses PATCH /repos/{owner}/{repo} to update repository settings without replacing the entire resource. Both can be idempotent if implemented correctly; the difference is complete vs. partial replacement.",
     "difficulty": "medium",
     "category": "api design"
   },
@@ -30,11 +30,11 @@
     "options": {
       "A": "GET /getUser?id=123",
       "B": "GET /users/123",
-      "C": "POST /users/get/123",
-      "D": "GET /user?action=get&id=123"
+      "C": "POST /users/get with {\"id\": 123} body",
+      "D": "GET /api/v1/user/fetch/123"
     },
     "correct_answers": ["B"],
-    "explanation": "RESTful URLs use nouns (resources) not verbs. /users/123 identifies the resource; the HTTP method (GET) specifies the action. Query parameters are for filtering, not resource identification.",
+    "explanation": "RESTful URLs use nouns (resources) not verbs. /users/123 identifies the resource; the HTTP method (GET) specifies the action. Query parameters are for filtering collections, not resource identification. Twitter, GitHub, and Stripe all follow this pattern: GET /users/{id}, GET /repos/{owner}/{repo}, GET /v1/customers/{id}. Verbs in URLs (getUser, fetch) indicate RPC-style design, not REST.",
     "difficulty": "easy",
     "category": "api design"
   },
@@ -47,70 +47,70 @@
       "D": "500 Internal Server Error"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "4xx codes are client errors: 400 (bad request), 401 (authentication required), 404 (resource not found). 500 is a server error—the server failed, not the client's fault.",
+    "explanation": "4xx codes are client errors: 400 (malformed request syntax), 401 (authentication required), 404 (resource doesn't exist). 500 is a server error—the server failed to fulfill a valid request. The distinction matters for retry logic: 4xx errors won't succeed on retry (fix the request), while 5xx might (transient server issue). Stripe returns detailed error codes within 4xx responses to help developers fix issues.",
     "difficulty": "easy",
     "category": "api design"
   },
   {
     "question": "An API returns 201 Created. What should the response include?",
     "options": {
-      "A": "Nothing, just the status code",
+      "A": "Nothing - the status code alone is sufficient",
       "B": "Location header with the new resource's URL",
-      "C": "Error message",
-      "D": "Redirect to login page"
+      "C": "Redirect instruction to the login page",
+      "D": "Error details for client-side validation"
     },
     "correct_answers": ["B"],
-    "explanation": "201 Created should include a Location header pointing to the newly created resource (e.g., Location: /users/456). The response body often includes the created resource representation.",
+    "explanation": "201 Created should include a Location header pointing to the newly created resource (e.g., Location: /users/456). The response body often includes the created resource representation, saving a subsequent GET request. AWS API Gateway, GitHub, and most well-designed APIs follow this pattern. This enables clients to immediately access or reference the new resource without parsing response bodies.",
     "difficulty": "medium",
     "category": "api design"
   },
   {
     "question": "What does HATEOAS stand for and what does it enable?",
     "options": {
-      "A": "HTTP Authentication Token Exchange - enables secure auth",
+      "A": "HTTP Authentication Token Exchange - enables secure token-based auth",
       "B": "Hypermedia As The Engine Of Application State - enables API discoverability",
-      "C": "High Availability Through Elastic Auto Scaling - enables scaling",
-      "D": "Hypertext Application Transfer Over Secure Sockets - enables encryption"
+      "C": "High Availability Through Elastic Auto Scaling - enables dynamic scaling",
+      "D": "Hypertext Application Transfer Over Secure Sockets - enables encrypted communication"
     },
     "correct_answers": ["B"],
-    "explanation": "HATEOAS means responses include links to related actions/resources, allowing clients to navigate the API dynamically without hardcoding URLs. It's the highest level of REST maturity.",
+    "explanation": "HATEOAS means responses include links to related actions/resources, allowing clients to navigate the API dynamically without hardcoding URLs. It's the highest level of REST maturity (Richardson Maturity Model Level 3). PayPal's API exemplifies this: a payment response includes links to capture, void, or refund. While powerful, many APIs skip HATEOAS for simplicity—it adds complexity but enables truly evolvable APIs.",
     "difficulty": "hard",
     "category": "api design"
   },
   {
     "question": "Which is the correct way to version a REST API?",
     "options": {
-      "A": "Only URL path versioning (/v1/users) is correct",
-      "B": "Only header versioning (Accept: application/vnd.api.v1+json) is correct",
+      "A": "Only URL path versioning (/v1/users) is RESTful",
+      "B": "Only header versioning (Accept: application/vnd.api.v1+json) is RESTful",
       "C": "Multiple approaches exist; URL path and header versioning are both common",
-      "D": "REST APIs should never be versioned"
+      "D": "REST APIs should never be versioned - use feature flags instead"
     },
     "correct_answers": ["C"],
-    "explanation": "Both URL versioning (/v1/) and header versioning are valid approaches with tradeoffs. URL is more visible/cacheable; headers are more 'pure' REST. Query param versioning (?v=1) is less common.",
+    "explanation": "Both URL versioning (/v1/) and header versioning are valid approaches with tradeoffs. URL is more visible, cacheable, and easier to test (Stripe uses /v1/). Headers are more 'pure' REST but harder to test in browsers (GitHub uses Accept headers). Twilio uses date-based versioning. The key is consistency and clear deprecation policies, not which method you choose.",
     "difficulty": "medium",
     "category": "api design"
   },
   {
     "question": "A REST API needs to return a filtered list of users. Which approach is most RESTful?",
     "options": {
-      "A": "POST /users/filter with filter criteria in body",
+      "A": "POST /users/filter with filter criteria in request body",
       "B": "GET /users?status=active&role=admin",
       "C": "GET /filterUsers/active/admin",
-      "D": "GET /users/filter/status/active/role/admin"
+      "D": "GET /users/search with criteria in custom headers"
     },
     "correct_answers": ["B"],
-    "explanation": "GET with query parameters is RESTful for filtering collections. POST for filtering violates REST (GET for retrieval). Embedding filters in URL path conflates filtering with resource identification.",
+    "explanation": "GET with query parameters is RESTful for filtering collections—it's cacheable and bookmarkable. POST for filtering violates REST semantics (GET for retrieval, POST for creation). Embedding filters in URL path conflates filtering with resource identification. GitHub uses GET /repos?type=public&sort=updated. Query parameters are designed for filtering, sorting, and pagination.",
     "difficulty": "medium",
     "category": "api design"
   },
   {
     "question": "True or False: A RESTful API must use JSON for request and response bodies.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - JSON is the REST standard",
+      "B": "False - REST is format-agnostic"
     },
     "correct_answers": ["B"],
-    "explanation": "REST is format-agnostic. While JSON is most common, REST APIs can use XML, YAML, or other formats. Content-Type and Accept headers negotiate the format.",
+    "explanation": "REST is format-agnostic. While JSON is most common today, REST APIs can use XML, YAML, Protocol Buffers, or other formats. Content-Type and Accept headers negotiate the format. AWS APIs support both JSON and XML. The original REST dissertation by Roy Fielding doesn't mention JSON at all—it predates JSON's popularity. REST is about architectural constraints, not data formats.",
     "difficulty": "easy",
     "category": "api design"
   },
@@ -123,33 +123,33 @@
       "D": "DELETE"
     },
     "correct_answers": ["A", "C", "D"],
-    "explanation": "Idempotent methods produce the same result regardless of how many times called. GET (read), PUT (replace), DELETE (remove) are idempotent. POST (create) is not—each call may create a new resource.",
+    "explanation": "Idempotent methods produce the same result regardless of how many times called. GET (read same data), PUT (replace with same data), DELETE (resource stays deleted) are idempotent. POST is not—each call may create a new resource. This matters for retry logic: safe to retry idempotent methods on network failure. Stripe uses idempotency keys with POST to make non-idempotent operations safe to retry.",
     "difficulty": "medium",
     "category": "api design"
   },
   {
     "question": "An API endpoint sometimes takes 30 seconds to process. What is the best approach?",
     "options": {
-      "A": "Increase timeout and make client wait",
+      "A": "Increase timeout and make client wait synchronously",
       "B": "Return 202 Accepted with a status URL for polling",
-      "C": "Return partial results immediately",
-      "D": "Split into multiple synchronous calls"
+      "C": "Return partial results immediately and complete later",
+      "D": "Split into multiple smaller synchronous calls"
     },
     "correct_answers": ["B"],
-    "explanation": "202 Accepted indicates the request is processing asynchronously. The response includes a URL to check status. This prevents timeouts and allows the client to continue other work.",
+    "explanation": "202 Accepted indicates the request is processing asynchronously. The response includes a URL to check status (polling) or a webhook for completion notification. This prevents timeouts and allows the client to continue other work. AWS uses this pattern for long-running operations like CloudFormation stack creation. GitHub uses it for repository imports. The pattern: POST returns 202 + status URL, GET on status URL returns progress or result.",
     "difficulty": "medium",
     "category": "api design"
   },
   {
     "question": "What is the purpose of the ETag header in REST APIs?",
     "options": {
-      "A": "To encrypt the response",
+      "A": "To encrypt the response payload",
       "B": "To enable conditional requests and caching",
-      "C": "To identify the API version",
-      "D": "To authenticate the client"
+      "C": "To identify the API version being used",
+      "D": "To authenticate the client making the request"
     },
     "correct_answers": ["B"],
-    "explanation": "ETag is a resource version identifier. Clients can use If-None-Match (caching) or If-Match (optimistic concurrency) headers with ETags to avoid unnecessary transfers or prevent conflicting updates.",
+    "explanation": "ETag is a resource version identifier (like a hash of content). Clients use If-None-Match for caching (return 304 Not Modified if unchanged) or If-Match for optimistic concurrency (fail if resource changed since last read). GitHub uses ETags extensively—polling for notifications returns 304 if nothing changed, saving bandwidth. ETags prevent lost updates in concurrent editing scenarios.",
     "difficulty": "hard",
     "category": "api design"
   }

@@ -2,115 +2,117 @@
   {
     "question": "What problem do consensus algorithms solve in distributed systems?",
     "options": {
-      "A": "Data compression",
+      "A": "Optimizing network bandwidth utilization across nodes",
       "B": "Getting multiple nodes to agree on a single value despite failures",
-      "C": "Load balancing",
-      "D": "Data encryption"
+      "C": "Distributing computational load evenly across cluster members",
+      "D": "Encrypting communication between distributed components"
     },
     "correct_answers": ["B"],
-    "explanation": "Consensus algorithms ensure distributed nodes agree on values (leader election, transaction ordering, configuration) even when some nodes fail or messages are delayed. This is fundamental to distributed coordination.",
+    "explanation": "Consensus algorithms ensure distributed nodes agree on values (leader election, transaction ordering, configuration changes) even when some nodes fail or messages are delayed. This is the fundamental coordination problem in distributed systems. Without consensus, you cannot build reliable distributed databases, configuration stores, or coordination services. The FLP impossibility result (Fischer, Lynch, Paterson 1985) proves that deterministic consensus is impossible with even one faulty process in an asynchronous system, which is why practical algorithms use timeouts and randomization.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "Which are well-known consensus algorithms? (Choose all that apply)",
     "options": {
-      "A": "Paxos",
-      "B": "Raft",
-      "C": "Round-robin",
+      "A": "Paxos (Lamport, 1989)",
+      "B": "Raft (Ongaro & Ousterhout, 2014)",
+      "C": "Consistent Hashing (Karger et al., 1997)",
       "D": "Zab (ZooKeeper Atomic Broadcast)"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "Paxos, Raft, and Zab are consensus algorithms for distributed agreement. Round-robin is a load balancing algorithm, not a consensus protocol.",
+    "explanation": "Paxos, Raft, and Zab are consensus algorithms for distributed agreement. Paxos is the foundational algorithm (used in Google Chubby, Spanner). Raft was designed for understandability (used in etcd, Consul, CockroachDB). Zab is ZooKeeper's protocol (used in Kafka, Hadoop). Consistent hashing is a data distribution algorithm, not a consensus protocol. It solves a different problem: how to distribute data across nodes, not how to get nodes to agree on values.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Why was Raft designed as an alternative to Paxos?",
     "options": {
-      "A": "Paxos is patented",
-      "B": "Raft is faster",
-      "C": "Raft is designed to be more understandable",
-      "D": "Paxos doesn't work in practice"
+      "A": "Paxos has fundamental correctness issues that Raft fixes",
+      "B": "Raft provides stronger consistency guarantees than Paxos",
+      "C": "Raft is designed to be more understandable and easier to implement correctly",
+      "D": "Paxos cannot handle more than three nodes in a cluster"
     },
     "correct_answers": ["C"],
-    "explanation": "Raft was explicitly designed for understandability. Paxos is notoriously difficult to understand and implement correctly. Raft achieves similar guarantees with a clearer structure (leader election, log replication).",
+    "explanation": "Raft was explicitly designed for understandability. Paxos is notoriously difficult to understand and implement correctly. Leslie Lamport's original Paxos paper used a Greek parliament metaphor that confused readers. Raft achieves equivalent guarantees with a clearer structure: distinct phases for leader election, log replication, and safety. The Raft paper includes a user study showing Raft is significantly easier to understand. This matters because consensus bugs can cause data loss or corruption. Understandability enables correct implementation.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "In Raft, what happens when the leader fails?",
     "options": {
-      "A": "The system stops until manual intervention",
-      "B": "Followers detect timeout and elect a new leader",
-      "C": "All data is lost",
-      "D": "The oldest follower automatically becomes leader"
+      "A": "The system stops accepting writes until an administrator intervenes",
+      "B": "Followers detect the timeout and automatically elect a new leader",
+      "C": "The most recently updated follower automatically becomes leader",
+      "D": "A random follower is selected as leader without election"
     },
     "correct_answers": ["B"],
-    "explanation": "Raft followers have election timeouts. When they don't hear from the leader, they become candidates and request votes. A candidate with majority votes becomes the new leader. This is automatic.",
+    "explanation": "Raft followers have randomized election timeouts. When they do not hear from the leader within the timeout, they become candidates and request votes from other nodes. A candidate with majority votes becomes the new leader. This is fully automatic with no human intervention required. The randomized timeouts prevent split votes where multiple candidates tie. etcd clusters typically recover from leader failure in 1-2 seconds. The election timeout is configurable but typically 150-300ms.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is a 'quorum' in consensus algorithms?",
     "options": {
-      "A": "The total number of nodes",
-      "B": "The minimum number of nodes that must agree for a decision",
-      "C": "The leader node",
-      "D": "A backup node"
+      "A": "The total number of nodes in the cluster",
+      "B": "The minimum number of nodes that must agree for a decision to be valid",
+      "C": "The designated leader node that coordinates consensus",
+      "D": "A backup node that takes over during failures"
     },
     "correct_answers": ["B"],
-    "explanation": "Quorum is the minimum nodes needed to make progress (typically majority: N/2 + 1). This ensures any two quorums overlap, preventing conflicting decisions. A 5-node cluster needs 3 nodes to agree.",
+    "explanation": "Quorum is the minimum nodes needed to make progress, typically a majority (N/2 + 1). This ensures any two quorums overlap by at least one node, preventing conflicting decisions. A 5-node cluster needs 3 nodes to agree. The overlap guarantee is crucial: if quorum Q1 decided value X and quorum Q2 decides value Y, at least one node was in both quorums and would reject the conflicting decision. This is the mathematical foundation of consensus safety.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
-    "question": "A Raft cluster has 5 nodes. How many can fail while still making progress?",
+    "question": "A Raft cluster has 5 nodes. How many node failures can it tolerate while still making progress?",
     "options": {
-      "A": "1",
-      "B": "2",
-      "C": "3",
-      "D": "4"
+      "A": "1 node (must maintain 80% availability)",
+      "B": "2 nodes (majority of 3 can still form quorum)",
+      "C": "3 nodes (any 2 nodes can elect a leader)",
+      "D": "4 nodes (single node can operate independently)"
     },
     "correct_answers": ["B"],
-    "explanation": "With 5 nodes, quorum is 3. The cluster can tolerate 2 failures and still have 3 nodes to form quorum. With 3 failures, only 2 nodes remain—not enough for quorum.",
+    "explanation": "With 5 nodes, quorum is 3 (majority). The cluster can tolerate 2 failures and still have 3 nodes to form quorum. With 3 failures, only 2 nodes remain, which is not enough for quorum. This is why production clusters use odd numbers: 3 nodes tolerates 1 failure, 5 tolerates 2, 7 tolerates 3. The formula: a cluster of N nodes tolerates (N-1)/2 failures. Kubernetes etcd clusters typically use 3 or 5 nodes depending on availability requirements.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "What is the 'split-brain' problem in distributed systems?",
     "options": {
-      "A": "CPU overload",
-      "B": "Two partitions each believing they are the authoritative cluster",
-      "C": "Memory fragmentation",
-      "D": "Network latency"
+      "A": "When a node's CPU becomes overloaded processing requests",
+      "B": "When two network partitions each believe they are the authoritative cluster",
+      "C": "When memory is fragmented across distributed nodes",
+      "D": "When network latency causes request timeouts"
     },
     "correct_answers": ["B"],
-    "explanation": "Split-brain occurs when network partition creates two groups, each electing its own leader and accepting writes. This causes data divergence. Quorum-based consensus prevents this—only the majority partition can operate.",
+    "explanation": "Split-brain occurs when a network partition creates two groups, each electing its own leader and accepting writes independently. This causes data divergence and potential data loss when the partition heals. Quorum-based consensus prevents this because only the majority partition can achieve quorum and operate. The minority partition cannot elect a leader or commit writes. This is why consensus algorithms require majority agreement, not just any subset of nodes.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Why do consensus algorithms typically require an odd number of nodes?",
     "options": {
-      "A": "Even numbers cause bugs",
-      "B": "Odd numbers ensure clear majority and avoid ties",
-      "C": "Hardware requirements",
-      "D": "Network protocol limitations"
+      "A": "Even numbers cause mathematical errors in quorum calculations",
+      "B": "Odd numbers ensure a clear majority exists and avoid tie situations",
+      "C": "Network protocols require odd-numbered addressing",
+      "D": "Storage systems perform better with odd node counts"
     },
     "correct_answers": ["B"],
-    "explanation": "With even nodes (e.g., 4), a 2-2 split has no majority. With odd nodes (e.g., 5), one partition always has majority (3). Odd numbers maximize fault tolerance for the node count.",
+    "explanation": "With even nodes (e.g., 4), a 2-2 split has no majority, and both partitions are stuck. With odd nodes (e.g., 5), one partition always has majority (at least 3). Odd numbers also maximize fault tolerance per node: 4 nodes still need 3 for quorum (same as 3 nodes), so the 4th node adds cost without improving fault tolerance. The recommendation: use 3 nodes for development/small deployments, 5 for production requiring higher availability, 7 for critical systems.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
-    "question": "True or False: Consensus algorithms can make progress during network partitions if a majority of nodes are in one partition.",
+    "question": "Can consensus algorithms make progress during network partitions if a majority of nodes are in one partition?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "No, all nodes must be reachable for consensus to work",
+      "B": "Yes, the majority partition can continue; the minority partition cannot",
+      "C": "Yes, both partitions continue independently and merge later",
+      "D": "No, partitions always cause complete system unavailability"
     },
-    "correct_answers": ["A"],
-    "explanation": "The majority partition can form quorum and continue operating. The minority partition cannot make progress (no quorum) but doesn't cause split-brain. This is the CP tradeoff—availability sacrificed in minority partition.",
+    "correct_answers": ["B"],
+    "explanation": "The majority partition can form quorum and continue operating normally, electing leaders and committing writes. The minority partition cannot make progress because it cannot achieve quorum, but it does not cause split-brain. This is the CP tradeoff in CAP theorem terms: consistency is preserved (no conflicting writes), but availability is sacrificed in the minority partition. When the partition heals, minority nodes catch up from the majority's log.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -118,25 +120,25 @@
     "question": "Which systems use consensus algorithms internally? (Choose all that apply)",
     "options": {
       "A": "etcd (Kubernetes configuration store)",
-      "B": "Apache ZooKeeper",
-      "C": "Redis (single-node mode)",
-      "D": "CockroachDB"
+      "B": "Apache ZooKeeper (distributed coordination)",
+      "C": "Redis in single-node mode",
+      "D": "CockroachDB (distributed SQL database)"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "etcd uses Raft, ZooKeeper uses Zab, CockroachDB uses Raft for distributed transactions. Single-node Redis doesn't need consensus—there's only one node to agree with itself.",
+    "explanation": "etcd uses Raft for distributed consensus. ZooKeeper uses Zab (ZooKeeper Atomic Broadcast). CockroachDB uses Raft for distributed transactions across ranges. Single-node Redis does not need consensus because there is only one node. Consensus is specifically for coordinating multiple nodes. When Redis is used in cluster mode with replication, it uses a simpler primary-replica model, not full consensus, which is why Redis Cluster can have data loss during failover.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is the main performance cost of consensus algorithms?",
     "options": {
-      "A": "High memory usage",
-      "B": "Latency from requiring multiple nodes to acknowledge writes",
-      "C": "CPU-intensive encryption",
-      "D": "Large disk storage"
+      "A": "High memory usage for storing consensus state",
+      "B": "Latency from requiring multiple nodes to acknowledge writes before confirming",
+      "C": "CPU-intensive cryptographic operations for message signing",
+      "D": "Large disk storage for consensus logs"
     },
     "correct_answers": ["B"],
-    "explanation": "Consensus requires waiting for quorum acknowledgment before confirming writes. This adds network round-trip latency. The tradeoff is consistency and fault tolerance for write latency.",
+    "explanation": "Consensus requires waiting for quorum acknowledgment before confirming writes. This adds network round-trip latency, typically 1-10ms within a datacenter, 50-200ms across regions. The tradeoff is consistency and fault tolerance for write latency. Read latency can be lower if reads are served from the leader or if linearizable reads are not required. Google Spanner accepts this latency cost for global strong consistency. Systems that cannot tolerate this latency often choose eventual consistency instead.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -146,10 +148,10 @@
       "A": "Leader, Follower, Candidate",
       "B": "Proposer, Acceptor, Learner",
       "C": "Primary, Secondary, Arbiter",
-      "D": "Master, Slave, Observer"
+      "D": "Coordinator, Participant, Observer"
     },
     "correct_answers": ["B"],
-    "explanation": "Paxos defines Proposers (propose values), Acceptors (vote on proposals), and Learners (learn decided values). A node can play multiple roles. Raft simplified this to Leader/Follower/Candidate.",
+    "explanation": "Paxos defines Proposers (propose values), Acceptors (vote on proposals and form quorums), and Learners (learn decided values and can serve reads). A single node can play multiple roles simultaneously. This separation of concerns is elegant but makes Paxos harder to understand. Raft simplified this to Leader (combines proposer and primary acceptor), Follower (acceptor and learner), and Candidate (during elections). The Raft simplification sacrifices some flexibility for understandability.",
     "difficulty": "hard",
     "category": "distributed systems"
   }

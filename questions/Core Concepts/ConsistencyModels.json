@@ -2,154 +2,156 @@
   {
     "question": "A user updates their profile picture. They immediately refresh the page but see the old picture. After a few seconds, the new picture appears. Which consistency model is this system using?",
     "options": {
-      "A": "Strong consistency",
-      "B": "Eventual consistency",
-      "C": "Read-your-writes consistency",
-      "D": "Linearizability"
+      "A": "Strong consistency with high latency",
+      "B": "Eventual consistency with replication lag",
+      "C": "Read-your-writes consistency with session affinity",
+      "D": "Linearizability with async acknowledgment"
     },
     "correct_answers": ["B"],
-    "explanation": "The delay before seeing the update indicates eventual consistency—replicas converge over time. Read-your-writes would guarantee the user sees their own update immediately.",
+    "explanation": "The delay before seeing the update indicates eventual consistency. Replicas converge over time, but there is a window where stale data is returned. Read-your-writes would guarantee the user sees their own update immediately. This is common in CDN-backed systems like Facebook profile pictures. The replication lag is the time between write completion and all replicas being updated. DynamoDB, Cassandra, and S3 all exhibit this behavior with their default settings.",
     "difficulty": "easy",
     "category": "consistency"
   },
   {
     "question": "Which consistency model guarantees that if process A completes a write, any subsequent read by ANY process will see that write?",
     "options": {
-      "A": "Eventual consistency",
+      "A": "Eventual consistency with bounded staleness",
       "B": "Read-your-writes consistency",
       "C": "Strong consistency (linearizability)",
       "D": "Causal consistency"
     },
     "correct_answers": ["C"],
-    "explanation": "Strong consistency/linearizability ensures all processes see writes in the same order, and completed writes are immediately visible to everyone. Other models allow temporary inconsistencies or only guarantee visibility to specific processes.",
+    "explanation": "Strong consistency (linearizability) ensures all processes see writes in the same order, and completed writes are immediately visible to everyone. It provides a global ordering of operations as if there were a single copy of the data. Other models allow temporary inconsistencies or only guarantee visibility to specific processes. Google Spanner achieves this using TrueTime (GPS and atomic clocks). The cost is higher latency since writes must be acknowledged by a quorum before returning.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "A collaborative document editor must ensure that if User A sees User B's edit, User A will also see all edits that User B saw before making that edit. Which consistency model is required?",
     "options": {
-      "A": "Strong consistency",
-      "B": "Eventual consistency",
+      "A": "Strong consistency (linearizability)",
+      "B": "Eventual consistency with conflict resolution",
       "C": "Causal consistency",
       "D": "Read-your-writes consistency"
     },
     "correct_answers": ["C"],
-    "explanation": "Causal consistency preserves cause-and-effect relationships. If edit X influenced edit Y, anyone seeing Y must also see X. This is weaker than strong consistency but stronger than eventual.",
+    "explanation": "Causal consistency preserves cause-and-effect relationships. If edit X influenced edit Y (User B saw X before making Y), anyone seeing Y must also see X. This is weaker than strong consistency (allows concurrent operations to be seen in different orders) but stronger than eventual (preserves causality). Google Docs and Figma use causal consistency models. The implementation typically uses vector clocks or logical timestamps to track causal dependencies between operations.",
     "difficulty": "hard",
     "category": "consistency"
   },
   {
-    "question": "Which consistency models allow a system to return stale data? (Choose all that apply)",
+    "question": "Which consistency models allow a system to return stale data under normal operation? (Choose all that apply)",
     "options": {
       "A": "Eventual consistency",
-      "B": "Strong consistency",
+      "B": "Strong consistency (linearizability)",
       "C": "Read-your-writes consistency",
       "D": "Monotonic reads consistency"
     },
     "correct_answers": ["A", "C", "D"],
-    "explanation": "Only strong consistency guarantees the latest data. Eventual allows stale reads until convergence. Read-your-writes only guarantees you see YOUR writes. Monotonic reads prevents going backward but allows staleness.",
+    "explanation": "Only strong consistency guarantees the latest data on every read. Eventual allows stale reads until convergence. Read-your-writes only guarantees you see YOUR writes. You might read stale data written by others. Monotonic reads prevents going backward in time but allows staleness. You will not see version 5 then version 3, but you might see version 3 when version 7 exists. These weaker models enable higher availability and lower latency, which is why they are common in distributed systems.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "A shopping cart service uses eventual consistency. A user adds an item, then immediately views their cart from a different device. What might they observe?",
     "options": {
-      "A": "The item is always present",
-      "B": "The item might not appear yet",
-      "C": "The cart is empty",
-      "D": "An error message"
+      "A": "The item is always present due to session synchronization",
+      "B": "The item might not appear yet due to replication lag",
+      "C": "The cart shows an error until replication completes",
+      "D": "The item appears but marked as pending"
     },
     "correct_answers": ["B"],
-    "explanation": "With eventual consistency, the write may not have propagated to the replica serving the second device. The item will eventually appear, but there's a window where it's not visible.",
+    "explanation": "With eventual consistency, the write may not have propagated to the replica serving the second device. The item will eventually appear, but there is a window where it is not visible. Amazon's shopping cart famously uses eventual consistency. They accept that users might occasionally see stale cart state because the alternative (strong consistency) would reduce availability and increase latency. The business decision: occasional confusion is better than slow or unavailable carts.",
     "difficulty": "easy",
     "category": "consistency"
   },
   {
     "question": "What is the key difference between 'read-your-writes' and 'monotonic reads' consistency?",
     "options": {
-      "A": "Read-your-writes is stronger than monotonic reads",
+      "A": "Read-your-writes is strictly stronger than monotonic reads",
       "B": "Read-your-writes guarantees seeing your own writes; monotonic reads guarantees not seeing older versions after newer ones",
-      "C": "They are the same consistency model",
-      "D": "Monotonic reads only applies to write operations"
+      "C": "They are equivalent consistency models with different names",
+      "D": "Monotonic reads applies to write operations while read-your-writes applies to reads"
     },
     "correct_answers": ["B"],
-    "explanation": "Read-your-writes: you always see your own writes. Monotonic reads: once you see version X, you never see version < X. Different guarantees—a system might provide one without the other.",
+    "explanation": "Read-your-writes: you always see your own writes immediately after they complete. Monotonic reads: once you see version X, you never see version less than X on subsequent reads. Different guarantees. A system might provide one without the other. You could have monotonic reads (never go backward) but not see your own recent write (read-your-writes). Or you could see your writes but occasionally see older versions from other replicas (violating monotonic reads). Session consistency typically combines both.",
     "difficulty": "hard",
     "category": "consistency"
   },
   {
-    "question": "A distributed database offers tunable consistency. For a financial transaction, which setting is most appropriate?",
+    "question": "A distributed database offers tunable consistency. For a financial transaction that transfers money between accounts, which setting is most appropriate?",
     "options": {
-      "A": "ONE (read/write to single replica)",
-      "B": "QUORUM (majority of replicas)",
-      "C": "ALL (all replicas must respond)",
-      "D": "ANY (at least one replica, including hints)"
+      "A": "ONE (read/write to single replica for lowest latency)",
+      "B": "QUORUM (majority of replicas for balance of consistency and availability)",
+      "C": "ALL (all replicas must respond for maximum consistency)",
+      "D": "LOCAL_QUORUM (majority within local datacenter)"
     },
     "correct_answers": ["B"],
-    "explanation": "QUORUM provides strong consistency (if read quorum + write quorum > replication factor) while maintaining availability if some replicas fail. ALL is strongest but sacrifices availability; ONE/ANY risk inconsistency.",
+    "explanation": "QUORUM provides strong consistency (if read quorum + write quorum > replication factor) while maintaining availability if some replicas fail. For a replication factor of 3, QUORUM means 2 replicas. Write to 2, read from 2 guarantees overlap and consistency. ALL is strongest but sacrifices availability if any replica is down. ONE risks reading stale data or losing writes. LOCAL_QUORUM does not provide cross-datacenter consistency. Financial systems like Stripe use quorum-based consistency for transaction data.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
-    "question": "True or False: Eventual consistency guarantees that all replicas will have the same data at some specific point in time.",
+    "question": "A team claims their eventually consistent system guarantees that all replicas will have identical data within 5 seconds. Is this claim consistent with the definition of eventual consistency?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "Yes, eventual consistency allows specifying convergence time bounds",
+      "B": "No, eventual consistency only guarantees convergence if updates stop, not within a time bound",
+      "C": "Yes, this is called bounded eventual consistency",
+      "D": "No, 5 seconds is too short for eventual consistency to work"
     },
     "correct_answers": ["B"],
-    "explanation": "Eventual consistency only guarantees convergence IF no new updates occur. With continuous updates, replicas may never be simultaneously identical. It guarantees convergence eventually, not at a specific time.",
+    "explanation": "Eventual consistency only guarantees convergence IF no new updates occur. With continuous updates, replicas may never be simultaneously identical. It guarantees convergence eventually, not within a specific time. What the team describes is 'bounded staleness' or 'timed consistency', a stronger guarantee. Azure Cosmos DB offers bounded staleness as a consistency level distinct from eventual consistency. The distinction matters: eventual consistency provides no SLA on convergence time.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "Which scenarios are acceptable for eventual consistency? (Choose all that apply)",
     "options": {
-      "A": "Social media like counts",
-      "B": "Bank account balances",
-      "C": "User profile information",
-      "D": "Inventory counts for high-demand items"
+      "A": "Social media like counts and view counters",
+      "B": "Bank account balances and financial ledgers",
+      "C": "User profile information and preferences",
+      "D": "Inventory counts for limited-quantity flash sales"
     },
     "correct_answers": ["A", "C"],
-    "explanation": "Like counts and profiles can tolerate temporary inconsistency. Bank balances require strong consistency to prevent overdrafts. Inventory for high-demand items needs consistency to prevent overselling.",
+    "explanation": "Like counts and profiles can tolerate temporary inconsistency. Users accept approximate like counts and brief delays in profile updates. Bank balances require strong consistency to prevent overdrafts and maintain audit trails. Inventory for high-demand items needs consistency to prevent overselling. Amazon learned this the hard way with early flash sales. The decision framework: what is the business cost of temporary inconsistency? For likes, nearly zero. For money or scarce inventory, potentially significant.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "A system implements 'session consistency'. What does this guarantee?",
     "options": {
-      "A": "All users see the same data",
-      "B": "Within a session, a user sees a consistent view including their own writes",
-      "C": "Sessions are always connected to the same server",
-      "D": "Data is consistent across all sessions"
+      "A": "All users in the same session see identical data",
+      "B": "Within a session, a user sees a consistent view including their own writes and monotonic reads",
+      "C": "Sessions are always routed to the same server (sticky sessions)",
+      "D": "Data is consistent across all active sessions globally"
     },
     "correct_answers": ["B"],
-    "explanation": "Session consistency combines read-your-writes and monotonic reads within a session. The user sees their writes and doesn't go backward, but different sessions may see different states.",
+    "explanation": "Session consistency combines read-your-writes and monotonic reads within a session. The user sees their writes and does not go backward, but different sessions may see different states. This is practical for user-facing applications. Azure Cosmos DB and DynamoDB both offer session consistency. Implementation typically involves session tokens that track the user's read/write position. The key insight: users care most about consistency of their own actions, not global consistency.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "Which technique helps achieve strong consistency in a distributed database?",
     "options": {
-      "A": "Asynchronous replication",
+      "A": "Asynchronous replication with conflict detection",
       "B": "Consensus protocols (Paxos, Raft)",
       "C": "Last-write-wins conflict resolution",
-      "D": "Read repair"
+      "D": "Read repair during query execution"
     },
     "correct_answers": ["B"],
-    "explanation": "Consensus protocols ensure all nodes agree on the order of operations, enabling strong consistency. Async replication causes lag; last-write-wins can lose data; read repair helps eventual consistency.",
+    "explanation": "Consensus protocols ensure all nodes agree on the order of operations, enabling strong consistency. Every write is agreed upon by a quorum before being acknowledged. Async replication causes lag and potential conflicts. Last-write-wins can lose data and does not provide ordering guarantees. Read repair helps eventual consistency converge faster but does not provide strong consistency. CockroachDB, etcd, and Spanner all use consensus protocols (Raft or Paxos variants) for strong consistency.",
     "difficulty": "medium",
     "category": "consistency"
   },
   {
     "question": "A distributed system uses vector clocks. What problem do they solve?",
     "options": {
-      "A": "Reducing network latency",
-      "B": "Detecting and ordering concurrent events",
-      "C": "Encrypting data in transit",
-      "D": "Load balancing requests"
+      "A": "Reducing network latency between distributed nodes",
+      "B": "Detecting and ordering concurrent events to identify conflicts",
+      "C": "Synchronizing physical wall-clock time across nodes",
+      "D": "Compressing timestamps to reduce storage overhead"
     },
     "correct_answers": ["B"],
-    "explanation": "Vector clocks track causality between events across nodes, helping detect concurrent (conflicting) updates and establish partial ordering. They're essential for conflict detection in eventually consistent systems.",
+    "explanation": "Vector clocks track causality between events across nodes, helping detect concurrent (potentially conflicting) updates and establish partial ordering. If event A happened-before event B, vector clocks capture this. If neither happened-before the other, they are concurrent and may conflict. Amazon Dynamo and Riak use vector clocks for conflict detection in eventually consistent systems. The tradeoff: vector clocks grow with the number of nodes, so they are typically pruned or replaced with simpler mechanisms at scale.",
     "difficulty": "hard",
     "category": "consistency"
   }

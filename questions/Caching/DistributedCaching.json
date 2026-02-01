@@ -2,13 +2,13 @@
   {
     "question": "What is distributed caching?",
     "options": {
-      "A": "Caching on a single powerful server",
+      "A": "Caching on a single powerful server with high memory",
       "B": "Spreading cache data across multiple nodes for scalability and availability",
-      "C": "Distributing cache to end users",
-      "D": "Caching distributed systems documentation"
+      "C": "Distributing cache configuration to end users",
+      "D": "Caching data at the client browser level"
     },
     "correct_answers": ["B"],
-    "explanation": "Distributed caching spreads data across multiple cache nodes. This provides horizontal scalability (more nodes = more capacity), fault tolerance (node failure doesn't lose all data), and reduced latency (data closer to consumers).",
+    "explanation": "Distributed caching spreads data across multiple cache nodes. This provides horizontal scalability (more nodes = more capacity), fault tolerance (node failure doesn't lose all data), and can reduce latency by placing data closer to consumers. Twitter uses distributed caching to handle 500M+ tweets daily; Facebook's Memcached cluster handles billions of requests per second.",
     "difficulty": "easy",
     "category": "caching"
   },
@@ -18,125 +18,125 @@
       "A": "Redis Cluster",
       "B": "Memcached",
       "C": "Apache Ignite",
-      "D": "MySQL"
+      "D": "PostgreSQL"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Redis Cluster, Memcached, and Apache Ignite are distributed caching solutions. MySQL is a relational database, not a cache (though it has query cache). Hazelcast and Ehcache are other examples.",
+    "explanation": "Redis Cluster, Memcached, and Apache Ignite are distributed caching solutions. PostgreSQL is a relational database—while it has query caching, it's not a distributed cache. Other examples include Hazelcast, Ehcache, and AWS ElastiCache. Each has different tradeoffs: Redis offers rich data structures, Memcached is simpler but multi-threaded, Ignite provides SQL queries on cached data.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
     "question": "How does consistent hashing help in distributed caching?",
     "options": {
-      "A": "It encrypts cache data",
+      "A": "It encrypts cache data for security",
       "B": "It minimizes data redistribution when cache nodes are added or removed",
-      "C": "It makes cache faster",
-      "D": "It compresses cache entries"
+      "C": "It compresses cache entries to save memory",
+      "D": "It ensures all nodes have identical data"
     },
     "correct_answers": ["B"],
-    "explanation": "Consistent hashing maps keys to nodes such that adding/removing a node only affects a small portion of keys. Without it, adding a node could invalidate most of the cache (modulo hashing problem).",
+    "explanation": "Consistent hashing maps keys to nodes such that adding/removing a node only affects ~1/N of keys (where N is node count). Without it, simple modulo hashing would invalidate most of the cache when nodes change. Discord uses consistent hashing for their message cache; Amazon's Dynamo popularized the technique. It's essential for elastic scaling without cache stampedes.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "A distributed cache has 5 nodes. One node fails. What happens to its data?",
     "options": {
-      "A": "All cache data is lost",
+      "A": "All cache data across all nodes is invalidated",
       "B": "Data on that node is lost; requests for those keys become cache misses",
-      "C": "Data automatically moves to other nodes",
-      "D": "The entire cache stops working"
+      "C": "Data automatically migrates to surviving nodes",
+      "D": "The entire cache cluster stops accepting requests"
     },
     "correct_answers": ["B"],
-    "explanation": "Without replication, data on the failed node is lost. Those keys become cache misses until re-cached. With replication (Redis Cluster), replicas can serve the data. Design for cache misses being acceptable.",
+    "explanation": "Without replication, data on the failed node is lost—those keys become cache misses until re-cached from the source of truth. With replication (Redis Cluster replicas), surviving replicas can serve the data. This is why caches should be treated as ephemeral—your system must handle cache misses gracefully. Netflix designs all services to survive complete cache failure.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "What is cache replication in distributed systems?",
     "options": {
-      "A": "Copying cache code to multiple servers",
+      "A": "Copying cache application code to multiple servers",
       "B": "Storing copies of cache data on multiple nodes for fault tolerance",
-      "C": "Replicating cache configuration",
-      "D": "Duplicating cache requests"
+      "C": "Replicating cache configuration across environments",
+      "D": "Duplicating cache requests for load testing"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache replication stores data copies on multiple nodes. If one fails, replicas serve requests. Tradeoff: more memory usage, write overhead, but higher availability. Redis Cluster supports replica nodes.",
+    "explanation": "Cache replication stores data copies on multiple nodes. If one fails, replicas serve requests. Redis Cluster supports replica nodes that automatically promote on master failure. The tradeoff: more memory usage and write overhead, but higher availability. For critical data like session state, replication prevents user-facing errors during node failures.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "What is the difference between Redis and Memcached for distributed caching?",
     "options": {
-      "A": "They are identical",
+      "A": "They are functionally identical with different APIs",
       "B": "Redis supports data structures and persistence; Memcached is simpler key-value only",
-      "C": "Memcached is faster in all cases",
-      "D": "Redis doesn't support clustering"
+      "C": "Memcached is always faster than Redis",
+      "D": "Redis doesn't support clustering or replication"
     },
     "correct_answers": ["B"],
-    "explanation": "Redis: rich data structures (lists, sets, hashes), persistence, pub/sub, Lua scripting. Memcached: simple key-value, multi-threaded (better for simple caching at scale). Choose based on feature needs.",
+    "explanation": "Redis offers rich data structures (lists, sets, sorted sets, hashes), persistence options, pub/sub, Lua scripting, and transactions. Memcached is simpler key-value storage but multi-threaded (Redis is single-threaded per shard). Instagram uses Redis for complex data; Pinterest uses Memcached for simple caching. Choose based on feature needs—Memcached for simple caching at massive scale, Redis for richer functionality.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "How should cache clients handle a cache node failure?",
     "options": {
-      "A": "Crash and restart",
+      "A": "Crash and restart the application",
       "B": "Retry with exponential backoff, fall back to database",
-      "C": "Wait indefinitely for recovery",
-      "D": "Delete all local data"
+      "C": "Wait indefinitely for the node to recover",
+      "D": "Delete all local application data"
     },
     "correct_answers": ["B"],
-    "explanation": "Clients should handle cache failures gracefully: retry briefly, then fall back to the database. Cache is an optimization, not a requirement. Circuit breakers can prevent cascading failures.",
+    "explanation": "Clients should handle cache failures gracefully: retry briefly for transient issues, then fall back to the database. Cache is an optimization, not a requirement—your system must work without it. Circuit breakers can prevent cascading failures if the cache is completely down. Stripe's systems are designed so cache failures cause latency increases, not outages.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "True or False: In a distributed cache, all nodes must have identical data.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - consistency requires all nodes to be synchronized",
+      "B": "False - distributed caches typically partition data across nodes"
     },
     "correct_answers": ["B"],
-    "explanation": "Distributed caches typically partition data—each node holds a subset of keys (sharding). Only with full replication would all nodes have identical data, which limits scalability.",
+    "explanation": "Distributed caches typically partition (shard) data—each node holds a subset of keys. Only with full replication would all nodes have identical data, which limits scalability (can't exceed single node's memory). Redis Cluster partitions data across shards; each shard may have replicas, but different shards hold different keys. This enables horizontal scaling beyond single-machine limits.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
     "question": "What is 'cache coherence' in distributed caching?",
     "options": {
-      "A": "Cache entries being well-organized",
+      "A": "Cache entries being well-organized and indexed",
       "B": "Ensuring all cache nodes have consistent view of data",
-      "C": "Cache performance optimization",
-      "D": "Cache security protocol"
+      "C": "Cache performance optimization through compression",
+      "D": "Security protocol for cache access control"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache coherence ensures that when data is updated, all caches reflect the change. In distributed systems, this is challenging due to network delays. Strategies include invalidation broadcasts and versioning.",
+    "explanation": "Cache coherence ensures that when data is updated, all caches reflect the change consistently. In distributed systems, this is challenging due to network delays and partial failures. Strategies include invalidation broadcasts (delete stale entries), versioning (detect stale reads), and TTL-based expiration (eventual consistency). Facebook's cache invalidation system processes millions of invalidations per second.",
     "difficulty": "hard",
     "category": "caching"
   },
   {
     "question": "A microservices architecture has services in multiple regions. How should distributed caching be designed?",
     "options": {
-      "A": "Single global cache cluster",
+      "A": "Single global cache cluster for consistency",
       "B": "Regional cache clusters with cross-region replication for shared data",
-      "C": "No caching in distributed systems",
-      "D": "Cache only in one region"
+      "C": "No caching in multi-region deployments",
+      "D": "Cache only in the primary region"
     },
     "correct_answers": ["B"],
-    "explanation": "Regional caches provide low latency. Cross-region replication (or invalidation) keeps shared data consistent. Global cache adds latency. Design depends on consistency requirements and data locality.",
+    "explanation": "Regional caches provide low latency (cache near the service). Cross-region replication or invalidation keeps shared data consistent. A global cache adds latency (cross-region round trips). Netflix uses regional caches with eventual consistency; Slack replicates critical cache data across regions. Design depends on consistency requirements—user sessions might need strong consistency, while product catalogs can be eventually consistent.",
     "difficulty": "hard",
     "category": "caching"
   },
   {
     "question": "What is 'hot key' problem in distributed caching?",
     "options": {
-      "A": "Cache keys being too long",
+      "A": "Cache keys being too long and consuming memory",
       "B": "One key receiving disproportionate traffic, overloading its node",
-      "C": "Cache entries expiring too quickly",
-      "D": "Keys containing sensitive data"
+      "C": "Cache entries expiring too quickly under load",
+      "D": "Keys containing sensitive data requiring encryption"
     },
     "correct_answers": ["B"],
-    "explanation": "Hot keys (e.g., viral content) concentrate traffic on one node, creating a bottleneck. Solutions: local caching, key replication across nodes, or splitting hot keys into multiple sub-keys.",
+    "explanation": "Hot keys (e.g., viral tweet, celebrity profile, flash sale item) concentrate traffic on one node, creating a bottleneck while other nodes sit idle. Solutions: local caching (each app server caches hot keys), key replication across multiple nodes, or splitting hot keys into sub-keys (user:123:0, user:123:1). Twitter faced this with viral tweets; Instagram with celebrity posts.",
     "difficulty": "medium",
     "category": "caching"
   },
@@ -146,10 +146,10 @@
       "A": "Network latency between app and cache",
       "B": "Serialization/deserialization overhead",
       "C": "Cache node memory and CPU",
-      "D": "Color of the server rack"
+      "D": "Geographic location of the development team"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Network latency affects round-trip time. Serialization adds CPU overhead (use efficient formats). Node resources limit throughput. Physical appearance has no impact on performance.",
+    "explanation": "Network latency affects round-trip time (same-AZ vs cross-AZ matters). Serialization adds CPU overhead—use efficient formats like Protocol Buffers or MessagePack instead of JSON. Node resources limit throughput and storage capacity. Development team location has no impact on runtime performance. Optimizing all three factors is why companies like Discord achieve sub-millisecond cache latencies.",
     "difficulty": "easy",
     "category": "caching"
   }

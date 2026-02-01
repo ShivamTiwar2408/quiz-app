@@ -5,10 +5,10 @@
       "A": "Root → TLD → Authoritative → Local cache",
       "B": "Local cache → Recursive resolver → Root → TLD → Authoritative",
       "C": "Authoritative → TLD → Root → Local cache",
-      "D": "Browser → OS → Router → ISP"
+      "D": "ISP → Browser → OS → Router"
     },
     "correct_answers": ["B"],
-    "explanation": "DNS resolution checks local cache first, then queries recursive resolver, which queries root servers → TLD servers (.com) → authoritative servers for the domain, caching results along the way.",
+    "explanation": "DNS resolution checks local cache first (browser, OS, router), then queries recursive resolver (like 8.8.8.8), which queries root servers → TLD servers (.com) → authoritative servers for the domain. Each level caches results. This hierarchical design handles billions of queries daily—root servers only handle the first hop, not every query.",
     "difficulty": "medium",
     "category": "networking"
   },
@@ -17,24 +17,24 @@
     "options": {
       "A": "To limit how long a DNS server can operate",
       "B": "To specify how long DNS records can be cached",
-      "C": "To set the maximum number of DNS hops",
-      "D": "To encrypt DNS queries"
+      "C": "To set the maximum number of network hops",
+      "D": "To encrypt DNS queries for security"
     },
     "correct_answers": ["B"],
-    "explanation": "TTL tells resolvers how long to cache a DNS record before re-querying. Lower TTL enables faster propagation of changes but increases DNS query load.",
+    "explanation": "TTL tells resolvers how long to cache a DNS record before re-querying. Lower TTL (e.g., 60 seconds) enables faster propagation of changes but increases DNS query load. Higher TTL (e.g., 24 hours) reduces load but slows updates. Cloudflare recommends 300 seconds for most records. During migrations, temporarily lower TTL before changes.",
     "difficulty": "easy",
     "category": "networking"
   },
   {
     "question": "A company wants to use DNS for load balancing across multiple servers. Which DNS record type and technique would they use?",
     "options": {
-      "A": "Single A record pointing to a load balancer",
-      "B": "Multiple A records with round-robin",
-      "C": "CNAME record to a load balancer",
-      "D": "MX record with priorities"
+      "A": "Single A record pointing to a hardware load balancer",
+      "B": "Multiple A records with round-robin rotation",
+      "C": "CNAME record pointing to a load balancer hostname",
+      "D": "MX record with priority values"
     },
     "correct_answers": ["B"],
-    "explanation": "Multiple A records for the same domain enable DNS round-robin—resolvers return records in rotating order, distributing traffic. This is simple but lacks health checking.",
+    "explanation": "Multiple A records for the same domain enable DNS round-robin—resolvers return records in rotating order, distributing traffic across IPs. Simple but limited: no health checking (sends traffic to dead servers), uneven distribution due to caching. AWS Route 53 and Cloudflare offer weighted and health-checked DNS for better load balancing.",
     "difficulty": "medium",
     "category": "networking"
   },
@@ -44,10 +44,10 @@
       "A": "A records are for IPv4; CNAME is for IPv6",
       "B": "A records map names to IPs; CNAME maps names to other names",
       "C": "A records are faster; CNAME records are more secure",
-      "D": "A records are for websites; CNAME is for email"
+      "D": "A records are for websites; CNAME is for email servers"
     },
     "correct_answers": ["B"],
-    "explanation": "A records map domain names directly to IPv4 addresses. CNAME (Canonical Name) creates an alias pointing to another domain name, which then resolves to an IP.",
+    "explanation": "A records map domain names directly to IPv4 addresses (example.com → 93.184.216.34). CNAME (Canonical Name) creates an alias pointing to another domain name (www.example.com → example.com), which then resolves to an IP. CNAME adds an extra lookup but simplifies management—change the target once, all aliases follow. AAAA records are for IPv6.",
     "difficulty": "easy",
     "category": "networking"
   },
@@ -57,10 +57,10 @@
       "A": "Change the IP immediately; users will refresh eventually",
       "B": "Lower TTL well before migration, then change IP, then restore TTL",
       "C": "Keep both old and new IPs active indefinitely",
-      "D": "Use CNAME instead of A records"
+      "D": "Use CNAME instead of A records to avoid the issue"
     },
     "correct_answers": ["B"],
-    "explanation": "Lower TTL before migration (e.g., to 5 minutes) so caches expire quickly. After migration and verification, restore higher TTL to reduce DNS load. This minimizes transition issues.",
+    "explanation": "Lower TTL before migration (e.g., to 300 seconds) at least 24-48 hours ahead so caches expire. After migration and verification, restore higher TTL to reduce DNS load. This minimizes the window where users hit old IPs. GitHub, Stripe, and major services follow this pattern for zero-downtime migrations.",
     "difficulty": "medium",
     "category": "networking"
   },
@@ -70,60 +70,60 @@
       "A": "MX (Mail Exchange)",
       "B": "SPF (via TXT record)",
       "C": "DKIM (via TXT record)",
-      "D": "A record"
+      "D": "PTR (Pointer record)"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "MX records specify mail servers. SPF and DKIM (stored in TXT records) authenticate email senders. A records might be used for the mail server's IP but aren't email-specific.",
+    "explanation": "MX records specify mail servers and priorities. SPF (Sender Policy Framework) in TXT records lists authorized sending IPs. DKIM (DomainKeys) in TXT records provides cryptographic email signing. Together they prevent email spoofing. PTR records are for reverse DNS (IP to name), used for spam filtering but not directly for delivery.",
     "difficulty": "medium",
     "category": "networking"
   },
   {
     "question": "What is DNS cache poisoning?",
     "options": {
-      "A": "Overloading DNS servers with queries",
+      "A": "Overloading DNS servers with excessive queries",
       "B": "Injecting false DNS records into resolver caches",
-      "C": "Encrypting DNS traffic",
-      "D": "Setting very long TTL values"
+      "C": "Encrypting DNS traffic to prevent interception",
+      "D": "Setting excessively long TTL values"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache poisoning attacks inject malicious DNS responses, causing resolvers to cache incorrect IP addresses. Users are then directed to attacker-controlled servers. DNSSEC helps prevent this.",
+    "explanation": "Cache poisoning attacks inject malicious DNS responses into resolver caches, causing users to be directed to attacker-controlled servers instead of legitimate ones. The Kaminsky attack (2008) exposed widespread vulnerability. DNSSEC cryptographically signs records to prevent this. Major resolvers like Google and Cloudflare implement DNSSEC validation.",
     "difficulty": "medium",
     "category": "networking"
   },
   {
     "question": "A global application wants to direct users to the nearest data center. Which DNS feature enables this?",
     "options": {
-      "A": "Round-robin DNS",
+      "A": "Round-robin DNS with multiple A records",
       "B": "GeoDNS / Geographic routing",
-      "C": "DNS over HTTPS",
-      "D": "Reverse DNS"
+      "C": "DNS over HTTPS for security",
+      "D": "Reverse DNS lookups"
     },
     "correct_answers": ["B"],
-    "explanation": "GeoDNS returns different IP addresses based on the querying resolver's location, directing users to geographically closer servers. This reduces latency for global applications.",
+    "explanation": "GeoDNS returns different IP addresses based on the querying resolver's geographic location, directing users to nearby servers. Netflix, Spotify, and CDNs use this extensively. AWS Route 53 geolocation routing and Cloudflare's Anycast provide this capability. Reduces latency by minimizing physical distance to servers.",
     "difficulty": "easy",
     "category": "networking"
   },
   {
     "question": "Why might a CNAME record at the zone apex (e.g., example.com without www) cause problems?",
     "options": {
-      "A": "CNAME records are slower than A records",
+      "A": "CNAME records are inherently slower than A records",
       "B": "DNS standards prohibit CNAME at apex when other records exist",
-      "C": "Browsers don't support CNAME",
-      "D": "CNAME records can't point to external domains"
+      "C": "Browsers don't support CNAME resolution",
+      "D": "CNAME records cannot point to external domains"
     },
     "correct_answers": ["B"],
-    "explanation": "RFC 1034 prohibits CNAME coexisting with other records. Zone apex typically needs SOA and NS records, making CNAME invalid there. ALIAS/ANAME records (provider-specific) work around this.",
+    "explanation": "RFC 1034 prohibits CNAME coexisting with other record types. Zone apex requires SOA and NS records, making CNAME technically invalid there. This is why you can't CNAME example.com to a load balancer. ALIAS/ANAME records (Cloudflare, Route 53) work around this by resolving at the DNS server level, returning A records to clients.",
     "difficulty": "hard",
     "category": "networking"
   },
   {
     "question": "True or False: DNS queries are encrypted by default.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - modern DNS uses encryption",
+      "B": "False - traditional DNS is unencrypted"
     },
     "correct_answers": ["B"],
-    "explanation": "Traditional DNS (port 53) is unencrypted, allowing eavesdropping and manipulation. DNS over HTTPS (DoH) and DNS over TLS (DoT) provide encryption but aren't universally deployed.",
+    "explanation": "Traditional DNS (port 53) is unencrypted plaintext, allowing ISPs and attackers to see and potentially modify queries. DNS over HTTPS (DoH) and DNS over TLS (DoT) provide encryption but aren't universally deployed. Firefox and Chrome support DoH; Cloudflare's 1.1.1.1 and Google's 8.8.8.8 support both DoH and DoT.",
     "difficulty": "easy",
     "category": "networking"
   },
@@ -131,12 +131,12 @@
     "question": "A company's website becomes unreachable. Investigation shows DNS is resolving to the wrong IP. What could cause this? (Choose all that apply)",
     "options": {
       "A": "DNS cache poisoning attack",
-      "B": "Incorrect DNS record update",
+      "B": "Incorrect DNS record update by administrator",
       "C": "Stale cache with old IP after migration",
       "D": "DDoS attack on web servers"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Wrong IP resolution can result from poisoning attacks, misconfiguration, or cached stale records. DDoS would make the correct IP unreachable but wouldn't change DNS resolution.",
+    "explanation": "Wrong IP resolution can result from cache poisoning attacks (malicious injection), misconfiguration (typo in DNS record), or stale cached records after IP changes. DDoS would make the correct IP unreachable but wouldn't change DNS resolution—users would still resolve to the right IP, just couldn't connect. Different failure modes require different responses.",
     "difficulty": "medium",
     "category": "networking"
   },
@@ -145,11 +145,11 @@
     "options": {
       "A": "To store authoritative records for a domain",
       "B": "To perform the full DNS lookup on behalf of clients",
-      "C": "To encrypt DNS queries",
-      "D": "To register new domain names"
+      "C": "To encrypt DNS queries end-to-end",
+      "D": "To register new domain names with registrars"
     },
     "correct_answers": ["B"],
-    "explanation": "Recursive resolvers (like 8.8.8.8 or ISP DNS) handle the full resolution process—querying root, TLD, and authoritative servers—so clients only need one query. They also cache results.",
+    "explanation": "Recursive resolvers (like Google's 8.8.8.8, Cloudflare's 1.1.1.1, or ISP DNS) handle the full resolution process—querying root, TLD, and authoritative servers—so clients only need one query. They cache results to reduce load on authoritative servers. Your computer asks the recursive resolver; it does the heavy lifting.",
     "difficulty": "medium",
     "category": "networking"
   }

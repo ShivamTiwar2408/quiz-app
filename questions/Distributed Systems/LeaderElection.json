@@ -2,78 +2,78 @@
   {
     "question": "What is leader election in distributed systems?",
     "options": {
-      "A": "Selecting which node handles user authentication",
+      "A": "Selecting which node handles user authentication requests",
       "B": "Process of selecting one node to coordinate actions among distributed nodes",
-      "C": "Choosing the database primary for write operations",
-      "D": "Determining which server handles incoming requests"
+      "C": "Choosing the database primary for write operations only",
+      "D": "Determining which server handles incoming HTTP requests"
     },
     "correct_answers": ["B"],
-    "explanation": "Leader election selects one node as coordinator/leader among peers. Leader handles coordination tasks (writes, scheduling, decisions). If leader fails, new election occurs. Ensures single point of coordination.",
+    "explanation": "Leader election selects one node as coordinator/leader among peers. The leader handles coordination tasks like ordering operations, assigning work, and making decisions that require a single authority. Kafka uses leader election for partition leaders; etcd uses it for cluster coordination. If the leader fails, a new election occurs automatically, ensuring continuous operation.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
-    "question": "Why is leader election needed?",
+    "question": "Why is leader election needed in distributed systems?",
     "options": {
-      "A": "To reduce costs",
+      "A": "To reduce infrastructure costs through consolidation",
       "B": "To coordinate actions that require single decision-maker and avoid conflicts",
-      "C": "To improve security",
-      "D": "To increase latency"
+      "C": "To improve security through centralized access control",
+      "D": "To increase read latency for consistency guarantees"
     },
     "correct_answers": ["B"],
-    "explanation": "Some tasks need single coordinator: assigning work, ordering operations, making decisions. Without leader, multiple nodes might conflict (split-brain). Leader election ensures one authoritative coordinator.",
+    "explanation": "Some tasks need a single coordinator: assigning work to workers, ordering operations for consistency, making decisions that can't be made independently. Without a leader, multiple nodes might make conflicting decisions (split-brain). ZooKeeper provides leader election for Kafka brokers; Elasticsearch uses it for cluster state management. The leader pattern simplifies reasoning about distributed state.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "What is the 'split-brain' problem?",
     "options": {
-      "A": "Server hardware failure",
+      "A": "Server hardware failure causing memory corruption",
       "B": "Multiple nodes believing they are the leader simultaneously",
-      "C": "Network being too fast",
-      "D": "Database corruption"
+      "C": "Network latency causing request timeouts",
+      "D": "Database replication lag between primary and replicas"
     },
     "correct_answers": ["B"],
-    "explanation": "Split-brain: network partition causes nodes to lose contact; each partition elects its own leader. Multiple leaders make conflicting decisions, causing data inconsistency. Quorum-based election prevents this.",
+    "explanation": "Split-brain occurs when a network partition causes nodes to lose contact; each partition may elect its own leader. Multiple leaders make conflicting decisions, causing data inconsistency. MongoDB experienced this in early versions. Quorum-based election prevents split-brain—only the partition with majority can elect a leader. This is why clusters use odd numbers of nodes (3, 5, 7).",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is a quorum in leader election?",
     "options": {
-      "A": "A type of database",
+      "A": "A type of distributed database for storing election state",
       "B": "Minimum number of nodes that must agree for election to be valid",
-      "C": "Maximum cluster size",
-      "D": "Network bandwidth"
+      "C": "Maximum cluster size supported by the election algorithm",
+      "D": "Network bandwidth required for election messages"
     },
     "correct_answers": ["B"],
-    "explanation": "Quorum: majority of nodes (N/2 + 1) must participate for valid election. Prevents split-brain—only one partition can have majority. With 5 nodes, quorum is 3; minority partition can't elect leader.",
+    "explanation": "Quorum requires a majority of nodes (N/2 + 1) to participate for a valid election. This prevents split-brain—only one partition can have majority. With 5 nodes, quorum is 3; a minority partition of 2 nodes can't elect a leader. etcd, Consul, and ZooKeeper all use quorum-based consensus. The tradeoff: higher quorum means more fault tolerance but requires more nodes to be available.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What happens when the leader fails?",
     "options": {
-      "A": "System stops permanently",
+      "A": "System stops permanently until manual intervention",
       "B": "Followers detect failure and trigger new election",
-      "C": "Nothing—system continues normally",
-      "D": "All data is lost"
+      "C": "System continues normally with degraded performance",
+      "D": "All uncommitted data is lost permanently"
     },
     "correct_answers": ["B"],
-    "explanation": "Leader failure triggers re-election: followers detect via heartbeat timeout, initiate election, select new leader. Brief unavailability during election. System resumes with new leader. Automatic recovery.",
+    "explanation": "Leader failure triggers automatic re-election: followers detect failure via heartbeat timeout, initiate election, and select a new leader. There's brief unavailability during election (typically seconds). Kafka partition leaders failover automatically; etcd elects new leaders within the election timeout. This automatic recovery is why leader-based systems can achieve high availability despite single-leader design.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "How do nodes detect leader failure?",
     "options": {
-      "A": "Manual monitoring",
+      "A": "Manual monitoring dashboards and operator alerts",
       "B": "Heartbeat timeouts—leader sends periodic heartbeats; missing heartbeats indicate failure",
-      "C": "Database queries",
-      "D": "User reports"
+      "C": "Database health check queries to the leader",
+      "D": "User-reported errors and support tickets"
     },
     "correct_answers": ["B"],
-    "explanation": "Heartbeat mechanism: leader sends periodic heartbeats to followers. If follower doesn't receive heartbeat within timeout, it assumes leader failed and may trigger election. Balance timeout vs. false positives.",
+    "explanation": "Heartbeat mechanism: leader sends periodic heartbeats (typically every 100-500ms) to followers. If a follower doesn't receive a heartbeat within the timeout, it assumes leader failure and may trigger election. The timeout must balance fast detection (short timeout) against false positives from network delays (long timeout). Raft uses randomized election timeouts to prevent simultaneous elections.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -83,73 +83,73 @@
       "A": "Raft",
       "B": "Paxos",
       "C": "Bully algorithm",
-      "D": "Bubble sort"
+      "D": "Dijkstra's algorithm"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Leader election algorithms: Raft (understandable consensus), Paxos (foundational but complex), Bully (simple, highest ID wins), ZAB (ZooKeeper). Bubble sort is a sorting algorithm, not election.",
+    "explanation": "Leader election algorithms: Raft (designed for understandability, used by etcd/Consul), Paxos (foundational but complex, used by Google Chubby), Bully (simple, highest ID wins), ZAB (ZooKeeper Atomic Broadcast). Dijkstra's algorithm finds shortest paths in graphs—it's not for leader election. Each algorithm has different tradeoffs in complexity, performance, and failure handling.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is a 'term' or 'epoch' in leader election?",
     "options": {
-      "A": "Time period for leader",
+      "A": "Time period defining how long a leader can serve",
       "B": "Monotonically increasing number identifying each election period",
-      "C": "Database term",
-      "D": "Network term"
+      "C": "Database transaction identifier for election operations",
+      "D": "Network partition identifier for split-brain detection"
     },
     "correct_answers": ["B"],
-    "explanation": "Term/epoch: incrementing number for each election. Helps identify stale leaders—messages from old terms are rejected. New election = new term. Prevents confusion when old leader rejoins after partition.",
+    "explanation": "Term/epoch is an incrementing number for each election. It helps identify stale leaders—messages from old terms are rejected. When a new election starts, the term increments. If an old leader rejoins after a partition, its lower term number reveals it's no longer the leader. Raft, ZAB, and Viewstamped Replication all use this concept to maintain consistency.",
     "difficulty": "hard",
     "category": "distributed systems"
   },
   {
     "question": "True or False: Leader election guarantees exactly one leader at all times.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - that's the fundamental guarantee of leader election",
+      "B": "False - brief periods may have zero or appear to have multiple leaders"
     },
     "correct_answers": ["B"],
-    "explanation": "Brief periods may have zero leaders (during election) or appear to have multiple (old leader hasn't realized it's replaced). Algorithms minimize these windows. Terms/epochs help nodes identify current valid leader.",
+    "explanation": "Brief periods may have zero leaders (during election) or appear to have multiple (old leader hasn't realized it's been replaced). Algorithms minimize these windows but can't eliminate them entirely. Terms/epochs help nodes identify the current valid leader. The key guarantee is 'at most one leader can make progress'—an old leader's operations will be rejected due to stale term.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is the role of ZooKeeper in leader election?",
     "options": {
-      "A": "Provides distributed storage for application data",
+      "A": "Provides distributed storage for application data and state",
       "B": "Provides coordination primitives (locks, leader election) for distributed systems",
-      "C": "Manages container orchestration and deployment",
+      "C": "Manages container orchestration and deployment pipelines",
       "D": "Handles load balancing across cluster nodes"
     },
     "correct_answers": ["B"],
-    "explanation": "ZooKeeper provides distributed coordination: leader election, distributed locks, configuration management. Applications use ZooKeeper's primitives instead of implementing their own. Highly available coordination service.",
+    "explanation": "ZooKeeper provides distributed coordination primitives: leader election, distributed locks, configuration management, and group membership. Kafka uses ZooKeeper for broker coordination (though moving away from it). HBase uses it for master election. Applications use ZooKeeper's battle-tested primitives instead of implementing their own—getting distributed coordination right is notoriously difficult.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Why should cluster size be odd for leader election?",
     "options": {
-      "A": "Odd numbers are lucky",
+      "A": "Odd numbers provide better load distribution",
       "B": "Ensures clear majority; avoids tie situations in quorum",
-      "C": "Even numbers don't work",
-      "D": "Performance reasons"
+      "C": "Even numbers cause network partition issues",
+      "D": "Performance is optimized for odd node counts"
     },
     "correct_answers": ["B"],
-    "explanation": "Odd cluster size ensures clear majority: 3 nodes need 2 for quorum, 5 need 3. Even sizes waste a node: 4 nodes still need 3 for quorum (same as 3 nodes). Odd maximizes fault tolerance per node.",
+    "explanation": "Odd cluster size ensures clear majority: 3 nodes need 2 for quorum, 5 need 3. Even sizes waste a node: 4 nodes still need 3 for quorum (same fault tolerance as 3 nodes). With 4 nodes, you can only lose 1; with 3 nodes, you can also only lose 1—but 3 nodes costs less. etcd documentation explicitly recommends odd-sized clusters for this reason.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "A 5-node cluster loses 2 nodes. Can it still elect a leader?",
     "options": {
-      "A": "No—too many failures",
+      "A": "No—losing 40% of nodes exceeds fault tolerance",
       "B": "Yes—3 remaining nodes form quorum (majority)",
-      "C": "Only if specific nodes survive",
-      "D": "Depends on network speed"
+      "C": "Only if the lost nodes were followers, not the leader",
+      "D": "Depends on which specific nodes survived"
     },
     "correct_answers": ["B"],
-    "explanation": "5-node cluster quorum = 3. With 3 nodes remaining, quorum is met—can elect leader and continue operating. Lose one more (2 remaining), quorum lost, cluster becomes read-only or unavailable.",
+    "explanation": "5-node cluster quorum = 3. With 3 nodes remaining, quorum is met—the cluster can elect a leader and continue operating normally. Lose one more (2 remaining), quorum is lost, and the cluster becomes unavailable for writes. This is why 5-node clusters tolerate 2 failures while 3-node clusters only tolerate 1. The math: can tolerate (N-1)/2 failures.",
     "difficulty": "medium",
     "category": "distributed systems"
   }

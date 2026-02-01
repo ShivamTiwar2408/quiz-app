@@ -2,13 +2,13 @@
   {
     "question": "What is microservices architecture?",
     "options": {
-      "A": "A single large application",
+      "A": "A single large application deployed as one unit",
       "B": "An architecture where applications are composed of small, independent services that communicate over networks",
-      "C": "A database design pattern",
-      "D": "A frontend framework"
+      "C": "A database design pattern for horizontal scaling",
+      "D": "A frontend framework for building user interfaces"
     },
     "correct_answers": ["B"],
-    "explanation": "Microservices decompose applications into small, independently deployable services. Each service owns its data, has a specific business capability, and communicates via APIs. Enables team autonomy and independent scaling.",
+    "explanation": "Microservices decompose applications into small, independently deployable services. Each service owns its data, has a specific business capability, and communicates via APIs. Netflix pioneered this at scale with 700+ microservices; Amazon's retail site comprises thousands. This enables team autonomy, independent scaling, and technology diversity—but adds significant operational complexity.",
     "difficulty": "easy",
     "category": "architectural patterns"
   },
@@ -17,50 +17,50 @@
     "options": {
       "A": "Independent deployment of services",
       "B": "Technology diversity—different services can use different tech stacks",
-      "C": "Simpler than monoliths",
+      "C": "Simpler architecture than monoliths",
       "D": "Easier scaling of individual components"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "Microservices benefits: independent deployment (change one service without affecting others), tech diversity (best tool for each job), targeted scaling. NOT simpler—distributed systems add significant complexity.",
+    "explanation": "Microservices benefits: independent deployment (change one service without affecting others—Amazon deploys thousands of times daily), tech diversity (use Python for ML, Go for performance-critical services), targeted scaling (scale only the bottleneck). NOT simpler—distributed systems add significant complexity in debugging, data consistency, and operations. The complexity is the price of flexibility.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
   {
     "question": "What is a key challenge of microservices?",
     "options": {
-      "A": "Too simple to implement",
+      "A": "Architecture is too simple to handle complex domains",
       "B": "Distributed system complexity: network failures, data consistency, debugging",
-      "C": "Cannot scale",
-      "D": "Requires single programming language"
+      "C": "Cannot scale beyond a single server",
+      "D": "Requires all services to use the same programming language"
     },
     "correct_answers": ["B"],
-    "explanation": "Microservices introduce distributed systems challenges: network is unreliable, maintaining data consistency across services is hard, debugging spans multiple services, operational complexity increases significantly.",
+    "explanation": "Microservices introduce distributed systems challenges: networks are unreliable (the fallacies of distributed computing), maintaining data consistency across services requires patterns like Saga, debugging spans multiple services requiring distributed tracing (Jaeger, Zipkin), and operational complexity increases dramatically. Google's SRE book documents these challenges extensively.",
     "difficulty": "easy",
     "category": "architectural patterns"
   },
   {
     "question": "How should microservices handle data?",
     "options": {
-      "A": "Share a single database",
+      "A": "Share a single database for consistency",
       "B": "Each service owns its data; no direct database sharing",
-      "C": "Use only in-memory storage",
-      "D": "Store all data in files"
+      "C": "Use only in-memory storage for performance",
+      "D": "Store all data in a central file system"
     },
     "correct_answers": ["B"],
-    "explanation": "Database per service: each microservice owns its data, accessed only through its API. No shared databases—this would couple services. Enables independent schema changes and technology choices.",
+    "explanation": "Database per service: each microservice owns its data, accessed only through its API. No shared databases—this would couple services and defeat the purpose. Enables independent schema changes, technology choices (SQL vs NoSQL per service), and scaling. Shopify migrated from shared database to service-owned data to enable team autonomy. The tradeoff: cross-service queries become harder.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
   {
     "question": "What is the recommended size for a microservice?",
     "options": {
-      "A": "Exactly 100 lines of code",
+      "A": "Exactly 100 lines of code or less",
       "B": "Small enough for one team to own; large enough to provide meaningful business capability",
-      "C": "As small as possible",
-      "D": "One function per service"
+      "C": "As small as technically possible",
+      "D": "One function per service (nanoservices)"
     },
     "correct_answers": ["B"],
-    "explanation": "Size isn't about code lines—it's about ownership and capability. A service should be owned by one team (two-pizza team) and represent a cohesive business capability. Too small = overhead; too large = mini-monolith.",
+    "explanation": "Size isn't about code lines—it's about ownership and capability. A service should be owned by one team (Amazon's 'two-pizza team' rule) and represent a cohesive business capability (bounded context in DDD terms). Too small creates overhead and chattiness; too large becomes a mini-monolith. Spotify's squads own services that map to user-facing features.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
@@ -68,12 +68,12 @@
     "question": "When should you NOT use microservices?",
     "options": {
       "A": "When you have a small team and simple domain",
-      "B": "When you need high scalability",
-      "C": "When you have multiple teams",
-      "D": "When services have clear boundaries"
+      "B": "When you need high scalability for specific components",
+      "C": "When you have multiple autonomous teams",
+      "D": "When services have clear bounded contexts"
     },
     "correct_answers": ["A"],
-    "explanation": "Microservices add overhead. Small teams with simple domains are better served by monoliths—less complexity, faster development. Microservices shine with multiple teams, complex domains, and scaling needs.",
+    "explanation": "Microservices add significant overhead. Small teams with simple domains are better served by monoliths—less complexity, faster development, easier debugging. Martin Fowler calls this 'Monolith First.' Microservices shine with multiple teams needing autonomy, complex domains with clear boundaries, and specific scaling needs. Basecamp runs a successful monolith; not every company needs Netflix's architecture.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
@@ -82,11 +82,11 @@
     "options": {
       "A": "Synchronous REST/gRPC calls",
       "B": "Asynchronous messaging (events, queues)",
-      "C": "Shared memory",
-      "D": "Direct database queries"
+      "C": "Shared memory between processes",
+      "D": "Direct database queries to other services' databases"
     },
     "correct_answers": ["A", "B"],
-    "explanation": "Microservices communicate via: synchronous calls (REST, gRPC) for request-response, asynchronous messaging (Kafka, RabbitMQ) for events. NOT shared memory (different processes) or direct DB queries (violates encapsulation).",
+    "explanation": "Microservices communicate via: synchronous calls (REST for simplicity, gRPC for performance) for request-response patterns, and asynchronous messaging (Kafka, RabbitMQ, SQS) for event-driven communication. NOT shared memory (services run in separate processes/containers) or direct DB queries (violates encapsulation and creates tight coupling). Uber uses both: gRPC for real-time and Kafka for analytics.",
     "difficulty": "easy",
     "category": "architectural patterns"
   },
@@ -95,48 +95,48 @@
     "options": {
       "A": "A network topology diagram showing service dependencies",
       "B": "Infrastructure layer handling service-to-service communication, security, and observability",
-      "C": "A NoSQL database optimized for microservices",
-      "D": "A container orchestration and deployment tool"
+      "C": "A NoSQL database optimized for microservices data",
+      "D": "A container orchestration and deployment platform"
     },
     "correct_answers": ["B"],
-    "explanation": "Service mesh (Istio, Linkerd) is infrastructure for service communication. Handles: load balancing, encryption, authentication, retries, circuit breaking, observability. Offloads cross-cutting concerns from application code.",
+    "explanation": "Service mesh (Istio, Linkerd, Consul Connect) is dedicated infrastructure for service communication. It handles load balancing, mTLS encryption, authentication, retries, circuit breaking, and observability—all without application code changes. Lyft created Envoy proxy for this purpose. The mesh offloads cross-cutting concerns from application code to infrastructure, but adds operational complexity.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
   {
     "question": "True or False: Microservices eliminate the need for careful API design.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - services are independent so APIs don't matter",
+      "B": "False - API design becomes even more critical"
     },
     "correct_answers": ["B"],
-    "explanation": "API design is MORE critical in microservices. APIs are contracts between services—breaking changes affect dependent services. Versioning, backward compatibility, and clear contracts are essential.",
+    "explanation": "API design is MORE critical in microservices. APIs are contracts between services—breaking changes affect all dependent services. You need versioning strategies, backward compatibility, clear documentation, and contract testing. Stripe's API is famous for maintaining backward compatibility for years. Poor API design in microservices creates the 'distributed monolith' anti-pattern.",
     "difficulty": "easy",
     "category": "architectural patterns"
   },
   {
     "question": "What is the 'distributed monolith' anti-pattern?",
     "options": {
-      "A": "A well-designed microservices system",
+      "A": "A well-designed microservices system with clear boundaries",
       "B": "Microservices that are tightly coupled, requiring coordinated deployments",
-      "C": "A single-server application",
-      "D": "A database pattern"
+      "C": "A single-server application handling all requests",
+      "D": "A database sharding pattern for horizontal scaling"
     },
     "correct_answers": ["B"],
-    "explanation": "Distributed monolith: services are technically separate but tightly coupled—changes require coordinated deployments, shared databases, synchronous call chains. Worst of both worlds: distributed complexity without independence benefits.",
+    "explanation": "Distributed monolith: services are technically separate but tightly coupled—changes require coordinated deployments, shared databases exist, synchronous call chains create dependencies. You get the worst of both worlds: distributed complexity without independence benefits. This often happens when teams split a monolith by technical layer (UI, business logic, data) instead of by business capability.",
     "difficulty": "hard",
     "category": "architectural patterns"
   },
   {
     "question": "How should microservices handle failures in dependent services?",
     "options": {
-      "A": "Crash immediately",
+      "A": "Crash immediately to alert operators",
       "B": "Implement resilience patterns: circuit breakers, retries, fallbacks, timeouts",
-      "C": "Ignore failures",
-      "D": "Wait indefinitely"
+      "C": "Ignore failures and return empty responses",
+      "D": "Wait indefinitely for the service to recover"
     },
     "correct_answers": ["B"],
-    "explanation": "Microservices must handle failures gracefully: circuit breakers (stop calling failing services), retries with backoff, fallbacks (degraded functionality), timeouts (don't wait forever). Failures are normal in distributed systems.",
+    "explanation": "Microservices must handle failures gracefully—failures are normal in distributed systems. Use circuit breakers (Netflix Hystrix pattern—stop calling failing services), retries with exponential backoff, fallbacks (return cached data or degraded functionality), and timeouts (don't wait forever). Amazon's retail site degrades gracefully: if recommendations fail, the page still loads with products.",
     "difficulty": "medium",
     "category": "architectural patterns"
   },
@@ -145,11 +145,11 @@
     "options": {
       "A": "Centralized team owning all services",
       "B": "Cross-functional teams owning services end-to-end (Conway's Law)",
-      "C": "Separate teams for frontend, backend, database",
-      "D": "One developer per service"
+      "C": "Separate teams for frontend, backend, and database",
+      "D": "One developer assigned per service"
     },
     "correct_answers": ["B"],
-    "explanation": "Conway's Law: system design mirrors organization structure. Cross-functional teams (dev, ops, QA) owning services end-to-end work best. Siloed teams (frontend/backend/DB) create coordination overhead and coupling.",
+    "explanation": "Conway's Law: system design mirrors organization structure. Cross-functional teams (developers, ops, QA) owning services end-to-end work best—they can deploy independently without coordination. Amazon's 'two-pizza teams' and Spotify's 'squads' follow this model. Siloed teams (frontend/backend/DB) create coordination overhead and coupling, defeating microservices benefits.",
     "difficulty": "medium",
     "category": "architectural patterns"
   }

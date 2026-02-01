@@ -2,154 +2,156 @@
   {
     "question": "What is the primary purpose of a message queue in distributed systems?",
     "options": {
-      "A": "To store data permanently",
+      "A": "To provide persistent storage for application data",
       "B": "To decouple producers and consumers, enabling asynchronous communication",
-      "C": "To encrypt messages",
-      "D": "To compress data"
+      "C": "To route network traffic between services",
+      "D": "To cache frequently accessed data for faster retrieval"
     },
     "correct_answers": ["B"],
-    "explanation": "Message queues decouple services—producers send messages without waiting for consumers. This enables asynchronous processing, load leveling, and resilience to consumer failures.",
+    "explanation": "Message queues decouple services. Producers send messages without waiting for consumers to process them. This enables asynchronous processing, load leveling during traffic spikes, and resilience to consumer failures. LinkedIn processes over 7 trillion messages per day through Kafka. The decoupling is fundamental: producers and consumers can scale independently, fail independently, and be deployed independently. This is the backbone of event-driven architectures.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "What is the difference between a message queue and a pub/sub system?",
     "options": {
-      "A": "They are the same thing",
+      "A": "They are identical concepts with different terminology",
       "B": "Queue: each message consumed by one consumer; Pub/Sub: messages broadcast to all subscribers",
-      "C": "Pub/Sub is faster",
-      "D": "Queues don't persist messages"
+      "C": "Pub/Sub provides persistence while queues are ephemeral",
+      "D": "Queues support ordering while pub/sub does not"
     },
     "correct_answers": ["B"],
-    "explanation": "In queues, each message is processed by one consumer (competing consumers). In pub/sub, messages are broadcast to all subscribers of a topic. Different patterns for different use cases.",
+    "explanation": "In queues, each message is processed by exactly one consumer (competing consumers pattern). In pub/sub, messages are broadcast to all subscribers of a topic. Different patterns for different use cases. Use queues for work distribution (process each order once). Use pub/sub for event notification (notify all interested services of a price change). Kafka blurs this line by supporting both patterns: consumer groups for queue semantics, multiple groups for pub/sub semantics.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "What is a 'dead letter queue' (DLQ)?",
     "options": {
-      "A": "A queue for deleted messages",
-      "B": "A queue for messages that failed processing after retries",
-      "C": "A queue that's no longer in use",
-      "D": "A queue for urgent messages"
+      "A": "A queue for messages that have been successfully processed and archived",
+      "B": "A queue for messages that failed processing after maximum retry attempts",
+      "C": "A queue that has been decommissioned but still contains messages",
+      "D": "A high-priority queue for time-sensitive messages"
     },
     "correct_answers": ["B"],
-    "explanation": "DLQ stores messages that couldn't be processed successfully after maximum retries. This prevents poison messages from blocking the queue and allows later analysis/reprocessing.",
+    "explanation": "DLQ stores messages that could not be processed successfully after maximum retries. This prevents poison messages (malformed or problematic messages) from blocking the main queue indefinitely. DLQ messages can be analyzed, fixed, and replayed. AWS SQS, RabbitMQ, and Kafka all support DLQ patterns. The key insight: without DLQ, a single bad message can block an entire queue. With DLQ, processing continues while problematic messages are isolated for investigation.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Which delivery guarantee is hardest to achieve in distributed messaging?",
     "options": {
-      "A": "At-most-once",
-      "B": "At-least-once",
-      "C": "Exactly-once",
-      "D": "Best-effort"
+      "A": "At-most-once (messages may be lost but never duplicated)",
+      "B": "At-least-once (messages may be duplicated but never lost)",
+      "C": "Exactly-once (messages delivered exactly one time)",
+      "D": "Best-effort (no guarantees provided)"
     },
     "correct_answers": ["C"],
-    "explanation": "Exactly-once is extremely difficult due to network failures and partial failures. At-most-once (may lose messages) and at-least-once (may duplicate) are easier. Exactly-once often requires idempotent consumers.",
+    "explanation": "Exactly-once is extremely difficult due to network failures and partial failures. Consider: producer sends message, broker receives it, broker crashes before acknowledging. Did the message get stored? The producer cannot know, so it retries, potentially creating a duplicate. At-most-once (fire and forget) and at-least-once (retry until acknowledged) are straightforward. Exactly-once typically requires idempotent consumers or transactional messaging with significant complexity. Kafka achieved exactly-once semantics in 2017 through idempotent producers and transactional writes.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
-    "question": "A consumer processes a message but crashes before acknowledging. What happens with at-least-once delivery?",
+    "question": "A consumer processes a message but crashes before acknowledging it. What happens with at-least-once delivery?",
     "options": {
-      "A": "Message is lost",
-      "B": "Message is redelivered to another consumer",
-      "C": "Message is automatically marked as processed",
-      "D": "The queue stops"
+      "A": "The message is permanently lost from the system",
+      "B": "The message is redelivered to another consumer (or the same one after restart)",
+      "C": "The message is automatically marked as processed based on timeout",
+      "D": "The queue stops processing until the crashed consumer recovers"
     },
     "correct_answers": ["B"],
-    "explanation": "At-least-once delivery redelivers unacknowledged messages. The message may be processed twice (once before crash, once after redelivery). Consumers must handle duplicates idempotently.",
+    "explanation": "At-least-once delivery redelivers unacknowledged messages after a visibility timeout. The message may be processed twice: once before the crash, once after redelivery. Consumers must handle duplicates idempotently. This is why idempotency is crucial in distributed systems. Stripe processes payments idempotently using idempotency keys. The pattern: use a unique message ID, check if already processed before processing, acknowledge only after successful processing.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Which are benefits of using message queues? (Choose all that apply)",
     "options": {
-      "A": "Load leveling during traffic spikes",
-      "B": "Guaranteed real-time processing",
+      "A": "Load leveling during traffic spikes by buffering requests",
+      "B": "Guaranteed sub-millisecond message delivery latency",
       "C": "Fault tolerance through message persistence",
-      "D": "Decoupling of services"
+      "D": "Decoupling of services for independent scaling and deployment"
     },
     "correct_answers": ["A", "C", "D"],
-    "explanation": "Queues buffer spikes (load leveling), persist messages for reliability, and decouple services. They introduce latency, so they don't guarantee real-time processing—that's a tradeoff.",
+    "explanation": "Queues buffer spikes (load leveling), persist messages for reliability (fault tolerance), and decouple services (independent scaling). They introduce latency, so they do NOT guarantee real-time processing. That is a tradeoff. Shopify uses queues to handle Black Friday traffic spikes. Orders queue up and process at a sustainable rate rather than overwhelming backend systems. The latency cost (seconds to minutes during peaks) is acceptable for the reliability gained.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
-    "question": "What is message ordering guarantee and why is it challenging?",
+    "question": "What is message ordering guarantee and why is it challenging in distributed queues?",
     "options": {
-      "A": "Ensuring messages are processed alphabetically",
+      "A": "Ensuring messages are sorted alphabetically by content",
       "B": "Ensuring messages are processed in the order they were sent",
-      "C": "Ensuring messages are encrypted in order",
-      "D": "Ensuring messages are compressed in order"
+      "C": "Ensuring messages are encrypted in a specific sequence",
+      "D": "Ensuring messages are compressed before transmission"
     },
     "correct_answers": ["B"],
-    "explanation": "Ordering guarantees that messages are consumed in send order. It's challenging with multiple consumers/partitions—strict ordering often requires single consumer or partition-level ordering.",
+    "explanation": "Ordering guarantees that messages are consumed in send order. It is challenging with multiple consumers or partitions because parallel processing inherently reorders. Strict global ordering requires single consumer or single partition, limiting throughput. The tradeoff: ordering vs parallelism. Most systems provide partition-level ordering (messages with same key are ordered) rather than global ordering. This is sufficient for most use cases: order events for a single customer are ordered, but events across customers can be parallel.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Apache Kafka uses partitions. How does this affect message ordering?",
     "options": {
-      "A": "Messages are globally ordered across all partitions",
+      "A": "Messages are globally ordered across all partitions in a topic",
       "B": "Messages are ordered within a partition but not across partitions",
-      "C": "Partitions prevent any ordering",
-      "D": "Ordering is random"
+      "C": "Partitions prevent any ordering guarantees",
+      "D": "Ordering is determined by consumer group configuration"
     },
     "correct_answers": ["B"],
-    "explanation": "Kafka guarantees order within a partition. Messages with the same key go to the same partition, preserving their order. Cross-partition ordering isn't guaranteed—consumers may process partitions at different rates.",
+    "explanation": "Kafka guarantees order within a partition only. Messages with the same key go to the same partition (via hash), preserving their order. Cross-partition ordering is not guaranteed because consumers may process partitions at different rates. This is a deliberate design choice enabling horizontal scaling. LinkedIn uses customer ID as partition key, ensuring all events for a customer are ordered while allowing parallel processing across customers. The partition count determines maximum parallelism.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
-    "question": "True or False: Message queues eliminate the need for error handling in consumers.",
+    "question": "A team claims that message queues eliminate the need for error handling in consumers. Is this claim accurate?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "Yes, queues automatically handle all error scenarios through retries",
+      "B": "No, consumers still need error handling for poison messages, business logic errors, and DLQ decisions",
+      "C": "Yes, if the queue is configured with infinite retries",
+      "D": "No, but only for network-related errors"
     },
     "correct_answers": ["B"],
-    "explanation": "Queues help with transient failures through retries, but consumers still need error handling for: poison messages, business logic errors, and deciding when to send to DLQ vs retry.",
+    "explanation": "Queues help with transient failures through retries, but consumers still need error handling for: poison messages (malformed data that will never succeed), business logic errors (invalid state transitions), and deciding when to send to DLQ vs retry. A message that fails due to a bug in consumer code will fail forever without proper error handling. The queue provides retry infrastructure, but the consumer must implement the logic for what constitutes a retriable vs fatal error.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
   {
     "question": "What is 'backpressure' in messaging systems?",
     "options": {
-      "A": "Compressing messages to save space",
-      "B": "Slowing down producers when consumers can't keep up",
-      "C": "Encrypting message backlogs",
-      "D": "Deleting old messages"
+      "A": "Compressing messages to reduce queue storage requirements",
+      "B": "Slowing down producers when consumers cannot keep up with message volume",
+      "C": "Encrypting messages to prevent unauthorized access",
+      "D": "Prioritizing older messages over newer ones"
     },
     "correct_answers": ["B"],
-    "explanation": "Backpressure signals producers to slow down when the queue is filling faster than consumers can process. This prevents queue overflow and resource exhaustion. It's a flow control mechanism.",
+    "explanation": "Backpressure signals producers to slow down when the queue is filling faster than consumers can process. This prevents queue overflow, memory exhaustion, and cascading failures. Without backpressure, an overwhelmed system crashes. With backpressure, it degrades gracefully. Kafka implements backpressure through consumer lag monitoring and producer blocking. Reactive Streams specification formalizes backpressure for streaming systems. The key insight: unbounded queues are dangerous; bounded queues with backpressure are safe.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "Which factors should influence message queue selection? (Choose all that apply)",
     "options": {
-      "A": "Required delivery guarantees",
-      "B": "Message ordering requirements",
-      "C": "Throughput and latency needs",
-      "D": "The color of the admin UI"
+      "A": "Required delivery guarantees (at-least-once vs exactly-once)",
+      "B": "Message ordering requirements (global vs partition-level)",
+      "C": "Throughput and latency requirements",
+      "D": "Team familiarity and operational expertise"
     },
-    "correct_answers": ["A", "B", "C"],
-    "explanation": "Queue selection depends on delivery guarantees (at-least-once vs exactly-once), ordering needs (strict vs relaxed), and performance requirements. UI aesthetics are irrelevant to technical selection.",
-    "difficulty": "easy",
+    "correct_answers": ["A", "B", "C", "D"],
+    "explanation": "Queue selection depends on delivery guarantees (Kafka for exactly-once, SQS for at-least-once), ordering needs (Kafka for partition ordering, SQS FIFO for strict ordering), performance requirements (Kafka for high throughput, RabbitMQ for low latency), AND operational factors. A team experienced with RabbitMQ may be more productive than with Kafka despite Kafka's technical advantages. The best technology is one your team can operate reliably. All four factors matter for production systems.",
+    "difficulty": "medium",
     "category": "distributed systems"
   },
   {
     "question": "A system uses a message queue for order processing. Orders must be processed in sequence per customer but can be parallel across customers. How should this be designed?",
     "options": {
-      "A": "Single consumer for all orders",
-      "B": "Partition by customer_id with one consumer per partition",
-      "C": "Random distribution across consumers",
-      "D": "Separate queue per customer"
+      "A": "Single consumer processing all orders sequentially",
+      "B": "Partition by customer_id ensuring per-customer ordering with cross-customer parallelism",
+      "C": "Random distribution across consumers with application-level ordering",
+      "D": "Separate queue per customer for isolation"
     },
     "correct_answers": ["B"],
-    "explanation": "Partitioning by customer_id ensures each customer's orders go to one partition (preserving order). Multiple partitions enable parallelism across customers. This balances ordering with throughput.",
+    "explanation": "Partitioning by customer_id ensures each customer's orders go to one partition, preserving order. Multiple partitions enable parallelism across customers. This balances ordering requirements with throughput. Amazon uses this pattern for order processing. A single consumer cannot scale. Random distribution breaks ordering. Separate queues per customer is operationally complex with millions of customers. Partition-based ordering is the standard solution for this common requirement.",
     "difficulty": "hard",
     "category": "distributed systems"
   }

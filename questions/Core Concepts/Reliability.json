@@ -8,7 +8,7 @@
       "D": "10,000 transactions"
     },
     "correct_answers": ["C"],
-    "explanation": "0.1% of 1,000,000 = 1,000 potentially failed or incorrect transactions. This illustrates why even 'three nines' reliability can mean significant absolute failures at scale.",
+    "explanation": "0.1% of 1,000,000 = 1,000 potentially failed or incorrect transactions. This illustrates why even 'three nines' reliability can mean significant absolute failures at scale. Stripe processes billions in payments—at their scale, even 99.99% reliability means thousands of affected transactions daily. This is why financial systems implement idempotency keys, reconciliation processes, and manual review queues. The absolute number of failures often matters more than the percentage when dealing with money or critical operations.",
     "difficulty": "easy",
     "category": "reliability"
   },
@@ -17,37 +17,37 @@
     "options": {
       "A": "Implementing comprehensive input validation",
       "B": "Using chaos engineering to discover weaknesses",
-      "C": "Minimizing code changes to reduce risk",
+      "C": "Minimizing code changes to reduce deployment risk",
       "D": "Implementing retry logic with exponential backoff"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "Input validation prevents bad data, chaos engineering reveals weaknesses, and smart retries handle transient failures. Minimizing changes can actually reduce reliability by accumulating technical debt and delaying necessary fixes.",
+    "explanation": "Input validation prevents bad data from corrupting state. Chaos engineering (pioneered by Netflix's Chaos Monkey) reveals weaknesses before they cause outages. Smart retries handle transient failures gracefully. Minimizing changes sounds safe but actually reduces reliability by accumulating technical debt, delaying security patches, and preventing necessary fixes. Amazon deploys code thousands of times daily—frequent small changes are safer than infrequent large ones. The key is automated testing and gradual rollouts, not change avoidance.",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "A distributed system experiences intermittent failures. Investigation reveals that retries are overwhelming a recovering service. Which pattern addresses this?",
     "options": {
-      "A": "Immediate retry on failure",
+      "A": "Immediate retry on failure with increased concurrency",
       "B": "Circuit breaker pattern",
-      "C": "Increasing timeout values",
-      "D": "Adding more service instances"
+      "C": "Increasing timeout values to allow more recovery time",
+      "D": "Adding more service instances to handle retry load"
     },
     "correct_answers": ["B"],
-    "explanation": "Circuit breakers stop calling a failing service, giving it time to recover. Immediate retries worsen the problem; longer timeouts don't reduce load; more instances don't help if the service itself is failing.",
+    "explanation": "Circuit breakers stop calling a failing service, giving it time to recover—like an electrical circuit breaker preventing damage from overload. Netflix's Hystrix library popularized this pattern after cascading failures took down their streaming service. When a circuit 'opens,' requests fail fast locally instead of waiting for timeouts. After a cooldown period, the circuit 'half-opens' to test if the service recovered. Immediate retries create a 'retry storm' that worsens the problem; longer timeouts just delay failure detection; more instances don't help if the downstream service is the bottleneck.",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "What distinguishes fault tolerance from fault avoidance?",
     "options": {
-      "A": "Fault tolerance prevents faults; fault avoidance handles them",
+      "A": "Fault tolerance prevents faults; fault avoidance handles them gracefully",
       "B": "Fault tolerance handles faults gracefully; fault avoidance tries to prevent them",
-      "C": "They are the same concept with different names",
-      "D": "Fault tolerance is cheaper to implement"
+      "C": "Fault tolerance is reactive; fault avoidance is proactive monitoring",
+      "D": "Fault tolerance requires redundancy; fault avoidance requires testing"
     },
     "correct_answers": ["B"],
-    "explanation": "Fault avoidance uses techniques like code reviews and testing to prevent faults. Fault tolerance assumes faults will occur and designs systems to continue operating despite them (redundancy, failover, graceful degradation).",
+    "explanation": "Fault avoidance uses techniques like code reviews, static analysis, and testing to prevent faults from occurring. Fault tolerance assumes faults will occur despite best efforts and designs systems to continue operating (redundancy, failover, graceful degradation). Both are necessary: NASA uses extensive fault avoidance (rigorous testing) AND fault tolerance (redundant systems) for spacecraft. The key insight is that you cannot prevent all faults—hardware fails, networks partition, humans make mistakes—so systems must be designed to handle failures gracefully.",
     "difficulty": "easy",
     "category": "reliability"
   },
@@ -56,24 +56,24 @@
     "options": {
       "A": "99.44%",
       "B": "99.9%",
-      "C": "98%",
-      "D": "99.99%"
+      "C": "98.5%",
+      "D": "99.72%"
     },
     "correct_answers": ["A"],
-    "explanation": "Availability = MTBF / (MTBF + MTTR) = 720 / (720 + 4) = 720/724 ≈ 0.9944 (99.44%). This formula shows how both failure frequency and repair time affect availability.",
+    "explanation": "Availability = MTBF / (MTBF + MTTR) = 720 / (720 + 4) = 720/724 ≈ 0.9944 (99.44%). This formula shows how both failure frequency and repair time affect availability. You can improve availability by either increasing MTBF (more reliable components, better testing) or decreasing MTTR (faster detection, automated recovery, better runbooks). Google's SRE practices focus heavily on MTTR—they assume failures will happen and optimize for fast recovery. Automated failover can reduce MTTR from hours to seconds, dramatically improving availability even with the same failure rate.",
     "difficulty": "hard",
     "category": "reliability"
   },
   {
     "question": "Which failure handling strategy is most appropriate for a non-critical background job that fails?",
     "options": {
-      "A": "Immediately alert on-call engineers",
+      "A": "Immediately alert on-call engineers for manual intervention",
       "B": "Retry with exponential backoff and dead letter queue",
-      "C": "Fail fast and drop the job",
-      "D": "Block until manual intervention"
+      "C": "Fail fast and drop the job to prevent resource waste",
+      "D": "Block the job queue until manual review and approval"
     },
     "correct_answers": ["B"],
-    "explanation": "For non-critical background jobs, retry with backoff handles transient failures, and DLQ captures persistent failures for later analysis without blocking. Immediate alerts waste attention; dropping loses work; blocking wastes resources.",
+    "explanation": "For non-critical background jobs, retry with backoff handles transient failures (network blips, temporary resource exhaustion), and DLQ captures persistent failures for later analysis without blocking the pipeline. AWS SQS and similar systems use this pattern extensively. Immediate alerts waste on-call attention on non-urgent issues (alert fatigue is real). Dropping jobs loses work that might succeed on retry. Blocking wastes resources and creates backlogs. The DLQ pattern lets you batch-review failures during business hours rather than 3 AM pages.",
     "difficulty": "medium",
     "category": "reliability"
   },
@@ -81,49 +81,49 @@
     "question": "A team implements the bulkhead pattern in their microservices. What problem does this primarily solve?",
     "options": {
       "A": "Preventing a failure in one component from exhausting shared resources",
-      "B": "Improving response time for critical requests",
-      "C": "Reducing memory usage across services",
-      "D": "Simplifying service discovery"
+      "B": "Improving response time for critical requests through prioritization",
+      "C": "Reducing memory usage across services through resource pooling",
+      "D": "Simplifying service discovery through isolated network segments"
     },
     "correct_answers": ["A"],
-    "explanation": "Bulkheads isolate components so a failure or resource exhaustion in one doesn't cascade to others—like ship compartments preventing total flooding. It's about fault isolation, not performance or resource optimization.",
+    "explanation": "Bulkheads isolate components so a failure or resource exhaustion in one doesn't cascade to others—like ship compartments preventing total flooding from a single hull breach. If your payment service and recommendation service share a thread pool, a slow recommendation API could exhaust all threads and block payments. Netflix isolates thread pools per dependency: if the ratings service hangs, it only exhausts its dedicated pool, leaving other services unaffected. The pattern trades some efficiency (dedicated resources) for resilience (fault isolation).",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "Which statements about idempotency and reliability are correct? (Choose all that apply)",
     "options": {
-      "A": "Idempotent operations can be safely retried",
+      "A": "Idempotent operations can be safely retried without side effects",
       "B": "All database writes are naturally idempotent",
       "C": "Idempotency helps handle duplicate messages in distributed systems",
-      "D": "Idempotency eliminates the need for transactions"
+      "D": "Idempotency eliminates the need for distributed transactions"
     },
     "correct_answers": ["A", "C"],
-    "explanation": "Idempotent operations produce the same result regardless of how many times they're executed, enabling safe retries and duplicate handling. Database writes aren't naturally idempotent (INSERT creates duplicates). Idempotency doesn't replace transactions for multi-step operations.",
+    "explanation": "Idempotent operations produce the same result regardless of how many times they're executed, enabling safe retries and duplicate handling. Stripe's API uses idempotency keys—if a payment request times out and you retry with the same key, you won't double-charge the customer. Database writes aren't naturally idempotent: INSERT creates duplicates, UPDATE with relative values (balance += 10) compounds. You must design for idempotency using techniques like unique constraints, version checks, or idempotency tokens. Idempotency doesn't replace transactions for multi-step operations requiring atomicity.",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "A system uses health checks that only verify the process is running. What critical aspect of reliability might this miss?",
     "options": {
-      "A": "CPU utilization",
+      "A": "CPU utilization and thermal throttling",
       "B": "Dependency health and functional correctness",
-      "C": "Memory allocation",
-      "D": "Network bandwidth"
+      "C": "Memory allocation and garbage collection pressure",
+      "D": "Network bandwidth and packet loss rates"
     },
     "correct_answers": ["B"],
-    "explanation": "A running process might have broken database connections, failed dependencies, or logic errors. Deep health checks should verify the service can actually perform its function, not just that it's alive.",
+    "explanation": "A running process might have broken database connections, failed dependencies, or logic errors returning wrong results. Deep health checks should verify the service can actually perform its function, not just that it's alive. Kubernetes distinguishes between liveness probes (is the process running?) and readiness probes (can it serve traffic?). A service might be 'live' but not 'ready' if its database connection is broken. AWS ELB health checks can hit actual endpoints that verify database connectivity, cache availability, and downstream service health—catching issues that simple process checks miss.",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "True or False: A system with 99.99% availability is necessarily more reliable than one with 99.9% availability.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - higher availability means fewer failures",
+      "B": "False - availability and reliability measure different things"
     },
     "correct_answers": ["B"],
-    "explanation": "Availability measures uptime; reliability measures correct operation. A system could be highly available but return incorrect results frequently. The 99.99% available system might have more bugs or data corruption than the 99.9% one.",
+    "explanation": "Availability measures uptime; reliability measures correct operation. A system could be highly available but return incorrect results frequently—it's 'up' but wrong. The 99.99% available system might have more bugs, data corruption, or silent failures than the 99.9% one. Consider a calculator that's always available but sometimes returns wrong answers versus one that's occasionally down but always correct when running. For financial systems, reliability (correctness) often matters more than availability. The distinction matters when designing SLOs: do you care more about uptime or correctness?",
     "difficulty": "medium",
     "category": "reliability"
   },
@@ -131,25 +131,25 @@
     "question": "Which combination of techniques provides defense in depth for reliability? (Choose all that apply)",
     "options": {
       "A": "Input validation at API gateway and service level",
-      "B": "Circuit breakers and retry logic",
-      "C": "Single comprehensive test suite",
+      "B": "Circuit breakers and retry logic working together",
+      "C": "Single comprehensive test suite covering all scenarios",
       "D": "Monitoring, alerting, and automated remediation"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "Defense in depth uses multiple layers: validation at multiple points, resilience patterns (circuit breakers + retries), and operational safeguards (monitoring + remediation). A single test suite, however comprehensive, is one layer, not defense in depth.",
+    "explanation": "Defense in depth uses multiple layers: validation at multiple points catches different error types (gateway catches malformed requests, service catches business logic violations). Circuit breakers prevent cascade failures while retries handle transient issues—they complement each other. Monitoring detects issues, alerting notifies humans, and automated remediation (auto-scaling, instance replacement) fixes problems faster than humans can. A single test suite, however comprehensive, is one layer—it catches bugs before deployment but doesn't help with runtime failures, configuration drift, or infrastructure issues.",
     "difficulty": "medium",
     "category": "reliability"
   },
   {
     "question": "A service experiences cascading failures when a downstream dependency slows down. Which timeout strategy best prevents this?",
     "options": {
-      "A": "No timeout (wait indefinitely)",
-      "B": "Very short timeout (100ms)",
-      "C": "Adaptive timeout based on historical latency",
-      "D": "Very long timeout (60 seconds)"
+      "A": "No timeout - wait indefinitely to ensure requests complete",
+      "B": "Very short timeout (100ms) to fail fast on any delay",
+      "C": "Adaptive timeout based on historical latency percentiles",
+      "D": "Very long timeout (60 seconds) to accommodate slow responses"
     },
     "correct_answers": ["C"],
-    "explanation": "Adaptive timeouts adjust based on normal operation patterns, catching abnormal slowdowns without false positives. No timeout causes resource exhaustion; too short causes false failures; too long delays failure detection.",
+    "explanation": "Adaptive timeouts adjust based on normal operation patterns (e.g., P99 latency + buffer), catching abnormal slowdowns without false positives during normal variance. No timeout causes resource exhaustion as threads/connections pile up waiting. Too-short timeouts cause false failures during normal latency spikes. Too-long timeouts delay failure detection, allowing problems to compound. Netflix and Amazon use adaptive timeouts that learn from recent latency distributions—if P99 is normally 50ms, a 200ms timeout catches real problems while tolerating normal variation.",
     "difficulty": "hard",
     "category": "reliability"
   }

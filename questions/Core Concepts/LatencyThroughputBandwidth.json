@@ -4,24 +4,24 @@
     "options": {
       "A": "Throughput doubles, latency halves",
       "B": "Throughput roughly doubles, latency stays similar",
-      "C": "Both throughput and latency double",
-      "D": "Throughput stays the same, latency halves"
+      "C": "Throughput doubles, latency increases due to coordination overhead",
+      "D": "Throughput stays the same, latency halves due to reduced queue wait time"
     },
     "correct_answers": ["B"],
-    "explanation": "Adding servers increases capacity (throughput) but doesn't inherently reduce per-request latency—each request still takes ~50ms to process. Latency is determined by the work done, not the number of workers.",
+    "explanation": "Adding servers increases capacity (throughput) but doesn't inherently reduce per-request latency—each request still takes ~50ms to process. Latency is determined by the work done per request, not the number of workers. This is why Netflix can handle millions of concurrent streams by adding servers, but each individual stream still takes the same time to start buffering. Little's Law (L = λW) shows that doubling capacity (λ) doesn't change the service time (W) for individual requests.",
     "difficulty": "medium",
     "category": "performance"
   },
   {
     "question": "A video streaming service has 10 Gbps bandwidth but users report buffering. Investigation shows the server can only encode at 100 Mbps. What is the bottleneck?",
     "options": {
-      "A": "Bandwidth",
-      "B": "Throughput",
-      "C": "Latency",
-      "D": "Network congestion"
+      "A": "Bandwidth - the network pipe is too small for video data",
+      "B": "Throughput - the processing capacity limits actual data flow",
+      "C": "Latency - encoding delay causes buffering issues",
+      "D": "Network congestion - packet loss is causing retransmissions"
     },
     "correct_answers": ["B"],
-    "explanation": "The encoding throughput (100 Mbps processing capacity) is the bottleneck, not the network bandwidth (10 Gbps capacity). Bandwidth is the pipe size; throughput is how much actually flows through based on processing capability.",
+    "explanation": "The encoding throughput (100 Mbps processing capacity) is the bottleneck, not the network bandwidth (10 Gbps capacity). Bandwidth is the theoretical maximum of the pipe; throughput is how much actually flows through based on processing capability. YouTube faced this exact challenge—their CDN bandwidth was massive, but transcoding throughput determined how quickly new videos became available in multiple resolutions. The distinction matters: you can't solve a throughput problem by buying more bandwidth.",
     "difficulty": "medium",
     "category": "performance"
   },
@@ -31,62 +31,62 @@
       "A": "Real-time multiplayer gaming",
       "B": "Batch data processing overnight",
       "C": "High-frequency trading systems",
-      "D": "Video transcoding pipeline"
+      "D": "Machine learning model training on large datasets"
     },
     "correct_answers": ["A", "C"],
-    "explanation": "Gaming and trading require fast individual responses (low latency). Batch processing and transcoding care about total work completed over time (throughput)—individual item latency matters less.",
+    "explanation": "Gaming and trading require fast individual responses (low latency). In gaming, even 50ms delay causes noticeable lag—Riot Games built dedicated network infrastructure to keep League of Legends latency under 35ms. High-frequency trading firms like Citadel spend millions on co-location to shave microseconds off latency because faster execution means better prices. Batch processing and ML training care about total work completed over time (throughput)—whether each record takes 10ms or 100ms matters less than processing all records before the deadline.",
     "difficulty": "easy",
     "category": "performance"
   },
   {
     "question": "A database query takes 100ms. The application makes 5 sequential queries to render a page. What is the minimum page load time due to database latency alone?",
     "options": {
-      "A": "100ms",
-      "B": "200ms",
-      "C": "500ms",
-      "D": "Cannot be determined"
+      "A": "100ms - queries can be parallelized automatically",
+      "B": "200ms - database connection pooling reduces overhead",
+      "C": "500ms - sequential queries add their latencies",
+      "D": "Variable - depends on database cache hit rate"
     },
     "correct_answers": ["C"],
-    "explanation": "Sequential queries add latencies: 5 × 100ms = 500ms minimum. This illustrates why reducing round trips (batching, parallel queries) is crucial for latency-sensitive applications.",
+    "explanation": "Sequential queries add latencies: 5 × 100ms = 500ms minimum. This illustrates why reducing round trips (batching, parallel queries, or GraphQL's ability to fetch related data in one request) is crucial for latency-sensitive applications. Facebook's TAO system was designed specifically to batch and parallelize data fetches—a single News Feed render might need data from hundreds of sources, and sequential fetching would take seconds. The N+1 query problem in ORMs is a classic manifestation of this issue.",
     "difficulty": "easy",
     "category": "performance"
   },
   {
     "question": "A CDN reduces latency for static content from 200ms to 20ms. If a page requires 50 static assets loaded in parallel, what is the approximate latency improvement?",
     "options": {
-      "A": "9,000ms saved",
-      "B": "180ms saved",
-      "C": "50ms saved",
-      "D": "No improvement for parallel loads"
+      "A": "9,000ms saved - each asset saves 180ms",
+      "B": "180ms saved - parallel loads complete in slowest request time",
+      "C": "3,600ms saved - average savings across all assets",
+      "D": "Variable - depends on browser connection limits"
     },
     "correct_answers": ["B"],
-    "explanation": "Parallel loads complete in the time of the slowest request. Latency drops from ~200ms to ~20ms = 180ms saved. The 50 assets don't multiply the savings since they load concurrently.",
+    "explanation": "Parallel loads complete in the time of the slowest request. Latency drops from ~200ms to ~20ms = 180ms saved. The 50 assets don't multiply the savings since they load concurrently. This is why CDNs like Cloudflare and Akamai are so effective—they reduce the latency of the critical path, not just individual requests. However, browsers limit concurrent connections (typically 6 per domain), which is why techniques like domain sharding were used before HTTP/2's multiplexing solved this problem.",
     "difficulty": "medium",
     "category": "performance"
   },
   {
     "question": "Which statement correctly describes the relationship between bandwidth and throughput?",
     "options": {
-      "A": "Bandwidth and throughput are the same thing",
-      "B": "Throughput can exceed bandwidth with compression",
+      "A": "Bandwidth and throughput are synonymous in networking contexts",
+      "B": "Throughput can exceed bandwidth when using data compression",
       "C": "Throughput is always less than or equal to bandwidth",
-      "D": "Bandwidth determines latency"
+      "D": "Bandwidth measures actual transfer; throughput measures theoretical maximum"
     },
     "correct_answers": ["C"],
-    "explanation": "Bandwidth is theoretical maximum capacity; throughput is actual achieved transfer rate. Throughput is limited by bandwidth but also by processing, protocol overhead, and congestion. Compression doesn't increase throughput beyond bandwidth—it reduces data size.",
+    "explanation": "Bandwidth is theoretical maximum capacity; throughput is actual achieved transfer rate. Throughput is limited by bandwidth but also by processing, protocol overhead, TCP window sizes, and congestion. A 1 Gbps link might only achieve 600 Mbps throughput due to these factors. Compression doesn't increase throughput beyond bandwidth—it reduces data size, so you transfer less data faster, but the bits-per-second through the wire remains bounded by bandwidth. AWS Direct Connect customers often see this: a 10 Gbps link rarely achieves full bandwidth due to protocol overhead.",
     "difficulty": "medium",
     "category": "performance"
   },
   {
     "question": "A service has P50 latency of 10ms and P99 latency of 500ms. What does this indicate?",
     "options": {
-      "A": "The service is consistently slow",
+      "A": "The service is consistently slow with high variance",
       "B": "Most requests are fast but some experience significant delays",
-      "C": "The service needs more bandwidth",
-      "D": "Average latency is 255ms"
+      "C": "The service needs more bandwidth to handle peak loads",
+      "D": "The median and average latency are both around 255ms"
     },
     "correct_answers": ["B"],
-    "explanation": "P50=10ms means half of requests complete in ≤10ms. P99=500ms means 1% take up to 500ms. This tail latency pattern suggests occasional slow paths (GC pauses, cache misses, retries) affecting a minority of requests.",
+    "explanation": "P50=10ms means half of requests complete in ≤10ms. P99=500ms means 1% take up to 500ms. This tail latency pattern suggests occasional slow paths (GC pauses, cache misses, cold starts, or retries) affecting a minority of requests. Amazon found that every 100ms of latency cost them 1% in sales—but tail latency matters even more because frustrated users remember bad experiences. Google's Jeff Dean famously documented how tail latency at scale becomes the norm: if you fan out to 100 services and each has 1% chance of being slow, you'll see slow responses 63% of the time.",
     "difficulty": "medium",
     "category": "performance"
   },
@@ -99,57 +99,57 @@
       "D": "Using faster storage (SSD vs HDD)"
     },
     "correct_answers": ["A", "C", "D"],
-    "explanation": "Caching avoids slow operations, geographic proximity reduces network RTT, and faster storage reduces I/O wait. Adding servers increases throughput capacity but doesn't reduce individual request latency.",
+    "explanation": "Caching avoids slow operations (Redis can respond in <1ms vs 10-100ms for database queries). Geographic proximity reduces network RTT—light in fiber travels ~200km/ms, so a server 3000km away adds 30ms minimum latency. Faster storage reduces I/O wait (SSD: 0.1ms vs HDD: 10ms seek time). Adding servers increases throughput capacity but doesn't reduce individual request latency. This is why Cloudflare has 300+ edge locations—physics limits how fast data can travel, so you must move computation closer to users.",
     "difficulty": "medium",
     "category": "performance"
   },
   {
     "question": "A system must transfer 1TB of data. With 1 Gbps bandwidth and 50ms latency, approximately how long will the transfer take?",
     "options": {
-      "A": "About 50ms",
-      "B": "About 2.2 hours",
-      "C": "About 8 seconds",
-      "D": "Depends on packet size"
+      "A": "About 50ms - latency dominates for any transfer",
+      "B": "About 2.2 hours - bandwidth dominates for bulk transfers",
+      "C": "About 8 seconds - modern protocols optimize large transfers",
+      "D": "About 4.4 hours - latency doubles the effective transfer time"
     },
     "correct_answers": ["B"],
-    "explanation": "1TB = 8,000 Gb. At 1 Gbps, transfer time ≈ 8,000 seconds ≈ 2.2 hours. For bulk transfers, bandwidth dominates; the 50ms latency is negligible compared to the transfer time.",
+    "explanation": "1TB = 8,000 Gb. At 1 Gbps, transfer time ≈ 8,000 seconds ≈ 2.2 hours. For bulk transfers, bandwidth dominates; the 50ms latency is negligible compared to the transfer time. This is why AWS offers Snowball for large data migrations—shipping a physical device can be faster than network transfer. Jim Gray's famous observation: 'Never underestimate the bandwidth of a station wagon full of tapes.' For small requests, latency dominates; for large transfers, bandwidth dominates. The crossover point depends on your specific numbers.",
     "difficulty": "hard",
     "category": "performance"
   },
   {
     "question": "True or False: Reducing latency always improves throughput.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - faster requests mean more can be processed",
+      "B": "False - they are related but distinct metrics"
     },
     "correct_answers": ["B"],
-    "explanation": "Latency and throughput are related but distinct. You can have low latency with low throughput (fast but limited capacity) or high throughput with high latency (batch processing). Reducing latency may or may not affect throughput depending on the bottleneck.",
+    "explanation": "Latency and throughput are related but distinct. You can have low latency with low throughput (a fast but limited-capacity system) or high throughput with high latency (batch processing). Reducing latency may or may not affect throughput depending on the bottleneck. A single-threaded service might have 1ms latency but only 1000 req/s throughput. Adding parallelism might increase throughput to 10,000 req/s while keeping latency at 1ms—or might increase latency due to contention while improving throughput. The relationship depends on whether you're CPU-bound, I/O-bound, or contention-bound.",
     "difficulty": "medium",
     "category": "performance"
   },
   {
     "question": "An API gateway adds 5ms latency to every request. For a service handling 10,000 requests/second, what is the total added latency per second?",
     "options": {
-      "A": "5ms",
-      "B": "50 seconds",
-      "C": "50ms",
-      "D": "This question conflates latency and throughput"
+      "A": "5ms - latency is per-request, not cumulative",
+      "B": "50 seconds - multiply latency by request count",
+      "C": "50ms - average across all requests",
+      "D": "This question conflates latency and throughput incorrectly"
     },
     "correct_answers": ["D"],
-    "explanation": "Latency is per-request delay, not cumulative. Each request experiences 5ms additional delay regardless of request volume. 'Total latency per second' isn't a meaningful metric—it conflates latency (time) with throughput (rate).",
+    "explanation": "Latency is per-request delay, not cumulative. Each request experiences 5ms additional delay regardless of request volume. 'Total latency per second' isn't a meaningful metric—it conflates latency (time per request) with throughput (requests per time). This is a common misconception. What matters is: does the 5ms gateway latency push your P99 above your SLA? Does it affect user experience? The 10,000 req/s is irrelevant to the latency question—though it might matter for gateway throughput capacity.",
     "difficulty": "hard",
     "category": "performance"
   },
   {
     "question": "Which metric is most important for a batch ETL job that runs nightly?",
     "options": {
-      "A": "P99 latency",
+      "A": "P99 latency - ensures consistent processing time",
       "B": "Throughput (records processed per hour)",
-      "C": "Network bandwidth",
+      "C": "Network bandwidth - determines data transfer speed",
       "D": "Individual record processing latency"
     },
     "correct_answers": ["B"],
-    "explanation": "Batch jobs care about completing all work within a time window—throughput matters most. Individual record latency and P99 are less relevant when processing millions of records; you care about total completion time.",
+    "explanation": "Batch jobs care about completing all work within a time window—throughput matters most. Individual record latency and P99 are less relevant when processing millions of records; you care about total completion time. Netflix's batch recommendation pipeline processes petabytes nightly—they optimize for records/hour, not milliseconds/record. If your ETL must finish by 6 AM and you have 10 billion records, you need ~280,000 records/second throughput. Whether each record takes 1ms or 10ms matters less than whether you hit that aggregate rate.",
     "difficulty": "easy",
     "category": "performance"
   }

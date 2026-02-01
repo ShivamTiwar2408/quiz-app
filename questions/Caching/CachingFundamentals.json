@@ -2,154 +2,156 @@
   {
     "question": "What is the primary benefit of caching in system design?",
     "options": {
-      "A": "Increased data security",
-      "B": "Reduced latency and load on backend systems",
-      "C": "Simplified application code",
-      "D": "Automatic data backup"
+      "A": "Improved data security through encryption at rest",
+      "B": "Reduced latency and decreased load on backend systems",
+      "C": "Simplified application architecture and code maintenance",
+      "D": "Automatic data replication for disaster recovery"
     },
     "correct_answers": ["B"],
-    "explanation": "Caching stores frequently accessed data closer to the consumer, reducing response time (latency) and decreasing load on databases and backend services.",
+    "explanation": "Caching stores frequently accessed data closer to the consumer, reducing response time (latency) and decreasing load on databases and backend services. Facebook's TAO cache serves billions of requests per second, reducing database load by over 99%. The fundamental principle: memory access is ~100x faster than SSD, ~100,000x faster than network calls to databases. Caching exploits this speed hierarchy to improve user experience and reduce infrastructure costs.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
-    "question": "A cache has a 95% hit rate. What does this mean?",
+    "question": "A cache has a 95% hit rate. What does this mean for system performance?",
     "options": {
-      "A": "95% of the cache storage is used",
-      "B": "95% of requests are served from cache without hitting the backend",
-      "C": "The cache is 95% faster than the database",
-      "D": "95% of cached data is valid"
+      "A": "95% of the cache storage capacity is currently utilized",
+      "B": "95% of requests are served from cache, only 5% hit the backend",
+      "C": "The cache responds 95% faster than the database",
+      "D": "95% of cached data has been validated as current"
     },
     "correct_answers": ["B"],
-    "explanation": "Hit rate = cache hits / total requests. 95% hit rate means 95% of requests find data in cache; only 5% require backend access. Higher hit rates mean better cache effectiveness.",
+    "explanation": "Hit rate = cache hits / total requests. A 95% hit rate means 95% of requests find data in cache; only 5% require backend access. If your database can handle 1,000 requests/second and you have 20,000 requests/second, a 95% hit rate reduces database load to 1,000 requests/second (20,000 × 0.05). This is why caching is essential for scaling read-heavy workloads. Netflix reports cache hit rates above 99% for their content metadata.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
     "question": "Which data is most suitable for caching? (Choose all that apply)",
     "options": {
-      "A": "Frequently read, rarely changed data",
-      "B": "User session tokens",
-      "C": "Real-time stock prices requiring millisecond accuracy",
-      "D": "Static configuration data"
+      "A": "Frequently read, rarely changed data like product catalogs",
+      "B": "User session tokens and authentication state",
+      "C": "Real-time stock prices requiring sub-second accuracy",
+      "D": "Static configuration data and feature flags"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "Good cache candidates: frequently accessed, relatively stable data. Sessions and config are commonly cached. Real-time data requiring millisecond accuracy may become stale too quickly for caching.",
+    "explanation": "Good cache candidates are frequently accessed and relatively stable. Product catalogs, sessions, and config are commonly cached. Real-time stock prices requiring sub-second accuracy may become stale too quickly for caching to be useful. The decision framework: (read frequency × latency savings) vs (staleness cost × change frequency). High-frequency trading systems often skip caching entirely because staleness cost is too high. E-commerce sites cache aggressively because slight staleness is acceptable.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "What is cache invalidation?",
     "options": {
-      "A": "Removing all data from the cache",
+      "A": "The process of removing all data from the cache during maintenance",
       "B": "Marking or removing stale cache entries when source data changes",
-      "C": "Validating that cached data is encrypted",
-      "D": "Checking cache server health"
+      "C": "Validating that cached data meets security requirements",
+      "D": "Checking cache server health through heartbeat mechanisms"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache invalidation ensures cached data stays consistent with the source. When source data changes, corresponding cache entries must be updated or removed to prevent serving stale data.",
+    "explanation": "Cache invalidation ensures cached data stays consistent with the source. When source data changes, corresponding cache entries must be updated or removed to prevent serving stale data. Phil Karlton famously said: 'There are only two hard things in Computer Science: cache invalidation and naming things.' The difficulty arises from distributed systems: data changes in one place but may be cached in many places, and coordinating updates across all caches while handling race conditions is genuinely complex.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
     "question": "Why is cache invalidation considered one of the hardest problems in computer science?",
     "options": {
-      "A": "It requires expensive hardware",
-      "B": "Determining when and what to invalidate in distributed systems is complex",
-      "C": "Cache invalidation algorithms are patented",
-      "D": "It's not actually hard with modern tools"
+      "A": "It requires specialized hardware that is expensive and rare",
+      "B": "Determining when and what to invalidate across distributed caches involves complex coordination and race conditions",
+      "C": "Cache invalidation algorithms are protected by patents",
+      "D": "Modern frameworks have solved this problem completely"
     },
     "correct_answers": ["B"],
-    "explanation": "In distributed systems, knowing when data changed, which caches have it, and ensuring consistent invalidation across all nodes is genuinely difficult. Race conditions and partial failures complicate it further.",
+    "explanation": "In distributed systems, knowing when data changed, which caches have copies, and ensuring consistent invalidation across all nodes is genuinely difficult. Race conditions abound: Thread A reads old data, Thread B updates database and invalidates cache, Thread A writes old data to cache. Now cache has stale data despite invalidation. Facebook's cache invalidation system processes millions of invalidations per second across thousands of cache servers. The complexity is real, not theoretical.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "A system uses TTL (Time To Live) for cache entries. What happens when TTL expires?",
     "options": {
-      "A": "The entry is immediately deleted",
+      "A": "The entry is immediately and synchronously deleted from all cache nodes",
       "B": "The entry is considered stale and typically refreshed on next access",
-      "C": "The cache server restarts",
-      "D": "The entry is moved to long-term storage"
+      "C": "The cache server triggers an alert and waits for manual intervention",
+      "D": "The entry is moved to a secondary storage tier for archival"
     },
     "correct_answers": ["B"],
-    "explanation": "Expired TTL marks the entry as stale. Depending on implementation, it may be lazily evicted on access (triggering a refresh) or proactively removed by background processes.",
+    "explanation": "Expired TTL marks the entry as stale. Depending on implementation, it may be lazily evicted on access (triggering a refresh) or proactively removed by background processes. Redis uses lazy expiration by default: expired keys are deleted when accessed or by periodic sampling. This is efficient because it avoids scanning all keys. The tradeoff: some expired keys may linger in memory until accessed or sampled.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
-    "question": "What is the tradeoff when setting cache TTL?",
+    "question": "What is the fundamental tradeoff when setting cache TTL?",
     "options": {
-      "A": "Longer TTL = fresher data, shorter TTL = stale data",
-      "B": "Longer TTL = potentially stale data, shorter TTL = more backend load",
-      "C": "TTL doesn't affect data freshness",
-      "D": "Longer TTL = more memory usage"
+      "A": "Longer TTL provides fresher data; shorter TTL causes stale data",
+      "B": "Longer TTL risks stale data; shorter TTL increases backend load",
+      "C": "TTL length does not affect data freshness or backend load",
+      "D": "Longer TTL increases memory usage proportionally"
     },
     "correct_answers": ["B"],
-    "explanation": "Long TTL: data may become stale before expiration. Short TTL: frequent cache misses increase backend load. The right TTL balances freshness requirements against performance.",
+    "explanation": "Long TTL: data may become stale before expiration, showing users outdated information. Short TTL: frequent cache misses increase backend load and latency. The right TTL balances freshness requirements against performance. Twitter uses different TTLs for different data: user profiles (minutes), tweet counts (seconds), trending topics (real-time). The business context determines acceptable staleness. A product price being 5 minutes stale might be fine; an account balance being 5 minutes stale is not.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
-    "question": "True or False: Caching always improves system performance.",
+    "question": "A team claims that adding caching will always improve their system's performance. Under what circumstances is this claim FALSE?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "When the cache hit rate is very low due to unique or random access patterns",
+      "B": "When the cache is properly sized and configured",
+      "C": "When the backend database is already fast",
+      "D": "Both A and C represent scenarios where caching may not help"
     },
-    "correct_answers": ["B"],
-    "explanation": "Caching adds complexity and can hurt performance if: hit rate is low (cache overhead without benefit), cache is undersized (thrashing), or invalidation is poorly implemented (stale data issues).",
+    "correct_answers": ["D"],
+    "explanation": "Caching adds complexity and can hurt performance if: hit rate is low (cache overhead without benefit, common with unique queries), cache is undersized (thrashing), invalidation is poorly implemented (stale data issues), or the backend is already fast enough (cache adds latency for misses). A cache miss is slower than no cache at all because you pay cache lookup time plus backend time. If your access pattern is mostly unique keys, caching adds overhead without benefit.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
     "question": "Which caching layers exist in a typical web application? (Choose all that apply)",
     "options": {
-      "A": "Browser cache",
-      "B": "CDN cache",
-      "C": "Application-level cache",
-      "D": "Database query cache"
+      "A": "Browser cache (client-side HTTP caching)",
+      "B": "CDN cache (edge network caching)",
+      "C": "Application-level cache (Redis, Memcached)",
+      "D": "Database query cache (MySQL query cache, PostgreSQL)"
     },
     "correct_answers": ["A", "B", "C", "D"],
-    "explanation": "Caching occurs at multiple layers: browser (client-side), CDN (edge), application (Redis/Memcached), and database (query cache). Each layer serves different purposes.",
+    "explanation": "Caching occurs at multiple layers: browser (client-side, controlled by HTTP headers), CDN (edge, closest to users), application (Redis/Memcached, business logic aware), and database (query cache, transparent to application). Each layer serves different purposes. A request might hit browser cache (0ms), miss and hit CDN (20ms), miss and hit Redis (2ms), miss and hit database query cache (5ms), or finally execute the query (50ms). Understanding all layers is essential for optimization.",
     "difficulty": "easy",
     "category": "caching"
   },
   {
-    "question": "A cache entry is accessed and found to be expired. The system fetches fresh data and updates the cache. What is this pattern called?",
+    "question": "A cache entry is accessed and found to be expired. The system fetches fresh data from the database and updates the cache. What is this pattern called?",
     "options": {
-      "A": "Write-through",
+      "A": "Write-through caching",
       "B": "Cache-aside (lazy loading)",
-      "C": "Write-behind",
-      "D": "Read-through"
+      "C": "Write-behind (write-back) caching",
+      "D": "Read-through caching"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache-aside: application checks cache, on miss fetches from DB and populates cache. The cache is 'aside' from the data path—application manages both cache and database explicitly.",
+    "explanation": "Cache-aside (also called lazy loading): application checks cache first, on miss fetches from database and populates cache. The cache is 'aside' from the data path. The application explicitly manages both cache and database. This is the most common pattern because it is simple and gives the application full control. The tradeoff: application code must handle cache logic. Read-through is similar but the cache itself fetches from the database, abstracting this from the application.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
-    "question": "What is 'cache warming'?",
+    "question": "What is 'cache warming' and when is it used?",
     "options": {
       "A": "Automatically scaling cache capacity based on traffic patterns",
       "B": "Pre-populating cache with expected data before traffic arrives",
-      "C": "Gradually increasing cache size based on memory pressure",
-      "D": "Incrementally loading cache data based on access frequency"
+      "C": "Gradually increasing cache memory allocation based on pressure",
+      "D": "Incrementally loading cache data based on historical access frequency"
     },
     "correct_answers": ["B"],
-    "explanation": "Cache warming pre-loads anticipated data into cache before it's needed (e.g., before a product launch or after cache restart). This prevents cold-start cache misses from overwhelming the backend.",
+    "explanation": "Cache warming pre-loads anticipated data into cache before it is needed. Use cases: before a product launch, after cache restart, before a marketing campaign. This prevents cold-start cache misses from overwhelming the backend. Amazon warms caches before Prime Day. Netflix warms caches when deploying new cache clusters. Without warming, a fresh cache has 0% hit rate, and all traffic hits the backend simultaneously, potentially causing cascading failures.",
     "difficulty": "medium",
     "category": "caching"
   },
   {
-    "question": "Which metric indicates cache efficiency?",
+    "question": "Which metric best indicates cache efficiency?",
     "options": {
-      "A": "Cache size in gigabytes",
-      "B": "Hit ratio (hits / total requests)",
-      "C": "Number of cache servers",
-      "D": "Cache server uptime"
+      "A": "Total cache size in gigabytes",
+      "B": "Hit ratio (cache hits divided by total requests)",
+      "C": "Number of cache servers in the cluster",
+      "D": "Cache server uptime percentage"
     },
     "correct_answers": ["B"],
-    "explanation": "Hit ratio directly measures how often the cache serves requests without backend access. Higher hit ratio = more effective caching. Size and server count are capacity metrics, not efficiency.",
+    "explanation": "Hit ratio directly measures how often the cache serves requests without backend access. Higher hit ratio equals more effective caching. Size and server count are capacity metrics, not efficiency metrics. A 10GB cache with 99% hit rate is more efficient than a 100GB cache with 50% hit rate. Monitor hit ratio alongside latency percentiles (P50, P99) and eviction rate. If eviction rate is high, the cache may be undersized. If hit rate is low despite adequate size, the access pattern may not be cache-friendly.",
     "difficulty": "easy",
     "category": "caching"
   }

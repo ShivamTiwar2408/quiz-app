@@ -8,70 +8,70 @@
       "D": "Both B and C"
     },
     "correct_answers": ["D"],
-    "explanation": "While app servers are redundant, the load balancer and network infrastructure can be SPOFs. A single load balancer or switch failure would make all servers unreachable. Both need redundancy for true high availability.",
+    "explanation": "While app servers are redundant, the load balancer and network infrastructure can be SPOFs. A single load balancer or switch failure would make all servers unreachable. AWS ELB is distributed across AZs to avoid being a SPOF—a lesson from early cloud architectures where single load balancers caused widespread outages.",
     "difficulty": "medium",
     "category": "availability"
   },
   {
     "question": "Which are common hidden single points of failure in distributed systems? (Choose all that apply)",
     "options": {
-      "A": "Shared configuration service",
+      "A": "Shared configuration service (like etcd or Consul)",
       "B": "DNS resolver",
       "C": "Certificate authority for internal TLS",
       "D": "Individual worker nodes in a cluster"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Config services, DNS, and certificate infrastructure are often overlooked SPOFs—if they fail, the entire system can become unavailable even if compute resources are healthy. Individual workers in a cluster are redundant by design.",
+    "explanation": "Config services, DNS, and certificate infrastructure are often overlooked SPOFs. GitHub's 2018 outage cascaded through their config system. Cloudflare's 2019 outage stemmed from WAF config. Individual workers in a cluster are redundant by design.",
     "difficulty": "hard",
     "category": "availability"
   },
   {
     "question": "A team eliminates their database SPOF by adding a replica. However, both databases share the same storage array. Have they truly eliminated the SPOF?",
     "options": {
-      "A": "Yes, database redundancy is sufficient",
+      "A": "Yes, database redundancy is sufficient for high availability",
       "B": "No, the shared storage is now the SPOF",
-      "C": "Yes, if they use synchronous replication",
-      "D": "No, but it's acceptable for cost reasons"
+      "C": "Yes, if they use synchronous replication between databases",
+      "D": "Partially - they've reduced risk but not eliminated it"
     },
     "correct_answers": ["B"],
-    "explanation": "Shared storage creates a hidden SPOF—if the storage array fails, both databases fail. True redundancy requires independent failure domains including separate storage, power, and network paths.",
+    "explanation": "Shared storage creates a hidden SPOF—if the storage array fails, both databases fail. True redundancy requires independent failure domains. AWS AZs have independent power, cooling, and networking. Netflix designs so losing an entire AZ doesn't affect service.",
     "difficulty": "medium",
     "category": "availability"
   },
   {
     "question": "Which strategy best addresses a SPOF in a critical authentication service?",
     "options": {
-      "A": "Increase the service's resource allocation",
+      "A": "Increase the service's resource allocation for better performance",
       "B": "Deploy multiple instances across availability zones with load balancing",
       "C": "Implement aggressive caching of authentication tokens",
-      "D": "Add comprehensive monitoring and alerting"
+      "D": "Add comprehensive monitoring and alerting for faster incident response"
     },
     "correct_answers": ["B"],
-    "explanation": "Multiple instances across AZs with load balancing provides true redundancy. More resources don't help if the single instance fails; caching helps but doesn't eliminate the SPOF; monitoring detects but doesn't prevent failures.",
+    "explanation": "Multiple instances across AZs provides true redundancy. Auth0 and Okta deploy across multiple regions for this reason. More resources don't help if the single instance fails; caching doesn't eliminate the SPOF; monitoring detects but doesn't prevent failures.",
     "difficulty": "easy",
     "category": "availability"
   },
   {
     "question": "A microservices architecture uses a single API gateway. What is the recommended approach to prevent it from becoming a SPOF?",
     "options": {
-      "A": "Remove the API gateway entirely",
+      "A": "Remove the API gateway entirely and use direct service calls",
       "B": "Deploy multiple gateway instances behind a load balancer",
       "C": "Use a more powerful server for the gateway",
       "D": "Implement client-side load balancing to bypass the gateway"
     },
     "correct_answers": ["B"],
-    "explanation": "Multiple gateway instances with load balancing maintains the gateway's benefits while eliminating the SPOF. Removing it loses functionality; vertical scaling doesn't add redundancy; client-side LB adds complexity and doesn't fully replace gateway features.",
+    "explanation": "Multiple gateway instances with load balancing maintains benefits while eliminating the SPOF. Kong and AWS API Gateway use this pattern. Removing the gateway loses cross-cutting concerns; vertical scaling doesn't add redundancy; client-side LB adds complexity without replacing gateway features like auth and rate limiting.",
     "difficulty": "easy",
     "category": "availability"
   },
   {
     "question": "True or False: A system with no single points of failure is guaranteed to be highly available.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - eliminating SPOFs ensures high availability",
+      "B": "False - other factors can still cause outages"
     },
     "correct_answers": ["B"],
-    "explanation": "Eliminating SPOFs is necessary but not sufficient. Correlated failures (affecting multiple components simultaneously), software bugs replicated across instances, or operational errors can still cause outages even without SPOFs.",
+    "explanation": "Eliminating SPOFs is necessary but not sufficient. Correlated failures (affecting multiple components simultaneously), software bugs replicated across instances, or operational errors can still cause outages. Amazon's 2017 S3 outage was caused by a human error that affected multiple redundant systems simultaneously.",
     "difficulty": "medium",
     "category": "availability"
   },
@@ -81,62 +81,62 @@
       "A": "Shared software bugs deployed to all instances",
       "B": "Correlated infrastructure failures (same data center)",
       "C": "Configuration errors pushed to all replicas",
-      "D": "Using different hardware vendors"
+      "D": "Using different hardware vendors for redundancy"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Shared bugs, correlated failures, and config errors can cause simultaneous failures across redundant components. Using different vendors actually helps avoid correlated failures (vendor diversity).",
+    "explanation": "Shared bugs, correlated failures, and config errors can cause simultaneous failures across redundant components. Knight Capital lost $440M in 45 minutes due to a bug deployed to all servers. Using different vendors (vendor diversity) actually helps avoid correlated failures—it's a mitigation strategy, not a risk factor.",
     "difficulty": "medium",
     "category": "availability"
   },
   {
     "question": "A company's entire infrastructure runs in a single cloud region. Which type of SPOF does this represent?",
     "options": {
-      "A": "Hardware SPOF",
-      "B": "Software SPOF",
+      "A": "Hardware SPOF - physical server dependencies",
+      "B": "Software SPOF - application-level single points",
       "C": "Geographic/Regional SPOF",
-      "D": "Operational SPOF"
+      "D": "Operational SPOF - human process dependencies"
     },
     "correct_answers": ["C"],
-    "explanation": "Single-region deployment creates a geographic SPOF—regional outages, natural disasters, or regulatory issues affecting that region would take down the entire system. Multi-region deployment addresses this.",
+    "explanation": "Single-region deployment creates a geographic SPOF—regional outages, natural disasters, or regulatory issues affecting that region would take down the entire system. AWS us-east-1 outages have taken down major portions of the internet. Multi-region deployment addresses this, though it adds complexity and cost.",
     "difficulty": "easy",
     "category": "availability"
   },
   {
     "question": "A database cluster uses automatic failover with a 30-second detection and promotion time. During this window, writes fail. How should the application handle this?",
     "options": {
-      "A": "Queue writes in memory and replay after failover",
-      "B": "Return errors to users immediately",
+      "A": "Queue writes in memory and replay after failover completes",
+      "B": "Return errors to users immediately for transparency",
       "C": "Implement retry logic with appropriate timeouts",
-      "D": "Switch to a backup database synchronously"
+      "D": "Switch to a backup database synchronously during failover"
     },
     "correct_answers": ["C"],
-    "explanation": "Retry logic handles the transient unavailability gracefully. In-memory queuing risks data loss; immediate errors provide poor UX for a brief outage; synchronous backup switching is what's already happening (the failover).",
+    "explanation": "Retry logic handles the transient unavailability gracefully—users may not even notice a brief delay. In-memory queuing risks data loss if the app crashes; immediate errors provide poor UX for a brief outage; synchronous backup switching is what's already happening (the failover). Stripe's API clients implement automatic retries with idempotency keys for exactly this scenario.",
     "difficulty": "medium",
     "category": "availability"
   },
   {
     "question": "Which is the most effective way to identify hidden SPOFs in an existing system?",
     "options": {
-      "A": "Code review of all services",
+      "A": "Code review of all services for dependency analysis",
       "B": "Chaos engineering and failure injection",
-      "C": "Architecture diagram review",
+      "C": "Architecture diagram review with stakeholders",
       "D": "Load testing at peak capacity"
     },
     "correct_answers": ["B"],
-    "explanation": "Chaos engineering actively tests failure scenarios, revealing hidden dependencies and SPOFs that aren't obvious from diagrams or code. Architecture reviews can miss runtime dependencies; load testing finds performance issues, not necessarily SPOFs.",
+    "explanation": "Chaos engineering actively tests failure scenarios, revealing hidden dependencies and SPOFs that aren't obvious from diagrams or code. Netflix's Chaos Monkey randomly terminates instances; their Chaos Kong simulates entire region failures. Architecture reviews can miss runtime dependencies; load testing finds performance issues, not necessarily SPOFs.",
     "difficulty": "medium",
     "category": "availability"
   },
   {
     "question": "A team adds a second load balancer for redundancy. Both load balancers share a virtual IP using VRRP. What potential SPOF remains?",
     "options": {
-      "A": "The VRRP protocol itself",
+      "A": "The VRRP protocol implementation itself",
       "B": "The network segment carrying the virtual IP",
-      "C": "The backend servers",
-      "D": "The load balancer software version"
+      "C": "The backend servers behind the load balancers",
+      "D": "The load balancer software version consistency"
     },
     "correct_answers": ["B"],
-    "explanation": "If both load balancers are on the same network segment, a switch or network failure affects both. The VIP provides failover between LBs but doesn't protect against shared network infrastructure failures.",
+    "explanation": "If both load balancers are on the same network segment, a switch or network failure affects both. The VIP provides failover between LBs but doesn't protect against shared network infrastructure failures. This is why production deployments use redundant network paths and switches—the network itself must be redundant, not just the endpoints.",
     "difficulty": "hard",
     "category": "availability"
   },
@@ -149,7 +149,7 @@
       "D": "Automated deployment pipelines"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Human SPOFs include single credential holders, undocumented processes, and knowledge silos—if that person is unavailable, operations halt. Automated pipelines actually reduce human SPOFs by codifying procedures.",
+    "explanation": "Human SPOFs include single credential holders (bus factor of 1), undocumented processes (tribal knowledge), and knowledge silos. If that person is unavailable, operations halt. Google's SRE practices emphasize documentation and credential sharing. Automated pipelines actually reduce human SPOFs by codifying procedures and removing single-person dependencies.",
     "difficulty": "medium",
     "category": "availability"
   }

@@ -8,33 +8,33 @@
       "D": "Monitoring CPU and memory usage across servers"
     },
     "correct_answers": ["B"],
-    "explanation": "Distributed tracing tracks requests as they flow through multiple services. Shows: which services were called, call order, time spent in each service. Essential for debugging latency and understanding microservices behavior.",
+    "explanation": "Distributed tracing tracks requests as they flow through multiple services, showing which services were called, call order, and time spent in each. Uber built Jaeger for this; Google's Dapper paper pioneered the concept. Essential for debugging latency in microservices—without it, finding why a request took 5 seconds across 20 services is nearly impossible.",
     "difficulty": "easy",
     "category": "observability"
   },
   {
     "question": "What problem does distributed tracing solve?",
     "options": {
-      "A": "Slow database queries",
+      "A": "Slow database queries in a single service",
       "B": "Understanding where time is spent when a request traverses multiple services",
-      "C": "Reducing network traffic",
-      "D": "Encrypting data"
+      "C": "Reducing network traffic between services",
+      "D": "Encrypting data in transit"
     },
     "correct_answers": ["B"],
-    "explanation": "In microservices, a slow request could be caused by any service in the chain. Distributed tracing shows the complete request path with timing, pinpointing exactly where latency occurs. Impossible to debug otherwise.",
+    "explanation": "In microservices, a slow request could be caused by any service in the chain, network latency between services, or queuing delays. Distributed tracing shows the complete request path with timing at each hop, pinpointing exactly where latency occurs. Netflix uses tracing to debug their 700+ microservices; without it, they'd be guessing.",
     "difficulty": "easy",
     "category": "observability"
   },
   {
     "question": "What is a trace?",
     "options": {
-      "A": "A single log entry",
+      "A": "A single log entry from one service",
       "B": "A collection of spans representing the complete journey of a request",
-      "C": "A metric",
-      "D": "A database query"
+      "C": "A metric measuring request latency",
+      "D": "A database query execution plan"
     },
     "correct_answers": ["B"],
-    "explanation": "A trace is the complete picture of a request's journey: all services touched, operations performed, time spent. Composed of spans (individual operations) linked together. One trace per request.",
+    "explanation": "A trace is the complete picture of a request's journey through your system: all services touched, operations performed, time spent at each step. It's composed of spans (individual operations) linked together by trace ID and parent-child relationships. One trace per request; traces can have hundreds of spans in complex systems.",
     "difficulty": "easy",
     "category": "observability"
   },
@@ -47,46 +47,46 @@
       "D": "Parent span ID"
     },
     "correct_answers": ["A", "B", "C", "D"],
-    "explanation": "Spans contain: operation name (what happened), timestamps (duration), tags (context like status codes, IDs), parent span ID (call hierarchy), and optionally logs/events. Rich context for debugging.",
+    "explanation": "Spans contain: operation name (what happened—'HTTP GET /users'), timestamps (duration calculation), tags/attributes (context like HTTP status codes, user IDs, error messages), and parent span ID (establishing the call hierarchy). This rich context enables powerful debugging—filter traces by error status, find slow database calls, identify which user experienced issues.",
     "difficulty": "medium",
     "category": "observability"
   },
   {
     "question": "How is trace context propagated between services?",
     "options": {
-      "A": "Shared database",
+      "A": "Shared database storing trace information",
       "B": "HTTP headers or message metadata carrying trace ID and span ID",
-      "C": "DNS",
-      "D": "Automatic detection"
+      "C": "DNS records for trace routing",
+      "D": "Automatic detection without explicit propagation"
     },
     "correct_answers": ["B"],
-    "explanation": "Trace context (trace ID, parent span ID) is propagated via HTTP headers (W3C Trace Context, B3) or message metadata. Each service extracts context, creates child span, and propagates to downstream calls.",
+    "explanation": "Trace context (trace ID, parent span ID, sampling flags) is propagated via HTTP headers (W3C Trace Context standard, B3 headers) or message metadata for async communication. Each service extracts context from incoming requests, creates a child span, and propagates context to downstream calls. OpenTelemetry SDKs handle this automatically for common frameworks.",
     "difficulty": "medium",
     "category": "observability"
   },
   {
     "question": "What is sampling in distributed tracing?",
     "options": {
-      "A": "Taking database samples",
+      "A": "Taking database samples for analysis",
       "B": "Recording only a percentage of traces to reduce overhead and storage",
-      "C": "Testing services",
-      "D": "Sampling user feedback"
+      "C": "Testing services with sample requests",
+      "D": "Sampling user feedback about performance"
     },
     "correct_answers": ["B"],
-    "explanation": "Sampling: record only some traces (e.g., 1% of requests). Reduces overhead (instrumentation cost) and storage. Trade-off: might miss rare issues. Strategies: random, rate-limited, tail-based (sample interesting traces).",
+    "explanation": "Sampling records only some traces (e.g., 1% or 10% of requests) to reduce instrumentation overhead and storage costs. At scale, storing every trace is expensive and unnecessary. Trade-off: might miss rare issues. Strategies: random sampling, rate-limited (N traces/second), or tail-based (decide after seeing complete trace). Google samples ~0.01% of requests in production.",
     "difficulty": "medium",
     "category": "observability"
   },
   {
     "question": "What is 'tail-based sampling'?",
     "options": {
-      "A": "Sampling at the end of the day",
+      "A": "Sampling traces at the end of each day",
       "B": "Deciding whether to keep a trace after seeing the complete trace (e.g., keep slow or error traces)",
-      "C": "Sampling the last service",
-      "D": "Random sampling"
+      "C": "Sampling only the last service in a request chain",
+      "D": "Random sampling with a tail distribution"
     },
     "correct_answers": ["B"],
-    "explanation": "Tail-based sampling: collect all spans, decide at the end whether to keep the trace. Can keep interesting traces (errors, slow requests) while discarding normal ones. More complex but captures important traces.",
+    "explanation": "Tail-based sampling: collect all spans initially, decide at the end whether to keep the complete trace. This allows keeping interesting traces (errors, slow requests, specific users) while discarding normal ones. More complex (requires buffering spans) but captures important traces that random sampling might miss. Honeycomb and Lightstep support tail-based sampling.",
     "difficulty": "hard",
     "category": "observability"
   },
@@ -96,60 +96,60 @@
       "A": "Jaeger",
       "B": "Zipkin",
       "C": "AWS X-Ray",
-      "D": "MySQL"
+      "D": "PostgreSQL"
     },
     "correct_answers": ["A", "B", "C"],
-    "explanation": "Tracing tools: Jaeger (CNCF, Uber), Zipkin (Twitter), AWS X-Ray (AWS native), Datadog APM, Honeycomb. These collect, store, and visualize traces. MySQL is a database, not a tracing tool.",
+    "explanation": "Tracing tools: Jaeger (CNCF project, created by Uber), Zipkin (created by Twitter), AWS X-Ray (AWS native, integrates with Lambda/ECS), plus Datadog APM, Honeycomb, and Lightstep. These collect, store, and visualize traces. PostgreSQL is a database—it might be traced, but it's not a tracing tool. OpenTelemetry provides vendor-neutral instrumentation that exports to any of these.",
     "difficulty": "easy",
     "category": "observability"
   },
   {
     "question": "True or False: Distributed tracing adds zero overhead to applications.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - modern tracing is completely transparent",
+      "B": "False - tracing adds measurable overhead"
     },
     "correct_answers": ["B"],
-    "explanation": "Tracing adds overhead: instrumentation code runs on every request, context propagation adds header size, spans are collected and transmitted. Overhead is typically small (1-5%) but not zero. Sampling reduces impact.",
+    "explanation": "Tracing adds overhead: instrumentation code runs on every request, context propagation adds bytes to headers, spans are serialized and transmitted to collectors. Overhead is typically small (1-5% CPU, minimal latency) but not zero. Sampling reduces impact significantly. The debugging value usually far outweighs the cost, but measure impact in your environment.",
     "difficulty": "easy",
     "category": "observability"
   },
   {
     "question": "What is OpenTelemetry?",
     "options": {
-      "A": "A database",
+      "A": "A time-series database for metrics",
       "B": "A vendor-neutral standard for collecting traces, metrics, and logs",
-      "C": "A programming language",
-      "D": "A cloud provider"
+      "C": "A programming language for observability",
+      "D": "A cloud provider's monitoring service"
     },
     "correct_answers": ["B"],
-    "explanation": "OpenTelemetry (OTel) is the industry standard for observability instrumentation. Provides APIs, SDKs, and collectors for traces, metrics, logs. Vendor-neutral—export to any backend. Merger of OpenTracing and OpenCensus.",
+    "explanation": "OpenTelemetry (OTel) is the CNCF standard for observability instrumentation. It provides APIs, SDKs, and collectors for traces, metrics, and logs across all major languages. Vendor-neutral—instrument once, export to any backend (Jaeger, Datadog, New Relic). Merger of OpenTracing and OpenCensus. Becoming the industry standard; most observability vendors support it.",
     "difficulty": "medium",
     "category": "observability"
   },
   {
     "question": "A request takes 5 seconds but each service reports <100ms latency. What might distributed tracing reveal?",
     "options": {
-      "A": "Nothing useful",
+      "A": "Nothing useful for this scenario",
       "B": "Sequential calls that could be parallelized, or network latency between services",
-      "C": "Database is slow",
-      "D": "Client is slow"
+      "C": "The database is definitely slow",
+      "D": "The client browser is slow"
     },
     "correct_answers": ["B"],
-    "explanation": "Tracing shows the full picture: services might be called sequentially (could parallelize), network latency between services, queuing time, or retries. Individual service metrics miss these inter-service issues.",
+    "explanation": "Tracing shows the full picture: services might be called sequentially when they could be parallelized (50 sequential 100ms calls = 5 seconds), network latency between services, queuing time waiting for resources, or retry attempts. Individual service metrics miss these inter-service issues. This is exactly why distributed tracing exists—to find problems that span service boundaries.",
     "difficulty": "hard",
     "category": "observability"
   },
   {
     "question": "How do traces help with dependency mapping?",
     "options": {
-      "A": "They don't",
+      "A": "They don't provide dependency information",
       "B": "Traces show which services call which, revealing actual runtime dependencies",
-      "C": "They map database schemas",
-      "D": "They show code dependencies"
+      "C": "They map database schema dependencies",
+      "D": "They show code-level import dependencies"
     },
     "correct_answers": ["B"],
-    "explanation": "Traces reveal actual runtime dependencies: which services call which, how often, latency between them. This creates accurate service dependency maps, often revealing unexpected dependencies not in documentation.",
+    "explanation": "Traces reveal actual runtime dependencies: which services call which, how often, latency between them, and error rates per dependency. This creates accurate service dependency maps that often reveal unexpected dependencies not documented anywhere. Jaeger and Zipkin can generate dependency graphs from trace data. Essential for understanding blast radius of failures and planning migrations.",
     "difficulty": "medium",
     "category": "observability"
   }

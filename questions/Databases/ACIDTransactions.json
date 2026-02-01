@@ -8,59 +8,59 @@
       "D": "Available, Consistent, Independent, Distributed"
     },
     "correct_answers": ["B"],
-    "explanation": "ACID: Atomicity (all or nothing), Consistency (valid state to valid state), Isolation (concurrent transactions don't interfere), Durability (committed data survives failures). Foundation of reliable transactions.",
+    "explanation": "ACID: Atomicity (all or nothing), Consistency (valid state to valid state), Isolation (concurrent transactions don't interfere), Durability (committed data survives failures). These properties form the foundation of reliable database transactions. Banks, payment processors, and any system handling critical data rely on ACID guarantees. PostgreSQL, MySQL InnoDB, and Oracle all provide ACID compliance.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
     "question": "What does Atomicity guarantee?",
     "options": {
-      "A": "Transactions execute quickly",
+      "A": "Transactions execute with minimal latency",
       "B": "All operations in a transaction succeed or all fail—no partial execution",
-      "C": "Data is encrypted",
-      "D": "Transactions run in parallel"
+      "C": "Data is encrypted at the atomic level",
+      "D": "Transactions can run in parallel without conflicts"
     },
     "correct_answers": ["B"],
-    "explanation": "Atomicity ensures transactions are indivisible. If any operation fails, all changes are rolled back. A bank transfer either moves money completely or not at all—never deducts without crediting.",
+    "explanation": "Atomicity ensures transactions are indivisible units. If any operation fails, all changes are rolled back to the previous state. A bank transfer either moves money completely or not at all—never deducts from one account without crediting another. Stripe relies on atomicity to ensure payment records are never in inconsistent states, even during failures.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
     "question": "A transaction transfers $100 from Account A to Account B. Which ACID property ensures the total money in the system remains unchanged?",
     "options": {
-      "A": "Atomicity",
-      "B": "Consistency",
-      "C": "Isolation",
-      "D": "Durability"
+      "A": "Atomicity - ensures both operations complete together",
+      "B": "Consistency - ensures business rules are maintained",
+      "C": "Isolation - ensures other transactions don't interfere",
+      "D": "Durability - ensures the transfer is permanent"
     },
     "correct_answers": ["B"],
-    "explanation": "Consistency ensures the database moves from one valid state to another. Business rules (total money unchanged) are maintained. Atomicity ensures both operations complete; consistency ensures rules are satisfied.",
+    "explanation": "Consistency ensures the database moves from one valid state to another, maintaining all defined rules and constraints. The business rule 'total money unchanged' is a consistency constraint. Atomicity ensures both debit and credit happen together; consistency ensures the result satisfies invariants. Database constraints, triggers, and application logic all contribute to consistency.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "Two transactions read the same row simultaneously. Which ACID property prevents them from seeing each other's uncommitted changes?",
     "options": {
-      "A": "Atomicity",
-      "B": "Consistency",
-      "C": "Isolation",
-      "D": "Durability"
+      "A": "Atomicity - transactions are indivisible",
+      "B": "Consistency - data remains valid",
+      "C": "Isolation - concurrent transactions don't interfere",
+      "D": "Durability - changes are permanent"
     },
     "correct_answers": ["C"],
-    "explanation": "Isolation ensures concurrent transactions don't interfere. Each transaction sees a consistent snapshot, unaffected by other uncommitted transactions. Isolation levels control the degree of isolation.",
+    "explanation": "Isolation ensures concurrent transactions don't interfere with each other. Each transaction sees a consistent snapshot, unaffected by other uncommitted transactions. Without isolation, you might read data that gets rolled back (dirty read). PostgreSQL's MVCC (Multi-Version Concurrency Control) provides isolation by maintaining multiple versions of rows.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "What does Durability guarantee?",
     "options": {
-      "A": "Transactions complete quickly",
+      "A": "Transactions complete within a time limit",
       "B": "Once committed, data survives system crashes and power failures",
-      "C": "Data is replicated",
-      "D": "Transactions can be undone"
+      "C": "Data is replicated across multiple servers",
+      "D": "Transactions can be undone after commit"
     },
     "correct_answers": ["B"],
-    "explanation": "Durability ensures committed transactions are permanent—surviving crashes, power loss, etc. Achieved through write-ahead logging (WAL), flushing to disk, and replication. Committed = guaranteed saved.",
+    "explanation": "Durability ensures committed transactions are permanent—surviving crashes, power loss, and hardware failures. Achieved through write-ahead logging (WAL), flushing to disk before acknowledging commit, and replication. When your bank says 'transaction complete,' durability guarantees that money won't disappear if the server crashes a millisecond later.",
     "difficulty": "easy",
     "category": "databases"
   },
@@ -73,83 +73,83 @@
       "D": "Serializable"
     },
     "correct_answers": ["A", "B", "C", "D"],
-    "explanation": "SQL defines four isolation levels (weakest to strongest): Read Uncommitted (dirty reads possible), Read Committed (no dirty reads), Repeatable Read (no non-repeatable reads), Serializable (full isolation).",
+    "explanation": "SQL defines four isolation levels (weakest to strongest): Read Uncommitted (dirty reads possible), Read Committed (no dirty reads—PostgreSQL default), Repeatable Read (no non-repeatable reads—MySQL InnoDB default), Serializable (full isolation, as if transactions ran sequentially). Higher isolation means fewer anomalies but more locking and lower concurrency.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "What is a 'dirty read'?",
     "options": {
-      "A": "Reading corrupted data",
+      "A": "Reading corrupted or malformed data",
       "B": "Reading uncommitted changes from another transaction",
-      "C": "Reading old cached data",
-      "D": "Reading encrypted data"
+      "C": "Reading old cached data instead of current values",
+      "D": "Reading encrypted data without decryption"
     },
     "correct_answers": ["B"],
-    "explanation": "Dirty read: Transaction A reads data modified by Transaction B before B commits. If B rolls back, A has read data that never officially existed. Prevented by Read Committed and higher isolation levels.",
+    "explanation": "Dirty read: Transaction A reads data modified by Transaction B before B commits. If B rolls back, A has read data that never officially existed—a phantom value. This can cause serious bugs in financial systems. Read Committed and higher isolation levels prevent dirty reads. Most production databases default to at least Read Committed for this reason.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "Why might an application choose a lower isolation level?",
     "options": {
-      "A": "Lower isolation is more secure",
+      "A": "Lower isolation provides stronger security guarantees",
       "B": "Higher isolation reduces concurrency and performance",
-      "C": "Lower isolation prevents deadlocks",
-      "D": "Lower isolation improves durability"
+      "C": "Lower isolation completely prevents all deadlocks",
+      "D": "Lower isolation improves data durability"
     },
     "correct_answers": ["B"],
-    "explanation": "Higher isolation requires more locking, reducing concurrency and throughput. Applications may accept weaker isolation (e.g., Read Committed) for better performance when anomalies are acceptable or handled in application logic.",
+    "explanation": "Higher isolation requires more locking, reducing concurrency and throughput. Serializable isolation can reduce throughput by 10x or more compared to Read Committed. Applications may accept weaker isolation (e.g., Read Committed) for better performance when anomalies are rare or handled in application logic. Analytics workloads often use lower isolation since exact consistency matters less than query speed.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "True or False: NoSQL databases never support ACID transactions.",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "True - NoSQL sacrifices ACID for scalability",
+      "B": "False - many NoSQL databases now support ACID"
     },
     "correct_answers": ["B"],
-    "explanation": "Many NoSQL databases now support ACID: MongoDB (multi-document transactions), DynamoDB (transactions), CockroachDB, FaunaDB. The NoSQL = no ACID assumption is outdated. Check specific database capabilities.",
+    "explanation": "Many NoSQL databases now support ACID: MongoDB (multi-document transactions since 4.0), DynamoDB (TransactWriteItems), CockroachDB (full ACID), FaunaDB, FoundationDB. The 'NoSQL = no ACID' assumption is outdated. Google Spanner proved you can have global scale AND ACID. Check specific database capabilities—the landscape has evolved significantly.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
     "question": "What is a 'phantom read'?",
     "options": {
-      "A": "Reading deleted data",
+      "A": "Reading data that was deleted by another transaction",
       "B": "A query returns different rows on re-execution because another transaction inserted/deleted rows",
-      "C": "Reading from a crashed database",
-      "D": "Reading null values"
+      "C": "Reading from a database that has crashed",
+      "D": "Reading null values where data should exist"
     },
     "correct_answers": ["B"],
-    "explanation": "Phantom read: Transaction A runs a query twice; between runs, Transaction B inserts/deletes rows matching A's criteria. A sees different result sets. Prevented only by Serializable isolation.",
+    "explanation": "Phantom read: Transaction A runs a query twice; between runs, Transaction B inserts or deletes rows matching A's WHERE clause. A sees different result sets—rows appear or disappear like phantoms. Only Serializable isolation prevents phantoms. This matters for reports or aggregations where consistent results are required across multiple queries in a transaction.",
     "difficulty": "hard",
     "category": "databases"
   },
   {
     "question": "How do databases typically implement durability?",
     "options": {
-      "A": "Keeping data in memory only",
+      "A": "Keeping all data in memory with battery backup",
       "B": "Write-ahead logging (WAL) and flushing to persistent storage",
-      "C": "Compressing data",
-      "D": "Using faster CPUs"
+      "C": "Compressing data to reduce storage requirements",
+      "D": "Using faster CPUs for quicker transaction processing"
     },
     "correct_answers": ["B"],
-    "explanation": "Durability uses WAL: changes are written to a log on disk before acknowledging commit. Even if crash occurs before data pages are written, the log allows recovery. Replication adds additional durability.",
+    "explanation": "Durability uses Write-Ahead Logging: changes are written to a sequential log on disk before acknowledging commit. Even if the system crashes before data pages are written, the log allows recovery by replaying committed transactions. PostgreSQL, MySQL, and SQLite all use WAL. Replication to other servers adds additional durability against hardware failures.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "A system requires high throughput for analytics queries that can tolerate slightly stale data. Which isolation level is most appropriate?",
     "options": {
-      "A": "Serializable",
-      "B": "Read Committed or Read Uncommitted",
-      "C": "Repeatable Read",
-      "D": "Isolation level doesn't affect throughput"
+      "A": "Serializable - ensures completely accurate results",
+      "B": "Read Committed or Read Uncommitted for better throughput",
+      "C": "Repeatable Read - balances accuracy and performance",
+      "D": "Isolation level doesn't affect query throughput"
     },
     "correct_answers": ["B"],
-    "explanation": "Analytics tolerating stale data can use lower isolation (Read Committed or even Read Uncommitted) for better throughput. Less locking means more concurrent queries. Serializable would unnecessarily limit concurrency.",
+    "explanation": "Analytics tolerating stale data can use lower isolation (Read Committed or even Read Uncommitted) for better throughput. Less locking means more concurrent queries. Data warehouses like Snowflake and BigQuery optimize for this pattern. Serializable would unnecessarily limit concurrency for workloads where perfect consistency isn't required. Match isolation level to business requirements.",
     "difficulty": "medium",
     "category": "databases"
   }

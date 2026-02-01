@@ -2,13 +2,13 @@
   {
     "question": "Which characteristic best distinguishes SQL from NoSQL databases?",
     "options": {
-      "A": "SQL databases are always faster",
+      "A": "SQL databases provide faster query performance in all scenarios",
       "B": "SQL databases enforce a predefined schema; NoSQL databases are often schema-flexible",
-      "C": "NoSQL databases cannot handle transactions",
-      "D": "SQL databases cannot scale horizontally"
+      "C": "NoSQL databases cannot support any form of transactions",
+      "D": "SQL databases are incapable of horizontal scaling"
     },
     "correct_answers": ["B"],
-    "explanation": "SQL databases require predefined schemas with structured tables. NoSQL databases often allow flexible or dynamic schemas. Both can handle transactions (with varying guarantees) and scale (with different approaches).",
+    "explanation": "SQL databases require predefined schemas with structured tables and relationships. NoSQL databases often allow flexible or dynamic schemas, enabling rapid iteration. Both can handle transactions (with varying guarantees) and scale (with different approaches). MongoDB added multi-document ACID transactions in 2018. CockroachDB and Spanner prove SQL can scale horizontally. The schema flexibility distinction remains the fundamental difference.",
     "difficulty": "easy",
     "category": "databases"
   },
@@ -16,140 +16,142 @@
     "question": "Which use cases are well-suited for document databases like MongoDB? (Choose all that apply)",
     "options": {
       "A": "Content management systems with varied content types",
-      "B": "Complex multi-table joins across normalized data",
-      "C": "User profiles with varying attributes",
-      "D": "Catalog data with hierarchical categories"
+      "B": "Complex analytical queries with multiple JOINs across normalized tables",
+      "C": "User profiles with varying attributes per user",
+      "D": "Product catalogs with hierarchical categories and attributes"
     },
     "correct_answers": ["A", "C", "D"],
-    "explanation": "Document DBs excel at varied/hierarchical data that maps to documents. Complex joins across normalized tables are SQL's strength—document DBs typically denormalize instead.",
+    "explanation": "Document databases excel at varied, hierarchical data that maps naturally to JSON documents. CMS content, user profiles with optional fields, and product catalogs with nested attributes are ideal use cases. Complex JOINs across normalized tables are SQL's strength. Document databases typically denormalize data to avoid joins, embedding related data within documents. The tradeoff: easier reads, more complex writes when embedded data changes.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
-    "question": "A financial application requires ACID transactions across multiple tables. Which database type is most appropriate?",
+    "question": "A financial application requires ACID transactions across multiple tables with referential integrity. Which database type is most appropriate?",
     "options": {
-      "A": "Key-value store",
-      "B": "Document database",
-      "C": "Relational database (SQL)",
-      "D": "Wide-column store"
+      "A": "Key-value store like Redis or DynamoDB",
+      "B": "Document database like MongoDB",
+      "C": "Relational database (SQL) like PostgreSQL",
+      "D": "Wide-column store like Cassandra"
     },
     "correct_answers": ["C"],
-    "explanation": "Relational databases provide strong ACID guarantees across tables. While some NoSQL databases offer transactions, SQL databases are designed for complex transactional workloads with referential integrity.",
+    "explanation": "Relational databases provide strong ACID guarantees across tables with foreign key constraints ensuring referential integrity. While MongoDB now supports multi-document transactions and DynamoDB supports transactions, SQL databases are designed from the ground up for complex transactional workloads. Banks, payment processors, and financial institutions predominantly use PostgreSQL, MySQL, or Oracle for core transaction processing. The decades of battle-tested reliability matter for financial systems.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
     "question": "What does 'eventual consistency' mean in the context of NoSQL databases?",
     "options": {
-      "A": "Data is never consistent",
-      "B": "All replicas will eventually have the same data, but may temporarily differ",
-      "C": "Consistency is optional",
-      "D": "Data is consistent only at the end of each day"
+      "A": "Data is never consistent and applications must handle all inconsistencies",
+      "B": "All replicas will eventually converge to the same data, but may temporarily differ",
+      "C": "Consistency is an optional feature that can be disabled",
+      "D": "Data becomes consistent only during scheduled maintenance windows"
     },
     "correct_answers": ["B"],
-    "explanation": "Eventual consistency means replicas may temporarily have different values after a write, but will converge to the same state given enough time without new updates. It trades consistency for availability/performance.",
+    "explanation": "Eventual consistency means replicas may temporarily have different values after a write, but will converge to the same state given enough time without new updates. Amazon's shopping cart uses eventual consistency. You might add an item and not see it immediately on another device, but it will appear within seconds. The tradeoff: higher availability and lower latency in exchange for temporary inconsistency. DynamoDB, Cassandra, and Riak all offer eventual consistency as a default or option.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "Which NoSQL database type is best for storing user sessions with simple key-based lookup?",
     "options": {
-      "A": "Graph database",
-      "B": "Document database",
-      "C": "Key-value store",
-      "D": "Wide-column store"
+      "A": "Graph database like Neo4j",
+      "B": "Document database like MongoDB",
+      "C": "Key-value store like Redis",
+      "D": "Wide-column store like Cassandra"
     },
     "correct_answers": ["C"],
-    "explanation": "Key-value stores (Redis, DynamoDB) are optimized for simple get/set by key—perfect for sessions. Graph DBs are for relationships; document DBs for complex documents; wide-column for large-scale analytics.",
+    "explanation": "Key-value stores like Redis and Memcached are optimized for simple get/set operations by key, perfect for session storage. Session access pattern is: get session by session_id, update session, set expiration. No complex queries needed. Redis provides sub-millisecond latency and built-in expiration (TTL). Graph databases are for relationship traversal; document databases for complex documents; wide-column stores for large-scale analytics. Match the database type to the access pattern.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
-    "question": "A social network needs to efficiently query 'friends of friends' relationships. Which database type is most suitable?",
+    "question": "A social network needs to efficiently query 'friends of friends' and 'shortest path between users' relationships. Which database type is most suitable?",
     "options": {
-      "A": "Relational database with JOIN queries",
-      "B": "Document database",
-      "C": "Graph database",
-      "D": "Key-value store"
+      "A": "Relational database with recursive JOIN queries",
+      "B": "Document database with embedded friend lists",
+      "C": "Graph database like Neo4j or Amazon Neptune",
+      "D": "Key-value store with denormalized friend data"
     },
     "correct_answers": ["C"],
-    "explanation": "Graph databases (Neo4j, Amazon Neptune) are designed for relationship traversal. 'Friends of friends' is a graph traversal query. SQL JOINs become expensive for deep relationship queries.",
+    "explanation": "Graph databases are designed for relationship traversal. 'Friends of friends' is a two-hop graph traversal; 'shortest path' is a graph algorithm. Neo4j can traverse millions of relationships per second. SQL recursive JOINs become exponentially expensive for deep relationship queries. LinkedIn uses graph databases for their connection recommendations. Facebook built TAO, a custom graph store, for their social graph. When relationships are the primary query pattern, graph databases excel.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
-    "question": "True or False: NoSQL databases are always better for scalability than SQL databases.",
+    "question": "A team claims that NoSQL databases are always better for scalability than SQL databases. Is this claim accurate?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "Yes, NoSQL was specifically designed for horizontal scaling while SQL cannot scale",
+      "B": "No, modern SQL databases like CockroachDB and Spanner also scale horizontally",
+      "C": "Yes, but only for read-heavy workloads",
+      "D": "No, SQL databases actually scale better than NoSQL in all scenarios"
     },
     "correct_answers": ["B"],
-    "explanation": "NoSQL databases were designed with horizontal scaling in mind, but modern SQL databases (CockroachDB, Spanner, Vitess) also scale horizontally. The best choice depends on data model and query patterns, not just scale.",
+    "explanation": "NoSQL databases were designed with horizontal scaling in mind, but modern SQL databases have caught up. Google Spanner provides global SQL with horizontal scaling. CockroachDB, TiDB, and Vitess (MySQL sharding) all scale horizontally while maintaining SQL semantics. The best choice depends on data model and query patterns, not just scale requirements. Uber migrated from PostgreSQL to MySQL with Vitess for scaling, not to NoSQL. The SQL vs NoSQL scaling debate is largely resolved: both can scale.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
     "question": "Which factors favor choosing a SQL database? (Choose all that apply)",
     "options": {
-      "A": "Complex queries with multiple JOINs",
-      "B": "Strong consistency requirements",
-      "C": "Rapidly changing schema",
-      "D": "ACID transaction requirements"
+      "A": "Complex queries with multiple JOINs across related entities",
+      "B": "Strong consistency requirements for financial transactions",
+      "C": "Rapidly evolving schema during early product development",
+      "D": "ACID transaction requirements across multiple tables"
     },
     "correct_answers": ["A", "B", "D"],
-    "explanation": "SQL excels at complex queries, strong consistency, and ACID transactions. Rapidly changing schemas favor NoSQL's flexibility. SQL schema changes require migrations.",
+    "explanation": "SQL excels at complex queries with JOINs (the relational model's strength), strong consistency (ACID by default), and multi-table transactions. Rapidly changing schemas favor NoSQL's flexibility because SQL schema changes require migrations that can be slow and risky on large tables. However, for mature products with stable schemas, SQL's query power and consistency guarantees often outweigh schema flexibility. Many companies start with NoSQL for flexibility, then migrate to SQL as requirements stabilize.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
-    "question": "What is 'denormalization' and why is it common in NoSQL?",
+    "question": "What is 'denormalization' and why is it common in NoSQL databases?",
     "options": {
-      "A": "Removing all data structure",
-      "B": "Duplicating data to avoid joins and improve read performance",
-      "C": "Encrypting data at rest",
-      "D": "Compressing data for storage"
+      "A": "Removing all data structure to improve flexibility",
+      "B": "Duplicating data across documents to avoid joins and improve read performance",
+      "C": "Encrypting data at rest for security compliance",
+      "D": "Compressing data to reduce storage costs"
     },
     "correct_answers": ["B"],
-    "explanation": "Denormalization duplicates data across documents/rows to avoid expensive joins. NoSQL databases often lack efficient joins, so data is structured for read patterns even if it means redundancy.",
+    "explanation": "Denormalization duplicates data across documents or rows to avoid expensive joins. NoSQL databases often lack efficient join operations, so data is structured for read patterns even if it means redundancy. In a blog system, you might embed author name in each post document rather than joining to an authors collection. The tradeoff: faster reads, but updates to author name require updating all posts. MongoDB's documentation explicitly recommends denormalization for read-heavy workloads. Design for your query patterns.",
     "difficulty": "medium",
     "category": "databases"
   },
   {
-    "question": "A time-series application stores billions of sensor readings with timestamp-based queries. Which database type is most appropriate?",
+    "question": "A time-series application stores billions of sensor readings with timestamp-based queries and aggregations. Which database type is most appropriate?",
     "options": {
-      "A": "Graph database",
-      "B": "Document database",
-      "C": "Time-series database",
-      "D": "Traditional relational database"
+      "A": "Graph database optimized for relationship traversal",
+      "B": "Document database with timestamp indexes",
+      "C": "Time-series database like InfluxDB or TimescaleDB",
+      "D": "Traditional relational database with partitioning"
     },
     "correct_answers": ["C"],
-    "explanation": "Time-series databases (InfluxDB, TimescaleDB) are optimized for timestamp-indexed data, time-range queries, and aggregations over time windows. They handle high write throughput and efficient time-based compression.",
+    "explanation": "Time-series databases are optimized for timestamp-indexed data, time-range queries, downsampling, and aggregations over time windows. They handle high write throughput (millions of points per second) and efficient time-based compression (often 10x better than general-purpose databases). InfluxDB, TimescaleDB, and Amazon Timestream are purpose-built for this workload. IoT platforms, monitoring systems (Prometheus, Grafana), and financial tick data all use time-series databases. Using a general-purpose database for time-series data is possible but suboptimal.",
     "difficulty": "easy",
     "category": "databases"
   },
   {
     "question": "Which statement about CAP theorem and database selection is correct?",
     "options": {
-      "A": "SQL databases are always CP; NoSQL databases are always AP",
-      "B": "Database CAP characteristics depend on configuration, not just database type",
-      "C": "CAP theorem doesn't apply to modern databases",
-      "D": "All databases can achieve CAP simultaneously"
+      "A": "SQL databases are always CP (consistent and partition-tolerant); NoSQL databases are always AP (available and partition-tolerant)",
+      "B": "Database CAP characteristics depend on configuration and deployment, not just database type",
+      "C": "CAP theorem has been disproven and no longer applies to modern databases",
+      "D": "All modern databases can achieve consistency, availability, and partition tolerance simultaneously"
     },
     "correct_answers": ["B"],
-    "explanation": "Many databases offer tunable consistency. Cassandra can be configured for stronger consistency; some SQL databases can relax consistency for availability. CAP tradeoffs are often configurable, not fixed by database type.",
+    "explanation": "Many databases offer tunable consistency. Cassandra can be configured for strong consistency using QUORUM reads and writes. DynamoDB offers both eventual and strong consistency options. PostgreSQL with synchronous replication is CP; with async replication, it leans AP. MongoDB's write concern and read concern settings tune the CAP tradeoff. The database type does not determine CAP characteristics; configuration does. Understand your database's consistency options and configure appropriately for your requirements.",
     "difficulty": "hard",
     "category": "databases"
   },
   {
-    "question": "A startup is building an MVP with uncertain data requirements. Which database approach is most pragmatic?",
+    "question": "A startup is building an MVP with uncertain data requirements that will evolve based on user feedback. Which database approach is most pragmatic?",
     "options": {
-      "A": "Design perfect schema upfront with SQL",
-      "B": "Use a flexible document database that can evolve",
-      "C": "Build custom storage from scratch",
-      "D": "Use multiple specialized databases from day one"
+      "A": "Design a comprehensive normalized schema upfront with SQL",
+      "B": "Use a flexible document database that can evolve with requirements",
+      "C": "Build custom storage tailored to anticipated needs",
+      "D": "Deploy multiple specialized databases from day one for future flexibility"
     },
     "correct_answers": ["B"],
-    "explanation": "For MVPs with evolving requirements, schema flexibility helps iterate quickly. Document databases allow schema evolution without migrations. Premature optimization (multiple DBs, custom storage) adds complexity.",
+    "explanation": "For MVPs with evolving requirements, schema flexibility helps iterate quickly. Document databases like MongoDB allow adding fields without migrations, changing document structure per record, and evolving the data model as you learn. Premature optimization (multiple databases, custom storage) adds complexity that slows iteration. Many successful companies started with MongoDB or similar flexible stores, then migrated to specialized databases as requirements stabilized. Instagram famously ran on a single PostgreSQL instance until they had product-market fit.",
     "difficulty": "medium",
     "category": "databases"
   }
