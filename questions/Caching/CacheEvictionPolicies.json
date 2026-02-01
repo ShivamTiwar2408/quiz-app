@@ -67,10 +67,10 @@
   {
     "question": "What is the 'cache pollution' problem?",
     "options": {
-      "A": "Cache data becoming corrupted",
+      "A": "Cache data becoming corrupted due to concurrent writes",
       "B": "Infrequently used items filling cache and evicting useful items",
-      "C": "Cache servers overheating",
-      "D": "Too many cache misses"
+      "C": "Cache entries exceeding their configured TTL values",
+      "D": "Too many cache misses causing backend overload"
     },
     "correct_answers": ["B"],
     "explanation": "Cache pollution occurs when one-time or rarely-reused data fills the cache, evicting frequently accessed items. This reduces hit rate. Scan-resistant policies help prevent pollution.",

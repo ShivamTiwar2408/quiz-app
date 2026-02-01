@@ -2,10 +2,10 @@
   {
     "question": "What is HyperLogLog?",
     "options": {
-      "A": "A logging framework",
+      "A": "A distributed logging framework for microservices",
       "B": "A probabilistic algorithm for estimating the cardinality (count of distinct elements) of large datasets",
-      "C": "A sorting algorithm",
-      "D": "A compression method"
+      "C": "A sorting algorithm for streaming data",
+      "D": "A data compression method for log files"
     },
     "correct_answers": ["B"],
     "explanation": "HyperLogLog: estimates count of unique elements using minimal memory. 12KB can estimate billions of unique items with ~2% error. Used for: unique visitors, distinct queries, cardinality estimation at scale.",

@@ -93,10 +93,10 @@
   {
     "question": "What is the SWIM protocol?",
     "options": {
-      "A": "A swimming pool management system",
+      "A": "Scalable Weakly-consistent Infrastructure for Membership—a protocol for managing cluster state",
       "B": "Scalable Weakly-consistent Infection-style Membership—an efficient gossip-based membership protocol",
-      "C": "A database protocol",
-      "D": "A load balancing algorithm"
+      "C": "A database replication protocol for distributed systems",
+      "D": "A load balancing algorithm for network traffic"
     },
     "correct_answers": ["B"],
     "explanation": "SWIM: efficient membership protocol using gossip. Combines direct probing with indirect probing (ask peers to probe suspect). O(1) message overhead per node. Used in Consul, Serf.",

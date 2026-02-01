@@ -41,10 +41,10 @@
   {
     "question": "What is stemming?",
     "options": {
-      "A": "Removing stems from plants",
+      "A": "Extracting root words using dictionary lookups",
       "B": "Reducing words to their root form so variations match the same term",
-      "C": "Adding prefixes",
-      "D": "Sorting words"
+      "C": "Adding prefixes to expand search terms",
+      "D": "Sorting words alphabetically for indexing"
     },
     "correct_answers": ["B"],
     "explanation": "Stemming: running, runs, ran → run. Increases recall (find more matches). Algorithms: Porter, Snowball. Trade-off: may over-stem (university, universe → univers). Alternative: lemmatization (more accurate, slower).",
@@ -67,10 +67,10 @@
   {
     "question": "What is Elasticsearch?",
     "options": {
-      "A": "A rubber band database",
+      "A": "A horizontally scalable document database",
       "B": "A distributed search and analytics engine built on Apache Lucene",
-      "C": "A relational database",
-      "D": "A caching system"
+      "C": "A relational database with full-text search capabilities",
+      "D": "A distributed caching system for search results"
     },
     "correct_answers": ["B"],
     "explanation": "Elasticsearch: distributed, RESTful search engine. Built on Lucene. Features: full-text search, aggregations, real-time indexing, horizontal scaling. Use cases: log analysis (ELK stack), e-commerce search, metrics.",

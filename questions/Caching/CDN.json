@@ -67,10 +67,10 @@
   {
     "question": "How does CDN reduce latency?",
     "options": {
-      "A": "Faster servers",
+      "A": "Using higher bandwidth network connections",
       "B": "Serving content from geographically closer edge servers",
-      "C": "Compressing all data",
-      "D": "Using faster internet"
+      "C": "Compressing all data using advanced algorithms",
+      "D": "Implementing HTTP/3 with QUIC protocol"
     },
     "correct_answers": ["B"],
     "explanation": "CDN reduces latency through proximity: content served from nearby edge server instead of distant origin. Physical distance = network latency. User in Sydney gets content from Sydney edge, not US origin.",
@@ -130,10 +130,10 @@
   {
     "question": "What is cache warming in CDN?",
     "options": {
-      "A": "Heating servers",
+      "A": "Automatically scaling edge server capacity based on traffic",
       "B": "Pre-populating edge caches with content before users request it",
-      "C": "Clearing cache",
-      "D": "Monitoring cache"
+      "C": "Invalidating stale cache entries across all edge locations",
+      "D": "Monitoring cache hit rates and performance metrics"
     },
     "correct_answers": ["B"],
     "explanation": "Cache warming: proactively push content to edge caches before user requests. Ensures first users get cache hits. Useful for: new content launches, predictable traffic patterns, critical content.",

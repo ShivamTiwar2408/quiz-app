@@ -2,10 +2,10 @@
   {
     "question": "What is leader election in distributed systems?",
     "options": {
-      "A": "Voting for company leadership",
+      "A": "Selecting which node handles user authentication",
       "B": "Process of selecting one node to coordinate actions among distributed nodes",
-      "C": "Electing database primary",
-      "D": "User authentication"
+      "C": "Choosing the database primary for write operations",
+      "D": "Determining which server handles incoming requests"
     },
     "correct_answers": ["B"],
     "explanation": "Leader election selects one node as coordinator/leader among peers. Leader handles coordination tasks (writes, scheduling, decisions). If leader fails, new election occurs. Ensures single point of coordination.",
@@ -117,10 +117,10 @@
   {
     "question": "What is the role of ZooKeeper in leader election?",
     "options": {
-      "A": "It manages zoo animals",
+      "A": "Provides distributed storage for application data",
       "B": "Provides coordination primitives (locks, leader election) for distributed systems",
-      "C": "It's a database",
-      "D": "It's a load balancer"
+      "C": "Manages container orchestration and deployment",
+      "D": "Handles load balancing across cluster nodes"
     },
     "correct_answers": ["B"],
     "explanation": "ZooKeeper provides distributed coordination: leader election, distributed locks, configuration management. Applications use ZooKeeper's primitives instead of implementing their own. Highly available coordination service.",

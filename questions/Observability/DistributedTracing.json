@@ -2,10 +2,10 @@
   {
     "question": "What is distributed tracing?",
     "options": {
-      "A": "Tracing network cables",
+      "A": "Monitoring network packet routes between data centers",
       "B": "Tracking request flow across multiple services to understand latency and dependencies",
-      "C": "Debugging local code",
-      "D": "Monitoring CPU usage"
+      "C": "Debugging local application code with breakpoints",
+      "D": "Monitoring CPU and memory usage across servers"
     },
     "correct_answers": ["B"],
     "explanation": "Distributed tracing tracks requests as they flow through multiple services. Shows: which services were called, call order, time spent in each service. Essential for debugging latency and understanding microservices behavior.",

@@ -2,10 +2,10 @@
   {
     "question": "What is MapReduce?",
     "options": {
-      "A": "A navigation system",
+      "A": "A distributed file system for storing large datasets",
       "B": "A programming model for processing large datasets in parallel across a cluster",
-      "C": "A database",
-      "D": "A compression algorithm"
+      "C": "A NoSQL database for key-value storage",
+      "D": "A data compression algorithm for big data"
     },
     "correct_answers": ["B"],
     "explanation": "MapReduce: programming model from Google (2004). Two phases: Map (transform/filter data in parallel), Reduce (aggregate results). Enables processing petabytes across thousands of machines. Foundation of big data.",
@@ -54,10 +54,10 @@
   {
     "question": "What is a combiner in MapReduce?",
     "options": {
-      "A": "A farming machine",
+      "A": "A component that merges multiple input files before processing",
       "B": "A local reducer that runs on map output before shuffle, reducing data transfer",
-      "C": "A data splitter",
-      "D": "A network device"
+      "C": "A data splitter that partitions input across mappers",
+      "D": "A network device that routes data between nodes"
     },
     "correct_answers": ["B"],
     "explanation": "Combiner: mini-reducer on mapper node. Aggregates locally before shuffle. Word count: instead of sending (word,1) 1000 times, combiner sends (word,1000). Reduces network traffic. Must be associative/commutative.",

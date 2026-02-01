@@ -3168,10 +3168,10 @@
     "subtopic": "Microservices",
     "question": "What is 'service mesh' in microservices?",
     "options": {
-      "A": "A fishing net for services",
+      "A": "A network topology diagram showing service dependencies",
       "B": "Infrastructure layer handling service-to-service communication, security, and observability",
-      "C": "A database type",
-      "D": "A deployment tool"
+      "C": "A NoSQL database optimized for microservices",
+      "D": "A container orchestration and deployment tool"
     },
     "correct_answers": [
       "B"
@@ -3688,10 +3688,10 @@
     "subtopic": "Serverless",
     "question": "What is serverless architecture?",
     "options": {
-      "A": "Architecture without any servers",
+      "A": "A cloud model where applications run on dedicated bare-metal servers",
       "B": "A cloud model where the provider manages servers, scaling, and infrastructure; you only write code",
-      "C": "Running servers locally",
-      "D": "A type of database"
+      "C": "Running application servers on local development machines",
+      "D": "A distributed database architecture pattern"
     },
     "correct_answers": [
       "B"
@@ -3724,10 +3724,10 @@
     "subtopic": "Serverless",
     "question": "What is cold start in serverless?",
     "options": {
-      "A": "Server room temperature",
+      "A": "Initial database connection pool establishment",
       "B": "Latency when a function instance must be initialized because no warm instance is available",
-      "C": "A deployment strategy",
-      "D": "A testing method"
+      "C": "A blue-green deployment strategy for serverless functions",
+      "D": "A testing methodology for serverless applications"
     },
     "correct_answers": [
       "B"
@@ -3832,10 +3832,10 @@
     "subtopic": "Serverless",
     "question": "What is AWS Step Functions?",
     "options": {
-      "A": "A walking tracker",
+      "A": "A managed workflow service for batch processing jobs",
       "B": "A serverless orchestration service for coordinating multiple Lambda functions into workflows",
-      "C": "A database",
-      "D": "A networking service"
+      "C": "A managed relational database service",
+      "D": "A virtual private cloud networking service"
     },
     "correct_answers": [
       "B"
@@ -5420,10 +5420,10 @@
     "subtopic": "MapReduce",
     "question": "What is MapReduce?",
     "options": {
-      "A": "A navigation system",
+      "A": "A distributed file system for storing large datasets",
       "B": "A programming model for processing large datasets in parallel across a cluster",
-      "C": "A database",
-      "D": "A compression algorithm"
+      "C": "A NoSQL database for key-value storage",
+      "D": "A data compression algorithm for big data"
     },
     "correct_answers": [
       "B"
@@ -5492,10 +5492,10 @@
     "subtopic": "MapReduce",
     "question": "What is a combiner in MapReduce?",
     "options": {
-      "A": "A farming machine",
+      "A": "A component that merges multiple input files before processing",
       "B": "A local reducer that runs on map output before shuffle, reducing data transfer",
-      "C": "A data splitter",
-      "D": "A network device"
+      "C": "A data splitter that partitions input across mappers",
+      "D": "A network device that routes data between nodes"
     },
     "correct_answers": [
       "B"
@@ -5944,10 +5944,10 @@
     "subtopic": "CDN",
     "question": "How does CDN reduce latency?",
     "options": {
-      "A": "Faster servers",
+      "A": "Using higher bandwidth network connections",
       "B": "Serving content from geographically closer edge servers",
-      "C": "Compressing all data",
-      "D": "Using faster internet"
+      "C": "Compressing all data using advanced algorithms",
+      "D": "Implementing HTTP/3 with QUIC protocol"
     },
     "correct_answers": [
       "B"
@@ -6035,10 +6035,10 @@
     "subtopic": "CDN",
     "question": "What is cache warming in CDN?",
     "options": {
-      "A": "Heating servers",
+      "A": "Automatically scaling edge server capacity based on traffic",
       "B": "Pre-populating edge caches with content before users request it",
-      "C": "Clearing cache",
-      "D": "Monitoring cache"
+      "C": "Invalidating stale cache entries across all edge locations",
+      "D": "Monitoring cache hit rates and performance metrics"
     },
     "correct_answers": [
       "B"
@@ -6161,10 +6161,10 @@
     "subtopic": "CacheEvictionPolicies",
     "question": "What is the 'cache pollution' problem?",
     "options": {
-      "A": "Cache data becoming corrupted",
+      "A": "Cache data becoming corrupted due to concurrent writes",
       "B": "Infrequently used items filling cache and evicting useful items",
-      "C": "Cache servers overheating",
-      "D": "Too many cache misses"
+      "C": "Cache entries exceeding their configured TTL values",
+      "D": "Too many cache misses causing backend overload"
     },
     "correct_answers": [
       "B"
@@ -6647,10 +6647,10 @@
     "subtopic": "CacheStampede",
     "question": "A cache warming job runs before a flash sale. How does this prevent stampede?",
     "options": {
-      "A": "It doesn't help with stampede",
+      "A": "It distributes load across multiple cache nodes",
       "B": "Popular items are pre-cached, so they won't expire during peak traffic",
-      "C": "It warms up the servers",
-      "D": "It reduces database size"
+      "C": "It extends TTL values automatically during high traffic",
+      "D": "It reduces database query complexity"
     },
     "correct_answers": [
       "B"
@@ -6902,10 +6902,10 @@
     "subtopic": "CachingFundamentals",
     "question": "What is 'cache warming'?",
     "options": {
-      "A": "Heating cache servers for optimal performance",
+      "A": "Automatically scaling cache capacity based on traffic patterns",
       "B": "Pre-populating cache with expected data before traffic arrives",
-      "C": "Gradually increasing cache size",
-      "D": "Monitoring cache temperature metrics"
+      "C": "Gradually increasing cache size based on memory pressure",
+      "D": "Incrementally loading cache data based on access frequency"
     },
     "correct_answers": [
       "B"
@@ -8942,10 +8942,10 @@
     "subtopic": "WebRTC",
     "question": "What is a signaling server in WebRTC?",
     "options": {
-      "A": "A traffic light",
+      "A": "A server that routes all media traffic between peers",
       "B": "A server that helps peers discover each other and exchange connection information",
-      "C": "A media server",
-      "D": "A database server"
+      "C": "A media transcoding server for format conversion",
+      "D": "A database server for storing session state"
     },
     "correct_answers": [
       "B"
@@ -8960,10 +8960,10 @@
     "subtopic": "WebRTC",
     "question": "What is ICE in WebRTC?",
     "options": {
-      "A": "Frozen water",
+      "A": "Internet Connection Establishment—a protocol for secure connections",
       "B": "Interactive Connectivity Establishment—a framework for finding the best path between peers",
-      "C": "A video codec",
-      "D": "An encryption method"
+      "C": "A video codec for real-time communication",
+      "D": "An encryption method for media streams"
     },
     "correct_answers": [
       "B"
@@ -8978,10 +8978,10 @@
     "subtopic": "WebRTC",
     "question": "What is STUN in WebRTC?",
     "options": {
-      "A": "A shocking experience",
+      "A": "Secure Transport Unified Network—a protocol for encrypted communication",
       "B": "Session Traversal Utilities for NAT—helps discover public IP and port for NAT traversal",
-      "C": "A video format",
-      "D": "A database"
+      "C": "A video format for streaming media",
+      "D": "A distributed database for session storage"
     },
     "correct_answers": [
       "B"
@@ -8996,10 +8996,10 @@
     "subtopic": "WebRTC",
     "question": "What is TURN in WebRTC?",
     "options": {
-      "A": "A direction change",
+      "A": "Transport Unified Relay Network—a protocol for load balancing",
       "B": "Traversal Using Relays around NAT—relays traffic when direct connection isn't possible",
-      "C": "A video codec",
-      "D": "A signaling protocol"
+      "C": "A video codec for high-quality streaming",
+      "D": "A signaling protocol for session establishment"
     },
     "correct_answers": [
       "B"
@@ -9014,10 +9014,10 @@
     "subtopic": "WebRTC",
     "question": "What is SDP in WebRTC?",
     "options": {
-      "A": "A political party",
+      "A": "Secure Data Protocol—an encryption standard for media",
       "B": "Session Description Protocol—describes media capabilities, codecs, and connection information",
-      "C": "A video format",
-      "D": "A database query"
+      "C": "A video format for peer-to-peer streaming",
+      "D": "A database query language for session data"
     },
     "correct_answers": [
       "B"
@@ -9068,10 +9068,10 @@
     "subtopic": "WebRTC",
     "question": "What is a data channel in WebRTC?",
     "options": {
-      "A": "A TV channel",
+      "A": "A dedicated network path for video streaming",
       "B": "A peer-to-peer channel for sending arbitrary data (text, files, game state)",
-      "C": "A database connection",
-      "D": "A video stream"
+      "C": "A database connection for real-time queries",
+      "D": "A video stream with embedded metadata"
     },
     "correct_answers": [
       "B"
@@ -11306,10 +11306,10 @@
     "subtopic": "BloomFilters",
     "question": "What is a Bloom filter?",
     "options": {
-      "A": "A water filter",
+      "A": "A hash table optimized for memory efficiency",
       "B": "A probabilistic data structure for testing set membership with possible false positives but no false negatives",
-      "C": "A sorting algorithm",
-      "D": "A compression method"
+      "C": "A sorting algorithm for distributed systems",
+      "D": "A data compression method for large datasets"
     },
     "correct_answers": [
       "B"
@@ -12170,10 +12170,10 @@
     "subtopic": "HyperLogLog",
     "question": "What is HyperLogLog?",
     "options": {
-      "A": "A logging framework",
+      "A": "A distributed logging framework for microservices",
       "B": "A probabilistic algorithm for estimating the cardinality (count of distinct elements) of large datasets",
-      "C": "A sorting algorithm",
-      "D": "A compression method"
+      "C": "A sorting algorithm for streaming data",
+      "D": "A data compression method for log files"
     },
     "correct_answers": [
       "B"
@@ -15254,10 +15254,10 @@
     "subtopic": "FullTextSearch",
     "question": "What is stemming?",
     "options": {
-      "A": "Removing stems from plants",
+      "A": "Extracting root words using dictionary lookups",
       "B": "Reducing words to their root form so variations match the same term",
-      "C": "Adding prefixes",
-      "D": "Sorting words"
+      "C": "Adding prefixes to expand search terms",
+      "D": "Sorting words alphabetically for indexing"
     },
     "correct_answers": [
       "B"
@@ -15290,10 +15290,10 @@
     "subtopic": "FullTextSearch",
     "question": "What is Elasticsearch?",
     "options": {
-      "A": "A rubber band database",
+      "A": "A horizontally scalable document database",
       "B": "A distributed search and analytics engine built on Apache Lucene",
-      "C": "A relational database",
-      "D": "A caching system"
+      "C": "A relational database with full-text search capabilities",
+      "D": "A distributed caching system for search results"
     },
     "correct_answers": [
       "B"
@@ -17706,10 +17706,10 @@
     "subtopic": "GossipProtocol",
     "question": "What is the SWIM protocol?",
     "options": {
-      "A": "A swimming pool management system",
+      "A": "Scalable Weakly-consistent Infrastructure for Membership—a protocol for managing cluster state",
       "B": "Scalable Weakly-consistent Infection-style Membership—an efficient gossip-based membership protocol",
-      "C": "A database protocol",
-      "D": "A load balancing algorithm"
+      "C": "A database replication protocol for distributed systems",
+      "D": "A load balancing algorithm for network traffic"
     },
     "correct_answers": [
       "B"
@@ -18226,10 +18226,10 @@
     "subtopic": "LeaderElection",
     "question": "What is leader election in distributed systems?",
     "options": {
-      "A": "Voting for company leadership",
+      "A": "Selecting which node handles user authentication",
       "B": "Process of selecting one node to coordinate actions among distributed nodes",
-      "C": "Electing database primary",
-      "D": "User authentication"
+      "C": "Choosing the database primary for write operations",
+      "D": "Determining which server handles incoming requests"
     },
     "correct_answers": [
       "B"
@@ -18388,10 +18388,10 @@
     "subtopic": "LeaderElection",
     "question": "What is the role of ZooKeeper in leader election?",
     "options": {
-      "A": "It manages zoo animals",
+      "A": "Provides distributed storage for application data",
       "B": "Provides coordination primitives (locks, leader election) for distributed systems",
-      "C": "It's a database",
-      "D": "It's a load balancer"
+      "C": "Manages container orchestration and deployment",
+      "D": "Handles load balancing across cluster nodes"
     },
     "correct_answers": [
       "B"
@@ -22778,10 +22778,10 @@
     "subtopic": "ServiceMesh",
     "question": "What is a service mesh?",
     "options": {
-      "A": "A fishing net",
+      "A": "A network topology for connecting microservices",
       "B": "A dedicated infrastructure layer for handling service-to-service communication in microservices",
-      "C": "A database",
-      "D": "A load balancer"
+      "C": "A distributed database for microservices",
+      "D": "A hardware load balancer for container traffic"
     },
     "correct_answers": [
       "B"
@@ -22796,10 +22796,10 @@
     "subtopic": "ServiceMesh",
     "question": "What is a sidecar proxy in a service mesh?",
     "options": {
-      "A": "A motorcycle attachment",
+      "A": "A secondary proxy for failover scenarios",
       "B": "A proxy container deployed alongside each service instance that handles all network traffic",
-      "C": "A backup service",
-      "D": "A database connection"
+      "C": "A backup service for disaster recovery",
+      "D": "A database connection pooling mechanism"
     },
     "correct_answers": [
       "B"
@@ -22832,10 +22832,10 @@
     "subtopic": "ServiceMesh",
     "question": "What is the data plane in a service mesh?",
     "options": {
-      "A": "An airplane",
+      "A": "The network layer handling data packet routing",
       "B": "The sidecar proxies that handle actual service traffic",
-      "C": "The control plane",
-      "D": "A database"
+      "C": "The control plane configuration storage",
+      "D": "A distributed database for service state"
     },
     "correct_answers": [
       "B"
@@ -22850,10 +22850,10 @@
     "subtopic": "ServiceMesh",
     "question": "What is the control plane in a service mesh?",
     "options": {
-      "A": "An airplane cockpit",
+      "A": "The network routing configuration layer",
       "B": "The centralized component that configures and manages the data plane proxies",
-      "C": "The sidecar proxies",
-      "D": "A database"
+      "C": "The collection of sidecar proxies across all services",
+      "D": "A distributed configuration database"
     },
     "correct_answers": [
       "B"
@@ -22940,10 +22940,10 @@
     "subtopic": "ServiceMesh",
     "question": "What is Envoy proxy?",
     "options": {
-      "A": "A diplomat",
+      "A": "A reverse proxy for API gateway implementations",
       "B": "A high-performance proxy used as the data plane in many service meshes",
-      "C": "A database",
-      "D": "A programming language"
+      "C": "A distributed database proxy for connection pooling",
+      "D": "A programming framework for building proxies"
     },
     "correct_answers": [
       "B"
@@ -25598,10 +25598,10 @@
     "subtopic": "DistributedTracing",
     "question": "What is distributed tracing?",
     "options": {
-      "A": "Tracing network cables",
+      "A": "Monitoring network packet routes between data centers",
       "B": "Tracking request flow across multiple services to understand latency and dependencies",
-      "C": "Debugging local code",
-      "D": "Monitoring CPU usage"
+      "C": "Debugging local application code with breakpoints",
+      "D": "Monitoring CPU and memory usage across servers"
     },
     "correct_answers": [
       "B"
@@ -27577,10 +27577,10 @@
     "subtopic": "SecretsManagement",
     "question": "What is HashiCorp Vault?",
     "options": {
-      "A": "A physical vault",
+      "A": "A distributed key-value database for configuration",
       "B": "A secrets management tool that securely stores and controls access to secrets",
-      "C": "A database",
-      "D": "A programming language"
+      "C": "A container orchestration platform",
+      "D": "A programming framework for security applications"
     },
     "correct_answers": [
       "B"
@@ -27595,10 +27595,10 @@
     "subtopic": "SecretsManagement",
     "question": "What are dynamic secrets?",
     "options": {
-      "A": "Secrets that change color",
+      "A": "Secrets that are encrypted with rotating keys",
       "B": "Secrets generated on-demand with limited lifetime, automatically revoked after use",
-      "C": "Static passwords",
-      "D": "Encrypted secrets"
+      "C": "Static passwords stored in encrypted format",
+      "D": "Secrets that are synchronized across multiple regions"
     },
     "correct_answers": [
       "B"
@@ -27667,10 +27667,10 @@
     "subtopic": "SecretsManagement",
     "question": "What is envelope encryption?",
     "options": {
-      "A": "Encrypting mail",
+      "A": "Encrypting data twice with the same key for added security",
       "B": "Encrypting data with a data key, then encrypting the data key with a master key",
-      "C": "Double encryption",
-      "D": "No encryption"
+      "C": "Using multiple encryption algorithms in sequence",
+      "D": "Encrypting only the metadata while leaving data unencrypted"
     },
     "correct_answers": [
       "B"
@@ -28192,10 +28192,10 @@
     "subtopic": "ErasureCoding",
     "question": "What is erasure coding?",
     "options": {
-      "A": "Deleting data",
+      "A": "A secure data deletion method for compliance",
       "B": "A data protection method that breaks data into fragments, encodes with redundant pieces, enabling recovery from failures",
-      "C": "A compression algorithm",
-      "D": "An encryption method"
+      "C": "A data compression algorithm for reducing storage costs",
+      "D": "An encryption method for data at rest"
     },
     "correct_answers": [
       "B"
@@ -28228,10 +28228,10 @@
     "subtopic": "ErasureCoding",
     "question": "What is Reed-Solomon coding?",
     "options": {
-      "A": "A person's name",
+      "A": "A data compression algorithm for storage efficiency",
       "B": "A widely-used erasure coding algorithm that can recover from multiple simultaneous failures",
-      "C": "A compression method",
-      "D": "A network protocol"
+      "C": "A lossless compression method for media files",
+      "D": "A network protocol for reliable data transfer"
     },
     "correct_answers": [
       "B"

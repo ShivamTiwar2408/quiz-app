@@ -2,10 +2,10 @@
   {
     "question": "What is a service mesh?",
     "options": {
-      "A": "A fishing net",
+      "A": "A network topology for connecting microservices",
       "B": "A dedicated infrastructure layer for handling service-to-service communication in microservices",
-      "C": "A database",
-      "D": "A load balancer"
+      "C": "A distributed database for microservices",
+      "D": "A hardware load balancer for container traffic"
     },
     "correct_answers": ["B"],
     "explanation": "Service mesh: infrastructure layer handling inter-service communication. Provides: traffic management, security (mTLS), observability—without changing application code. Examples: Istio, Linkerd, Consul Connect.",
@@ -15,10 +15,10 @@
   {
     "question": "What is a sidecar proxy in a service mesh?",
     "options": {
-      "A": "A motorcycle attachment",
+      "A": "A secondary proxy for failover scenarios",
       "B": "A proxy container deployed alongside each service instance that handles all network traffic",
-      "C": "A backup service",
-      "D": "A database connection"
+      "C": "A backup service for disaster recovery",
+      "D": "A database connection pooling mechanism"
     },
     "correct_answers": ["B"],
     "explanation": "Sidecar proxy: runs next to each service (same pod in Kubernetes). Intercepts all inbound/outbound traffic. Handles: load balancing, retries, circuit breaking, mTLS, metrics. Service unaware of mesh.",
@@ -41,10 +41,10 @@
   {
     "question": "What is the data plane in a service mesh?",
     "options": {
-      "A": "An airplane",
+      "A": "The network layer handling data packet routing",
       "B": "The sidecar proxies that handle actual service traffic",
-      "C": "The control plane",
-      "D": "A database"
+      "C": "The control plane configuration storage",
+      "D": "A distributed database for service state"
     },
     "correct_answers": ["B"],
     "explanation": "Data plane: the sidecars (usually Envoy proxies). Handle actual traffic: routing, load balancing, health checks, metrics collection. Distributed across all service instances. Does the work.",
@@ -54,10 +54,10 @@
   {
     "question": "What is the control plane in a service mesh?",
     "options": {
-      "A": "An airplane cockpit",
+      "A": "The network routing configuration layer",
       "B": "The centralized component that configures and manages the data plane proxies",
-      "C": "The sidecar proxies",
-      "D": "A database"
+      "C": "The collection of sidecar proxies across all services",
+      "D": "A distributed configuration database"
     },
     "correct_answers": ["B"],
     "explanation": "Control plane: centralized management. Configures proxies, distributes policies, collects telemetry. Istio: istiod. Linkerd: control plane components. Provides API for operators to configure mesh behavior.",
@@ -119,10 +119,10 @@
   {
     "question": "What is Envoy proxy?",
     "options": {
-      "A": "A diplomat",
+      "A": "A reverse proxy for API gateway implementations",
       "B": "A high-performance proxy used as the data plane in many service meshes",
-      "C": "A database",
-      "D": "A programming language"
+      "C": "A distributed database proxy for connection pooling",
+      "D": "A programming framework for building proxies"
     },
     "correct_answers": ["B"],
     "explanation": "Envoy: L7 proxy originally from Lyft. Features: dynamic configuration, extensive observability, extensible. Used by: Istio, AWS App Mesh, Consul Connect. De facto standard for service mesh data planes.",

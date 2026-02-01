@@ -2,10 +2,10 @@
   {
     "question": "What is serverless architecture?",
     "options": {
-      "A": "Architecture without any servers",
+      "A": "A cloud model where applications run on dedicated bare-metal servers",
       "B": "A cloud model where the provider manages servers, scaling, and infrastructure; you only write code",
-      "C": "Running servers locally",
-      "D": "A type of database"
+      "C": "Running application servers on local development machines",
+      "D": "A distributed database architecture pattern"
     },
     "correct_answers": ["B"],
     "explanation": "Serverless: servers exist but are abstracted away. Provider handles provisioning, scaling, patching. You deploy functions/containers, pay per execution. Examples: AWS Lambda, Azure Functions, Google Cloud Functions.",
@@ -28,10 +28,10 @@
   {
     "question": "What is cold start in serverless?",
     "options": {
-      "A": "Server room temperature",
+      "A": "Initial database connection pool establishment",
       "B": "Latency when a function instance must be initialized because no warm instance is available",
-      "C": "A deployment strategy",
-      "D": "A testing method"
+      "C": "A blue-green deployment strategy for serverless functions",
+      "D": "A testing methodology for serverless applications"
     },
     "correct_answers": ["B"],
     "explanation": "Cold start: first invocation (or after idle timeout) requires: container spin-up, runtime initialization, code loading. Can add 100ms-several seconds latency. Warm starts reuse existing instances—much faster.",
@@ -106,10 +106,10 @@
   {
     "question": "What is AWS Step Functions?",
     "options": {
-      "A": "A walking tracker",
+      "A": "A managed workflow service for batch processing jobs",
       "B": "A serverless orchestration service for coordinating multiple Lambda functions into workflows",
-      "C": "A database",
-      "D": "A networking service"
+      "C": "A managed relational database service",
+      "D": "A virtual private cloud networking service"
     },
     "correct_answers": ["B"],
     "explanation": "Step Functions: serverless workflow orchestration. Define state machines with steps (Lambda, other services). Handles: sequencing, branching, error handling, retries, parallel execution. Visual workflow designer.",

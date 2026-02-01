@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const questionsDir = 'src/questions';
+const questionsDir = 'questions';
 const allQuestions = [];
 const topics = {};
 

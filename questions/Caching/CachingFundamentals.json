@@ -130,10 +130,10 @@
   {
     "question": "What is 'cache warming'?",
     "options": {
-      "A": "Heating cache servers for optimal performance",
+      "A": "Automatically scaling cache capacity based on traffic patterns",
       "B": "Pre-populating cache with expected data before traffic arrives",
-      "C": "Gradually increasing cache size",
-      "D": "Monitoring cache temperature metrics"
+      "C": "Gradually increasing cache size based on memory pressure",
+      "D": "Incrementally loading cache data based on access frequency"
     },
     "correct_answers": ["B"],
     "explanation": "Cache warming pre-loads anticipated data into cache before it's needed (e.g., before a product launch or after cache restart). This prevents cold-start cache misses from overwhelming the backend.",

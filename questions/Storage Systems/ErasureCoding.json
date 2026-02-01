@@ -2,10 +2,10 @@
   {
     "question": "What is erasure coding?",
     "options": {
-      "A": "Deleting data",
+      "A": "A secure data deletion method for compliance",
       "B": "A data protection method that breaks data into fragments, encodes with redundant pieces, enabling recovery from failures",
-      "C": "A compression algorithm",
-      "D": "An encryption method"
+      "C": "A data compression algorithm for reducing storage costs",
+      "D": "An encryption method for data at rest"
     },
     "correct_answers": ["B"],
     "explanation": "Erasure coding: split data into k fragments, generate m parity fragments. Any k of (k+m) fragments can reconstruct original. More storage-efficient than replication for same fault tolerance.",
@@ -28,10 +28,10 @@
   {
     "question": "What is Reed-Solomon coding?",
     "options": {
-      "A": "A person's name",
+      "A": "A data compression algorithm for storage efficiency",
       "B": "A widely-used erasure coding algorithm that can recover from multiple simultaneous failures",
-      "C": "A compression method",
-      "D": "A network protocol"
+      "C": "A lossless compression method for media files",
+      "D": "A network protocol for reliable data transfer"
     },
     "correct_answers": ["B"],
     "explanation": "Reed-Solomon: most common erasure code. RS(k,m): k data chunks, m parity chunks. Survives any m failures. Used in: CDs, QR codes, RAID 6, cloud storage (S3, Azure). Well-understood, efficient.",

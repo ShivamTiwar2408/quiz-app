@@ -104,10 +104,10 @@
   {
     "question": "A cache warming job runs before a flash sale. How does this prevent stampede?",
     "options": {
-      "A": "It doesn't help with stampede",
+      "A": "It distributes load across multiple cache nodes",
       "B": "Popular items are pre-cached, so they won't expire during peak traffic",
-      "C": "It warms up the servers",
-      "D": "It reduces database size"
+      "C": "It extends TTL values automatically during high traffic",
+      "D": "It reduces database query complexity"
     },
     "correct_answers": ["B"],
     "explanation": "Cache warming pre-populates cache with expected hot data. If TTL is set appropriately, entries won't expire during the sale. No expiration = no stampede. Combine with longer TTL for sale duration.",

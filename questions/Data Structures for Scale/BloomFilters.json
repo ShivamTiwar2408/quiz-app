@@ -2,10 +2,10 @@
   {
     "question": "What is a Bloom filter?",
     "options": {
-      "A": "A water filter",
+      "A": "A hash table optimized for memory efficiency",
       "B": "A probabilistic data structure for testing set membership with possible false positives but no false negatives",
-      "C": "A sorting algorithm",
-      "D": "A compression method"
+      "C": "A sorting algorithm for distributed systems",
+      "D": "A data compression method for large datasets"
     },
     "correct_answers": ["B"],
     "explanation": "Bloom filter: space-efficient probabilistic structure. Can answer 'is X in set?' with: definitely not (100% accurate) or probably yes (may be false positive). No false negatives. Very compact.",

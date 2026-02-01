@@ -28,10 +28,10 @@
   {
     "question": "What is a signaling server in WebRTC?",
     "options": {
-      "A": "A traffic light",
+      "A": "A server that routes all media traffic between peers",
       "B": "A server that helps peers discover each other and exchange connection information",
-      "C": "A media server",
-      "D": "A database server"
+      "C": "A media transcoding server for format conversion",
+      "D": "A database server for storing session state"
     },
     "correct_answers": ["B"],
     "explanation": "Signaling server: coordinates connection setup. Exchanges: SDP (session description), ICE candidates (network paths). Not part of WebRTC spec—use WebSockets, HTTP, etc. Once connected, peers communicate directly.",
@@ -41,10 +41,10 @@
   {
     "question": "What is ICE in WebRTC?",
     "options": {
-      "A": "Frozen water",
+      "A": "Internet Connection Establishment—a protocol for secure connections",
       "B": "Interactive Connectivity Establishment—a framework for finding the best path between peers",
-      "C": "A video codec",
-      "D": "An encryption method"
+      "C": "A video codec for real-time communication",
+      "D": "An encryption method for media streams"
     },
     "correct_answers": ["B"],
     "explanation": "ICE: finds network path between peers. Gathers candidates: local IP, server-reflexive (STUN), relay (TURN). Tests connectivity. Handles NAT traversal. Essential for peer-to-peer in real networks.",
@@ -54,10 +54,10 @@
   {
     "question": "What is STUN in WebRTC?",
     "options": {
-      "A": "A shocking experience",
+      "A": "Secure Transport Unified Network—a protocol for encrypted communication",
       "B": "Session Traversal Utilities for NAT—helps discover public IP and port for NAT traversal",
-      "C": "A video format",
-      "D": "A database"
+      "C": "A video format for streaming media",
+      "D": "A distributed database for session storage"
     },
     "correct_answers": ["B"],
     "explanation": "STUN server: tells client its public IP/port (as seen from outside NAT). Client uses this for ICE candidates. Lightweight, stateless. Works when NAT allows direct connection. Free STUN servers available.",
@@ -67,10 +67,10 @@
   {
     "question": "What is TURN in WebRTC?",
     "options": {
-      "A": "A direction change",
+      "A": "Transport Unified Relay Network—a protocol for load balancing",
       "B": "Traversal Using Relays around NAT—relays traffic when direct connection isn't possible",
-      "C": "A video codec",
-      "D": "A signaling protocol"
+      "C": "A video codec for high-quality streaming",
+      "D": "A signaling protocol for session establishment"
     },
     "correct_answers": ["B"],
     "explanation": "TURN server: relays media when direct connection fails (symmetric NAT, firewalls). All traffic goes through TURN. More expensive (bandwidth), but ensures connectivity. Fallback when STUN fails.",
@@ -80,10 +80,10 @@
   {
     "question": "What is SDP in WebRTC?",
     "options": {
-      "A": "A political party",
+      "A": "Secure Data Protocol—an encryption standard for media",
       "B": "Session Description Protocol—describes media capabilities, codecs, and connection information",
-      "C": "A video format",
-      "D": "A database query"
+      "C": "A video format for peer-to-peer streaming",
+      "D": "A database query language for session data"
     },
     "correct_answers": ["B"],
     "explanation": "SDP: text format describing session. Contains: media types, codecs, encryption keys, ICE candidates. Exchanged via signaling. Offer/answer model: caller sends offer, callee sends answer. Negotiates capabilities.",
@@ -119,10 +119,10 @@
   {
     "question": "What is a data channel in WebRTC?",
     "options": {
-      "A": "A TV channel",
+      "A": "A dedicated network path for video streaming",
       "B": "A peer-to-peer channel for sending arbitrary data (text, files, game state)",
-      "C": "A database connection",
-      "D": "A video stream"
+      "C": "A database connection for real-time queries",
+      "D": "A video stream with embedded metadata"
     },
     "correct_answers": ["B"],
     "explanation": "Data channel: P2P data transfer. Like WebSocket but peer-to-peer. Configurable: reliable/unreliable, ordered/unordered. Use cases: chat, file transfer, game state sync. Low latency, no server relay.",

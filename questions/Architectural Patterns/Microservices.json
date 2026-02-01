@@ -93,10 +93,10 @@
   {
     "question": "What is 'service mesh' in microservices?",
     "options": {
-      "A": "A fishing net for services",
+      "A": "A network topology diagram showing service dependencies",
       "B": "Infrastructure layer handling service-to-service communication, security, and observability",
-      "C": "A database type",
-      "D": "A deployment tool"
+      "C": "A NoSQL database optimized for microservices",
+      "D": "A container orchestration and deployment tool"
     },
     "correct_answers": ["B"],
     "explanation": "Service mesh (Istio, Linkerd) is infrastructure for service communication. Handles: load balancing, encryption, authentication, retries, circuit breaking, observability. Offloads cross-cutting concerns from application code.",
