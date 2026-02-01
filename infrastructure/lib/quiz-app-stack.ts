@@ -157,6 +157,31 @@ export class QuizAppStack extends cdk.Stack {
       },
     });
 
+    // Add CORS headers to 4XX/5XX responses (including 401 from Cognito authorizer)
+    api.addGatewayResponse('UnauthorizedResponse', {
+      type: apigateway.ResponseType.UNAUTHORIZED,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
+      },
+    });
+
+    api.addGatewayResponse('Default4XXResponse', {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
+      },
+    });
+
+    api.addGatewayResponse('Default5XXResponse', {
+      type: apigateway.ResponseType.DEFAULT_5XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
+      },
+    });
+
     const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'QuizApiAuthorizer', {
       cognitoUserPools: [userPool],
       identitySource: 'method.request.header.Authorization',
