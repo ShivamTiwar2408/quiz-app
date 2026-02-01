@@ -18,6 +18,9 @@ const LAMBDA_CONFIG = {
   bundling: { minify: true, sourceMap: true },
 } as const;
 
+// Force Lambda redeployment when questions are updated
+const DEPLOYMENT_VERSION = '2026-02-01-v2';
+
 const MEMORY_SIZES = {
   SMALL: 256,
   MEDIUM: 512,
@@ -119,7 +122,7 @@ export class QuizAppStack extends cdk.Stack {
       'GetQuestionsLambda',
       path.join(lambdaDir, 'getQuestions.ts'),
       MEMORY_SIZES.MEDIUM,
-      tableEnv
+      { ...tableEnv, DEPLOYMENT_VERSION }
     );
 
     const saveProgress = this.createLambdaFunction(

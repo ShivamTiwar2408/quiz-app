@@ -24,7 +24,7 @@ export interface UseQuizReturn {
     status: 'remind' | 'known',
     userProgress: Record<string, UserProgress>,
     setUserProgress: React.Dispatch<React.SetStateAction<Record<string, UserProgress>>>
-  ) => Promise<void>;
+  ) => void;
   resetQuiz: () => void;
 }
 
@@ -107,7 +107,7 @@ export function useQuiz(): UseQuizReturn {
     return true; // Quiz ended
   }, [quizState.currentQuestionIndex, questions.length]);
 
-  const handleProgressMark = useCallback(async (
+  const handleProgressMark = useCallback((
     status: 'remind' | 'known',
     userProgress: Record<string, UserProgress>,
     setUserProgress: React.Dispatch<React.SetStateAction<Record<string, UserProgress>>>
@@ -117,14 +117,16 @@ export function useQuiz(): UseQuizReturn {
     const isCorrect = quizState.answers[quizState.answers.length - 1]?.correct || false;
     const finalStatus = !isCorrect ? PROGRESS_STATUS.WRONG : status;
 
-    await saveProgress({
+    // Fire-and-forget - don't await, let it run in background
+    saveProgress({
       questionId: currentQuestion.id,
       topic: currentQuestion.topic,
       subtopic: currentQuestion.subtopic,
       status: finalStatus,
       answeredCorrectly: isCorrect,
-    });
+    }).catch(err => console.error('Background save failed:', err));
 
+    // Update local state immediately
     setUserProgress(prev => ({
       ...prev,
       [currentQuestion.id]: {

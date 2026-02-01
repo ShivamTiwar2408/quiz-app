@@ -371,6 +371,46 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 /* Header */
@@ -382,7 +422,7 @@ body {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 100;
 }
 
@@ -774,17 +814,26 @@ body {
   gap: 10px;
 }
 
+.tracker-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
 .tracker-btn {
-  flex: 1;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .tracker-btn:hover {
@@ -792,16 +841,32 @@ body {
   color: var(--text-primary);
 }
 
-.tracker-btn.remind.active {
+.tracker-btn.remind.active,
+.tracker-btn.remind:hover {
   border-color: var(--orange);
   background: var(--orange-bg);
   color: var(--orange);
 }
 
-.tracker-btn.known.active {
+.tracker-btn.known.active,
+.tracker-btn.known:hover {
   border-color: var(--green);
   background: var(--green-bg);
   color: var(--green);
+}
+
+.tracker-btn.review.active,
+.tracker-btn.review:hover {
+  border-color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-primary);
+}
+
+.tracker-btn.explanation.active,
+.tracker-btn.explanation:hover {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
 }
 
 /* Quiz Footer */

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Question, UserProgress } from '../types';
+
+type FeedbackStatus = 'remind' | 'known' | 'review' | 'review-explanation';
 
 interface QuizQuestionProps {
   question: Question;
@@ -25,6 +27,14 @@ export function QuizQuestion({
   onProgressMark,
 }: QuizQuestionProps) {
   const isMultiSelect = question.correct_answers.length > 1;
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackStatus | null>(null);
+
+  const handleFeedback = (status: FeedbackStatus) => {
+    setSelectedFeedback(status);
+    // Map review options to the backend status - non-blocking fire-and-forget
+    const backendStatus = status === 'review' || status === 'review-explanation' ? 'remind' : status;
+    onProgressMark(backendStatus as 'remind' | 'known');
+  };
 
   return (
     <>
@@ -84,16 +94,28 @@ export function QuizQuestion({
             <span className="tracker-label">How well do you know this?</span>
             <div className="tracker-buttons">
               <button
-                className={`tracker-btn remind ${userProgress[question.id]?.status === 'remind' ? 'active' : ''}`}
-                onClick={() => onProgressMark('remind')}
+                className={`tracker-btn remind ${selectedFeedback === 'remind' ? 'active' : ''}`}
+                onClick={() => handleFeedback('remind')}
               >
-                🔔 Remind Me Later
+                🔔 Reminded Me
               </button>
               <button
-                className={`tracker-btn known ${userProgress[question.id]?.status === 'known' ? 'active' : ''}`}
-                onClick={() => onProgressMark('known')}
+                className={`tracker-btn known ${selectedFeedback === 'known' ? 'active' : ''}`}
+                onClick={() => handleFeedback('known')}
               >
-                ✅ I Know This
+                ✅ I Know It
+              </button>
+              <button
+                className={`tracker-btn review ${selectedFeedback === 'review' ? 'active' : ''}`}
+                onClick={() => handleFeedback('review')}
+              >
+                📝 Review
+              </button>
+              <button
+                className={`tracker-btn explanation ${selectedFeedback === 'review-explanation' ? 'active' : ''}`}
+                onClick={() => handleFeedback('review-explanation')}
+              >
+                📖 Review Explanation
               </button>
             </div>
           </div>

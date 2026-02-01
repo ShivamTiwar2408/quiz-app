@@ -62,6 +62,17 @@ function App() {
     );
   }
 
+  const isLoading = userData.loading || quiz.loading;
+
+  const renderLoadingOverlay = () => isLoading && (
+    <div className="loading-overlay">
+      <div className="loading-spinner">
+        <div className="spinner" />
+        <span className="loading-text">Loading...</span>
+      </div>
+    </div>
+  );
+
   const renderSidebar = () => (
     <>
       <Sidebar
@@ -81,6 +92,7 @@ function App() {
   if (screen === SCREENS.HOME) {
     return (
       <div className="app">
+        {renderLoadingOverlay()}
         {renderSidebar()}
         <Header onMenuOpen={() => setMenuOpen(true)} />
         <main className="home-content">
@@ -157,6 +169,7 @@ function App() {
     const passed = pct >= PASSING_SCORE_PERCENT;
     return (
       <div className="app">
+        {renderLoadingOverlay()}
         {renderSidebar()}
         <Header onMenuOpen={() => setMenuOpen(true)} />
         <main className="results-content">
@@ -202,6 +215,7 @@ function App() {
 
   return (
     <div className="app">
+      {renderLoadingOverlay()}
       {renderSidebar()}
       <QuizHeader
         onMenuOpen={() => setMenuOpen(true)}
