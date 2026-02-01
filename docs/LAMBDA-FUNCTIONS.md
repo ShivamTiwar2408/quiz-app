@@ -213,6 +213,8 @@ if (Array.isArray(body.progress)) {
 | questionId | String | Sort Key (SK) |
 | status | String | "remind" or "known" |
 | answeredCorrectly | Boolean | Whether user got it right |
+| remindCount | Number | Times user marked as "remind me" |
+| knownCount | Number | Times user marked as "I know this" |
 | timestamp | String | ISO timestamp of last update |
 
 ### Response Format

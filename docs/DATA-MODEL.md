@@ -60,27 +60,33 @@ Table: QuizUserProgress
 │   └── questionId (Sort Key)
 │       ├── status: "remind" | "known"
 │       ├── answeredCorrectly: boolean
+│       ├── remindCount: number
+│       ├── knownCount: number
 │       └── timestamp: ISO string
 ```
 
 ### Example Records
 
 ```json
-// User marked question as "I know this"
+// User marked question as "I know this" twice
 {
   "userId": "user_abc123xyz",
   "questionId": "q001",
   "status": "known",
   "answeredCorrectly": true,
+  "remindCount": 0,
+  "knownCount": 2,
   "timestamp": "2024-01-15T10:30:00.000Z"
 }
 
-// User marked question for review
+// User marked question for review 3 times
 {
   "userId": "user_abc123xyz",
   "questionId": "q005",
   "status": "remind",
   "answeredCorrectly": false,
+  "remindCount": 3,
+  "knownCount": 0,
   "timestamp": "2024-01-15T10:32:00.000Z"
 }
 ```

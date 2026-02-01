@@ -18,7 +18,9 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "cdk.out"]
 }

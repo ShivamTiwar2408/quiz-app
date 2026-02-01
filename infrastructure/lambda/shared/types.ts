@@ -1,3 +1,6 @@
+// Shared types between frontend and backend
+// This is the single source of truth for domain types
+
 export interface Question {
   id: string;
   topic: string;
@@ -15,6 +18,7 @@ export interface TopicsMap {
 }
 
 export interface UserProgress {
+  userId?: string;
   questionId: string;
   topic?: string;
   subtopic?: string;
@@ -25,6 +29,7 @@ export interface UserProgress {
   remindCount: number;
   knownCount: number;
   lastAnswered?: string;
+  timestamp?: string;
 }
 
 export interface UserStats {
@@ -33,34 +38,12 @@ export interface UserStats {
   totalWrong: number;
   totalKnown: number;
   totalRemind: number;
-  topicStats: Record<string, { answered: number; correct: number; wrong: number }>;
-}
-
-export interface QuizState {
-  currentQuestionIndex: number;
-  selectedAnswers: string[];
-  showResult: boolean;
-  score: number;
-  answers: { questionId: string; selected: string[]; correct: boolean }[];
+  topicStats: Record<string, {
+    answered: number;
+    correct: number;
+    wrong: number;
+  }>;
 }
 
 export type QuizMode = 'smart' | 'wrong' | 'remind' | 'random';
-
-// Auth types
-export interface AuthUser {
-  email: string;
-  userId: string;
-}
-
-export interface AuthTokens {
-  idToken: string;
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface AuthState {
-  user: AuthUser | null;
-  tokens: AuthTokens | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
+export type ProgressStatus = 'known' | 'remind' | 'wrong';
