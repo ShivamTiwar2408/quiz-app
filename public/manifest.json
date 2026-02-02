@@ -1,7 +1,7 @@
 {
-  "short_name": "AWS Quiz",
-  "name": "AWS Quiz Master",
-  "description": "AWS Solutions Architect Quiz App",
+  "short_name": "Recallr",
+  "name": "Recallr",
+  "description": "Learn, Note, Quiz, Remember",
   "icons": [
     {
       "src": "icon-192.png",

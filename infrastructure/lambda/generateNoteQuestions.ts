@@ -1,0 +1,175 @@
+import { ScanCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
+import { getDocClient } from './shared/db';
+import { Note } from './shared/types';
+
+const NOTES_TABLE = process.env.NOTES_TABLE_NAME || '';
+const NOTE_QUESTIONS_TABLE = process.env.NOTE_QUESTIONS_TABLE_NAME || '';
+const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
+
+const bedrockClient = new BedrockRuntimeClient({ region: AWS_REGION });
+
+interface GeneratedQuestion {
+  noteId: string;
+  ownerId: string;
+  question: string;
+  options: Record<string, string>;
+  correct_answers: string[];
+  explanation: string;
+  difficulty: string;
+  generatedAt: string;
+  noteTitle: string;
+  noteContent: string;
+}
+
+async function generateQuestionFromNote(note: Note): Promise<GeneratedQuestion | null> {
+  const prompt = `You are an expert quiz question generator. Based on the following note, create a high-quality multiple choice question to test recall and understanding.
+
+Note Title: ${note.title}
+Note Content: ${note.content}
+
+Generate a question that:
+1. Tests understanding of the key concepts in the note
+2. Has 4 options (A, B, C, D)
+3. Has exactly one correct answer
+4. Includes a brief explanation of why the correct answer is right
+
+Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
+{
+  "question": "Your question here?",
+  "options": {
+    "A": "First option",
+    "B": "Second option", 
+    "C": "Third option",
+    "D": "Fourth option"
+  },
+  "correct_answers": ["A"],
+  "explanation": "Brief explanation of why this is correct",
+  "difficulty": "medium"
+}`;
+
+  try {
+    const command = new InvokeModelCommand({
+      modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify({
+        anthropic_version: 'bedrock-2023-05-31',
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    });
+
+    const response = await bedrockClient.send(command);
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    const content = responseBody.content[0].text;
+    
+    // Parse the JSON response
+    const questionData = JSON.parse(content);
+    
+    return {
+      noteId: note.noteId,
+      ownerId: note.userId || '',
+      question: questionData.question,
+      options: questionData.options,
+      correct_answers: questionData.correct_answers,
+      explanation: questionData.explanation,
+      difficulty: questionData.difficulty || 'medium',
+      generatedAt: new Date().toISOString(),
+      noteTitle: note.title,
+      noteContent: note.content,
+    };
+  } catch (error) {
+    console.error(`Error generating question for note ${note.noteId}:`, error);
+    return null;
+  }
+}
+
+export const handler = async (): Promise<void> => {
+  console.log('Starting note question generation job');
+  const docClient = getDocClient();
+  
+  // Calculate timestamp for 24 hours ago
+  const oneDayAgo = new Date();
+  oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+  const oneDayAgoISO = oneDayAgo.toISOString();
+  
+  try {
+    // Scan for notes with quizMe=true and updatedAt in last 24 hours
+    // Note: For production with many users, consider using GSI or pagination
+    const scanCommand = new ScanCommand({
+      TableName: NOTES_TABLE,
+      FilterExpression: 'quizMe = :quizMe AND updatedAt >= :since',
+      ExpressionAttributeValues: {
+        ':quizMe': true,
+        ':since': oneDayAgoISO,
+      },
+    });
+    
+    const result = await docClient.send(scanCommand);
+    const notes = (result.Items || []) as Note[];
+    
+    console.log(`Found ${notes.length} notes to process`);
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const note of notes) {
+      try {
+        // Check if question already exists for this note (avoid duplicates)
+        const existingQuery = new QueryCommand({
+          TableName: NOTE_QUESTIONS_TABLE,
+          KeyConditionExpression: 'noteId = :noteId',
+          ExpressionAttributeValues: {
+            ':noteId': note.noteId,
+          },
+          Limit: 1,
+        });
+        
+        const existing = await docClient.send(existingQuery);
+        
+        // Skip if question was generated recently (within last 24 hours)
+        if (existing.Items && existing.Items.length > 0) {
+          const existingQuestion = existing.Items[0];
+          const generatedAt = new Date(existingQuestion.generatedAt);
+          if (generatedAt >= oneDayAgo) {
+            console.log(`Skipping note ${note.noteId} - question already generated recently`);
+            continue;
+          }
+        }
+        
+        // Generate new question
+        const question = await generateQuestionFromNote(note);
+        
+        if (question) {
+          // Save to DynamoDB
+          await docClient.send(new PutCommand({
+            TableName: NOTE_QUESTIONS_TABLE,
+            Item: question,
+          }));
+          
+          console.log(`Generated question for note: ${note.noteId}`);
+          successCount++;
+        } else {
+          errorCount++;
+        }
+        
+        // Add small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (noteError) {
+        console.error(`Error processing note ${note.noteId}:`, noteError);
+        errorCount++;
+      }
+    }
+    
+    console.log(`Job completed. Success: ${successCount}, Errors: ${errorCount}`);
+  } catch (error) {
+    console.error('Error in note question generation job:', error);
+    throw error;
+  }
+};

@@ -7,9 +7,11 @@ interface SidebarProps {
   userEmail: string;
   wrongCount: number;
   remindCount: number;
+  notesCount: number;
   onClose: () => void;
   onSignOut: () => void;
   onStartQuiz: (mode: QuizMode, topic?: string, subtopic?: string) => void;
+  onOpenNotes: () => void;
 }
 
 export function Sidebar({
@@ -18,9 +20,11 @@ export function Sidebar({
   userEmail,
   wrongCount,
   remindCount,
+  notesCount,
   onClose,
   onSignOut,
   onStartQuiz,
+  onOpenNotes,
 }: SidebarProps) {
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
 
@@ -56,6 +60,9 @@ export function Sidebar({
         <div className="quick-actions">
           <button className="sidebar-action" onClick={() => handleQuizStart('smart')}>
             <span className="action-icon">🎯</span> Smart Quiz
+          </button>
+          <button className="sidebar-action notes" onClick={onOpenNotes}>
+            <span className="action-icon">📝</span> My Notes {notesCount > 0 && `(${notesCount})`}
           </button>
           {wrongCount > 0 && (
             <button className="sidebar-action wrong" onClick={() => handleQuizStart('wrong')}>

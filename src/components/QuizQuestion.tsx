@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Question, UserProgress } from '../types';
 
 type FeedbackStatus = 'remind' | 'known' | 'review' | 'review-explanation';
@@ -18,11 +18,9 @@ interface QuizQuestionProps {
 export function QuizQuestion({
   question,
   questionNumber,
-  totalQuestions,
   selectedAnswers,
   showResult,
   showExplanation,
-  userProgress,
   onAnswerSelect,
   onProgressMark,
 }: QuizQuestionProps) {

@@ -13,7 +13,7 @@ export function Header({ onMenuOpen, children }: HeaderProps) {
         <span></span>
         <span></span>
       </button>
-      {children || <div className="logo">System Design Quiz</div>}
+      {children || <div className="logo">Recallr</div>}
     </header>
   );
 }

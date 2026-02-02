@@ -4,18 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#6366f1" />
-    <meta name="description" content="AWS Solutions Architect Quiz App" />
+    <meta name="description" content="Recallr - Learn, Note, Quiz, Remember" />
     
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="AWS Quiz" />
+    <meta name="apple-mobile-web-app-title" content="Recallr" />
     
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon-192.png" />
     
-    <title>AWS Quiz Master</title>
+    <title>Recallr</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,36 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('%PUBLIC_URL%/service-worker.js');
+          navigator.serviceWorker.register('%PUBLIC_URL%/service-worker.js')
+            .then((registration) => {
+              // Check for updates immediately
+              registration.update();
+              
+              // Check for updates every 30 seconds
+              setInterval(() => registration.update(), 30000);
+              
+              // Handle updates - auto-update without prompt for better PWA experience
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available - auto-activate
+                    console.log('New version available, updating...');
+                    newWorker.postMessage('skipWaiting');
+                  }
+                });
+              });
+            })
+            .catch(err => console.error('SW registration failed:', err));
+          
+          // Reload when new service worker takes over
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+              refreshing = true;
+              window.location.reload();
+            }
+          });
         });
       }
     </script>

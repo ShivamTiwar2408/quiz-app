@@ -55,7 +55,7 @@ export function AuthScreen({
   return (
     <div className="app auth-screen">
       <div className="auth-container">
-        <div className="auth-logo">🎯 System Design Quiz</div>
+        <div className="auth-logo">🧠 Recallr</div>
         
         {authScreen === AUTH_SCREENS.LOGIN && (
           <form className="auth-form" onSubmit={handleSignIn}>

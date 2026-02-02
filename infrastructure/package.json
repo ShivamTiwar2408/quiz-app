@@ -11,17 +11,18 @@
     "synth": "cdk synth"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.170.0",
-    "constructs": "^10.4.2",
-    "ts-node": "^10.9.2",
+    "@aws-sdk/client-bedrock-runtime": "^3.967.0",
     "@aws-sdk/client-dynamodb": "^3.700.0",
     "@aws-sdk/lib-dynamodb": "^3.700.0",
-    "@types/aws-lambda": "^8.10.145"
+    "@types/aws-lambda": "^8.10.145",
+    "aws-cdk-lib": "^2.170.0",
+    "constructs": "^10.4.2",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "aws-cdk": "^2.170.0",
-    "typescript": "~5.7.2",
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.24.0",
+    "typescript": "~5.7.2"
   }
 }

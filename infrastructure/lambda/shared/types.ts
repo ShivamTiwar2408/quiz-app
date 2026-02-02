@@ -45,5 +45,18 @@ export interface UserStats {
   }>;
 }
 
-export type QuizMode = 'smart' | 'wrong' | 'remind' | 'random';
+export type QuizMode = 'smart' | 'wrong' | 'remind' | 'random' | 'notes';
 export type ProgressStatus = 'known' | 'remind' | 'wrong';
+
+// Notes types
+export interface Note {
+  noteId: string;
+  userId?: string;
+  title: string;
+  content: string;
+  color: string;
+  pinned: boolean;
+  quizMe: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

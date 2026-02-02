@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Question, QuizState, UserProgress, QuizMode } from '../types';
-import { fetchQuestions, saveProgress } from '../api';
+import { fetchQuestions, fetchNoteQuestions, saveProgress } from '../api';
 import { QUESTIONS_PER_QUIZ, PROGRESS_STATUS } from '../constants';
 
 export interface QuizFilter {
@@ -49,7 +49,15 @@ export function useQuiz(): UseQuizReturn {
   const startQuiz = useCallback(async (mode: QuizMode, topic?: string, subtopic?: string): Promise<boolean> => {
     setLoading(true);
     try {
-      const qs = await fetchQuestions({ count: QUESTIONS_PER_QUIZ, topic, subtopic, mode });
+      let qs: Question[];
+      
+      if (mode === 'notes') {
+        // Fetch questions generated from user notes
+        qs = await fetchNoteQuestions(QUESTIONS_PER_QUIZ);
+      } else {
+        qs = await fetchQuestions({ count: QUESTIONS_PER_QUIZ, topic, subtopic, mode });
+      }
+      
       if (qs.length === 0) {
         return false;
       }

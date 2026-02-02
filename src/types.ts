@@ -44,7 +44,7 @@ export interface QuizState {
   answers: { questionId: string; selected: string[]; correct: boolean }[];
 }
 
-export type QuizMode = 'smart' | 'wrong' | 'remind' | 'random';
+export type QuizMode = 'smart' | 'wrong' | 'remind' | 'random' | 'notes';
 
 // Auth types
 export interface AuthUser {
@@ -63,4 +63,17 @@ export interface AuthState {
   tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+
+// Notes types
+export interface Note {
+  noteId: string;
+  userId?: string;
+  title: string;
+  content: string;
+  color: string;
+  pinned: boolean;
+  quizMe: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

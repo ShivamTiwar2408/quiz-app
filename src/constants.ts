@@ -19,6 +19,7 @@ export const SCREENS = {
   HOME: 'home',
   QUIZ: 'quiz',
   RESULTS: 'results',
+  NOTES: 'notes',
 } as const;
 
 export const AUTH_SCREENS = {

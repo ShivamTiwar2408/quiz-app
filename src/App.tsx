@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { QuizMode } from './types';
-import { useAuth, useQuiz, useUserData } from './hooks';
-import { AuthScreen, Header, QuizHeader, QuizQuestion, Sidebar } from './components';
+import { useAuth, useQuiz, useUserData, useNotes } from './hooks';
+import { AuthScreen, Header, QuizHeader, QuizQuestion, Sidebar, NotesScreen } from './components';
 import { SCREENS, PASSING_SCORE_PERCENT } from './constants';
 import './App.css';
 
@@ -11,6 +11,7 @@ function App() {
   const auth = useAuth();
   const userData = useUserData(auth.user);
   const quiz = useQuiz();
+  const notesHook = useNotes(auth.user);
   
   const [screen, setScreen] = useState<Screen>(SCREENS.HOME);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,82 +82,138 @@ function App() {
         userEmail={auth.user!.email}
         wrongCount={userData.wrongCount}
         remindCount={userData.remindCount}
+        notesCount={notesHook.notes.length}
         onClose={() => setMenuOpen(false)}
         onSignOut={handleSignOut}
         onStartQuiz={handleStartQuiz}
+        onOpenNotes={() => {
+          setMenuOpen(false);
+          setScreen(SCREENS.NOTES);
+        }}
       />
       {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}
     </>
   );
 
+  if (screen === SCREENS.NOTES) {
+    return (
+      <NotesScreen
+        notes={notesHook.notes}
+        loading={notesHook.loading}
+        onCreateNote={async (data) => {
+          await notesHook.createNote(data);
+        }}
+        onUpdateNote={async (data) => {
+          await notesHook.updateNote(data);
+        }}
+        onDeleteNote={async (noteId) => {
+          await notesHook.removeNote(noteId);
+        }}
+        onTogglePin={notesHook.togglePin}
+        onBack={() => setScreen(SCREENS.HOME)}
+      />
+    );
+  }
+
   if (screen === SCREENS.HOME) {
+    const topicKeys = Object.keys(userData.topics);
+    const hasReviewItems = userData.wrongCount > 0 || userData.remindCount > 0;
+    
     return (
       <div className="app">
         {renderLoadingOverlay()}
         {renderSidebar()}
         <Header onMenuOpen={() => setMenuOpen(true)} />
         <main className="home-content">
-          <div className="hero-section">
-            <h1>Welcome, {auth.user.email.split('@')[0]}!</h1>
-            <p className="hero-subtitle">Master system design with intelligent quizzes</p>
+          {/* Greeting */}
+          <div className="greeting">
+            <span className="greeting-wave">👋</span>
+            <h1>Hey {auth.user.email.split('@')[0]}</h1>
           </div>
-          <div className="stats-row">
-            <div className="stat-item">
-              <span className="stat-number">{Object.keys(userData.topics).length}</span>
-              <span className="stat-label">Topics</span>
+
+          {/* Main CTA */}
+          <button className="main-cta" onClick={() => handleStartQuiz('smart')} disabled={quiz.loading}>
+            <div className="cta-content">
+              <span className="cta-icon">🎯</span>
+              <div className="cta-text">
+                <span className="cta-title">{quiz.loading ? 'Loading...' : 'Start Quiz'}</span>
+                <span className="cta-subtitle">Smart questions based on your progress</span>
+              </div>
             </div>
-            <div className="stat-item">
-              <span className="stat-number green">{userData.userStats.totalKnown}</span>
-              <span className="stat-label">Mastered</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number orange">{userData.userStats.totalRemind}</span>
-              <span className="stat-label">To Review</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number red">{userData.wrongCount}</span>
-              <span className="stat-label">Need Practice</span>
-            </div>
-          </div>
-          <div className="quiz-options">
-            <button className="quiz-btn primary" onClick={() => handleStartQuiz('smart')} disabled={quiz.loading}>
-              <span className="btn-icon">🎯</span>
-              <span className="btn-label">{quiz.loading ? 'Loading...' : 'Smart Quiz'}</span>
-              <span className="btn-meta">AI-powered question selection</span>
+            <span className="cta-arrow">›</span>
+          </button>
+
+          {/* Quick Actions */}
+          <div className="quick-actions-grid">
+            <button className="quick-action" onClick={() => setScreen(SCREENS.NOTES)}>
+              <span className="qa-icon">📝</span>
+              <span className="qa-label">Notes</span>
+              {notesHook.notes.length > 0 && <span className="qa-badge">{notesHook.notes.length}</span>}
             </button>
-            {userData.wrongCount > 0 && (
-              <button className="quiz-btn danger" onClick={() => handleStartQuiz('wrong')}>
-                <span className="btn-icon">❌</span>
-                <span className="btn-label">Practice Wrong Answers</span>
-                <span className="btn-meta">{userData.wrongCount} questions to review</span>
-              </button>
-            )}
-            {userData.remindCount > 0 && (
-              <button className="quiz-btn secondary" onClick={() => handleStartQuiz('remind')}>
-                <span className="btn-icon">🔔</span>
-                <span className="btn-label">Reminder Quiz</span>
-                <span className="btn-meta">{userData.remindCount} marked for review</span>
-              </button>
-            )}
-            <button className="quiz-btn tertiary" onClick={() => handleStartQuiz('random')}>
-              <span className="btn-icon">🎲</span>
-              <span className="btn-label">Random Quiz</span>
-              <span className="btn-meta">Test yourself on anything</span>
+            <button className="quick-action" onClick={() => handleStartQuiz('notes')}>
+              <span className="qa-icon">🧠</span>
+              <span className="qa-label">Quiz Notes</span>
+            </button>
+            <button className="quick-action" onClick={() => handleStartQuiz('random')}>
+              <span className="qa-icon">🎲</span>
+              <span className="qa-label">Random</span>
+            </button>
+            <button className="quick-action" onClick={() => setMenuOpen(true)}>
+              <span className="qa-icon">📚</span>
+              <span className="qa-label">Topics</span>
+              <span className="qa-badge">{topicKeys.length}</span>
             </button>
           </div>
-          <div className="topics-preview">
-            <h3>Browse by Topic</h3>
-            <div className="topics-grid">
-              {Object.keys(userData.topics).slice(0, 6).map(t => (
-                <button key={t} className="topic-card" onClick={() => handleStartQuiz('smart', t)}>
-                  {t}
-                </button>
-              ))}
-              {Object.keys(userData.topics).length > 6 && (
-                <button className="topic-card more" onClick={() => setMenuOpen(true)}>
-                  +{Object.keys(userData.topics).length - 6} more
-                </button>
-              )}
+
+          {/* Review Section - Only show if there are items to review */}
+          {hasReviewItems && (
+            <div className="review-section">
+              <h2>Needs Review</h2>
+              <div className="review-cards">
+                {userData.wrongCount > 0 && (
+                  <button className="review-card wrong" onClick={() => handleStartQuiz('wrong')}>
+                    <div className="rc-left">
+                      <span className="rc-icon">❌</span>
+                      <div className="rc-info">
+                        <span className="rc-count">{userData.wrongCount}</span>
+                        <span className="rc-label">Wrong answers</span>
+                      </div>
+                    </div>
+                    <span className="rc-action">Practice →</span>
+                  </button>
+                )}
+                {userData.remindCount > 0 && (
+                  <button className="review-card remind" onClick={() => handleStartQuiz('remind')}>
+                    <div className="rc-left">
+                      <span className="rc-icon">🔔</span>
+                      <div className="rc-info">
+                        <span className="rc-count">{userData.remindCount}</span>
+                        <span className="rc-label">To review</span>
+                      </div>
+                    </div>
+                    <span className="rc-action">Review →</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Progress Stats */}
+          <div className="progress-section">
+            <h2>Your Progress</h2>
+            <div className="progress-stats">
+              <div className="progress-stat">
+                <span className="ps-value green">{userData.userStats.totalKnown}</span>
+                <span className="ps-label">Mastered</span>
+              </div>
+              <div className="progress-stat">
+                <span className="ps-value">{userData.userStats.totalAnswered}</span>
+                <span className="ps-label">Answered</span>
+              </div>
+              <div className="progress-stat">
+                <span className="ps-value">{topicKeys.length}</span>
+                <span className="ps-label">Topics</span>
+              </div>
             </div>
           </div>
         </main>

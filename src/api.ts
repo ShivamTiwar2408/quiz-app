@@ -1,4 +1,4 @@
-import { Question, UserProgress, UserStats, TopicsMap, QuizMode } from './types';
+import { Question, UserProgress, UserStats, TopicsMap, QuizMode, Note } from './types';
 import { getIdToken, refreshTokens } from './auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || '';
@@ -100,5 +100,85 @@ export async function getProgress(): Promise<ProgressResponse> {
   } catch (error) {
     console.error('Error fetching progress:', error);
     return { progress: {}, stats: defaultStats };
+  }
+}
+
+// Notes API
+export interface FetchNotesParams {
+  pinned?: boolean;
+  quizMe?: boolean;
+}
+
+export async function fetchNotes(params: FetchNotesParams = {}): Promise<Note[]> {
+  if (!API_BASE_URL) return [];
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.pinned !== undefined) queryParams.set('pinned', String(params.pinned));
+    if (params.quizMe !== undefined) queryParams.set('quizMe', String(params.quizMe));
+    
+    const url = queryParams.toString() 
+      ? `${API_BASE_URL}/notes?${queryParams}` 
+      : `${API_BASE_URL}/notes`;
+    
+    const response = await authFetch(url);
+    if (!response.ok) throw new Error('Failed to fetch notes');
+    const data = await response.json();
+    return data.notes || [];
+  } catch (error) {
+    console.error('Error fetching notes:', error);
+    return [];
+  }
+}
+
+export interface SaveNoteParams {
+  noteId?: string;
+  title: string;
+  content: string;
+  color?: string;
+  pinned?: boolean;
+  quizMe?: boolean;
+}
+
+export async function saveNote(params: SaveNoteParams): Promise<Note | null> {
+  if (!API_BASE_URL) return null;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) throw new Error('Failed to save note');
+    const data = await response.json();
+    return data.note;
+  } catch (error) {
+    console.error('Error saving note:', error);
+    return null;
+  }
+}
+
+export async function deleteNote(noteId: string): Promise<boolean> {
+  if (!API_BASE_URL) return false;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/notes/${noteId}`, {
+      method: 'DELETE',
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Error deleting note:', error);
+    return false;
+  }
+}
+
+// Note Questions API - Questions generated from user notes
+export async function fetchNoteQuestions(count: number = 10): Promise<Question[]> {
+  if (!API_BASE_URL) return [];
+  try {
+    const response = await authFetch(`${API_BASE_URL}/note-questions?count=${count}`);
+    if (!response.ok) throw new Error('Failed to fetch note questions');
+    const data = await response.json();
+    return data.questions || [];
+  } catch (error) {
+    console.error('Error fetching note questions:', error);
+    return [];
   }
 }
