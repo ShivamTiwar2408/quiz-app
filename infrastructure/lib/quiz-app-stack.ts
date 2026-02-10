@@ -6,65 +6,44 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as events from 'aws-cdk-lib/aws-events';
-import * as targets from 'aws-cdk-lib/aws-events-targets';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import { Construct } from 'constructs';
 
-// Configuration constants - Single source of truth
 const LAMBDA_CONFIG = {
   runtime: Runtime.NODEJS_20_X,
   timeout: cdk.Duration.seconds(10),
   bundling: { minify: true, sourceMap: true },
 } as const;
 
-// Force Lambda redeployment when questions are updated
-const DEPLOYMENT_VERSION = '2026-02-01-v2';
-
-const MEMORY_SIZES = {
-  SMALL: 256,
-  MEDIUM: 512,
-  LARGE: 1024,
-} as const;
+const DEPLOYMENT_VERSION = '2026-02-10-analytics-v1';
+const MEMORY_SIZES = { SMALL: 256, MEDIUM: 512, LARGE: 1024 } as const;
 
 export class QuizAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
     const userPool = this.createUserPool();
     const userPoolClient = this.createUserPoolClient(userPool);
-    const userProgressTable = this.createDynamoTable();
+    const progressTable = this.createProgressTable();
+    const attemptsTable = this.createAttemptsTable();
+    const sessionsTable = this.createSessionsTable();
     const notesTable = this.createNotesTable();
-    const noteQuestionsTable = this.createNoteQuestionsTable();
-    const lambdas = this.createLambdaFunctions(userProgressTable, notesTable, noteQuestionsTable);
+    const customQuestionsTable = this.createCustomQuestionsTable();
+    const lambdas = this.createLambdaFunctions(progressTable, attemptsTable, sessionsTable, notesTable, customQuestionsTable);
     const api = this.createApiGateway(userPool, lambdas);
-    const { bucket, distribution } = this.createFrontendInfrastructure();
-    
-    // Create EventBridge rule for daily question generation
-    this.createDailyQuestionGenerationRule(lambdas.generateNoteQuestions);
-
+    const { distribution } = this.createFrontendInfrastructure();
     this.createOutputs(api, distribution, userPool, userPoolClient);
   }
 
   private createUserPool(): cognito.UserPool {
     return new cognito.UserPool(this, 'QuizUserPool', {
-      userPoolName: 'quiz-app-users',
+      userPoolName: 'recallr-users',
       selfSignUpEnabled: true,
       signInAliases: { email: true },
       autoVerify: { email: true },
-      standardAttributes: {
-        email: { required: true, mutable: true },
-      },
-      passwordPolicy: {
-        minLength: 8,
-        requireLowercase: true,
-        requireUppercase: true,
-        requireDigits: true,
-        requireSymbols: false,
-      },
+      standardAttributes: { email: { required: true, mutable: true } },
+      passwordPolicy: { minLength: 8, requireLowercase: true, requireUppercase: true, requireDigits: true, requireSymbols: false },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -73,199 +52,161 @@ export class QuizAppStack extends cdk.Stack {
   private createUserPoolClient(userPool: cognito.UserPool): cognito.UserPoolClient {
     return new cognito.UserPoolClient(this, 'QuizUserPoolClient', {
       userPool,
-      userPoolClientName: 'quiz-app-client',
-      authFlows: {
-        userPassword: true,
-        userSrp: true,
-      },
+      userPoolClientName: 'recallr-client',
+      authFlows: { userPassword: true, userSrp: true },
       generateSecret: false,
     });
   }
 
-  private createDynamoTable(): dynamodb.Table {
-    const table = new dynamodb.Table(this, 'UserProgressTable', {
-      tableName: 'QuizUserProgress',
+  private createProgressTable(): dynamodb.Table {
+    const table = new dynamodb.Table(this, 'ProgressTable', {
+      tableName: 'RecallrProgress',
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'questionId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-
+    table.addGlobalSecondaryIndex({
+      indexName: 'ReviewDateIndex',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'nextReviewDate', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
     table.addGlobalSecondaryIndex({
       indexName: 'TopicIndex',
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'topic', type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
     });
-
+    table.addGlobalSecondaryIndex({
+      indexName: 'StatusIndex',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'userStatus', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
     return table;
   }
 
+  private createAttemptsTable(): dynamodb.Table {
+    const table = new dynamodb.Table(this, 'AttemptsTable', {
+      tableName: 'RecallrAttempts',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'attemptId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      timeToLiveAttribute: 'ttl',
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'QuestionIndex',
+      partitionKey: { name: 'questionId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'attemptedAt', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+    return table;
+  }
+
+  private createSessionsTable(): dynamodb.Table {
+    return new dynamodb.Table(this, 'SessionsTable', {
+      tableName: 'RecallrSessions',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'sessionId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      timeToLiveAttribute: 'ttl',
+    });
+  }
+
   private createNotesTable(): dynamodb.Table {
-    const table = new dynamodb.Table(this, 'NotesTable', {
-      tableName: 'QuizUserNotes',
+    return new dynamodb.Table(this, 'NotesTable', {
+      tableName: 'RecallrNotes',
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'noteId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+  }
 
+  private createCustomQuestionsTable(): dynamodb.Table {
+    const table = new dynamodb.Table(this, 'CustomQuestionsTable', {
+      tableName: 'RecallrCustomQuestions',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'questionId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
     table.addGlobalSecondaryIndex({
       indexName: 'TopicIndex',
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'topic', type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
     });
-
-    table.addGlobalSecondaryIndex({
-      indexName: 'QuestionIndex',
-      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'questionId', type: dynamodb.AttributeType.STRING },
-      projectionType: dynamodb.ProjectionType.ALL,
-    });
-
     return table;
   }
 
-  private createNoteQuestionsTable(): dynamodb.Table {
-    const table = new dynamodb.Table(this, 'NoteQuestionsTable', {
-      tableName: 'QuizNoteQuestions',
-      partitionKey: { name: 'noteId', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-
-    // GSI to query by owner (userId)
-    table.addGlobalSecondaryIndex({
-      indexName: 'OwnerIndex',
-      partitionKey: { name: 'ownerId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'generatedAt', type: dynamodb.AttributeType.STRING },
-      projectionType: dynamodb.ProjectionType.ALL,
-    });
-
-    return table;
-  }
-
-  private createLambdaFunction(
-    id: string,
-    entry: string,
-    memorySize: number,
-    environment?: Record<string, string>
-  ): NodejsFunction {
-    const props: NodejsFunctionProps = {
+  private createLambdaFunction(id: string, entry: string, memorySize: number, environment?: Record<string, string>): NodejsFunction {
+    return new NodejsFunction(this, id, {
       ...LAMBDA_CONFIG,
       entry,
       handler: 'handler',
       memorySize,
       environment,
-    };
-    return new NodejsFunction(this, id, props);
+    });
   }
 
-  private createLambdaFunctions(table: dynamodb.Table, notesTable: dynamodb.Table, noteQuestionsTable: dynamodb.Table) {
+  private createLambdaFunctions(
+    progressTable: dynamodb.Table,
+    attemptsTable: dynamodb.Table,
+    sessionsTable: dynamodb.Table,
+    notesTable: dynamodb.Table,
+    customQuestionsTable: dynamodb.Table
+  ) {
     const lambdaDir = path.join(__dirname, '../lambda');
-    const tableEnv = { TABLE_NAME: table.tableName };
-    const notesEnv = { NOTES_TABLE_NAME: notesTable.tableName };
-    const noteQuestionsEnv = { NOTE_QUESTIONS_TABLE_NAME: noteQuestionsTable.tableName };
+    const commonEnv = {
+      PROGRESS_TABLE: progressTable.tableName,
+      ATTEMPTS_TABLE: attemptsTable.tableName,
+      SESSIONS_TABLE: sessionsTable.tableName,
+      CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName,
+      DEPLOYMENT_VERSION,
+    };
+    const notesEnv = { NOTES_TABLE: notesTable.tableName };
 
-    const getTopics = this.createLambdaFunction(
-      'GetTopicsLambda',
-      path.join(lambdaDir, 'getTopics.ts'),
-      MEMORY_SIZES.SMALL
-    );
+    const getTopics = this.createLambdaFunction('GetTopicsLambda', path.join(lambdaDir, 'getTopics.ts'), MEMORY_SIZES.SMALL);
+    const generateQuiz = this.createLambdaFunction('GenerateQuizLambda', path.join(lambdaDir, 'generateQuiz.ts'), MEMORY_SIZES.MEDIUM, commonEnv);
+    const submitAnswer = this.createLambdaFunction('SubmitAnswerLambda', path.join(lambdaDir, 'submitAnswer.ts'), MEMORY_SIZES.SMALL, commonEnv);
+    const getProgress = this.createLambdaFunction('GetProgressLambda', path.join(lambdaDir, 'getProgress.ts'), MEMORY_SIZES.SMALL, commonEnv);
+    const getStats = this.createLambdaFunction('GetStatsLambda', path.join(lambdaDir, 'getStats.ts'), MEMORY_SIZES.SMALL, commonEnv);
+    const getAttempts = this.createLambdaFunction('GetAttemptsLambda', path.join(lambdaDir, 'getAttempts.ts'), MEMORY_SIZES.SMALL, commonEnv);
+    const getSessions = this.createLambdaFunction('GetSessionsLambda', path.join(lambdaDir, 'getSessions.ts'), MEMORY_SIZES.SMALL, commonEnv);
+    const getAnalytics = this.createLambdaFunction('GetAnalyticsLambda', path.join(lambdaDir, 'getAnalytics.ts'), MEMORY_SIZES.MEDIUM, commonEnv);
+    const manageQuestions = this.createLambdaFunction('ManageQuestionsLambda', path.join(lambdaDir, 'manageQuestions.ts'), MEMORY_SIZES.SMALL, { CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName });
+    const getNotes = this.createLambdaFunction('GetNotesLambda', path.join(lambdaDir, 'getNotes.ts'), MEMORY_SIZES.SMALL, notesEnv);
+    const saveNote = this.createLambdaFunction('SaveNoteLambda', path.join(lambdaDir, 'saveNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
+    const deleteNote = this.createLambdaFunction('DeleteNoteLambda', path.join(lambdaDir, 'deleteNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
 
-    const getQuestions = this.createLambdaFunction(
-      'GetQuestionsLambda',
-      path.join(lambdaDir, 'getQuestions.ts'),
-      MEMORY_SIZES.MEDIUM,
-      { ...tableEnv, DEPLOYMENT_VERSION }
-    );
-
-    const saveProgress = this.createLambdaFunction(
-      'SaveProgressLambda',
-      path.join(lambdaDir, 'saveProgress.ts'),
-      MEMORY_SIZES.SMALL,
-      tableEnv
-    );
-
-    const getProgress = this.createLambdaFunction(
-      'GetProgressLambda',
-      path.join(lambdaDir, 'getProgress.ts'),
-      MEMORY_SIZES.SMALL,
-      tableEnv
-    );
-
-    const getNotes = this.createLambdaFunction(
-      'GetNotesLambda',
-      path.join(lambdaDir, 'getNotes.ts'),
-      MEMORY_SIZES.SMALL,
-      notesEnv
-    );
-
-    const saveNote = this.createLambdaFunction(
-      'SaveNoteLambda',
-      path.join(lambdaDir, 'saveNote.ts'),
-      MEMORY_SIZES.SMALL,
-      notesEnv
-    );
-
-    const deleteNote = this.createLambdaFunction(
-      'DeleteNoteLambda',
-      path.join(lambdaDir, 'deleteNote.ts'),
-      MEMORY_SIZES.SMALL,
-      notesEnv
-    );
-
-    // Lambda for generating questions from notes (triggered by EventBridge)
-    const generateNoteQuestions = new NodejsFunction(this, 'GenerateNoteQuestionsLambda', {
-      ...LAMBDA_CONFIG,
-      entry: path.join(lambdaDir, 'generateNoteQuestions.ts'),
-      handler: 'handler',
-      memorySize: MEMORY_SIZES.LARGE,
-      timeout: cdk.Duration.minutes(5), // Longer timeout for batch processing
-      environment: {
-        ...notesEnv,
-        ...noteQuestionsEnv,
-      },
-    });
-
-    // Lambda for fetching note-generated questions
-    const getNoteQuestions = this.createLambdaFunction(
-      'GetNoteQuestionsLambda',
-      path.join(lambdaDir, 'getNoteQuestions.ts'),
-      MEMORY_SIZES.SMALL,
-      noteQuestionsEnv
-    );
-
-    // Grant Bedrock permissions to generateNoteQuestions Lambda
-    generateNoteQuestions.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['bedrock:InvokeModel'],
-      resources: ['arn:aws:bedrock:*::foundation-model/anthropic.claude-3-haiku-20240307-v1:0'],
-    }));
-
-    // Grant permissions - Principle of Least Privilege
-    table.grantReadData(getQuestions);
-    table.grantReadWriteData(saveProgress);
-    table.grantReadData(getProgress);
-    
+    progressTable.grantReadWriteData(generateQuiz);
+    progressTable.grantReadWriteData(submitAnswer);
+    progressTable.grantReadData(getProgress);
+    progressTable.grantReadData(getStats);
+    progressTable.grantReadData(getAnalytics);
+    attemptsTable.grantReadWriteData(submitAnswer);
+    attemptsTable.grantReadData(getStats);
+    attemptsTable.grantReadData(getAttempts);
+    attemptsTable.grantReadData(getAnalytics);
+    sessionsTable.grantReadWriteData(generateQuiz);
+    sessionsTable.grantReadData(getSessions);
+    sessionsTable.grantReadData(getAnalytics);
+    customQuestionsTable.grantReadWriteData(manageQuestions);
+    customQuestionsTable.grantReadData(generateQuiz);
     notesTable.grantReadData(getNotes);
     notesTable.grantReadWriteData(saveNote);
     notesTable.grantReadWriteData(deleteNote);
-    notesTable.grantReadData(generateNoteQuestions);
-    
-    noteQuestionsTable.grantReadWriteData(generateNoteQuestions);
-    noteQuestionsTable.grantReadData(getNoteQuestions);
 
-    return { getTopics, getQuestions, saveProgress, getProgress, getNotes, saveNote, deleteNote, generateNoteQuestions, getNoteQuestions };
+    return { getTopics, generateQuiz, submitAnswer, getProgress, getStats, getAttempts, getSessions, getAnalytics, manageQuestions, getNotes, saveNote, deleteNote };
   }
 
-  private createApiGateway(
-    userPool: cognito.UserPool,
-    lambdas: ReturnType<typeof this.createLambdaFunctions>
-  ): apigateway.RestApi {
-    const api = new apigateway.RestApi(this, 'QuizApi', {
-      restApiName: 'Quiz API',
+  private createApiGateway(userPool: cognito.UserPool, lambdas: ReturnType<typeof this.createLambdaFunctions>): apigateway.RestApi {
+    const api = new apigateway.RestApi(this, 'RecallrApi', {
+      restApiName: 'Recallr API',
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
@@ -273,7 +214,6 @@ export class QuizAppStack extends cdk.Stack {
       },
     });
 
-    // Add CORS headers to 4XX/5XX responses (including 401 from Cognito authorizer)
     api.addGatewayResponse('UnauthorizedResponse', {
       type: apigateway.ResponseType.UNAUTHORIZED,
       responseHeaders: {
@@ -281,7 +221,6 @@ export class QuizAppStack extends cdk.Stack {
         'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
       },
     });
-
     api.addGatewayResponse('Default4XXResponse', {
       type: apigateway.ResponseType.DEFAULT_4XX,
       responseHeaders: {
@@ -289,7 +228,6 @@ export class QuizAppStack extends cdk.Stack {
         'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
       },
     });
-
     api.addGatewayResponse('Default5XXResponse', {
       type: apigateway.ResponseType.DEFAULT_5XX,
       responseHeaders: {
@@ -298,70 +236,39 @@ export class QuizAppStack extends cdk.Stack {
       },
     });
 
-    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'QuizApiAuthorizer', {
+    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'ApiAuthorizer', {
       cognitoUserPools: [userPool],
       identitySource: 'method.request.header.Authorization',
     });
+    const authConfig = { authorizer, authorizationType: apigateway.AuthorizationType.COGNITO };
 
-    const authConfig = {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
-    };
-
-    // Define routes - Open/Closed Principle: easy to add new routes
-    const routes: Array<{
-      path: string;
-      method: 'GET' | 'POST' | 'DELETE';
-      lambda: NodejsFunction;
-    }> = [
-      { path: 'topics', method: 'GET', lambda: lambdas.getTopics },
-      { path: 'questions', method: 'GET', lambda: lambdas.getQuestions },
-      { path: 'progress', method: 'GET', lambda: lambdas.getProgress },
-      { path: 'progress', method: 'POST', lambda: lambdas.saveProgress },
-      { path: 'notes', method: 'GET', lambda: lambdas.getNotes },
-      { path: 'notes', method: 'POST', lambda: lambdas.saveNote },
-      { path: 'note-questions', method: 'GET', lambda: lambdas.getNoteQuestions },
-    ];
-
-    // Group routes by path to handle multiple methods on same resource
-    const resources = new Map<string, apigateway.Resource>();
-    for (const route of routes) {
-      if (!resources.has(route.path)) {
-        resources.set(route.path, api.root.addResource(route.path));
-      }
-      resources.get(route.path)!.addMethod(
-        route.method,
-        new apigateway.LambdaIntegration(route.lambda),
-        authConfig
-      );
-    }
-
-    // Add DELETE /notes/{noteId} route
-    const notesResource = resources.get('notes')!;
-    const noteIdResource = notesResource.addResource('{noteId}');
-    noteIdResource.addMethod(
-      'DELETE',
-      new apigateway.LambdaIntegration(lambdas.deleteNote),
-      authConfig
-    );
+    // Routes
+    api.root.addResource('topics').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getTopics), authConfig);
+    
+    const quiz = api.root.addResource('quiz');
+    quiz.addResource('generate').addMethod('POST', new apigateway.LambdaIntegration(lambdas.generateQuiz), authConfig);
+    quiz.addResource('submit').addMethod('POST', new apigateway.LambdaIntegration(lambdas.submitAnswer), authConfig);
+    
+    api.root.addResource('progress').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getProgress), authConfig);
+    api.root.addResource('stats').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getStats), authConfig);
+    api.root.addResource('attempts').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getAttempts), authConfig);
+    api.root.addResource('sessions').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getSessions), authConfig);
+    api.root.addResource('analytics').addMethod('GET', new apigateway.LambdaIntegration(lambdas.getAnalytics), authConfig);
+    
+    // Custom questions CRUD
+    const questions = api.root.addResource('questions');
+    questions.addMethod('GET', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
+    questions.addMethod('POST', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
+    const questionById = questions.addResource('{questionId}');
+    questionById.addMethod('PUT', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
+    questionById.addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
+    
+    const notes = api.root.addResource('notes');
+    notes.addMethod('GET', new apigateway.LambdaIntegration(lambdas.getNotes), authConfig);
+    notes.addMethod('POST', new apigateway.LambdaIntegration(lambdas.saveNote), authConfig);
+    notes.addResource('{noteId}').addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.deleteNote), authConfig);
 
     return api;
-  }
-
-  private createDailyQuestionGenerationRule(lambda: NodejsFunction): void {
-    // Run daily at 2 AM UTC
-    new events.Rule(this, 'DailyNoteQuestionGeneration', {
-      ruleName: 'recallr-daily-note-question-generation',
-      description: 'Triggers daily generation of quiz questions from user notes',
-      schedule: events.Schedule.cron({
-        minute: '0',
-        hour: '2',
-        day: '*',
-        month: '*',
-        year: '*',
-      }),
-      targets: [new targets.LambdaFunction(lambda)],
-    });
   }
 
   private createFrontendInfrastructure() {
@@ -400,21 +307,9 @@ export class QuizAppStack extends cdk.Stack {
     userPool: cognito.UserPool,
     userPoolClient: cognito.UserPoolClient
   ) {
-    new cdk.CfnOutput(this, 'ApiUrl', {
-      value: api.url,
-      description: 'API Gateway URL',
-    });
-    new cdk.CfnOutput(this, 'CloudFrontUrl', {
-      value: `https://${distribution.distributionDomainName}`,
-      description: 'CloudFront URL',
-    });
-    new cdk.CfnOutput(this, 'UserPoolId', {
-      value: userPool.userPoolId,
-      description: 'Cognito User Pool ID',
-    });
-    new cdk.CfnOutput(this, 'UserPoolClientId', {
-      value: userPoolClient.userPoolClientId,
-      description: 'Cognito User Pool Client ID',
-    });
+    new cdk.CfnOutput(this, 'ApiUrl', { value: api.url, description: 'API Gateway URL' });
+    new cdk.CfnOutput(this, 'CloudFrontUrl', { value: `https://${distribution.distributionDomainName}`, description: 'CloudFront URL' });
+    new cdk.CfnOutput(this, 'UserPoolId', { value: userPool.userPoolId, description: 'Cognito User Pool ID' });
+    new cdk.CfnOutput(this, 'UserPoolClientId', { value: userPoolClient.userPoolClientId, description: 'Cognito User Pool Client ID' });
   }
 }

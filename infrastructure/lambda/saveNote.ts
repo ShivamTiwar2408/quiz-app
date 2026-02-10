@@ -6,7 +6,7 @@ import { successResponse, errorResponse, badRequestResponse } from './shared/res
 import { Note } from './shared/types';
 import { randomUUID } from 'crypto';
 
-const NOTES_TABLE = process.env.NOTES_TABLE_NAME || '';
+const NOTES_TABLE = process.env.NOTES_TABLE || '';
 
 const NOTE_COLORS = ['default', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'brown'];
 

@@ -4,7 +4,7 @@ import { getDocClient } from './shared/db';
 import { getUserId } from './shared/auth';
 import { successResponse, errorResponse } from './shared/response';
 
-const NOTES_TABLE = process.env.NOTES_TABLE_NAME || '';
+const NOTES_TABLE = process.env.NOTES_TABLE || process.env.NOTES_TABLE_NAME || '';
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   try {

@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { QuizMode } from './types';
 import { useAuth, useQuiz, useUserData, useNotes } from './hooks';
-import { AuthScreen, Header, QuizHeader, QuizQuestion, Sidebar, NotesScreen } from './components';
-import { SCREENS, PASSING_SCORE_PERCENT } from './constants';
+import { AuthScreen, Header, QuizHeader, QuizQuestion, Sidebar, NotesScreen, AnalyticsScreen, QuestionManager } from './components';
+import { SCREENS, PASSING_SCORE_PERCENT, QUIZ_TYPE_INFO } from './constants';
 import './App.css';
 
-type Screen = typeof SCREENS[keyof typeof SCREENS];
+type Screen = typeof SCREENS[keyof typeof SCREENS] | 'analytics' | 'questions';
 
 function App() {
   const auth = useAuth();
@@ -29,7 +29,7 @@ function App() {
     if (success) {
       setScreen(SCREENS.QUIZ);
     } else {
-      alert('No questions available.');
+      alert('No questions available for this selection.');
     }
   }, [quiz]);
 
@@ -38,6 +38,10 @@ function App() {
     if (quizEnded) {
       setScreen(SCREENS.RESULTS);
     }
+  }, [quiz]);
+
+  const handleConfidenceSubmit = useCallback((rating: number) => {
+    quiz.submitAnswerWithConfidence(rating);
   }, [quiz]);
 
   const handleProgressMark = useCallback((status: 'remind' | 'known') => {
@@ -100,24 +104,28 @@ function App() {
       <NotesScreen
         notes={notesHook.notes}
         loading={notesHook.loading}
-        onCreateNote={async (data) => {
-          await notesHook.createNote(data);
-        }}
-        onUpdateNote={async (data) => {
-          await notesHook.updateNote(data);
-        }}
-        onDeleteNote={async (noteId) => {
-          await notesHook.removeNote(noteId);
-        }}
+        onCreateNote={async (data) => { await notesHook.createNote(data); }}
+        onUpdateNote={async (data) => { await notesHook.updateNote(data); }}
+        onDeleteNote={async (noteId) => { await notesHook.removeNote(noteId); }}
         onTogglePin={notesHook.togglePin}
         onBack={() => setScreen(SCREENS.HOME)}
       />
     );
   }
 
+  if (screen === 'analytics') {
+    return <AnalyticsScreen onBack={() => setScreen(SCREENS.HOME)} />;
+  }
+
+  if (screen === 'questions') {
+    return <QuestionManager onBack={() => setScreen(SCREENS.HOME)} />;
+  }
+
   if (screen === SCREENS.HOME) {
     const topicKeys = Object.keys(userData.topics);
     const hasReviewItems = userData.wrongCount > 0 || userData.remindCount > 0;
+    const overdueCount = userData.userStats.overdueCount || 0;
+    const dueToday = userData.userStats.dueToday || 0;
     
     return (
       <div className="app">
@@ -125,38 +133,64 @@ function App() {
         {renderSidebar()}
         <Header onMenuOpen={() => setMenuOpen(true)} />
         <main className="home-content">
-          {/* Greeting */}
           <div className="greeting">
             <span className="greeting-wave">👋</span>
             <h1>Hey {auth.user.email.split('@')[0]}</h1>
           </div>
 
-          {/* Main CTA */}
-          <button className="main-cta" onClick={() => handleStartQuiz('smart')} disabled={quiz.loading}>
+          {(overdueCount > 0 || dueToday > 0) && (
+            <div className="due-alert">
+              <div className="due-alert-content">
+                <span className="due-icon">📅</span>
+                <div className="due-text">
+                  {overdueCount > 0 && <span className="overdue">{overdueCount} overdue</span>}
+                  {overdueCount > 0 && dueToday > 0 && <span className="separator">•</span>}
+                  {dueToday > 0 && <span className="due-today">{dueToday} due today</span>}
+                </div>
+              </div>
+              <button className="due-action" onClick={() => handleStartQuiz('spaced_review')}>
+                Review Now →
+              </button>
+            </div>
+          )}
+
+          <button className="main-cta" onClick={() => handleStartQuiz('adaptive')} disabled={quiz.loading}>
             <div className="cta-content">
               <span className="cta-icon">🎯</span>
               <div className="cta-text">
-                <span className="cta-title">{quiz.loading ? 'Loading...' : 'Start Quiz'}</span>
-                <span className="cta-subtitle">Smart questions based on your progress</span>
+                <span className="cta-title">{quiz.loading ? 'Loading...' : 'Start Smart Quiz'}</span>
+                <span className="cta-subtitle">Adaptive questions based on your progress</span>
               </div>
             </div>
             <span className="cta-arrow">›</span>
           </button>
 
-          {/* Quick Actions */}
+          <div className="quiz-types-section">
+            <h2>Quiz Modes</h2>
+            <div className="quiz-types-grid">
+              {Object.entries(QUIZ_TYPE_INFO).map(([type, info]) => (
+                <button key={type} className="quiz-type-card" onClick={() => handleStartQuiz(type as QuizMode)}>
+                  <span className="qt-icon">{info.icon}</span>
+                  <span className="qt-name">{info.name}</span>
+                  <span className="qt-desc">{info.description}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="quick-actions-grid">
             <button className="quick-action" onClick={() => setScreen(SCREENS.NOTES)}>
               <span className="qa-icon">📝</span>
               <span className="qa-label">Notes</span>
               {notesHook.notes.length > 0 && <span className="qa-badge">{notesHook.notes.length}</span>}
             </button>
-            <button className="quick-action" onClick={() => handleStartQuiz('notes')}>
-              <span className="qa-icon">🧠</span>
-              <span className="qa-label">Quiz Notes</span>
+            <button className="quick-action" onClick={() => setScreen('analytics')}>
+              <span className="qa-icon">📊</span>
+              <span className="qa-label">Analytics</span>
             </button>
-            <button className="quick-action" onClick={() => handleStartQuiz('random')}>
-              <span className="qa-icon">🎲</span>
-              <span className="qa-label">Random</span>
+            <button className="quick-action" onClick={() => setScreen('questions')}>
+              <span className="qa-icon">✏️</span>
+              <span className="qa-label">My Questions</span>
             </button>
             <button className="quick-action" onClick={() => setMenuOpen(true)}>
               <span className="qa-icon">📚</span>
@@ -165,25 +199,24 @@ function App() {
             </button>
           </div>
 
-          {/* Review Section - Only show if there are items to review */}
           {hasReviewItems && (
             <div className="review-section">
-              <h2>Needs Review</h2>
+              <h2>Needs Attention</h2>
               <div className="review-cards">
                 {userData.wrongCount > 0 && (
-                  <button className="review-card wrong" onClick={() => handleStartQuiz('wrong')}>
+                  <button className="review-card wrong" onClick={() => handleStartQuiz('weak_area')}>
                     <div className="rc-left">
                       <span className="rc-icon">❌</span>
                       <div className="rc-info">
                         <span className="rc-count">{userData.wrongCount}</span>
-                        <span className="rc-label">Wrong answers</span>
+                        <span className="rc-label">Struggling</span>
                       </div>
                     </div>
                     <span className="rc-action">Practice →</span>
                   </button>
                 )}
                 {userData.remindCount > 0 && (
-                  <button className="review-card remind" onClick={() => handleStartQuiz('remind')}>
+                  <button className="review-card remind" onClick={() => handleStartQuiz('spaced_review')}>
                     <div className="rc-left">
                       <span className="rc-icon">🔔</span>
                       <div className="rc-info">
@@ -198,21 +231,24 @@ function App() {
             </div>
           )}
 
-          {/* Progress Stats */}
           <div className="progress-section">
             <h2>Your Progress</h2>
             <div className="progress-stats">
               <div className="progress-stat">
-                <span className="ps-value green">{userData.userStats.totalKnown}</span>
+                <span className="ps-value green">{userData.userStats.masteredCount || userData.userStats.totalKnown}</span>
                 <span className="ps-label">Mastered</span>
               </div>
               <div className="progress-stat">
-                <span className="ps-value">{userData.userStats.totalAnswered}</span>
-                <span className="ps-label">Answered</span>
+                <span className="ps-value blue">{userData.userStats.reviewingCount || 0}</span>
+                <span className="ps-label">Reviewing</span>
               </div>
               <div className="progress-stat">
-                <span className="ps-value">{topicKeys.length}</span>
-                <span className="ps-label">Topics</span>
+                <span className="ps-value">{userData.userStats.totalAnswered}</span>
+                <span className="ps-label">Attempted</span>
+              </div>
+              <div className="progress-stat">
+                <span className="ps-value orange">{userData.userStats.currentDailyStreak || 0}</span>
+                <span className="ps-label">Day Streak</span>
               </div>
             </div>
           </div>
@@ -251,14 +287,23 @@ function App() {
                 {quiz.currentFilter.subtopic && ` > ${quiz.currentFilter.subtopic}`}
               </div>
             )}
+            {quiz.quizMetadata && (
+              <div className="quiz-metadata">
+                <span className="meta-item">📊 {quiz.quizMetadata.newCount} new</span>
+                <span className="meta-item">🔄 {quiz.quizMetadata.reviewCount} review</span>
+                {quiz.quizMetadata.overdueCount > 0 && (
+                  <span className="meta-item overdue">⚠️ {quiz.quizMetadata.overdueCount} were overdue</span>
+                )}
+              </div>
+            )}
           </div>
           <div className="results-actions">
-            <button className="action-btn primary" onClick={() => handleStartQuiz('smart', quiz.currentFilter.topic, quiz.currentFilter.subtopic)}>
-              Try Again
+            <button className="action-btn primary" onClick={() => handleStartQuiz('adaptive', quiz.currentFilter.topic, quiz.currentFilter.subtopic)}>
+              Continue Learning
             </button>
             {quiz.questions.length - quiz.quizState.score > 0 && (
-              <button className="action-btn danger" onClick={() => handleStartQuiz('wrong')}>
-                Practice Wrong Answers
+              <button className="action-btn danger" onClick={() => handleStartQuiz('weak_area')}>
+                Practice Weak Areas
               </button>
             )}
             <button className="action-btn ghost" onClick={() => setScreen(SCREENS.HOME)}>
@@ -292,6 +337,7 @@ function App() {
             userProgress={userData.userProgress}
             onAnswerSelect={quiz.handleAnswerSelect}
             onProgressMark={handleProgressMark}
+            onConfidenceSubmit={handleConfidenceSubmit}
           />
         )}
       </main>
