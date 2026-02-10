@@ -1,13 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchCustomQuestions, createQuestion, updateQuestion, deleteQuestion, CustomQuestion, CreateQuestionParams } from '../api';
 
 interface QuestionManagerProps {
   onBack: () => void;
 }
 
-type View = 'list' | 'create' | 'edit';
+type View = 'list' | 'create' | 'edit' | 'bulk-import';
 
 const DIFFICULTY_OPTIONS = ['easy', 'medium', 'hard'] as const;
+
+interface BulkQuestion {
+  question: string;
+  options: Record<string, string>;
+  correct_answers?: string[];
+  correctOptions?: string[];
+  explanation: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  topic?: string;
+  subtopic?: string;
+}
 
 export function QuestionManager({ onBack }: QuestionManagerProps) {
   const [questions, setQuestions] = useState<CustomQuestion[]>([]);
@@ -16,6 +27,15 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
   const [editingQuestion, setEditingQuestion] = useState<CustomQuestion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Bulk import state
+  const [bulkJson, setBulkJson] = useState('');
+  const [bulkTopic, setBulkTopic] = useState('');
+  const [bulkSubtopic, setBulkSubtopic] = useState('');
+  const [bulkPreview, setBulkPreview] = useState<BulkQuestion[]>([]);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [formData, setFormData] = useState<CreateQuestionParams>({

@@ -1,172 +1,283 @@
-# Frontend Implementation
+# Frontend Guide
 
 ## Tech Stack
 
-- React 18 with TypeScript
-- CSS (custom dark theme)
-- No external UI libraries
+- **React 18** with TypeScript
+- **CSS** (no framework, custom styles)
+- **PWA** with service worker
+- **AWS Amplify Auth** for Cognito integration
 
-## Application Flow
+## Project Structure
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  Home Screen │────▶│  Quiz Screen │────▶│   Results    │
-│              │     │              │     │    Screen    │
-└──────────────┘     └──────────────┘     └──────────────┘
-       │                    │                    │
-       │                    │                    │
-       ▼                    ▼                    ▼
-  Load Progress       Answer Questions      Show Score
-  Show Stats          Mark Progress         Try Again
-  Select Mode         Show Explanation
+src/
+├── App.tsx              # Main app component, routing
+├── App.css              # Global styles
+├── api.ts               # API client functions
+├── auth.ts              # Cognito authentication
+├── types.ts             # TypeScript interfaces
+├── constants.ts         # App constants, quiz type info
+├── components/
+│   ├── index.ts         # Component exports
+│   ├── AuthScreen.tsx   # Login/signup/confirm
+│   ├── Header.tsx       # App header, quiz header
+│   ├── Sidebar.tsx      # Navigation sidebar
+│   ├── QuizQuestion.tsx # Question display + confidence
+│   ├── NotesScreen.tsx  # Notes management
+│   ├── AnalyticsScreen.tsx  # Analytics dashboard
+│   └── QuestionManager.tsx  # Custom questions CRUD
+└── hooks/
+    ├── index.ts         # Hook exports
+    ├── useAuth.ts       # Authentication state
+    ├── useQuiz.ts       # Quiz state management
+    ├── useUserData.ts   # Progress, stats, topics
+    └── useNotes.ts      # Notes state
 ```
 
-## Quiz Modes
+## Key Components
 
-| Mode | Description |
-|------|-------------|
-| Start Quiz | Random 10 questions from entire pool |
-| Review Mode | Only questions marked as "Remind Me" |
-| New Questions | Only questions user hasn't seen yet |
+### App.tsx
+Main application component handling:
+- Screen routing (home, quiz, results, notes, analytics, questions)
+- Quiz flow orchestration
+- Global state coordination
 
-## State Management
+**Screens:**
+| Screen | Description |
+|--------|-------------|
+| `home` | Dashboard with quick actions, stats, due items |
+| `quiz` | Active quiz with questions |
+| `results` | Quiz completion summary |
+| `notes` | Notes management |
+| `analytics` | Progress analytics |
+| `questions` | Custom question manager |
 
-```typescript
-// Quiz state tracks current session
-interface QuizState {
-  currentQuestionIndex: number;  // Which question we're on (0-9)
-  selectedAnswers: string[];     // User's current selection ["A", "B"]
-  showResult: boolean;           // Whether answer has been submitted
-  score: number;                 // Running score count
-  answers: {                     // History of all answers
-    questionId: string;
-    selected: string[];
-    correct: boolean;
-  }[];
-}
+### QuizQuestion.tsx
+Displays a single question with:
+- Question text and options
+- Multi-select support
+- Answer validation
+- Explanation display
+- **Confidence rating slider (0-5)**
 
-// User progress persists across sessions
-interface UserProgress {
-  questionId: string;
-  status: 'remind' | 'known' | null;
-  answeredCorrectly: boolean;
-}
-```
-
-## API Integration (src/api.ts)
-
-### User Identification
-
-```typescript
-// Generate unique user ID on first visit, persist in localStorage
-function getUserId(): string {
-  let userId = localStorage.getItem('quizUserId');
-  if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('quizUserId', userId);
-  }
-  return userId;
-}
-```
-
-### Fallback Strategy
-
-The frontend gracefully handles API unavailability:
-
-```typescript
-export async function fetchQuestions(count: number = 10): Promise<Question[]> {
-  try {
-    if (!API_BASE_URL) {
-      // No API configured - use local questions.json
-      const localQuestions = await import('./questions.json');
-      return shuffleArray(localQuestions.default).slice(0, count);
-    }
-    
-    const response = await fetch(`${API_BASE_URL}/questions?count=${count}`);
-    return (await response.json()).questions;
-  } catch (error) {
-    // API failed - fallback to local questions
-    const localQuestions = await import('./questions.json');
-    return shuffleArray(localQuestions.default).slice(0, count);
-  }
+```tsx
+interface QuizQuestionProps {
+  question: Question;
+  questionNumber: number;
+  totalQuestions: number;
+  selectedAnswers: string[];
+  showResult: boolean;
+  showExplanation: boolean;
+  userProgress: Record<string, UserProgress>;
+  onAnswerSelect: (key: string) => void;
+  onProgressMark: (status: 'remind' | 'known') => void;
+  onConfidenceSubmit: (rating: number) => void;
 }
 ```
 
-This allows the app to work:
-1. Locally during development (no API)
-2. When API is temporarily unavailable
-3. Fully connected to backend in production
+### AnalyticsScreen.tsx
+Four-tab analytics dashboard:
 
-## Question Data Structure
+| Tab | Content |
+|-----|---------|
+| Overview | Total stats, accuracy, streaks, due counts |
+| Topics | Per-topic breakdown with mastery levels |
+| History | Recent attempt history with details |
+| Sessions | Past quiz session summaries |
+
+### QuestionManager.tsx
+CRUD interface for custom questions:
+- List view with topic filtering
+- Create form with validation
+- Edit existing questions
+- Delete with confirmation
+
+## Custom Hooks
+
+### useAuth
+Manages Cognito authentication state.
 
 ```typescript
-interface Question {
-  id: string;                    // Unique identifier "q001"
-  question: string;              // The question text
-  options: Record<string, string>; // { "A": "...", "B": "...", ... }
-  correct_answers: string[];     // ["A"] or ["A", "C"] for multi-select
-  explanation: string;           // Shown after answering
-  difficulty: string;            // "easy" | "medium" | "hard"
-  category: string;              // Topic category
+const {
+  user,                    // Current user or null
+  authLoading,             // Loading state
+  authScreen,              // 'signin' | 'signup' | 'confirm'
+  authError,               // Error message
+  pendingEmail,            // Email awaiting confirmation
+  handleSignUp,            // (email, password) => Promise
+  handleSignIn,            // (email, password) => Promise
+  handleConfirm,           // (code) => Promise
+  handleSignOut,           // () => void
+  setAuthScreen,           // (screen) => void
+  clearError,              // () => void
+} = useAuth();
+```
+
+### useQuiz
+Manages quiz state and flow.
+
+```typescript
+const {
+  questions,               // Current quiz questions
+  currentQuestion,         // Active question
+  quizState,               // { currentQuestionIndex, selectedAnswers, showResult, score }
+  quizMetadata,            // { newCount, reviewCount, overdueCount }
+  currentFilter,           // { topic?, subtopic? }
+  loading,                 // Loading state
+  showExplanation,         // Show explanation flag
+  startQuiz,               // (mode, topic?, subtopic?) => Promise<boolean>
+  handleAnswerSelect,      // (key) => void
+  submitAnswer,            // () => Promise
+  submitAnswerWithConfidence, // (rating) => Promise
+  nextQuestion,            // () => boolean (returns true if quiz ended)
+  handleProgressMark,      // (status, progress, setProgress) => void
+  resetQuiz,               // () => void
+} = useQuiz();
+```
+
+### useUserData
+Manages user progress and statistics.
+
+```typescript
+const {
+  topics,                  // Topic hierarchy
+  userProgress,            // SM-2 progress by questionId
+  userStats,               // Aggregated statistics
+  wrongCount,              // Questions with status 'struggling'
+  remindCount,             // Questions due for review
+  loading,                 // Loading state
+  setUserProgress,         // State setter
+  resetUserData,           // () => void
+} = useUserData(user);
+```
+
+### useNotes
+Manages notes state.
+
+```typescript
+const {
+  notes,                   // Array of notes
+  loading,                 // Loading state
+  createNote,              // (data) => Promise
+  updateNote,              // (data) => Promise
+  removeNote,              // (noteId) => Promise
+  togglePin,               // (noteId) => Promise
+} = useNotes(user);
+```
+
+## API Client (api.ts)
+
+All API functions with automatic token refresh:
+
+```typescript
+// Quiz
+generateQuiz(request: GenerateQuizRequest): Promise<GenerateQuizResponse>
+submitAnswer(request: SubmitAnswerRequest): Promise<SubmitAnswerResponse>
+
+// Progress
+getProgress(): Promise<ProgressResponse>
+getStats(): Promise<UserStats>
+
+// Analytics
+fetchAnalytics(): Promise<AnalyticsData>
+fetchAttempts(limit?, questionId?): Promise<AttemptRecord[]>
+fetchSessions(limit?): Promise<SessionRecord[]>
+
+// Custom Questions
+fetchCustomQuestions(topic?): Promise<CustomQuestion[]>
+createQuestion(params): Promise<CustomQuestion>
+updateQuestion(id, params): Promise<CustomQuestion>
+deleteQuestion(id): Promise<boolean>
+
+// Notes
+fetchNotes(params?): Promise<Note[]>
+saveNote(params): Promise<Note>
+deleteNote(id): Promise<boolean>
+
+// Topics
+fetchTopics(): Promise<TopicsMap>
+```
+
+## Styling
+
+### CSS Variables
+```css
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg: #0f172a;
+  --bg-card: #1e293b;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
 }
 ```
 
-## Key Features
+### Key Classes
+| Class | Purpose |
+|-------|---------|
+| `.app` | Main container |
+| `.home-content` | Home screen layout |
+| `.quiz-content` | Quiz screen layout |
+| `.main-cta` | Primary call-to-action button |
+| `.quick-actions-grid` | 4-column action grid |
+| `.quiz-type-card` | Quiz mode selection card |
+| `.confidence-slider` | 0-5 confidence rating |
+| `.analytics-*` | Analytics screen styles |
+| `.qm-*` | Question manager styles |
 
-### Multi-Select Support
+## PWA Configuration
 
-Questions can have multiple correct answers:
+### Service Worker (public/service-worker.js)
+- Network-first for HTML/JS/CSS
+- Cache-first for static assets
+- Skip API calls (always network)
+- Automatic cache invalidation on version change
 
-```typescript
-const isMultiSelect = currentQuestion?.correct_answers.length > 1;
-
-// Answer validation
-const isCorrect = correct.length === selected.length && 
-  correct.every(c => selected.includes(c));
+### Manifest (public/manifest.json)
+```json
+{
+  "name": "Recallr",
+  "short_name": "Recallr",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#6366f1",
+  "background_color": "#0f172a"
+}
 ```
 
-### Progress Tracking
-
-Users can mark questions for later review:
-
-```typescript
-const handleProgressMark = async (status: 'remind' | 'known') => {
-  const progress = {
-    questionId: currentQuestion.id,
-    status,
-    answeredCorrectly: quizState.answers[quizState.answers.length - 1]?.correct
-  };
-  
-  // Update local state immediately
-  setUserProgress(prev => ({ ...prev, [currentQuestion.id]: progress }));
-  
-  // Persist to backend
-  await saveProgress(progress);
-};
-```
-
-### Statistics Calculation
-
-```typescript
-const stats = {
-  total: allQuestions.length,
-  known: Object.values(userProgress).filter(p => p.status === 'known').length,
-  remind: Object.values(userProgress).filter(p => p.status === 'remind').length,
-};
-
-// Progress percentage
-const progressPercent = stats.total > 0 
-  ? Math.round((stats.known / stats.total) * 100) 
-  : 0;
-```
-
-## Environment Configuration
-
-Set API URL via environment variable:
+## Environment Variables
 
 ```bash
 # .env
-REACT_APP_API_URL=https://8c1p8cvsb2.execute-api.us-east-1.amazonaws.com/prod
+REACT_APP_API_URL=https://fwge4gqlr7.execute-api.us-east-1.amazonaws.com/prod
+REACT_APP_USER_POOL_ID=us-east-1_Suy4cgvUy
+REACT_APP_USER_POOL_CLIENT_ID=3gmspqs073e366vr1t01sggdl6
+REACT_APP_REGION=us-east-1
 ```
 
-For local development without API, leave this unset.
+## Build & Deploy
+
+```bash
+# Development
+npm start
+
+# Production build
+npm run build
+
+# Deploy to S3
+aws s3 sync build/ s3://quizappstack-websitebucket75c24d94-deol4ncerkge/ --delete --profile ShivamTiwari2408
+
+# Invalidate CloudFront cache
+aws cloudfront create-invalidation --distribution-id ERF50ZOUSOA4M --paths "/*" --profile ShivamTiwari2408
+```
+
+## Cache Busting
+
+Update `CACHE_VERSION` in `public/service-worker.js` before each deployment:
+```javascript
+const CACHE_VERSION = '2026-02-10-analytics-v3';
+```
