@@ -171,6 +171,133 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
     }));
   };
 
+  // Bulk import functions
+  const handleBulkImport = () => {
+    setBulkJson('');
+    setBulkTopic('');
+    setBulkSubtopic('');
+    setBulkPreview([]);
+    setError(null);
+    setView('bulk-import');
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setBulkJson(content);
+      parseBulkJson(content);
+    };
+    reader.readAsText(file);
+  };
+
+  const parseBulkJson = (jsonStr: string) => {
+    setError(null);
+    setBulkPreview([]);
+
+    if (!jsonStr.trim()) return;
+
+    try {
+      const parsed = JSON.parse(jsonStr);
+      const questionsArray = Array.isArray(parsed) ? parsed : [parsed];
+      
+      // Validate structure
+      const validated: BulkQuestion[] = [];
+      for (let i = 0; i < questionsArray.length; i++) {
+        const q = questionsArray[i];
+        if (!q.question) throw new Error(`Question ${i + 1}: missing "question" field`);
+        if (!q.options || typeof q.options !== 'object') throw new Error(`Question ${i + 1}: missing or invalid "options" field`);
+        if (!q.explanation) throw new Error(`Question ${i + 1}: missing "explanation" field`);
+        
+        // Support both correct_answers and correctOptions
+        const correctAnswers = q.correct_answers || q.correctOptions;
+        if (!correctAnswers || !Array.isArray(correctAnswers) || correctAnswers.length === 0) {
+          throw new Error(`Question ${i + 1}: missing "correct_answers" or "correctOptions" field`);
+        }
+        
+        validated.push({
+          ...q,
+          correct_answers: correctAnswers,
+        });
+      }
+      
+      setBulkPreview(validated);
+    } catch (err: any) {
+      if (err instanceof SyntaxError) {
+        setError('Invalid JSON format. Please check your JSON syntax.');
+      } else {
+        setError(err.message);
+      }
+    }
+  };
+
+  const handleBulkSubmit = async () => {
+    if (bulkPreview.length === 0) {
+      setError('No valid questions to import');
+      return;
+    }
+
+    if (!bulkTopic.trim()) {
+      setError('Topic is required for bulk import');
+      return;
+    }
+
+    if (!bulkSubtopic.trim()) {
+      setError('Subtopic is required for bulk import');
+      return;
+    }
+
+    setBulkImporting(true);
+    setBulkProgress({ current: 0, total: bulkPreview.length });
+    setError(null);
+
+    const imported: CustomQuestion[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < bulkPreview.length; i++) {
+      const q = bulkPreview[i];
+      setBulkProgress({ current: i + 1, total: bulkPreview.length });
+
+      try {
+        const payload: CreateQuestionParams = {
+          topic: q.topic || bulkTopic,
+          subtopic: q.subtopic || bulkSubtopic,
+          question: q.question,
+          options: q.options,
+          correct_answers: q.correct_answers || [],
+          explanation: q.explanation,
+          difficulty: q.difficulty || 'medium',
+        };
+
+        const created = await createQuestion(payload);
+        if (created) {
+          imported.push(created);
+        } else {
+          errors.push(`Question ${i + 1}: Failed to create`);
+        }
+      } catch (err: any) {
+        errors.push(`Question ${i + 1}: ${err.message}`);
+      }
+    }
+
+    setBulkImporting(false);
+
+    if (imported.length > 0) {
+      setQuestions(prev => [...imported, ...prev]);
+    }
+
+    if (errors.length > 0) {
+      setError(`Imported ${imported.length}/${bulkPreview.length} questions. Errors:\n${errors.join('\n')}`);
+    } else {
+      setView('list');
+      setBulkJson('');
+      setBulkPreview([]);
+    }
+  };
+
   if (loading) {
     return (
       <div className="app">
@@ -193,9 +320,14 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
           <h1>✏️ My Questions</h1>
         </header>
         <main className="qm-content">
-          <button className="create-btn" onClick={handleCreate}>
-            ➕ Create New Question
-          </button>
+          <div className="qm-actions-row">
+            <button className="create-btn" onClick={handleCreate}>
+              ➕ Create New Question
+            </button>
+            <button className="create-btn bulk" onClick={handleBulkImport}>
+              📥 Bulk Import JSON
+            </button>
+          </div>
 
           {questions.length === 0 ? (
             <div className="empty-state">
@@ -226,6 +358,117 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
               ))}
             </div>
           )}
+        </main>
+      </div>
+    );
+  }
+
+  // Bulk Import view
+  if (view === 'bulk-import') {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <button className="back-btn" onClick={() => { setView('list'); setError(null); }}>← Cancel</button>
+          <h1>📥 Bulk Import Questions</h1>
+        </header>
+        <main className="qm-content">
+          <div className="bulk-import-form">
+            {error && <div className="form-error" style={{ whiteSpace: 'pre-wrap' }}>{error}</div>}
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Default Topic *</label>
+                <input
+                  type="text"
+                  value={bulkTopic}
+                  onChange={e => setBulkTopic(e.target.value)}
+                  placeholder="e.g., System Design Scenarios"
+                />
+              </div>
+              <div className="form-group">
+                <label>Default Subtopic *</label>
+                <input
+                  type="text"
+                  value={bulkSubtopic}
+                  onChange={e => setBulkSubtopic(e.target.value)}
+                  placeholder="e.g., Applied Scenarios"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Upload JSON File</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileUpload}
+                className="file-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Or Paste JSON Array</label>
+              <textarea
+                value={bulkJson}
+                onChange={e => {
+                  setBulkJson(e.target.value);
+                  parseBulkJson(e.target.value);
+                }}
+                placeholder={`Paste JSON array of questions, e.g.:
+[
+  {
+    "question": "Your question text...",
+    "options": { "A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D" },
+    "correct_answers": ["B"],
+    "explanation": "Explanation text...",
+    "difficulty": "medium"
+  }
+]`}
+                rows={10}
+                className="json-textarea"
+              />
+            </div>
+
+            {bulkPreview.length > 0 && (
+              <div className="bulk-preview">
+                <h3>Preview: {bulkPreview.length} question(s) ready to import</h3>
+                <div className="preview-list">
+                  {bulkPreview.slice(0, 5).map((q, i) => (
+                    <div key={i} className="preview-item">
+                      <span className="preview-num">#{i + 1}</span>
+                      <span className="preview-text">{q.question.substring(0, 100)}{q.question.length > 100 ? '...' : ''}</span>
+                      <span className={`qc-difficulty ${q.difficulty || 'medium'}`}>{q.difficulty || 'medium'}</span>
+                    </div>
+                  ))}
+                  {bulkPreview.length > 5 && (
+                    <div className="preview-more">...and {bulkPreview.length - 5} more</div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {bulkImporting && (
+              <div className="bulk-progress">
+                <div className="progress-track">
+                  <div 
+                    className="progress-bar" 
+                    style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
+                  />
+                </div>
+                <span>Importing {bulkProgress.current} of {bulkProgress.total}...</span>
+              </div>
+            )}
+
+            <button 
+              type="button" 
+              className="submit-btn" 
+              onClick={handleBulkSubmit}
+              disabled={bulkImporting || bulkPreview.length === 0}
+            >
+              {bulkImporting ? 'Importing...' : `Import ${bulkPreview.length} Question(s)`}
+            </button>
+          </div>
         </main>
       </div>
     );

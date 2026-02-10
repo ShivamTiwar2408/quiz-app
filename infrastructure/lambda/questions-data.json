@@ -9786,15 +9786,15 @@
     "subtopic": "CAPTheorem",
     "question": "According to the CAP theorem, during a network partition, a distributed system must choose between:",
     "options": {
-      "A": "Consistency and Performance",
-      "B": "Availability and Performance",
+      "A": "Consistency and Latency",
+      "B": "Availability and Throughput",
       "C": "Consistency and Availability",
-      "D": "Durability and Availability"
+      "D": "Partition tolerance and Durability"
     },
     "correct_answers": [
       "C"
     ],
-    "explanation": "CAP states that during a partition (P), you cannot have both Consistency (C) and Availability (A). You must choose to either return potentially stale data (AP) or reject requests until consistency is restored (CP).",
+    "explanation": "CAP states that during a partition (P), you cannot have both Consistency (C) and Availability (A). You must choose to either return potentially stale data (AP) or reject requests until consistency is restored (CP). Eric Brewer formalized this in 2000, and Gilbert & Lynch proved it in 2002. The key insight: partitions are inevitable in distributed systems (networks fail), so the real choice is between C and A when partitions occur. During normal operation, you can have both.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
@@ -9804,15 +9804,15 @@
     "subtopic": "CAPTheorem",
     "question": "A banking system requires that account balances are always accurate, even if it means rejecting transactions during network issues. Which CAP classification best describes this system?",
     "options": {
-      "A": "AP (Availability + Partition tolerance)",
-      "B": "CP (Consistency + Partition tolerance)",
-      "C": "CA (Consistency + Availability)",
-      "D": "CAP (all three)"
+      "A": "AP (Availability + Partition tolerance) with eventual consistency",
+      "B": "CP (Consistency + Partition tolerance) with reduced availability",
+      "C": "CA (Consistency + Availability) with partition avoidance",
+      "D": "Tunable consistency based on transaction amount"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "The system prioritizes consistency over availability—it will reject requests rather than risk incorrect balances. This is a CP system. CA is impossible in distributed systems (partitions happen); CAP together is impossible by the theorem.",
+    "explanation": "The system prioritizes consistency over availability. This is a CP system. CA is impossible in distributed systems because partitions are inevitable. Traditional banks use CP systems for core banking. An ATM that cannot reach the network will decline transactions rather than risk overdrafts. The regulatory requirement for accurate financial records makes CP the only viable choice for banking core systems.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9822,15 +9822,15 @@
     "subtopic": "CAPTheorem",
     "question": "Which statement about the CAP theorem is FALSE?",
     "options": {
-      "A": "It applies only during network partitions",
-      "B": "A system must always sacrifice one of the three properties",
+      "A": "The tradeoff between C and A only applies during network partitions",
+      "B": "A system must permanently sacrifice one of the three properties at design time",
       "C": "Most distributed systems are partition-tolerant by necessity",
-      "D": "The choice between C and A can be made per-operation"
+      "D": "The choice between C and A can be made differently for different operations"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "CAP tradeoffs only apply during partitions. When the network is healthy, a system can provide both consistency and availability. The theorem doesn't require permanently sacrificing one property.",
+    "explanation": "CAP tradeoffs only apply during partitions. When the network is healthy, a system can provide both consistency and availability. The theorem does not require permanently sacrificing one property. Modern systems like CockroachDB and Spanner provide strong consistency AND high availability during normal operation, only sacrificing availability in the minority partition during network splits.",
     "difficulty": "hard",
     "category": "distributed systems"
   },
@@ -9840,15 +9840,15 @@
     "subtopic": "CAPTheorem",
     "question": "A social media platform shows slightly outdated follower counts but never goes offline. Which CAP properties does it prioritize?",
     "options": {
-      "A": "Consistency and Availability",
-      "B": "Consistency and Partition tolerance",
-      "C": "Availability and Partition tolerance",
-      "D": "Only Partition tolerance"
+      "A": "Consistency and Availability (CA)",
+      "B": "Consistency and Partition tolerance (CP)",
+      "C": "Availability and Partition tolerance (AP)",
+      "D": "Strong consistency with async replication"
     },
     "correct_answers": [
       "C"
     ],
-    "explanation": "The system accepts stale data (relaxed consistency) to remain available during partitions—this is an AP system. It prioritizes user access over perfect accuracy for non-critical data.",
+    "explanation": "The system accepts stale data (relaxed consistency) to remain available during partitions. This is an AP system. Twitter, Instagram, and Facebook all use AP designs for non-critical data like follower counts and likes. Users tolerate seeing approximate numbers but will not tolerate the app being unavailable. For critical features like direct messages, these same platforms often use CP subsystems.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
@@ -9858,15 +9858,15 @@
     "subtopic": "CAPTheorem",
     "question": "Why is a CA (Consistency + Availability without Partition tolerance) system impractical for distributed systems?",
     "options": {
-      "A": "Network partitions are inevitable in distributed systems",
-      "B": "CA systems are too expensive to build",
-      "C": "CA systems cannot scale horizontally",
-      "D": "CA systems have poor performance"
+      "A": "Network partitions are inevitable in any distributed system",
+      "B": "CA systems require specialized hardware that is prohibitively expensive",
+      "C": "The CAP theorem mathematically proves CA is impossible",
+      "D": "CA systems cannot scale beyond a single data center"
     },
     "correct_answers": [
       "A"
     ],
-    "explanation": "Network partitions (hardware failures, network issues) are unavoidable in distributed systems. A CA system would fail entirely during partitions. Practical distributed systems must be partition-tolerant, leaving the C vs A choice.",
+    "explanation": "Network partitions (hardware failures, network issues, cable cuts, BGP misconfigurations) are unavoidable in distributed systems. A CA system would fail entirely during partitions. Google Spanner paper notes they experience network partitions regularly despite their private network. Practical distributed systems must be partition-tolerant, leaving the C vs A choice. Single-node databases are technically CA but are not distributed systems.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9876,16 +9876,16 @@
     "subtopic": "CAPTheorem",
     "question": "Which databases are typically classified as CP systems? (Choose all that apply)",
     "options": {
-      "A": "MongoDB (with majority write concern)",
-      "B": "Cassandra (with eventual consistency)",
-      "C": "Google Spanner",
-      "D": "Amazon DynamoDB (default settings)"
+      "A": "MongoDB with majority write concern and read concern",
+      "B": "Apache Cassandra with consistency level ONE",
+      "C": "Google Cloud Spanner",
+      "D": "Amazon DynamoDB with eventual consistency reads"
     },
     "correct_answers": [
       "A",
       "C"
     ],
-    "explanation": "MongoDB with majority writes and Spanner prioritize consistency, potentially rejecting operations during partitions. Cassandra and DynamoDB default to eventual consistency (AP), though both can be configured differently.",
+    "explanation": "MongoDB with majority write/read concern and Spanner prioritize consistency, potentially rejecting operations during partitions when quorum cannot be reached. Cassandra with CL=ONE and DynamoDB with eventual reads are AP. The key insight: many databases are configurable. Cassandra with CL=QUORUM behaves more like CP; DynamoDB with strongly consistent reads behaves more like CP. The CAP classification depends on configuration, not just the database product.",
     "difficulty": "hard",
     "category": "distributed systems"
   },
@@ -9893,17 +9893,17 @@
     "id": "Core_Concepts__CAPTheorem__6",
     "topic": "Core Concepts",
     "subtopic": "CAPTheorem",
-    "question": "A distributed database uses quorum reads and writes (majority of replicas). During a partition that isolates the minority, what happens?",
+    "question": "A distributed database uses quorum reads and writes (majority of replicas). During a partition that isolates the minority of nodes, what happens?",
     "options": {
-      "A": "The minority partition continues serving reads and writes",
-      "B": "The minority partition becomes unavailable for writes",
-      "C": "Both partitions continue operating independently",
-      "D": "The entire system shuts down"
+      "A": "The minority partition continues serving reads and writes normally",
+      "B": "The minority partition becomes unavailable for writes but may serve stale reads",
+      "C": "Both partitions continue operating independently, causing split-brain",
+      "D": "The entire system shuts down until the partition heals"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "Quorum systems require majority agreement. The minority partition cannot achieve quorum, so it rejects writes to maintain consistency. The majority partition continues operating. This is CP behavior.",
+    "explanation": "Quorum systems require majority agreement for writes. The minority partition cannot achieve write quorum, so it rejects writes to maintain consistency. Depending on configuration, it might serve stale reads or reject all operations. The majority partition continues operating normally. This is CP behavior. etcd, Consul, and ZooKeeper all exhibit this behavior. The minority partition is available in the sense of responding, but unavailable for making progress.",
     "difficulty": "hard",
     "category": "distributed systems"
   },
@@ -9911,15 +9911,17 @@
     "id": "Core_Concepts__CAPTheorem__7",
     "topic": "Core Concepts",
     "subtopic": "CAPTheorem",
-    "question": "True or False: The CAP theorem means you must permanently choose two of the three properties when designing a system.",
+    "question": "A common misconception is that CAP means you must permanently choose two of three properties. What does CAP actually mean?",
     "options": {
-      "A": "True",
-      "B": "False"
+      "A": "You must choose two properties at system design time and cannot change",
+      "B": "During partitions, you choose C or A; during normal operation, you can have both",
+      "C": "You can have all three properties but with degraded performance",
+      "D": "The choice applies only to write operations, not reads"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "CAP tradeoffs apply during partitions only. Systems can (and do) provide all three properties during normal operation. The choice between C and A is made when partitions occur, and can even vary per operation or data type.",
+    "explanation": "CAP tradeoffs apply during partitions only. Systems can provide both consistency and availability during normal operation. The choice between C and A is made when partitions occur, and can even vary per operation or data type. Spanner provides strong consistency AND five-nines availability during normal operation. It only sacrifices availability in minority partitions during network splits.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9929,15 +9931,15 @@
     "subtopic": "CAPTheorem",
     "question": "A system architect wants to build a globally distributed database that is always consistent and always available. What should you tell them?",
     "options": {
-      "A": "Use synchronous replication across all regions",
-      "B": "This is impossible according to CAP theorem",
-      "C": "Use a consensus algorithm like Paxos",
-      "D": "Deploy in a single region to avoid partitions"
+      "A": "Use synchronous replication across all regions with consensus protocols",
+      "B": "This is impossible according to CAP theorem during network partitions",
+      "C": "Use a consensus algorithm like Paxos or Raft to achieve both",
+      "D": "Deploy in a single region with multiple availability zones"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "CAP proves this is impossible during partitions. Synchronous replication and consensus algorithms help with consistency but sacrifice availability during partitions. Single region avoids the distributed system context entirely.",
+    "explanation": "CAP proves this is impossible during partitions. Synchronous replication and consensus algorithms help with consistency but sacrifice availability during partitions. If a region is unreachable, writes to that region data block or fail. Single region avoids the distributed system context but does not provide global distribution. Google Spanner comes closest by using GPS-synchronized clocks, but even Spanner sacrifices availability in minority partitions.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9947,15 +9949,15 @@
     "subtopic": "CAPTheorem",
     "question": "Which strategy allows a system to provide different CAP tradeoffs for different types of data?",
     "options": {
-      "A": "Using a single database with configurable consistency",
-      "B": "Polyglot persistence with different databases for different needs",
-      "C": "Tunable consistency levels per operation",
-      "D": "All of the above"
+      "A": "Using a single database with configurable consistency levels per query",
+      "B": "Polyglot persistence with different databases for different data types",
+      "C": "Tunable consistency levels per operation or table",
+      "D": "All of the above are valid approaches"
     },
     "correct_answers": [
       "D"
     ],
-    "explanation": "All approaches work: single DBs with configurable consistency (Cassandra), multiple specialized databases, or per-operation tuning. Critical data can use CP settings while less critical data uses AP settings.",
+    "explanation": "All approaches work: single DBs with configurable consistency (Cassandra consistency levels, DynamoDB read consistency), multiple specialized databases (polyglot persistence), or per-operation tuning. Critical data like financial transactions can use CP settings while less critical data like view counts uses AP settings. Netflix uses this pattern: user credentials in CP storage, viewing history in AP storage. CAP tradeoffs should be made per-data-type based on business requirements.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9963,17 +9965,17 @@
     "id": "Core_Concepts__CAPTheorem__10",
     "topic": "Core Concepts",
     "subtopic": "CAPTheorem",
-    "question": "During a network partition, a CP system receives a write request. What is the expected behavior?",
+    "question": "During a network partition, a CP system receives a write request for data whose replicas are split across both partitions. What is the expected behavior?",
     "options": {
-      "A": "Accept the write and sync later",
-      "B": "Reject the write or block until partition heals",
-      "C": "Write to local node only",
-      "D": "Redirect to a different region"
+      "A": "Accept the write and synchronize when the partition heals",
+      "B": "Reject the write or block until the partition heals",
+      "C": "Write to the local partition only and mark as tentative",
+      "D": "Redirect the request to whichever partition has more replicas"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "CP systems prioritize consistency—they won't accept writes that can't be consistently replicated. The system either rejects the request or blocks until it can guarantee consistency across replicas.",
+    "explanation": "CP systems prioritize consistency. They will not accept writes that cannot be consistently replicated to a quorum. The system either rejects the request with an error or blocks until it can guarantee consistency across sufficient replicas. This is exactly what happens with etcd, ZooKeeper, and Consul during partitions. The minority partition becomes read-only or fully unavailable to prevent split-brain.",
     "difficulty": "medium",
     "category": "distributed systems"
   },
@@ -9981,17 +9983,17 @@
     "id": "Core_Concepts__CAPTheorem__11",
     "topic": "Core Concepts",
     "subtopic": "CAPTheorem",
-    "question": "Which real-world scenario best illustrates the CAP tradeoff?",
+    "question": "Which real-world scenario best illustrates the practical implications of the CAP tradeoff?",
     "options": {
-      "A": "Choosing between SQL and NoSQL databases",
-      "B": "An ATM allowing withdrawals during network outage vs. declining transactions",
-      "C": "Scaling vertically vs. horizontally",
-      "D": "Using caching vs. direct database access"
+      "A": "Choosing between SQL and NoSQL databases for a new project",
+      "B": "An ATM deciding whether to allow withdrawals during network outage",
+      "C": "Selecting between vertical and horizontal scaling strategies",
+      "D": "Deciding between synchronous and asynchronous API designs"
     },
     "correct_answers": [
       "B"
     ],
-    "explanation": "ATM during network outage: allow withdrawal (AP—available but potentially inconsistent with actual balance) or decline (CP—consistent but unavailable). This directly illustrates the C vs A choice during partition.",
+    "explanation": "ATM during network outage perfectly illustrates CAP: allow withdrawal (AP, available but potentially inconsistent with actual balance, risking overdraft) or decline (CP, consistent but unavailable, frustrating customer). Banks historically chose CP (decline), but some now allow small offline withdrawals (AP for small amounts, CP for large). This real-world example shows CAP is not just theoretical. It is a business decision with real consequences.",
     "difficulty": "easy",
     "category": "distributed systems"
   },
@@ -28426,6 +28428,456 @@
     "explanation": "1EB archival: erasure coding is ideal. RS(10,4) across AZs: 40% overhead (vs 200% for 3x replication), survives 4 failures, 11 9s durability achievable. Cost-effective at scale. This is how S3 works.",
     "difficulty": "hard",
     "category": "storage systems"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__0",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a globally distributed social media feed service. During a temporary network partition between regions, product insists that users must still be able to post and read most recent content without errors. Which CAP choice BEST matches this requirement for the write path?",
+    "options": {
+      "A": "Prioritize Consistency and Partition Tolerance (CP), reject writes during partition to avoid divergence",
+      "B": "Prioritize Availability and Partition Tolerance (AP), accept writes in each partition and reconcile later",
+      "C": "Prioritize Consistency and Availability (CA), rely on synchronous replication across all regions",
+      "D": "Ignore CAP and rely only on horizontal scaling of a single-region database"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "During a network partition, you cannot simultaneously guarantee both strict consistency and availability. If product insists that users can continue reading and writing without errors, you are prioritizing availability under partitions. This aligns with an AP choice: accept writes in each partition and handle conflicts or reconciliation later. CP (A) would reject or block writes to maintain consistency, violating the requirement. CA (C) is not achievable under partitions because synchronous replication would fail when the network is split. D ignores the partition scenario altogether and conflicts with global distribution requirements.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__1",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "A read-heavy analytics dashboard must show near-real-time metrics but can tolerate slightly stale data (a few seconds delay). Which combination of design choices is MOST appropriate?",
+    "options": {
+      "A": "Single strongly consistent relational database with all reads and writes going to the primary instance",
+      "B": "Leader-follower database with followers serving reads and asynchronous replication from the leader",
+      "C": "Sharded database where each shard is strongly consistent and all reads go to the shard leaders only",
+      "D": "In-memory cache in front of a single-node database with cache write-through on every update"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "For a read-heavy workload that can tolerate slightly stale data, leader-follower (primary-replica) with asynchronous replication is a natural fit. Followers scale out read traffic while allowing some replication lag, which the requirement tolerates. A bottlenecks all reads on the primary and may not scale well. C still forces all reads to leaders, which limits read scaling and mainly helps with data volume, not read fanout. D adds a cache but keeps a single-node database as a write bottleneck and does not inherently provide horizontal read scaling across replicas like B.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__2",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing an API rate limiter for a large multi-tenant SaaS platform. Which design choice MOST improves both scalability and fairness across tenants?",
+    "options": {
+      "A": "Use a local in-process counter per API node without any shared state",
+      "B": "Use a global distributed counter in a strongly consistent database table",
+      "C": "Use a token bucket per tenant stored in a distributed in-memory key-value store (e.g., Redis), with keys sharded by tenant ID",
+      "D": "Use a fixed global QPS limit stored in a configuration file and shared across all tenants"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "A token bucket per tenant stored in a distributed in-memory store allows you to enforce per-tenant limits fairly while scaling horizontally: keys can be sharded by tenant ID across multiple nodes. Local in-process counters (A) break when traffic is distributed across many API nodes and cannot enforce a global limit. A single strongly consistent counter (B) will quickly become a hot spot and a bottleneck. A fixed global QPS limit (D) cannot ensure fairness across tenants and is too coarse-grained for a multi-tenant system.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__3",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing an image sharing service where users frequently read their own recent photos and occasionally older photos. Storage is in an object store (like S3). Which caching strategy MOST effectively reduces median and tail read latency while keeping invalidation manageable?",
+    "options": {
+      "A": "No cache at all; always read directly from object storage",
+      "B": "Global write-through cache where every image write goes to cache and storage, and all reads go to cache first",
+      "C": "Read-through cache with LRU eviction, where cache entries are populated on read and evicted based on recency",
+      "D": "Full preloading cache where all user images are cached permanently regardless of access patterns"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "A read-through cache with LRU eviction automatically caches frequently accessed items (like recent photos) and evicts cold items, which matches the access pattern. This reduces median and tail latency while keeping cache size under control without complex invalidation logic. A offers no latency benefits. B adds complexity and can waste cache space on rarely-read images; it also requires writing to the cache on every upload. D is unrealistic at scale because it attempts to cache everything and will exceed memory constraints or lead to constant thrashing.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__4",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a high-write leaderboard service for a mobile game. Players submit score updates frequently, and you must show the top N scores globally with low latency. Which storage and indexing approach is MOST suitable?",
+    "options": {
+      "A": "Append-only log file on disk that is periodically sorted offline to recompute the leaderboard",
+      "B": "Relational database table with a B-tree index on the score column and full table scans for top N queries",
+      "C": "In-memory sorted set data structure (e.g., Redis sorted set) keyed by leaderboard, with scores as the sort key",
+      "D": "Document database with each player document containing an array of all historical scores"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "An in-memory sorted set (like Redis ZSET) is designed for exactly this pattern: frequent updates and fast top N queries by score. It provides O(log n) inserts and efficient range queries. A introduces high latency and staleness because the leaderboard is only updated after offline processing. B can handle this for smaller scales but top N queries will stress the database and index; under very high write rates, it becomes a bottleneck. D forces you to read and aggregate arrays of scores per user, which is inefficient and poorly suited for global ranking queries.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__5",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a notification service that must deliver push notifications to millions of devices. Notifications can arrive in bursts, but slight delivery delay (seconds) is acceptable. Which architecture choice BEST handles bursty traffic while keeping the core service resilient?",
+    "options": {
+      "A": "Have the web/API tier synchronously call the push provider (e.g., FCM/APNS) for each notification request",
+      "B": "Place a durable message queue between the producer and multiple notification worker services that send pushes",
+      "C": "Write notifications directly into a relational database and have clients poll periodically for new rows",
+      "D": "Use a single cron job that runs every minute and sends all pending notifications in a tight loop"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "A durable message queue decouples producers from consumers and naturally absorbs bursts: producers can enqueue messages quickly while workers scale horizontally to process the queue and talk to push providers. A makes the API tier directly dependent on push provider latency and failures. C forces clients into inefficient polling and puts unnecessary load on the database. D introduces a coarse time granularity and single point of failure that cannot react smoothly to burst patterns.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__6",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a multi-region read API for a product catalog. Data is mastered in a single primary region but must be served with low latency globally. Strong consistency on reads is NOT required, but reads should be fast and mostly fresh. Which approach is MOST appropriate?",
+    "options": {
+      "A": "Serve all reads from the primary region and rely on aggressive HTTP caching headers at the client side only",
+      "B": "Replicate data asynchronously to read replicas in each region and route users to their nearest replica",
+      "C": "Use a synchronous two-phase commit across all regions for every write before allowing any read",
+      "D": "Write data independently in every region and run an eventual reconciliation job nightly"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Asynchronous replication to regional read replicas gives low-latency local reads with acceptable staleness, which matches the requirement. A will have high latency for distant users. C greatly increases write latency and availability issues due to the need for cross-region coordination on every write. D allows large divergence (full-day discrepancies) and complex conflict resolution that is excessive for a product catalog that only needs mostly fresh, not region-siloed, data.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__7",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a logging system that ingests logs from thousands of microservices and supports near-real-time search and alerting. Which combination of components is MOST suitable?",
+    "options": {
+      "A": "Services write logs to local files; operators manually copy and grep them on demand",
+      "B": "Services send logs to a central message bus (e.g., Kafka), then a log processor indexes them into a search engine (e.g., Elasticsearch)",
+      "C": "Services directly write logs into a relational database table, and alerts run as SQL queries",
+      "D": "Services send logs via email to a shared inbox that SREs monitor"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Streaming logs into a central message bus and then indexing them into a search engine is the standard pattern for scalable, near-real-time logging and alerting. Kafka (or similar) buffers spikes, and Elasticsearch (or similar) enables fast queries and aggregations. A is purely manual and unscalable. C will overload the relational database with high write volume and large unstructured payloads. D is clearly not viable for any serious scale or automated alerting.",
+    "difficulty": "easy",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__8",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing an API that needs to ensure idempotent processing of payment requests so that retried requests (due to client or network timeouts) do not result in duplicate charges. Which approach MOST directly ensures idempotency at the application level?",
+    "options": {
+      "A": "Rely on the HTTP POST verb semantics and trust clients not to resend requests",
+      "B": "Require clients to send a unique idempotency key per logical payment, and deduplicate requests on the server using this key",
+      "C": "Use only HTTP GET for payment requests so that intermediate caches can safely retry",
+      "D": "Log every request and manually inspect logs for duplicates"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "An idempotency key uniquely identifies a logical operation (e.g., charge this card for this order). The server can store the result for each key and return the same result on retries, preventing duplicate charges. A is unsafe because POST semantics do not enforce idempotency. C misuses GET, which is meant to be safe and cacheable, and is not appropriate for payments. D is manual and cannot reliably prevent duplicates at scale.",
+    "difficulty": "easy",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__AppliedScenarios__9",
+    "topic": "System Design Scenarios",
+    "subtopic": "AppliedScenarios",
+    "question": "You are designing a microservices architecture for an e-commerce platform. Which combination of characteristics MOST strongly suggests that you should maintain a monolith for now instead of aggressively splitting into many microservices?",
+    "options": {
+      "A": "Team size is small, deployment frequency is modest, and cross-service boundaries are unclear",
+      "B": "Many teams own different parts of the system and frequently deploy independently",
+      "C": "You have strict multi-language requirements and each component needs different tech stacks",
+      "D": "You already have separate databases per bounded context and strong domain boundaries"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Microservices add operational complexity: network calls, distributed tracing, deployment orchestration, and cross-service failures. If your team is small, deployment cadence is moderate, and boundaries between components are not well-understood, a monolith is usually simpler and safer. B, C, and D are all signals that microservices might be justified: multiple teams and frequent deployments, heterogeneous tech requirements, or clearly separated bounded contexts with separate data stores.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__0",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which load balancing strategy best handles uneven response times across Spring Boot instances?",
+    "options": {
+      "A": "Round Robin",
+      "B": "Least Connections",
+      "C": "IP Hash",
+      "D": "Random"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Least Connections routing directs traffic to the instance with the fewest active connections, which naturally adapts to uneven response times. Slow instances accumulate connections and receive less new traffic, while fast instances clear connections quickly and receive more. Round Robin and Random ignore server load entirely, distributing requests evenly regardless of how busy each instance is. IP Hash provides session affinity but doesn't account for response time differences.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__1",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which caching pattern in Java microservices minimizes cache stampede during hot-key expiration?",
+    "options": {
+      "A": "Cache-aside only",
+      "B": "Write-through only",
+      "C": "Request coalescing (single-flight)",
+      "D": "No caching"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Request coalescing (also called single-flight or request deduplication) ensures that when a hot key expires, only one request fetches the new value from the backend while other concurrent requests wait for that single fetch to complete. This prevents the thundering herd problem where hundreds of requests simultaneously hit the database. Cache-aside and write-through patterns alone don't prevent multiple concurrent cache misses from all hitting the backend simultaneously.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__2",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "In a Java-based distributed system, which CAP choice is commonly preferred for user-facing services requiring high availability?",
+    "options": {
+      "A": "CP over availability",
+      "B": "AP over strong consistency",
+      "C": "CA in all partitions",
+      "D": "None of the above"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "User-facing services typically prioritize availability (AP) because users expect the application to respond even if data might be slightly stale. Showing a slightly outdated feed or product listing is usually preferable to showing an error page. CP systems would reject requests during network partitions to maintain consistency, which degrades user experience. CA is impossible during network partitions according to the CAP theorem, as partitions are inevitable in distributed systems.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__3",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which Java concurrency primitive best supports high-throughput non-blocking pipelines in modern services?",
+    "options": {
+      "A": "synchronized blocks",
+      "B": "ReentrantLock",
+      "C": "CompletableFuture with async execution",
+      "D": "Thread.sleep"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "CompletableFuture with async execution enables non-blocking pipelines where threads aren't held waiting for I/O operations. You can chain transformations, combine multiple async operations, and handle errors without blocking threads. synchronized blocks and ReentrantLock are blocking primitives that hold threads while waiting for locks. Thread.sleep explicitly blocks the current thread and is never appropriate for high-throughput scenarios.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__4",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which JVM-level tuning primarily reduces GC pause impact for latency-sensitive services?",
+    "options": {
+      "A": "Increasing heap without tuning GC",
+      "B": "Using low-latency collectors like ZGC/Shenandoah",
+      "C": "Disabling GC logs",
+      "D": "Using smaller heap always"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "ZGC and Shenandoah are designed specifically for low-latency applications, providing sub-millisecond pause times regardless of heap size by performing most GC work concurrently with application threads. Simply increasing heap without tuning GC often makes pauses longer and less frequent but more impactful. Disabling GC logs has no effect on actual GC performance. Smaller heaps cause more frequent GC cycles, which can increase overall pause time impact.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__5",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which resiliency pattern prevents cascading failures in Java microservices?",
+    "options": {
+      "A": "Retry-only",
+      "B": "Circuit Breaker",
+      "C": "Client-side load balancing only",
+      "D": "Synchronous fan-out"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Circuit Breaker prevents cascading failures by detecting when a downstream service is failing and short-circuiting requests to it, allowing the failing service time to recover while returning fast failures or fallback responses to callers. Retry-only can actually worsen cascading failures by adding load to struggling services. Client-side load balancing distributes load but doesn't prevent failures from propagating. Synchronous fan-out increases coupling and failure propagation risk.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__6",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which messaging pattern improves decoupling and scalability between Java services?",
+    "options": {
+      "A": "Synchronous REST chaining",
+      "B": "Shared database",
+      "C": "Event-driven messaging",
+      "D": "Tight coupling via RPC only"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Event-driven messaging decouples services temporally (producer doesn't wait for consumer) and spatially (producer doesn't need to know consumer addresses). Services can scale independently, and the message broker absorbs traffic spikes. Synchronous REST chaining creates tight temporal coupling where failures cascade. Shared databases create tight data coupling and become scaling bottlenecks. Tight RPC coupling makes services dependent on each other's availability.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__7",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which design choice best improves write scalability in a high-throughput Java service storing time-series data?",
+    "options": {
+      "A": "Single leader with synchronous replication",
+      "B": "Sharding by time or key",
+      "C": "Strongly consistent single-node store",
+      "D": "Centralized locking"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Sharding by time or key distributes write load across multiple nodes, allowing horizontal scaling. Time-based sharding is particularly effective for time-series data as recent writes go to the current shard while older data remains on previous shards. Single leader with synchronous replication bottlenecks all writes through one node. Single-node stores can't scale horizontally. Centralized locking serializes writes and becomes a severe bottleneck.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__8",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which approach reduces tail latency in fan-out Java services calling multiple downstream dependencies?",
+    "options": {
+      "A": "Serial blocking calls",
+      "B": "Parallel async calls with timeouts and hedging",
+      "C": "Unbounded retries",
+      "D": "Synchronous aggregation without timeouts"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Parallel async calls with timeouts and hedging minimize tail latency by: (1) calling dependencies concurrently rather than sequentially, (2) setting timeouts to bound worst-case latency, and (3) using hedged requests to retry slow calls before the timeout expires. Serial blocking calls add latencies together. Unbounded retries can cause infinite waits. Synchronous aggregation without timeouts allows any slow dependency to delay the entire response indefinitely.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__9",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which data access pattern reduces load on primary databases in read-heavy Java applications?",
+    "options": {
+      "A": "Read replicas with cache",
+      "B": "Always read from primary",
+      "C": "Disable caching",
+      "D": "Client-side joins only"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Read replicas offload read traffic from the primary database, and adding a cache layer further reduces database load by serving repeated reads from memory. This combination is the standard pattern for read-heavy workloads. Always reading from primary creates a bottleneck and doesn't scale. Disabling caching increases database load. Client-side joins don't reduce database load and often increase it by requiring multiple queries.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__10",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which pattern ensures exactly-once effect processing semantics at the application level in Java consumers?",
+    "options": {
+      "A": "At-least-once without idempotency",
+      "B": "Idempotent handlers with deduplication",
+      "C": "Fire-and-forget consumers",
+      "D": "Unbounded retries"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Exactly-once semantics at the application level requires idempotent handlers that produce the same result regardless of how many times a message is processed, combined with deduplication to detect and skip already-processed messages. At-least-once without idempotency causes duplicate effects. Fire-and-forget provides at-most-once semantics with potential message loss. Unbounded retries without idempotency amplify duplicate processing problems.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__11",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which approach best prevents connection pool exhaustion in high-QPS Java services?",
+    "options": {
+      "A": "Unlimited pool size",
+      "B": "Backpressure and bulkheads with bounded pools",
+      "C": "Increasing thread count only",
+      "D": "Disabling timeouts"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Bounded connection pools with backpressure reject or queue requests when the pool is exhausted, preventing resource exhaustion. Bulkheads isolate connection pools per dependency so one slow dependency doesn't exhaust connections needed for others. Unlimited pool size can exhaust memory and downstream resources. Increasing threads without bounding connections shifts the bottleneck. Disabling timeouts allows connections to be held indefinitely by slow operations.",
+    "difficulty": "hard",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__12",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which storage choice best supports horizontally scalable session management in Spring Boot?",
+    "options": {
+      "A": "In-memory session on each instance",
+      "B": "Sticky sessions only",
+      "C": "External distributed cache for sessions",
+      "D": "Local file system"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "External distributed cache (like Redis or Hazelcast) stores sessions outside application instances, allowing any instance to serve any user's request. This enables true horizontal scaling and survives instance failures. In-memory sessions are lost when instances restart and require sticky sessions. Sticky sessions prevent load balancing flexibility and create hot spots. Local file system doesn't work across instances and has I/O overhead.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__13",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which consistency model is typically acceptable for feed or notification systems built in Java microservices?",
+    "options": {
+      "A": "Strong consistency always",
+      "B": "Eventual consistency",
+      "C": "Linearizability only",
+      "D": "Strict serializability"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Feed and notification systems typically tolerate eventual consistency because users accept seeing updates with slight delays, and the cost of strong consistency (latency, availability trade-offs) isn't justified. A user seeing a notification a few seconds late is acceptable. Strong consistency, linearizability, and strict serializability all impose significant performance and availability costs that aren't necessary for these use cases.",
+    "difficulty": "medium",
+    "category": "system design"
+  },
+  {
+    "id": "System_Design_Scenarios__JavaSystemDesign__14",
+    "topic": "System Design Scenarios",
+    "subtopic": "JavaSystemDesign",
+    "question": "Which Java I/O model scales better for high-concurrency network servers?",
+    "options": {
+      "A": "Blocking I/O per thread",
+      "B": "Non-blocking NIO with event loops",
+      "C": "Single-threaded blocking I/O",
+      "D": "Busy-wait loops"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Non-blocking NIO with event loops (used by Netty, Vert.x, and Spring WebFlux) allows a small number of threads to handle thousands of concurrent connections by not blocking on I/O operations. Threads only process events when data is ready. Blocking I/O per thread requires one thread per connection, which doesn't scale due to memory and context-switching overhead. Single-threaded blocking I/O can only handle one connection at a time. Busy-wait loops waste CPU cycles.",
+    "difficulty": "medium",
+    "category": "system design"
   },
   {
     "id": "Trade-Offs__ConcurrencyVsParallelism__0",

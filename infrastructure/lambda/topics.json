@@ -164,6 +164,10 @@
     "DistributedFileSystems",
     "ErasureCoding"
   ],
+  "System Design Scenarios": [
+    "AppliedScenarios",
+    "JavaSystemDesign"
+  ],
   "Trade-Offs": [
     "ConcurrencyVsParallelism",
     "LongPollingVsWebSockets",
