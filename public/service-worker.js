@@ -1,5 +1,5 @@
 // Update this version on each deployment to force cache refresh
-const CACHE_VERSION = '2026-02-10-analytics-v3';
+const CACHE_VERSION = '2026-02-10-homepage-v4';
 const CACHE_NAME = `recallr-${CACHE_VERSION}`;
 
 const urlsToCache = [

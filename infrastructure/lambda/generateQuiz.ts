@@ -40,9 +40,13 @@ async function fetchCustomQuestions(userId: string): Promise<Question[]> {
   }
 }
 
-async function fetchUserProgress(userId: string): Promise<Map<string, UserQuestionProgress>> {
+interface ProgressWithHidden extends UserQuestionProgress {
+  isHidden?: boolean;
+}
+
+async function fetchUserProgress(userId: string): Promise<{ progressMap: Map<string, UserQuestionProgress>; hiddenIds: Set<string> }> {
   const tableName = process.env.PROGRESS_TABLE;
-  if (!tableName) return new Map();
+  if (!tableName) return { progressMap: new Map(), hiddenIds: new Set() };
 
   try {
     const docClient = getDocClient();
@@ -53,13 +57,19 @@ async function fetchUserProgress(userId: string): Promise<Map<string, UserQuesti
     }));
 
     const progressMap = new Map<string, UserQuestionProgress>();
-    for (const item of (result.Items || []) as UserQuestionProgress[]) {
-      progressMap.set(item.questionId, item);
+    const hiddenIds = new Set<string>();
+    
+    for (const item of (result.Items || []) as ProgressWithHidden[]) {
+      if (item.isHidden) {
+        hiddenIds.add(item.questionId);
+      } else {
+        progressMap.set(item.questionId, item);
+      }
     }
-    return progressMap;
+    return { progressMap, hiddenIds };
   } catch (error) {
     console.error('Error fetching progress:', error);
-    return new Map();
+    return { progressMap: new Map(), hiddenIds: new Set() };
   }
 }
 
@@ -139,14 +149,17 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 
     // Fetch user progress
-    const progressMap = await fetchUserProgress(userId);
+    const { progressMap, hiddenIds } = await fetchUserProgress(userId);
 
     // Fetch custom questions and merge with base questions
     const customQuestions = await fetchCustomQuestions(userId);
     const allQuestions = [...baseQuestions, ...customQuestions];
+    
+    // Filter out hidden questions
+    const availableQuestions = allQuestions.filter(q => !hiddenIds.has(q.id));
 
     // Generate quiz using the intelligent algorithm
-    const result = generateQuiz(allQuestions, progressMap, request);
+    const result = generateQuiz(availableQuestions, progressMap, request);
 
     if (result.questions.length === 0) {
       return successResponse({
@@ -177,7 +190,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       sessionId,
       questions: questionsWithShuffledOptions,
       quizType: request.quizType,
-      total: allQuestions.length,
+      total: availableQuestions.length,
+      hiddenCount: hiddenIds.size,
       returned: result.questions.length,
       metadata: result.metadata,
     });

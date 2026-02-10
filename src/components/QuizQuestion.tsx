@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Question, UserProgress } from '../types';
+import { hideQuestion } from '../api';
 
 interface QuizQuestionProps {
   question: Question;
@@ -12,6 +13,7 @@ interface QuizQuestionProps {
   onAnswerSelect: (letter: string) => void;
   onProgressMark: (status: 'remind' | 'known') => void;
   onConfidenceSubmit?: (rating: number) => void;
+  onQuestionHidden?: (questionId: string) => void;
 }
 
 // SM-2 Confidence Scale (0-5)
@@ -33,10 +35,13 @@ export function QuizQuestion({
   onAnswerSelect,
   onProgressMark,
   onConfidenceSubmit,
+  onQuestionHidden,
 }: QuizQuestionProps) {
   const isMultiSelect = question.correct_answers.length > 1;
   const [selectedConfidence, setSelectedConfidence] = useState<number | null>(null);
   const [hasSubmittedConfidence, setHasSubmittedConfidence] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
+  const [showHideConfirm, setShowHideConfirm] = useState(false);
 
   const handleConfidenceSelect = (rating: number) => {
     setSelectedConfidence(rating);
@@ -49,6 +54,22 @@ export function QuizQuestion({
       // Fall back to legacy progress mark
       const status = rating >= 4 ? 'known' : 'remind';
       onProgressMark(status);
+    }
+  };
+
+  const handleHideQuestion = async () => {
+    setIsHiding(true);
+    const success = await hideQuestion(
+      question.id,
+      question.topic,
+      question.subtopic,
+      'User marked as not useful'
+    );
+    setIsHiding(false);
+    setShowHideConfirm(false);
+    
+    if (success && onQuestionHidden) {
+      onQuestionHidden(question.id);
     }
   };
 
@@ -68,7 +89,36 @@ export function QuizQuestion({
               {question.difficulty}
             </span>
           )}
+          <button 
+            className="hide-question-btn"
+            onClick={() => setShowHideConfirm(true)}
+            title="Hide this question from future quizzes"
+          >
+            🚫
+          </button>
         </div>
+        
+        {showHideConfirm && (
+          <div className="hide-confirm-banner">
+            <span>Hide this question from future quizzes?</span>
+            <div className="hide-confirm-actions">
+              <button 
+                className="hide-confirm-yes" 
+                onClick={handleHideQuestion}
+                disabled={isHiding}
+              >
+                {isHiding ? 'Hiding...' : 'Yes, hide it'}
+              </button>
+              <button 
+                className="hide-confirm-no" 
+                onClick={() => setShowHideConfirm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="question-header">
           <span className="question-number">{questionNumber}</span>
           <span className="question-type">

@@ -478,3 +478,56 @@ export async function deleteQuestion(questionId: string): Promise<boolean> {
     return false;
   }
 }
+
+// ============================================
+// HIDDEN QUESTIONS API
+// ============================================
+
+export interface HiddenQuestion {
+  questionId: string;
+  topic: string;
+  subtopic: string;
+  hiddenAt: string;
+  hideReason?: string;
+}
+
+export async function fetchHiddenQuestions(): Promise<HiddenQuestion[]> {
+  if (!API_BASE_URL) return [];
+  try {
+    const response = await authFetch(`${API_BASE_URL}/hidden-questions`);
+    if (!response.ok) throw new Error('Failed to fetch hidden questions');
+    const data = await response.json();
+    return data.hiddenQuestions || [];
+  } catch (error) {
+    console.error('Error fetching hidden questions:', error);
+    return [];
+  }
+}
+
+export async function hideQuestion(questionId: string, topic?: string, subtopic?: string, reason?: string): Promise<boolean> {
+  if (!API_BASE_URL) return false;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/hidden-questions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questionId, topic, subtopic, reason }),
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Error hiding question:', error);
+    return false;
+  }
+}
+
+export async function unhideQuestion(questionId: string): Promise<boolean> {
+  if (!API_BASE_URL) return false;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/hidden-questions/${encodeURIComponent(questionId)}`, {
+      method: 'DELETE',
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Error unhiding question:', error);
+    return false;
+  }
+}
