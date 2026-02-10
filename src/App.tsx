@@ -104,9 +104,15 @@ function App() {
       <NotesScreen
         notes={notesHook.notes}
         loading={notesHook.loading}
-        onCreateNote={async (data) => { await notesHook.createNote(data); }}
-        onUpdateNote={async (data) => { await notesHook.updateNote(data); }}
-        onDeleteNote={async (noteId) => { await notesHook.removeNote(noteId); }}
+        onCreateNote={async (data) => {
+          await notesHook.createNote(data);
+        }}
+        onUpdateNote={async (data) => {
+          await notesHook.updateNote(data);
+        }}
+        onDeleteNote={async (noteId) => {
+          await notesHook.removeNote(noteId);
+        }}
         onTogglePin={notesHook.togglePin}
         onBack={() => setScreen(SCREENS.HOME)}
       />
@@ -123,9 +129,12 @@ function App() {
 
   if (screen === SCREENS.HOME) {
     const topicKeys = Object.keys(userData.topics);
-    const hasReviewItems = userData.wrongCount > 0 || userData.remindCount > 0;
     const overdueCount = userData.userStats.overdueCount || 0;
     const dueToday = userData.userStats.dueToday || 0;
+    const totalDue = overdueCount + dueToday;
+    const accuracy = userData.userStats.totalAnswered > 0 
+      ? Math.round((userData.userStats.totalCorrect / userData.userStats.totalAnswered) * 100) 
+      : 0;
     
     return (
       <div className="app">
@@ -133,125 +142,128 @@ function App() {
         {renderSidebar()}
         <Header onMenuOpen={() => setMenuOpen(true)} />
         <main className="home-content">
-          <div className="greeting">
-            <span className="greeting-wave">👋</span>
-            <h1>Hey {auth.user.email.split('@')[0]}</h1>
-          </div>
-
-          {(overdueCount > 0 || dueToday > 0) && (
-            <div className="due-alert">
-              <div className="due-alert-content">
-                <span className="due-icon">📅</span>
-                <div className="due-text">
-                  {overdueCount > 0 && <span className="overdue">{overdueCount} overdue</span>}
-                  {overdueCount > 0 && dueToday > 0 && <span className="separator">•</span>}
-                  {dueToday > 0 && <span className="due-today">{dueToday} due today</span>}
+          {/* Hero Section */}
+          <section className="hero-section">
+            <div className="hero-greeting">
+              <h1>Welcome back, {auth.user.email.split('@')[0]}!</h1>
+              <p className="hero-subtitle">Ready to level up your system design skills?</p>
+            </div>
+            
+            {/* Primary CTA */}
+            <button className="hero-cta" onClick={() => handleStartQuiz(totalDue > 0 ? 'spaced_review' : 'adaptive')} disabled={quiz.loading}>
+              <div className="hero-cta-content">
+                <span className="hero-cta-icon">{totalDue > 0 ? '📅' : '🎯'}</span>
+                <div className="hero-cta-text">
+                  <span className="hero-cta-title">
+                    {quiz.loading ? 'Loading...' : totalDue > 0 ? `Review ${totalDue} Due Questions` : 'Start Smart Quiz'}
+                  </span>
+                  <span className="hero-cta-subtitle">
+                    {totalDue > 0 
+                      ? `${overdueCount > 0 ? `${overdueCount} overdue` : ''}${overdueCount > 0 && dueToday > 0 ? ' • ' : ''}${dueToday > 0 ? `${dueToday} due today` : ''}`
+                      : 'Adaptive questions based on your progress'}
+                  </span>
                 </div>
               </div>
-              <button className="due-action" onClick={() => handleStartQuiz('spaced_review')}>
-                Review Now →
-              </button>
-            </div>
-          )}
+              <span className="hero-cta-arrow">→</span>
+            </button>
+          </section>
 
-          <button className="main-cta" onClick={() => handleStartQuiz('adaptive')} disabled={quiz.loading}>
-            <div className="cta-content">
-              <span className="cta-icon">🎯</span>
-              <div className="cta-text">
-                <span className="cta-title">{quiz.loading ? 'Loading...' : 'Start Smart Quiz'}</span>
-                <span className="cta-subtitle">Adaptive questions based on your progress</span>
+          {/* Stats Overview */}
+          <section className="stats-section">
+            <div className="stats-grid">
+              <div className="stat-card">
+                <span className="stat-value green">{userData.userStats.masteredCount || userData.userStats.totalKnown || 0}</span>
+                <span className="stat-label">Mastered</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-value blue">{userData.userStats.reviewingCount || 0}</span>
+                <span className="stat-label">Learning</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-value">{accuracy}%</span>
+                <span className="stat-label">Accuracy</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-value orange">{userData.userStats.currentDailyStreak || 0}🔥</span>
+                <span className="stat-label">Streak</span>
               </div>
             </div>
-            <span className="cta-arrow">›</span>
-          </button>
+          </section>
 
-          <div className="quiz-types-section">
-            <h2>Quiz Modes</h2>
-            <div className="quiz-types-grid">
-              {Object.entries(QUIZ_TYPE_INFO).map(([type, info]) => (
-                <button key={type} className="quiz-type-card" onClick={() => handleStartQuiz(type as QuizMode)}>
-                  <span className="qt-icon">{info.icon}</span>
-                  <span className="qt-name">{info.name}</span>
-                  <span className="qt-desc">{info.description}</span>
+          {/* Quiz Modes */}
+          <section className="modes-section">
+            <h2 className="section-title">Practice Modes</h2>
+            <div className="modes-grid">
+              {Object.entries(QUIZ_TYPE_INFO).slice(0, 4).map(([type, info]) => (
+                <button 
+                  key={type} 
+                  className={`mode-card ${type}`}
+                  onClick={() => handleStartQuiz(type as QuizMode)}
+                >
+                  <span className="mode-icon">{info.icon}</span>
+                  <div className="mode-text">
+                    <span className="mode-name">{info.name}</span>
+                    <span className="mode-desc">{info.description}</span>
+                  </div>
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="quick-actions-grid">
-            <button className="quick-action" onClick={() => setScreen(SCREENS.NOTES)}>
-              <span className="qa-icon">📝</span>
-              <span className="qa-label">Notes</span>
-              {notesHook.notes.length > 0 && <span className="qa-badge">{notesHook.notes.length}</span>}
-            </button>
-            <button className="quick-action" onClick={() => setScreen('analytics')}>
-              <span className="qa-icon">📊</span>
-              <span className="qa-label">Analytics</span>
-            </button>
-            <button className="quick-action" onClick={() => setScreen('questions')}>
-              <span className="qa-icon">✏️</span>
-              <span className="qa-label">My Questions</span>
-            </button>
-            <button className="quick-action" onClick={() => setMenuOpen(true)}>
-              <span className="qa-icon">📚</span>
-              <span className="qa-label">Topics</span>
-              <span className="qa-badge">{topicKeys.length}</span>
-            </button>
-          </div>
-
-          {hasReviewItems && (
-            <div className="review-section">
-              <h2>Needs Attention</h2>
-              <div className="review-cards">
-                {userData.wrongCount > 0 && (
-                  <button className="review-card wrong" onClick={() => handleStartQuiz('weak_area')}>
-                    <div className="rc-left">
-                      <span className="rc-icon">❌</span>
-                      <div className="rc-info">
-                        <span className="rc-count">{userData.wrongCount}</span>
-                        <span className="rc-label">Struggling</span>
-                      </div>
-                    </div>
-                    <span className="rc-action">Practice →</span>
-                  </button>
-                )}
-                {userData.remindCount > 0 && (
-                  <button className="review-card remind" onClick={() => handleStartQuiz('spaced_review')}>
-                    <div className="rc-left">
-                      <span className="rc-icon">🔔</span>
-                      <div className="rc-info">
-                        <span className="rc-count">{userData.remindCount}</span>
-                        <span className="rc-label">To review</span>
-                      </div>
-                    </div>
-                    <span className="rc-action">Review →</span>
-                  </button>
-                )}
-              </div>
+            <div className="modes-secondary">
+              {Object.entries(QUIZ_TYPE_INFO).slice(4).map(([type, info]) => (
+                <button 
+                  key={type} 
+                  className="mode-btn-secondary"
+                  onClick={() => handleStartQuiz(type as QuizMode)}
+                >
+                  <span>{info.icon}</span>
+                  <span>{info.name}</span>
+                </button>
+              ))}
             </div>
+          </section>
+
+          {/* Quick Access */}
+          <section className="quick-section">
+            <h2 className="section-title">Quick Access</h2>
+            <div className="quick-grid">
+              <button className="quick-card" onClick={() => setMenuOpen(true)}>
+                <span className="quick-icon">📚</span>
+                <span className="quick-label">Browse Topics</span>
+                <span className="quick-meta">{topicKeys.length} topics</span>
+              </button>
+              <button className="quick-card" onClick={() => setScreen('analytics')}>
+                <span className="quick-icon">📊</span>
+                <span className="quick-label">Analytics</span>
+                <span className="quick-meta">View progress</span>
+              </button>
+              <button className="quick-card" onClick={() => setScreen(SCREENS.NOTES)}>
+                <span className="quick-icon">📝</span>
+                <span className="quick-label">Notes</span>
+                <span className="quick-meta">{notesHook.notes.length} notes</span>
+              </button>
+              <button className="quick-card" onClick={() => setScreen('questions')}>
+                <span className="quick-icon">✏️</span>
+                <span className="quick-label">My Questions</span>
+                <span className="quick-meta">Custom quiz</span>
+              </button>
+            </div>
+          </section>
+
+          {/* Weak Areas Alert */}
+          {userData.wrongCount > 0 && (
+            <section className="alert-section">
+              <button className="alert-card" onClick={() => handleStartQuiz('weak_area')}>
+                <div className="alert-content">
+                  <span className="alert-icon">💪</span>
+                  <div className="alert-text">
+                    <span className="alert-title">{userData.wrongCount} questions need practice</span>
+                    <span className="alert-subtitle">Focus on your weak areas to improve</span>
+                  </div>
+                </div>
+                <span className="alert-action">Practice →</span>
+              </button>
+            </section>
           )}
-
-          <div className="progress-section">
-            <h2>Your Progress</h2>
-            <div className="progress-stats">
-              <div className="progress-stat">
-                <span className="ps-value green">{userData.userStats.masteredCount || userData.userStats.totalKnown}</span>
-                <span className="ps-label">Mastered</span>
-              </div>
-              <div className="progress-stat">
-                <span className="ps-value blue">{userData.userStats.reviewingCount || 0}</span>
-                <span className="ps-label">Reviewing</span>
-              </div>
-              <div className="progress-stat">
-                <span className="ps-value">{userData.userStats.totalAnswered}</span>
-                <span className="ps-label">Attempted</span>
-              </div>
-              <div className="progress-stat">
-                <span className="ps-value orange">{userData.userStats.currentDailyStreak || 0}</span>
-                <span className="ps-label">Day Streak</span>
-              </div>
-            </div>
-          </div>
         </main>
       </div>
     );
