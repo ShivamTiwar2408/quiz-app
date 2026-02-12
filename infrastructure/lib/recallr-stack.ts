@@ -170,7 +170,7 @@ export class QuizAppStack extends cdk.Stack {
     };
     const notesEnv = { NOTES_TABLE: notesTable.tableName };
 
-    const getTopics = this.createLambdaFunction('GetTopicsLambda', path.join(lambdaDir, 'getTopics.ts'), MEMORY_SIZES.SMALL);
+    const getTopics = this.createLambdaFunction('GetTopicsLambda', path.join(lambdaDir, 'getTopics.ts'), MEMORY_SIZES.SMALL, { CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName });
     const generateQuiz = this.createLambdaFunction('GenerateQuizLambda', path.join(lambdaDir, 'generateQuiz.ts'), MEMORY_SIZES.MEDIUM, commonEnv);
     const submitAnswer = this.createLambdaFunction('SubmitAnswerLambda', path.join(lambdaDir, 'submitAnswer.ts'), MEMORY_SIZES.SMALL, commonEnv);
     const getProgress = this.createLambdaFunction('GetProgressLambda', path.join(lambdaDir, 'getProgress.ts'), MEMORY_SIZES.SMALL, commonEnv);
@@ -179,6 +179,7 @@ export class QuizAppStack extends cdk.Stack {
     const getSessions = this.createLambdaFunction('GetSessionsLambda', path.join(lambdaDir, 'getSessions.ts'), MEMORY_SIZES.SMALL, commonEnv);
     const getAnalytics = this.createLambdaFunction('GetAnalyticsLambda', path.join(lambdaDir, 'getAnalytics.ts'), MEMORY_SIZES.MEDIUM, commonEnv);
     const manageQuestions = this.createLambdaFunction('ManageQuestionsLambda', path.join(lambdaDir, 'manageQuestions.ts'), MEMORY_SIZES.SMALL, { CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName });
+    const hideQuestion = this.createLambdaFunction('HideQuestionLambda', path.join(lambdaDir, 'hideQuestion.ts'), MEMORY_SIZES.SMALL, { PROGRESS_TABLE: progressTable.tableName });
     const getNotes = this.createLambdaFunction('GetNotesLambda', path.join(lambdaDir, 'getNotes.ts'), MEMORY_SIZES.SMALL, notesEnv);
     const saveNote = this.createLambdaFunction('SaveNoteLambda', path.join(lambdaDir, 'saveNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
     const deleteNote = this.createLambdaFunction('DeleteNoteLambda', path.join(lambdaDir, 'deleteNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
@@ -197,11 +198,13 @@ export class QuizAppStack extends cdk.Stack {
     sessionsTable.grantReadData(getAnalytics);
     customQuestionsTable.grantReadWriteData(manageQuestions);
     customQuestionsTable.grantReadData(generateQuiz);
+    customQuestionsTable.grantReadData(getTopics);
+    progressTable.grantReadWriteData(hideQuestion);
     notesTable.grantReadData(getNotes);
     notesTable.grantReadWriteData(saveNote);
     notesTable.grantReadWriteData(deleteNote);
 
-    return { getTopics, generateQuiz, submitAnswer, getProgress, getStats, getAttempts, getSessions, getAnalytics, manageQuestions, getNotes, saveNote, deleteNote };
+    return { getTopics, generateQuiz, submitAnswer, getProgress, getStats, getAttempts, getSessions, getAnalytics, manageQuestions, hideQuestion, getNotes, saveNote, deleteNote };
   }
 
   private createApiGateway(userPool: cognito.UserPool, lambdas: ReturnType<typeof this.createLambdaFunctions>): apigateway.RestApi {
@@ -262,6 +265,12 @@ export class QuizAppStack extends cdk.Stack {
     const questionById = questions.addResource('{questionId}');
     questionById.addMethod('PUT', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
     questionById.addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.manageQuestions), authConfig);
+    
+    // Hidden questions management
+    const hidden = api.root.addResource('hidden-questions');
+    hidden.addMethod('GET', new apigateway.LambdaIntegration(lambdas.hideQuestion), authConfig);
+    hidden.addMethod('POST', new apigateway.LambdaIntegration(lambdas.hideQuestion), authConfig);
+    hidden.addResource('{questionId}').addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.hideQuestion), authConfig);
     
     const notes = api.root.addResource('notes');
     notes.addMethod('GET', new apigateway.LambdaIntegration(lambdas.getNotes), authConfig);

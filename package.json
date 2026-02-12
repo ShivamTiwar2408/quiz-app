@@ -1,5 +1,5 @@
 {
-  "name": "quiz-app",
+  "name": "recallr",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "test": "jest --no-cache",
+    "test:coverage": "jest --coverage --no-cache"
   },
   "browserslist": {
     "production": [
@@ -24,7 +26,14 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.2.10",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "ts-jest": "^29.4.6"
   }
 }

@@ -1,6 +1,6 @@
-# System Design Quiz App
+# Recallr - System Design Interview Prep
 
-A React-based quiz application for testing system design knowledge, deployed with AWS CDK (API Gateway, Lambda, DynamoDB, CloudFront).
+A React-based spaced repetition application for mastering system design concepts, deployed with AWS CDK (API Gateway, Lambda, DynamoDB, CloudFront).
 
 ## Architecture
 
@@ -44,14 +44,19 @@ REACT_APP_API_URL=https://your-api-gateway-url
 
 ## API Endpoints
 
-- `GET /questions?count=10` - Get random questions
+- `GET /topics` - Get topic hierarchy
+- `POST /quiz/generate` - Generate quiz session
+- `POST /quiz/submit` - Submit answer
 - `GET /progress` - Get user progress
-- `POST /progress` - Save user progress
+- `GET /stats` - Get aggregated statistics
+- `GET /analytics` - Get comprehensive analytics
 
 ## Features
 
-- Random quiz generation (10 questions)
-- Multiple choice and multi-select questions
-- Progress tracking (Remind Me / I Know This)
-- Review mode for marked questions
-- New questions mode for unseen content
+- SM-2 Spaced Repetition algorithm
+- 5 Quiz Modes: Adaptive, Spaced Review, Topic Focused, Weak Area, Exam Prep
+- Confidence feedback (0-5 rating)
+- Analytics dashboard
+- Custom questions
+- Notes system with quiz generation
+- PWA support

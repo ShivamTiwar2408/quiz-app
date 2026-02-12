@@ -5,3 +5,4 @@ export { Sidebar } from './Sidebar';
 export { NotesScreen } from './NotesScreen';
 export { AnalyticsScreen } from './AnalyticsScreen';
 export { QuestionManager } from './QuestionManager';
+export { ErrorBoundary } from './ErrorBoundary';

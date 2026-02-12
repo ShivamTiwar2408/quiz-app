@@ -1,5 +1,5 @@
 {
-  "name": "quiz-app-infrastructure",
+  "name": "recallr-infrastructure",
   "version": "1.0.0",
   "bin": {
     "infrastructure": "bin/infrastructure.js"

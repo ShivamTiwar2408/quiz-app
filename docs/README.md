@@ -11,6 +11,7 @@ A spaced repetition quiz application for mastering system design concepts, built
 
 | Document | Description |
 |----------|-------------|
+| [High-Level Design (HLD)](./HIGH-LEVEL-DESIGN.md) | Comprehensive system design with diagrams |
 | [Architecture Overview](./ARCHITECTURE.md) | High-level system architecture and component interactions |
 | [SM-2 Algorithm](./SM2-ALGORITHM.md) | Spaced repetition algorithm implementation details |
 | [Data Model](./DATA-MODEL.md) | DynamoDB tables, schemas, and indexes |

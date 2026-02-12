@@ -43,7 +43,7 @@ infrastructure/
 ├── bin/
 │   └── infrastructure.ts    # CDK app entry point
 ├── lib/
-│   └── quiz-app-stack.ts    # Main stack definition
+│   └── recallr-stack.ts     # Main stack definition
 ├── lambda/
 │   ├── shared/              # Shared Lambda modules
 │   ├── generateQuiz.ts
@@ -215,7 +215,7 @@ npx cdk deploy --require-approval never --profile ShivamTiwari2408
 
 ### Lambda Not Updating
 
-Force Lambda code update by changing `DEPLOYMENT_VERSION` in `quiz-app-stack.ts`:
+Force Lambda code update by changing `DEPLOYMENT_VERSION` in `recallr-stack.ts`:
 
 ```typescript
 const DEPLOYMENT_VERSION = '2026-02-10-v2';  // Change this
@@ -243,8 +243,8 @@ API Gateway CORS is configured for all origins. If issues persist:
 ### CloudWatch Logs
 
 Each Lambda has its own log group:
-- `/aws/lambda/QuizAppStack-GetTopicsLambda*`
-- `/aws/lambda/QuizAppStack-GenerateQuizLambda*`
+- `/aws/lambda/RecallrStack-GetTopicsLambda*`
+- `/aws/lambda/RecallrStack-GenerateQuizLambda*`
 - etc.
 
 ### DynamoDB Metrics

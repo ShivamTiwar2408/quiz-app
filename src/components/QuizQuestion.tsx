@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Question, UserProgress } from '../types';
 import { hideQuestion } from '../api';
 
@@ -42,6 +42,13 @@ export function QuizQuestion({
   const [hasSubmittedConfidence, setHasSubmittedConfidence] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [showHideConfirm, setShowHideConfirm] = useState(false);
+
+  // Reset confidence state when question changes
+  useEffect(() => {
+    setSelectedConfidence(null);
+    setHasSubmittedConfidence(false);
+    setShowHideConfirm(false);
+  }, [question.id]);
 
   const handleConfidenceSelect = (rating: number) => {
     setSelectedConfidence(rating);

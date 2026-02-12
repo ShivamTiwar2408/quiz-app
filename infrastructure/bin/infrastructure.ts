@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { QuizAppStack } from '../lib/quiz-app-stack';
+import { QuizAppStack } from '../lib/recallr-stack';
 
 const app = new cdk.App();
 new QuizAppStack(app, 'QuizAppStack', {
