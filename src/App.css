@@ -1406,21 +1406,22 @@ body {
 }
 
 /* ==================== */
-/* Google Keep Style Notes */
+/* Google Keep Style Notes App */
 /* ==================== */
 
-.notes-screen {
+.notes-app {
   min-height: 100vh;
   background: var(--bg-primary);
   display: flex;
   flex-direction: column;
 }
 
-.notes-header {
+/* Header with Search */
+.notes-app-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
+  gap: 12px;
+  padding: 12px 16px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
@@ -1428,265 +1429,64 @@ body {
   z-index: 100;
 }
 
-.notes-header h1 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.notes-search-bar {
-  flex: 1;
-  max-width: 600px;
-}
-
-.notes-search-bar input {
-  width: 100%;
-  padding: 10px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-.notes-search-bar input:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-}
-
-.notes-search-bar input::placeholder {
-  color: var(--text-muted);
-}
-
-.notes-main {
-  flex: 1;
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* Note Input - Google Keep Style */
-.note-input-container {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  margin-bottom: 24px;
-  transition: box-shadow 0.2s;
-}
-
-.note-input-container:focus-within,
-.note-input-container.expanded {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.note-input-title {
-  width: 100%;
-  padding: 12px 16px 0;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.note-input-title:focus {
-  outline: none;
-}
-
-.note-input-title::placeholder {
-  color: var(--text-muted);
-}
-
-.note-input-content {
-  width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 14px;
-  line-height: 1.5;
-  resize: none;
-  font-family: inherit;
-}
-
-.note-input-content:focus {
-  outline: none;
-}
-
-.note-input-content::placeholder {
-  color: var(--text-muted);
-}
-
-.note-input-options {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-top: 1px solid var(--border-color);
-}
-
-.quiz-me-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--text-secondary);
-  flex: 1;
-}
-
-.quiz-me-checkbox input {
-  display: none;
-}
-
-.quiz-me-checkbox .checkbox-icon {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--border-color);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: white;
-  transition: all 0.15s;
-}
-
-.quiz-me-checkbox input:checked + .checkbox-icon {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-}
-
-.quiz-me-checkbox:hover .checkbox-icon {
-  border-color: var(--accent-primary);
-}
-
-.color-picker-btn,
-.delete-note-btn {
-  width: 32px;
-  height: 32px;
+.notes-back-btn {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.15s;
-}
-
-.color-picker-btn:hover {
-  background: var(--bg-hover);
-}
-
-.delete-note-btn:hover {
-  background: var(--red-bg);
-}
-
-.color-picker {
-  display: flex;
-  gap: 6px;
-  padding: 8px 16px;
-  flex-wrap: wrap;
-}
-
-.color-option {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.color-option:hover {
-  transform: scale(1.1);
-}
-
-.color-option.selected {
-  border-color: var(--text-primary);
-}
-
-.note-input-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 8px 16px 12px;
-}
-
-.note-input-actions .cancel-btn,
-.note-input-actions .save-btn {
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.note-input-actions .cancel-btn {
-  background: transparent;
-  border: none;
   color: var(--text-secondary);
-}
-
-.note-input-actions .cancel-btn:hover {
-  background: var(--bg-hover);
-}
-
-.note-input-actions .save-btn {
-  background: var(--accent-primary);
-  border: none;
-  color: white;
-}
-
-.note-input-actions .save-btn:hover {
-  background: var(--accent-hover);
-}
-
-/* Notes Sections */
-.notes-section {
-  margin-bottom: 24px;
-}
-
-.notes-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  padding-left: 4px;
-}
-
-/* Notes Grid - Masonry-like */
-.notes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-/* Note Card - Google Keep Style */
-.note-card-keep {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 12px;
   cursor: pointer;
   transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.notes-back-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.notes-search-wrapper {
+  flex: 1;
+  max-width: 720px;
   position: relative;
-  min-height: 80px;
+  display: flex;
+  align-items: center;
 }
 
-.note-card-keep:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.pin-btn {
+.notes-search-wrapper .search-icon {
   position: absolute;
-  top: 8px;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.notes-search-input {
+  width: 100%;
+  padding: 12px 40px 12px 44px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: all 0.15s;
+}
+
+.notes-search-input:focus {
+  outline: none;
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.notes-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-clear {
+  position: absolute;
   right: 8px;
   width: 28px;
   height: 28px;
@@ -1696,61 +1496,497 @@ body {
   background: transparent;
   border: none;
   border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 20px;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.search-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Main Content Area */
+.notes-app-main {
+  flex: 1;
+  padding: 24px 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Note Composer - Google Keep Style */
+.note-composer {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 32px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.note-composer.expanded {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.composer-title {
+  width: 100%;
+  padding: 14px 16px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.composer-title:focus {
+  outline: none;
+}
+
+.composer-title::placeholder {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.composer-content {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
   font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  font-family: inherit;
+  min-height: 24px;
+}
+
+.composer-content:focus {
+  outline: none;
+}
+
+.composer-content::placeholder {
+  color: var(--text-muted);
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.toolbar-btn:hover,
+.toolbar-btn.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Quiz Toggle Switch */
+.quiz-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.quiz-toggle input {
+  display: none;
+}
+
+.toggle-track {
+  width: 36px;
+  height: 20px;
+  background: var(--bg-hover);
+  border-radius: 10px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.quiz-toggle input:checked + .toggle-track {
+  background: var(--accent-primary);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.quiz-toggle input:checked + .toggle-track .toggle-thumb {
+  left: 18px;
+  background: white;
+}
+
+.toggle-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Color Palette */
+.color-palette,
+.modal-color-palette {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  flex-wrap: wrap;
+}
+
+.palette-color {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.palette-color:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.palette-color.selected {
+  border-color: white;
+}
+
+/* Composer Actions */
+.composer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 12px 12px;
+}
+
+.action-close,
+.action-save {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.action-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.action-close:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.action-save {
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+}
+
+.action-save:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.action-close:disabled,
+.action-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Notes Section Labels */
+.notes-section {
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+
+/* Masonry Grid using CSS Columns */
+.notes-masonry {
+  column-count: 4;
+  column-gap: 16px;
+}
+
+/* Note Card */
+.note-card {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.note-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-pin-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
   opacity: 0;
   transition: all 0.15s;
 }
 
-.note-card-keep:hover .pin-btn {
-  opacity: 0.6;
+.note-card:hover .card-pin-btn {
+  opacity: 0.7;
 }
 
-.pin-btn:hover {
+.card-pin-btn:hover {
   opacity: 1 !important;
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
 }
 
-.pin-btn.pinned {
+.card-pin-btn.pinned {
   opacity: 1;
+  color: var(--accent-primary);
 }
 
-.note-card-title {
-  font-size: 14px;
+.card-title {
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 8px 0;
-  padding-right: 24px;
+  padding-right: 32px;
+  line-height: 1.4;
 }
 
-.note-card-content {
+.card-content {
   font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.quiz-me-badge {
+.card-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 10px;
   padding: 4px 8px;
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--accent-primary);
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
 }
 
-.notes-loading,
-.notes-empty {
+.card-badge.quiz {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-primary);
+}
+
+/* Loading State */
+.notes-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.loader-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Empty State */
+.notes-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
   text-align: center;
-  padding: 60px 20px;
+}
+
+.notes-empty-state p {
+  margin-top: 16px;
   color: var(--text-muted);
   font-size: 14px;
+}
+
+/* Edit Modal */
+.note-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.note-modal {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+  width: 100%;
+  padding: 16px 16px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.modal-title:focus {
+  outline: none;
+}
+
+.modal-title::placeholder {
+  color: var(--text-muted);
+}
+
+.modal-content {
+  flex: 1;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  font-family: inherit;
+  min-height: 150px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.modal-content:focus {
+  outline: none;
+}
+
+.modal-content::placeholder {
+  color: var(--text-muted);
+}
+
+.modal-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.modal-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.modal-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-btn:hover,
+.modal-btn.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-btn.delete-btn:hover {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* Sidebar Notes Action */
@@ -1763,55 +1999,51 @@ body {
   background: rgba(99, 102, 241, 0.2);
 }
 
-/* Mobile Responsive for Notes */
-@media (max-width: 600px) {
-  .notes-header {
-    flex-wrap: wrap;
-    gap: 12px;
+/* Sidebar Note Questions Action */
+.sidebar-action.note-questions {
+  border-color: var(--green);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.sidebar-action.note-questions:hover {
+  background: rgba(34, 197, 94, 0.2);
+}
+
+/* Responsive Masonry Columns */
+@media (max-width: 500px) {
+  .notes-masonry {
+    column-count: 1;
   }
   
-  .notes-search-bar {
-    order: 3;
-    width: 100%;
-    max-width: none;
+  .notes-app-header {
+    padding: 10px 12px;
   }
   
-  .notes-grid {
-    grid-template-columns: 1fr;
+  .notes-search-input {
+    padding: 10px 36px 10px 40px;
+    font-size: 14px;
   }
   
-  .note-card-keep .pin-btn {
-    opacity: 0.6;
+  .note-card .card-pin-btn {
+    opacity: 0.7;
   }
 }
 
-@media (min-width: 601px) and (max-width: 900px) {
-  .notes-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (min-width: 501px) and (max-width: 700px) {
+  .notes-masonry {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+  .notes-masonry {
+    column-count: 3;
   }
 }
 
 @media (min-width: 901px) {
-  .notes-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Mobile Responsive for Notes */
-@media (max-width: 600px) {
-  .notes-header {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .notes-search-bar {
-    order: 3;
-    width: 100%;
-    max-width: none;
-  }
-  
-  .notes-grid {
-    grid-template-columns: 1fr;
+  .notes-masonry {
+    column-count: 4;
   }
 }
 
@@ -1865,6 +2097,60 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+/* Compact confidence section */
+.confidence-section-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.confidence-label-inline {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.confidence-row {
+  display: flex;
+  gap: 4px;
+}
+
+.confidence-btn-compact {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.confidence-btn-compact:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  transform: scale(1.08);
+}
+
+.confidence-btn-compact.selected {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--accent-primary);
+}
+
+.confidence-btn-compact.faded {
+  opacity: 0.3;
+}
+
+.confidence-btn-compact:disabled {
+  cursor: default;
+}
+
+/* Legacy confidence styles (kept for reference) */
 .confidence-header {
   display: flex;
   align-items: center;
@@ -2550,293 +2836,8 @@ body {
 }
 
 /* ============================================
-   QUESTION MANAGER STYLES
+   ANALYTICS SCREEN STYLES
    ============================================ */
-
-.qm-content {
-  padding: 16px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.create-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--accent-primary);
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 16px;
-  transition: background 0.2s;
-}
-
-.create-btn:hover {
-  background: var(--accent-hover);
-}
-
-.questions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.question-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 14px;
-}
-
-.qc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.qc-topic {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.qc-difficulty {
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.qc-difficulty.easy { background: var(--green-bg); color: var(--green); }
-.qc-difficulty.medium { background: var(--orange-bg); color: var(--orange); }
-.qc-difficulty.hard { background: var(--red-bg); color: var(--red); }
-
-.qc-text {
-  font-size: 13px;
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-
-.qc-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.qc-option {
-  padding: 4px 8px;
-  background: var(--bg-hover);
-  border-radius: 6px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-.qc-option.correct {
-  background: var(--green-bg);
-  color: var(--green);
-}
-
-.qc-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.qc-actions button {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.edit-btn {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.edit-btn:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-}
-
-.delete-btn {
-  background: transparent;
-  color: var(--red);
-  border-color: var(--red);
-}
-
-.delete-btn:hover {
-  background: var(--red);
-  color: white;
-}
-
-/* Question Form */
-.question-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-error {
-  padding: 12px;
-  background: var(--red-bg);
-  border: 1px solid var(--red);
-  border-radius: 8px;
-  color: var(--red);
-  font-size: 13px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.form-group input,
-.form-group textarea {
-  padding: 10px 12px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.options-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.option-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.option-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--green);
-}
-
-.option-row .option-letter {
-  width: 24px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.option-row input[type="text"] {
-  flex: 1;
-}
-
-.difficulty-selector {
-  display: flex;
-  gap: 8px;
-}
-
-.diff-btn {
-  flex: 1;
-  padding: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.diff-btn:hover {
-  background: var(--bg-hover);
-}
-
-.diff-btn.active.easy {
-  background: var(--green-bg);
-  border-color: var(--green);
-  color: var(--green);
-}
-
-.diff-btn.active.medium {
-  background: var(--orange-bg);
-  border-color: var(--orange);
-  color: var(--orange);
-}
-
-.diff-btn.active.hard {
-  background: var(--red-bg);
-  border-color: var(--red);
-  color: var(--red);
-}
-
-.question-form .submit-btn {
-  padding: 14px;
-  background: var(--accent-primary);
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.question-form .submit-btn:hover:not(:disabled) {
-  background: var(--accent-hover);
-}
-
-.question-form .submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.back-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 14px;
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.back-btn:hover {
-  color: var(--text-primary);
-}
-
-
-/* ==================== */
-/* Question Manager Styles */
-/* ==================== */
 
 .qm-content {
   flex: 1;
@@ -2851,6 +2852,85 @@ body {
   gap: 12px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+/* Question Manager Tabs */
+.qm-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.qm-tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qm-tab:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+}
+
+.qm-tab.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.qm-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--blue-bg, rgba(59, 130, 246, 0.1));
+  border: 1px solid var(--blue, #3b82f6);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--blue, #3b82f6);
+}
+
+.qm-info-banner .info-icon {
+  font-size: 16px;
+}
+
+.question-card.note-question {
+  border-left: 3px solid var(--accent-primary);
+}
+
+.qc-meta {
+  margin-bottom: 10px;
+}
+
+.qc-generated {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.note-source {
+  background: var(--bg-secondary);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.note-source-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-source-info .note-title {
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .create-btn {
@@ -3659,6 +3739,21 @@ body {
   color: var(--red);
 }
 
+/* Notes Quiz Alert */
+.alert-card.notes-quiz {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.alert-card.notes-quiz:hover {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: var(--green);
+}
+
+.alert-card.notes-quiz .alert-action {
+  color: var(--green);
+}
+
 /* Mobile Responsive */
 @media (max-width: 400px) {
   .stats-grid {
@@ -3731,4 +3826,115 @@ body {
 
 .error-retry-btn:hover {
   background: var(--accent-hover);
+}
+
+/* ==================== */
+/* Thumbs Feedback Styles */
+/* ==================== */
+
+.thumbs-feedback {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.thumb-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 6px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.15s;
+  border-radius: 4px;
+}
+
+.thumb-btn:hover:not(:disabled) {
+  opacity: 1;
+  background: var(--bg-hover);
+}
+
+.thumb-btn.selected {
+  opacity: 1;
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.thumb-btn.faded {
+  opacity: 0.2;
+}
+
+.thumb-btn:disabled {
+  cursor: default;
+}
+
+/* Question text row with thumbs */
+.question-text-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.question-text-row .question-text {
+  flex: 1;
+  margin: 0;
+}
+
+.question-text-row .thumbs-feedback {
+  margin-top: 4px;
+}
+
+/* Option row wrapper for thumbs */
+.option-row-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.option-row-wrapper .option-item {
+  flex: 1;
+}
+
+.option-row-wrapper .thumbs-feedback {
+  margin-left: 4px;
+}
+
+/* Explanation header with thumbs */
+.explanation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.explanation-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Note saving indicator */
+.note-input-actions .save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.note-input-actions .cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .thumb-btn {
+    padding: 3px 5px;
+    font-size: 12px;
+  }
+  
+  .option-row-wrapper .thumbs-feedback {
+    margin-left: 2px;
+  }
 }

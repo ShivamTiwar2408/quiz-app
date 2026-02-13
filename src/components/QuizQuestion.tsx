@@ -14,17 +14,58 @@ interface QuizQuestionProps {
   onProgressMark: (status: 'remind' | 'known') => void;
   onConfidenceSubmit?: (rating: number) => void;
   onQuestionHidden?: (questionId: string) => void;
+  onQuestionFeedback?: (questionId: string, feedback: string) => void;
 }
 
-// SM-2 Confidence Scale (0-5)
+// SM-2 Confidence Scale (0-5) - compact version
 const CONFIDENCE_OPTIONS = [
-  { rating: 0, label: 'Blackout', emoji: '😵', description: 'Complete blank' },
-  { rating: 1, label: 'Wrong', emoji: '😰', description: 'Recognized after seeing answer' },
-  { rating: 2, label: 'Hard', emoji: '😓', description: 'Struggled significantly' },
-  { rating: 3, label: 'Okay', emoji: '🤔', description: 'Correct with effort' },
-  { rating: 4, label: 'Good', emoji: '😊', description: 'Correct with slight hesitation' },
-  { rating: 5, label: 'Easy', emoji: '🎯', description: 'Perfect instant recall' },
+  { rating: 0, emoji: '😵' },
+  { rating: 1, emoji: '😰' },
+  { rating: 2, emoji: '😓' },
+  { rating: 3, emoji: '🤔' },
+  { rating: 4, emoji: '😊' },
+  { rating: 5, emoji: '🎯' },
 ];
+
+// Simple thumbs feedback component
+function ThumbsFeedback({ 
+  id, 
+  type,
+  onFeedback 
+}: { 
+  id: string; 
+  type: 'question' | 'options' | 'explanation';
+  onFeedback?: (id: string, type: string, rating: 'good' | 'bad') => void;
+}) {
+  const [rating, setRating] = useState<'good' | 'bad' | null>(null);
+
+  const handleRate = (value: 'good' | 'bad') => {
+    if (rating) return;
+    setRating(value);
+    onFeedback?.(id, type, value);
+  };
+
+  return (
+    <span className="thumbs-feedback">
+      <button 
+        className={`thumb-btn ${rating === 'good' ? 'selected' : ''} ${rating && rating !== 'good' ? 'faded' : ''}`}
+        onClick={(e) => { e.stopPropagation(); handleRate('good'); }}
+        disabled={rating !== null}
+        title="Good"
+      >
+        👍
+      </button>
+      <button 
+        className={`thumb-btn ${rating === 'bad' ? 'selected' : ''} ${rating && rating !== 'bad' ? 'faded' : ''}`}
+        onClick={(e) => { e.stopPropagation(); handleRate('bad'); }}
+        disabled={rating !== null}
+        title="Bad"
+      >
+        👎
+      </button>
+    </span>
+  );
+}
 
 export function QuizQuestion({
   question,
@@ -36,29 +77,30 @@ export function QuizQuestion({
   onProgressMark,
   onConfidenceSubmit,
   onQuestionHidden,
+  onQuestionFeedback,
 }: QuizQuestionProps) {
   const isMultiSelect = question.correct_answers.length > 1;
   const [selectedConfidence, setSelectedConfidence] = useState<number | null>(null);
   const [hasSubmittedConfidence, setHasSubmittedConfidence] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [showHideConfirm, setShowHideConfirm] = useState(false);
+  const [feedbackKey, setFeedbackKey] = useState(0);
 
-  // Reset confidence state when question changes
+  // Reset all state when question changes
   useEffect(() => {
     setSelectedConfidence(null);
     setHasSubmittedConfidence(false);
     setShowHideConfirm(false);
+    setFeedbackKey(prev => prev + 1);
   }, [question.id]);
 
   const handleConfidenceSelect = (rating: number) => {
     setSelectedConfidence(rating);
     setHasSubmittedConfidence(true);
     
-    // Call the new confidence submit if available
     if (onConfidenceSubmit) {
       onConfidenceSubmit(rating);
     } else {
-      // Fall back to legacy progress mark
       const status = rating >= 4 ? 'known' : 'remind';
       onProgressMark(status);
     }
@@ -80,7 +122,12 @@ export function QuizQuestion({
     }
   };
 
-  // Determine if answer was correct
+  const handleFeedback = (id: string, type: string, rating: 'good' | 'bad') => {
+    if (onQuestionFeedback) {
+      onQuestionFeedback(id, `${type}_${rating}`);
+    }
+  };
+
   const isCorrect = showResult && 
     question.correct_answers.length === selectedAnswers.length && 
     question.correct_answers.every(c => selectedAnswers.includes(c));
@@ -132,7 +179,18 @@ export function QuizQuestion({
             {isMultiSelect ? 'Select All That Apply' : 'Single Choice'}
           </span>
         </div>
-        <h2 className="question-text">{question.question}</h2>
+        
+        <div className="question-text-row">
+          <h2 className="question-text">{question.question}</h2>
+          {showExplanation && (
+            <ThumbsFeedback 
+              key={`q-${feedbackKey}`}
+              id={question.id} 
+              type="question" 
+              onFeedback={handleFeedback} 
+            />
+          )}
+        </div>
         
         <div className="options-container">
           {Object.entries(question.options).map(([letter, option]) => {
@@ -145,22 +203,31 @@ export function QuizQuestion({
             if (showResult && isSelected && !isCorrectOption) className += ' incorrect';
 
             return (
-              <button
-                key={letter}
-                className={className}
-                onClick={() => onAnswerSelect(letter)}
-                disabled={showResult}
-              >
-                <span className={`option-indicator ${isMultiSelect ? 'checkbox' : 'radio'}`}>
-                  {showResult ? (
-                    isCorrectOption ? '✓' : isSelected ? '✗' : null
-                  ) : (
-                    isSelected && <span className="indicator-dot" />
-                  )}
-                </span>
-                <span className="option-letter">{letter}.</span>
-                <span className="option-content">{option}</span>
-              </button>
+              <div key={letter} className="option-row-wrapper">
+                <button
+                  className={className}
+                  onClick={() => onAnswerSelect(letter)}
+                  disabled={showResult}
+                >
+                  <span className={`option-indicator ${isMultiSelect ? 'checkbox' : 'radio'}`}>
+                    {showResult ? (
+                      isCorrectOption ? '✓' : isSelected ? '✗' : null
+                    ) : (
+                      isSelected && <span className="indicator-dot" />
+                    )}
+                  </span>
+                  <span className="option-letter">{letter}.</span>
+                  <span className="option-content">{option}</span>
+                </button>
+                {showExplanation && (
+                  <ThumbsFeedback 
+                    key={`o-${letter}-${feedbackKey}`}
+                    id={`${question.id}-${letter}`} 
+                    type="options" 
+                    onFeedback={handleFeedback} 
+                  />
+                )}
+              </div>
             );
           })}
         </div>
@@ -174,50 +241,39 @@ export function QuizQuestion({
             <span className="result-text">{isCorrect ? 'Correct!' : 'Incorrect'}</span>
           </div>
 
-          {/* Explanation */}
+          {/* Explanation with thumbs */}
           <div className="explanation-section">
             <div className="explanation-header">
-              <span className="explanation-icon">💡</span>
-              <span>Explanation</span>
+              <div className="explanation-title">
+                <span className="explanation-icon">💡</span>
+                <span>Explanation</span>
+              </div>
+              <ThumbsFeedback 
+                key={`e-${feedbackKey}`}
+                id={question.id} 
+                type="explanation" 
+                onFeedback={handleFeedback} 
+              />
             </div>
             <p className="explanation-text">{question.explanation}</p>
           </div>
 
-          {/* SM-2 Confidence Rating */}
-          <div className="confidence-section">
-            <div className="confidence-header">
-              <span className="confidence-icon">🧠</span>
-              <span>How well did you know this?</span>
-            </div>
-            <p className="confidence-subtitle">
-              Rate your recall to optimize your learning schedule
-            </p>
-            <div className="confidence-grid">
+          {/* SM-2 Confidence Rating - Compact */}
+          <div className="confidence-section-compact">
+            <span className="confidence-label-inline">How well did you know this?</span>
+            <div className="confidence-row">
               {CONFIDENCE_OPTIONS.map((option) => (
                 <button
                   key={option.rating}
-                  className={`confidence-btn ${selectedConfidence === option.rating ? 'selected' : ''} ${hasSubmittedConfidence && selectedConfidence !== option.rating ? 'faded' : ''}`}
+                  className={`confidence-btn-compact ${selectedConfidence === option.rating ? 'selected' : ''} ${hasSubmittedConfidence && selectedConfidence !== option.rating ? 'faded' : ''}`}
                   onClick={() => !hasSubmittedConfidence && handleConfidenceSelect(option.rating)}
                   disabled={hasSubmittedConfidence}
+                  title={`${option.rating}/5`}
                 >
-                  <span className="confidence-emoji">{option.emoji}</span>
-                  <span className="confidence-label">{option.label}</span>
-                  <span className="confidence-rating">{option.rating}</span>
+                  {option.emoji}
                 </button>
               ))}
             </div>
-            {hasSubmittedConfidence && selectedConfidence !== null && (
-              <div className="confidence-feedback">
-                <span className="feedback-icon">✓</span>
-                <span>
-                  {selectedConfidence >= 4 
-                    ? "Great! This will be reviewed less frequently."
-                    : selectedConfidence >= 2
-                    ? "Got it! This will come up again soon."
-                    : "No worries! We'll help you master this."}
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Related Concepts */}

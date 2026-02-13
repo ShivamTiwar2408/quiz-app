@@ -10,6 +10,7 @@ interface HomeScreenProps {
   wrongCount: number;
   remindCount: number;
   notes: Note[];
+  noteQuestionsCount?: number;
   loading: boolean;
   menuOpen: boolean;
   onMenuOpen: () => void;
@@ -19,6 +20,7 @@ interface HomeScreenProps {
   onOpenNotes: () => void;
   onOpenAnalytics: () => void;
   onOpenQuestions: () => void;
+  onOpenNoteQuestions?: () => void;
 }
 
 export const HomeScreen = memo(function HomeScreen({
@@ -28,6 +30,7 @@ export const HomeScreen = memo(function HomeScreen({
   wrongCount,
   remindCount,
   notes,
+  noteQuestionsCount = 0,
   loading,
   menuOpen,
   onMenuOpen,
@@ -37,6 +40,7 @@ export const HomeScreen = memo(function HomeScreen({
   onOpenNotes,
   onOpenAnalytics,
   onOpenQuestions,
+  onOpenNoteQuestions,
 }: HomeScreenProps) {
   const topicKeys = Object.keys(topics);
   const overdueCount = userStats.overdueCount || 0;
@@ -64,10 +68,12 @@ export const HomeScreen = memo(function HomeScreen({
         wrongCount={wrongCount}
         remindCount={remindCount}
         notesCount={notes.length}
+        noteQuestionsCount={noteQuestionsCount}
         onClose={onMenuClose}
         onSignOut={onSignOut}
         onStartQuiz={onStartQuiz}
         onOpenNotes={onOpenNotes}
+        onOpenNoteQuestions={onOpenNoteQuestions}
       />
       {menuOpen && <div className="overlay" onClick={onMenuClose} />}
     </>
@@ -201,6 +207,22 @@ export const HomeScreen = memo(function HomeScreen({
                 </div>
               </div>
               <span className="alert-action">Practice →</span>
+            </button>
+          </section>
+        )}
+
+        {/* Notes Quiz Alert */}
+        {noteQuestionsCount > 0 && (
+          <section className="alert-section">
+            <button className="alert-card notes-quiz" onClick={() => onStartQuiz('notes')}>
+              <div className="alert-content">
+                <span className="alert-icon">📓</span>
+                <div className="alert-text">
+                  <span className="alert-title">{noteQuestionsCount} questions from your notes</span>
+                  <span className="alert-subtitle">Quiz yourself on concepts from your notes</span>
+                </div>
+              </div>
+              <span className="alert-action">Start Quiz →</span>
             </button>
           </section>
         )}

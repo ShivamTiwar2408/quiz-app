@@ -53,6 +53,11 @@ export const QUIZ_TYPE_INFO = {
     description: 'Mix of everything',
     icon: '🎲',
   },
+  notes: {
+    name: 'Notes Quiz',
+    description: 'Questions from your notes',
+    icon: '📓',
+  },
 } as const;
 
 export const PROGRESS_STATUS = {

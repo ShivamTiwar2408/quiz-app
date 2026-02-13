@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { fetchCustomQuestions, createQuestion, updateQuestion, deleteQuestion, CustomQuestion, CreateQuestionParams } from '../api';
+import { fetchCustomQuestions, createQuestion, updateQuestion, deleteQuestion, CustomQuestion, CreateQuestionParams, fetchNoteQuestions, updateNoteQuestion, deleteNoteQuestion, NoteQuestion, UpdateNoteQuestionParams } from '../api';
 
 interface QuestionManagerProps {
   onBack: () => void;
 }
 
-type View = 'list' | 'create' | 'edit' | 'bulk-import';
+type View = 'list' | 'create' | 'edit' | 'bulk-import' | 'edit-note';
+type Tab = 'custom' | 'notes';
 
 const DIFFICULTY_OPTIONS = ['easy', 'medium', 'hard'] as const;
 
@@ -22,9 +23,12 @@ interface BulkQuestion {
 
 export function QuestionManager({ onBack }: QuestionManagerProps) {
   const [questions, setQuestions] = useState<CustomQuestion[]>([]);
+  const [noteQuestions, setNoteQuestions] = useState<NoteQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>('list');
+  const [activeTab, setActiveTab] = useState<Tab>('custom');
   const [editingQuestion, setEditingQuestion] = useState<CustomQuestion | null>(null);
+  const [editingNoteQuestion, setEditingNoteQuestion] = useState<NoteQuestion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -48,14 +52,27 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
     difficulty: 'medium',
   });
 
+  // Form state for note questions
+  const [noteFormData, setNoteFormData] = useState<UpdateNoteQuestionParams>({
+    question: '',
+    options: { A: '', B: '', C: '', D: '' },
+    correct_answers: [],
+    explanation: '',
+    difficulty: 'medium',
+  });
+
   useEffect(() => {
     loadQuestions();
   }, []);
 
   const loadQuestions = async () => {
     setLoading(true);
-    const data = await fetchCustomQuestions();
-    setQuestions(data);
+    const [customData, noteData] = await Promise.all([
+      fetchCustomQuestions(),
+      fetchNoteQuestions(),
+    ]);
+    setQuestions(customData);
+    setNoteQuestions(noteData);
     setLoading(false);
   };
 
@@ -91,6 +108,18 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
     setView('edit');
   };
 
+  const handleEditNoteQuestion = (q: NoteQuestion) => {
+    setEditingNoteQuestion(q);
+    setNoteFormData({
+      question: q.question,
+      options: q.options,
+      correct_answers: q.correct_answers,
+      explanation: q.explanation,
+      difficulty: q.difficulty,
+    });
+    setView('edit-note');
+  };
+
   const handleDelete = async (questionId: string) => {
     if (!confirm('Are you sure you want to delete this question?')) return;
     
@@ -99,6 +128,17 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
       setQuestions(prev => prev.filter(q => q.questionId !== questionId));
     } else {
       setError('Failed to delete question');
+    }
+  };
+
+  const handleDeleteNoteQuestion = async (questionId: string) => {
+    if (!confirm('Are you sure you want to delete this note question?')) return;
+    
+    const success = await deleteNoteQuestion(questionId);
+    if (success) {
+      setNoteQuestions(prev => prev.filter(q => q.questionId !== questionId));
+    } else {
+      setError('Failed to delete note question');
     }
   };
 
@@ -150,6 +190,32 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
       }
     } catch (err: any) {
       setError(err.message || 'Failed to save question');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleNoteQuestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNoteQuestion) return;
+    
+    setError(null);
+    setSaving(true);
+
+    try {
+      // Validation
+      if (!noteFormData.question?.trim()) throw new Error('Question text is required');
+      if (!noteFormData.correct_answers?.length) throw new Error('Select at least one correct answer');
+      if (!noteFormData.explanation?.trim()) throw new Error('Explanation is required');
+
+      const updated = await updateNoteQuestion(editingNoteQuestion.questionId, noteFormData);
+      if (updated) {
+        setNoteQuestions(prev => prev.map(q => q.questionId === updated.questionId ? updated : q));
+        setView('list');
+        setEditingNoteQuestion(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to save note question');
     } finally {
       setSaving(false);
     }
@@ -320,43 +386,105 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
           <h1>✏️ My Questions</h1>
         </header>
         <main className="qm-content">
-          <div className="qm-actions-row">
-            <button className="create-btn" onClick={handleCreate}>
-              ➕ Create New Question
+          {/* Tabs */}
+          <div className="qm-tabs">
+            <button 
+              className={`qm-tab ${activeTab === 'custom' ? 'active' : ''}`}
+              onClick={() => setActiveTab('custom')}
+            >
+              📝 Custom Questions ({questions.length})
             </button>
-            <button className="create-btn bulk" onClick={handleBulkImport}>
-              📥 Bulk Import JSON
+            <button 
+              className={`qm-tab ${activeTab === 'notes' ? 'active' : ''}`}
+              onClick={() => setActiveTab('notes')}
+            >
+              📓 Notes Questions ({noteQuestions.length})
             </button>
           </div>
 
-          {questions.length === 0 ? (
-            <div className="empty-state">
-              <p>No custom questions yet.</p>
-              <p>Create your own questions to practice!</p>
-            </div>
-          ) : (
-            <div className="questions-list">
-              {questions.map(q => (
-                <div key={q.questionId} className="question-card">
-                  <div className="qc-header">
-                    <span className="qc-topic">{q.topic} › {q.subtopic}</span>
-                    <span className={`qc-difficulty ${q.difficulty}`}>{q.difficulty}</span>
-                  </div>
-                  <p className="qc-text">{q.question}</p>
-                  <div className="qc-options">
-                    {Object.entries(q.options).map(([letter, text]) => (
-                      <span key={letter} className={`qc-option ${q.correct_answers.includes(letter) ? 'correct' : ''}`}>
-                        {letter}: {text.substring(0, 50)}{text.length > 50 ? '...' : ''}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="qc-actions">
-                    <button className="edit-btn" onClick={() => handleEdit(q)}>Edit</button>
-                    <button className="delete-btn" onClick={() => handleDelete(q.questionId)}>Delete</button>
-                  </div>
+          {activeTab === 'custom' && (
+            <>
+              <div className="qm-actions-row">
+                <button className="create-btn" onClick={handleCreate}>
+                  ➕ Create New Question
+                </button>
+                <button className="create-btn bulk" onClick={handleBulkImport}>
+                  📥 Bulk Import JSON
+                </button>
+              </div>
+
+              {questions.length === 0 ? (
+                <div className="empty-state">
+                  <p>No custom questions yet.</p>
+                  <p>Create your own questions to practice!</p>
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div className="questions-list">
+                  {questions.map(q => (
+                    <div key={q.questionId} className="question-card">
+                      <div className="qc-header">
+                        <span className="qc-topic">{q.topic} › {q.subtopic}</span>
+                        <span className={`qc-difficulty ${q.difficulty}`}>{q.difficulty}</span>
+                      </div>
+                      <p className="qc-text">{q.question}</p>
+                      <div className="qc-options">
+                        {Object.entries(q.options).map(([letter, text]) => (
+                          <span key={letter} className={`qc-option ${q.correct_answers.includes(letter) ? 'correct' : ''}`}>
+                            {letter}: {text.substring(0, 50)}{text.length > 50 ? '...' : ''}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="qc-actions">
+                        <button className="edit-btn" onClick={() => handleEdit(q)}>Edit</button>
+                        <button className="delete-btn" onClick={() => handleDelete(q.questionId)}>Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'notes' && (
+            <>
+              <div className="qm-info-banner">
+                <span className="info-icon">💡</span>
+                <span>These questions are auto-generated from your notes with "Quiz Me" enabled. You can edit or delete them here.</span>
+              </div>
+
+              {noteQuestions.length === 0 ? (
+                <div className="empty-state">
+                  <p>No note questions yet.</p>
+                  <p>Enable "Quiz Me" on your notes to generate questions automatically!</p>
+                </div>
+              ) : (
+                <div className="questions-list">
+                  {noteQuestions.map(q => (
+                    <div key={q.questionId} className="question-card note-question">
+                      <div className="qc-header">
+                        <span className="qc-topic">📓 {q.noteTitle || 'Note'}</span>
+                        <span className={`qc-difficulty ${q.difficulty}`}>{q.difficulty}</span>
+                      </div>
+                      <p className="qc-text">{q.question}</p>
+                      <div className="qc-options">
+                        {Object.entries(q.options).map(([letter, text]) => (
+                          <span key={letter} className={`qc-option ${q.correct_answers.includes(letter) ? 'correct' : ''}`}>
+                            {letter}: {text.substring(0, 50)}{text.length > 50 ? '...' : ''}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="qc-meta">
+                        <span className="qc-generated">Generated: {new Date(q.generatedAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="qc-actions">
+                        <button className="edit-btn" onClick={() => handleEditNoteQuestion(q)}>Edit</button>
+                        <button className="delete-btn" onClick={() => handleDeleteNoteQuestion(q.questionId)}>Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
@@ -469,6 +597,103 @@ export function QuestionManager({ onBack }: QuestionManagerProps) {
               {bulkImporting ? 'Importing...' : `Import ${bulkPreview.length} Question(s)`}
             </button>
           </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Edit Note Question form
+  if (view === 'edit-note' && editingNoteQuestion) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <button className="back-btn" onClick={() => { setView('list'); setEditingNoteQuestion(null); }}>← Cancel</button>
+          <h1>✏️ Edit Note Question</h1>
+        </header>
+        <main className="qm-content">
+          <form className="question-form" onSubmit={handleNoteQuestionSubmit}>
+            {error && <div className="form-error">{error}</div>}
+
+            <div className="form-group note-source">
+              <label>📓 Source Note</label>
+              <div className="note-source-info">
+                <span className="note-title">{editingNoteQuestion.noteTitle}</span>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Question *</label>
+              <textarea
+                value={noteFormData.question}
+                onChange={e => setNoteFormData(prev => ({ ...prev, question: e.target.value }))}
+                placeholder="Enter your question..."
+                rows={3}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Options (check correct answers) *</label>
+              <div className="options-editor">
+                {['A', 'B', 'C', 'D', 'E', 'F'].map(letter => (
+                  <div key={letter} className="option-row">
+                    <input
+                      type="checkbox"
+                      checked={noteFormData.correct_answers?.includes(letter) || false}
+                      onChange={() => {
+                        setNoteFormData(prev => ({
+                          ...prev,
+                          correct_answers: prev.correct_answers?.includes(letter)
+                            ? prev.correct_answers.filter(a => a !== letter)
+                            : [...(prev.correct_answers || []), letter],
+                        }));
+                      }}
+                      id={`note-correct-${letter}`}
+                    />
+                    <label htmlFor={`note-correct-${letter}`} className="option-letter">{letter}</label>
+                    <input
+                      type="text"
+                      value={noteFormData.options?.[letter] || ''}
+                      onChange={e => setNoteFormData(prev => ({
+                        ...prev,
+                        options: { ...prev.options, [letter]: e.target.value },
+                      }))}
+                      placeholder={`Option ${letter} (leave empty to skip)`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Explanation *</label>
+              <textarea
+                value={noteFormData.explanation}
+                onChange={e => setNoteFormData(prev => ({ ...prev, explanation: e.target.value }))}
+                placeholder="Explain why the correct answer(s) are correct..."
+                rows={4}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Difficulty</label>
+              <div className="difficulty-selector">
+                {DIFFICULTY_OPTIONS.map(d => (
+                  <button
+                    key={d}
+                    type="button"
+                    className={`diff-btn ${noteFormData.difficulty === d ? 'active' : ''} ${d}`}
+                    onClick={() => setNoteFormData(prev => ({ ...prev, difficulty: d }))}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="submit-btn" disabled={saving}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </form>
         </main>
       </div>
     );

@@ -6,6 +6,9 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
@@ -30,7 +33,8 @@ export class QuizAppStack extends cdk.Stack {
     const sessionsTable = this.createSessionsTable();
     const notesTable = this.createNotesTable();
     const customQuestionsTable = this.createCustomQuestionsTable();
-    const lambdas = this.createLambdaFunctions(progressTable, attemptsTable, sessionsTable, notesTable, customQuestionsTable);
+    const noteQuestionsTable = this.createNoteQuestionsTable();
+    const lambdas = this.createLambdaFunctions(progressTable, attemptsTable, sessionsTable, notesTable, customQuestionsTable, noteQuestionsTable);
     const api = this.createApiGateway(userPool, lambdas);
     const { distribution } = this.createFrontendInfrastructure();
     this.createOutputs(api, distribution, userPool, userPoolClient);
@@ -143,6 +147,23 @@ export class QuizAppStack extends cdk.Stack {
     return table;
   }
 
+  private createNoteQuestionsTable(): dynamodb.Table {
+    const table = new dynamodb.Table(this, 'NoteQuestionsTable', {
+      tableName: 'RecallrNoteQuestions',
+      partitionKey: { name: 'noteId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'generatedAt', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'OwnerIndex',
+      partitionKey: { name: 'ownerId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'generatedAt', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+    return table;
+  }
+
   private createLambdaFunction(id: string, entry: string, memorySize: number, environment?: Record<string, string>): NodejsFunction {
     return new NodejsFunction(this, id, {
       ...LAMBDA_CONFIG,
@@ -158,7 +179,8 @@ export class QuizAppStack extends cdk.Stack {
     attemptsTable: dynamodb.Table,
     sessionsTable: dynamodb.Table,
     notesTable: dynamodb.Table,
-    customQuestionsTable: dynamodb.Table
+    customQuestionsTable: dynamodb.Table,
+    noteQuestionsTable: dynamodb.Table
   ) {
     const lambdaDir = path.join(__dirname, '../lambda');
     const commonEnv = {
@@ -169,6 +191,10 @@ export class QuizAppStack extends cdk.Stack {
       DEPLOYMENT_VERSION,
     };
     const notesEnv = { NOTES_TABLE: notesTable.tableName };
+    const noteQuestionsEnv = {
+      NOTES_TABLE_NAME: notesTable.tableName,
+      NOTE_QUESTIONS_TABLE_NAME: noteQuestionsTable.tableName,
+    };
 
     const getTopics = this.createLambdaFunction('GetTopicsLambda', path.join(lambdaDir, 'getTopics.ts'), MEMORY_SIZES.SMALL, { CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName });
     const generateQuiz = this.createLambdaFunction('GenerateQuizLambda', path.join(lambdaDir, 'generateQuiz.ts'), MEMORY_SIZES.MEDIUM, commonEnv);
@@ -181,8 +207,51 @@ export class QuizAppStack extends cdk.Stack {
     const manageQuestions = this.createLambdaFunction('ManageQuestionsLambda', path.join(lambdaDir, 'manageQuestions.ts'), MEMORY_SIZES.SMALL, { CUSTOM_QUESTIONS_TABLE: customQuestionsTable.tableName });
     const hideQuestion = this.createLambdaFunction('HideQuestionLambda', path.join(lambdaDir, 'hideQuestion.ts'), MEMORY_SIZES.SMALL, { PROGRESS_TABLE: progressTable.tableName });
     const getNotes = this.createLambdaFunction('GetNotesLambda', path.join(lambdaDir, 'getNotes.ts'), MEMORY_SIZES.SMALL, notesEnv);
-    const saveNote = this.createLambdaFunction('SaveNoteLambda', path.join(lambdaDir, 'saveNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
     const deleteNote = this.createLambdaFunction('DeleteNoteLambda', path.join(lambdaDir, 'deleteNote.ts'), MEMORY_SIZES.SMALL, notesEnv);
+    
+    // Note questions lambdas
+    const getNoteQuestions = this.createLambdaFunction('GetNoteQuestionsLambda', path.join(lambdaDir, 'getNoteQuestions.ts'), MEMORY_SIZES.SMALL, noteQuestionsEnv);
+    
+    // Generate note questions lambda with longer timeout for Bedrock calls
+    const generateNoteQuestions = new NodejsFunction(this, 'GenerateNoteQuestionsLambda', {
+      ...LAMBDA_CONFIG,
+      entry: path.join(lambdaDir, 'generateNoteQuestions.ts'),
+      handler: 'handler',
+      memorySize: MEMORY_SIZES.MEDIUM,
+      timeout: cdk.Duration.minutes(5), // Longer timeout for Bedrock calls
+      environment: noteQuestionsEnv,
+    });
+    
+    // SaveNote lambda - needs reference to generateNoteQuestions for instant generation
+    const saveNote = new NodejsFunction(this, 'SaveNoteLambda', {
+      ...LAMBDA_CONFIG,
+      entry: path.join(lambdaDir, 'saveNote.ts'),
+      handler: 'handler',
+      memorySize: MEMORY_SIZES.SMALL,
+      environment: {
+        ...notesEnv,
+        GENERATE_QUESTIONS_FUNCTION: generateNoteQuestions.functionName,
+      },
+    });
+    
+    // Grant saveNote permission to invoke generateNoteQuestions
+    generateNoteQuestions.grantInvoke(saveNote);
+    
+    // Grant Bedrock permissions to generateNoteQuestions
+    generateNoteQuestions.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['bedrock:InvokeModel'],
+      resources: [
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-3-haiku-20240307-v1:0',
+        'arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0',
+      ],
+    }));
+    
+    // Schedule generateNoteQuestions to run every 6 hours
+    new events.Rule(this, 'GenerateNoteQuestionsSchedule', {
+      schedule: events.Schedule.rate(cdk.Duration.hours(6)),
+      targets: [new targets.LambdaFunction(generateNoteQuestions)],
+    });
 
     progressTable.grantReadWriteData(generateQuiz);
     progressTable.grantReadWriteData(submitAnswer);
@@ -203,8 +272,13 @@ export class QuizAppStack extends cdk.Stack {
     notesTable.grantReadData(getNotes);
     notesTable.grantReadWriteData(saveNote);
     notesTable.grantReadWriteData(deleteNote);
+    
+    // Note questions permissions
+    notesTable.grantReadData(generateNoteQuestions);
+    noteQuestionsTable.grantReadWriteData(generateNoteQuestions);
+    noteQuestionsTable.grantReadWriteData(getNoteQuestions);
 
-    return { getTopics, generateQuiz, submitAnswer, getProgress, getStats, getAttempts, getSessions, getAnalytics, manageQuestions, hideQuestion, getNotes, saveNote, deleteNote };
+    return { getTopics, generateQuiz, submitAnswer, getProgress, getStats, getAttempts, getSessions, getAnalytics, manageQuestions, hideQuestion, getNotes, saveNote, deleteNote, getNoteQuestions, generateNoteQuestions };
   }
 
   private createApiGateway(userPool: cognito.UserPool, lambdas: ReturnType<typeof this.createLambdaFunctions>): apigateway.RestApi {
@@ -276,6 +350,13 @@ export class QuizAppStack extends cdk.Stack {
     notes.addMethod('GET', new apigateway.LambdaIntegration(lambdas.getNotes), authConfig);
     notes.addMethod('POST', new apigateway.LambdaIntegration(lambdas.saveNote), authConfig);
     notes.addResource('{noteId}').addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.deleteNote), authConfig);
+    
+    // Note questions CRUD
+    const noteQuestions = api.root.addResource('note-questions');
+    noteQuestions.addMethod('GET', new apigateway.LambdaIntegration(lambdas.getNoteQuestions), authConfig);
+    const noteQuestionById = noteQuestions.addResource('{questionId}');
+    noteQuestionById.addMethod('PUT', new apigateway.LambdaIntegration(lambdas.getNoteQuestions), authConfig);
+    noteQuestionById.addMethod('DELETE', new apigateway.LambdaIntegration(lambdas.getNoteQuestions), authConfig);
 
     return api;
   }

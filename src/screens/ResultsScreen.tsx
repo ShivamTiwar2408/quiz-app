@@ -1,8 +1,12 @@
 import { memo } from 'react';
 import { TopicsMap, Note, QuizState, QuizMode } from '../types';
 import { Header, Sidebar } from '../components';
-import { QuizFilter } from '../hooks/useQuiz';
 import { PASSING_SCORE_PERCENT } from '../constants';
+
+interface QuizFilter {
+  topic?: string;
+  subtopic?: string;
+}
 
 interface QuizMetadata {
   overdueCount: number;

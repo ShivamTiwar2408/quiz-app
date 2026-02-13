@@ -247,16 +247,72 @@ export async function deleteNote(noteId: string): Promise<boolean> {
 }
 
 // Note Questions API - Questions generated from user notes
-export async function fetchNoteQuestions(count: number = 10): Promise<Question[]> {
+export interface NoteQuestion {
+  questionId: string;
+  id: string;
+  topic: string;
+  subtopic: string;
+  question: string;
+  options: Record<string, string>;
+  correct_answers: string[];
+  explanation: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  noteId: string;
+  noteTitle: string;
+  generatedAt: string;
+  isNoteQuestion: true;
+}
+
+export async function fetchNoteQuestions(count: number = 100, forQuiz: boolean = false): Promise<NoteQuestion[]> {
   if (!API_BASE_URL) return [];
   try {
-    const response = await authFetch(`${API_BASE_URL}/note-questions?count=${count}`);
+    const params = new URLSearchParams({ count: String(count) });
+    if (forQuiz) params.set('forQuiz', 'true');
+    const response = await authFetch(`${API_BASE_URL}/note-questions?${params}`);
     if (!response.ok) throw new Error('Failed to fetch note questions');
     const data = await response.json();
     return data.questions || [];
   } catch (error) {
     console.error('Error fetching note questions:', error);
     return [];
+  }
+}
+
+export interface UpdateNoteQuestionParams {
+  question?: string;
+  options?: Record<string, string>;
+  correct_answers?: string[];
+  explanation?: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+}
+
+export async function updateNoteQuestion(questionId: string, params: UpdateNoteQuestionParams): Promise<NoteQuestion | null> {
+  if (!API_BASE_URL) return null;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/note-questions/${encodeURIComponent(questionId)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) throw new Error('Failed to update note question');
+    const data = await response.json();
+    return data.question;
+  } catch (error) {
+    console.error('Error updating note question:', error);
+    return null;
+  }
+}
+
+export async function deleteNoteQuestion(questionId: string): Promise<boolean> {
+  if (!API_BASE_URL) return false;
+  try {
+    const response = await authFetch(`${API_BASE_URL}/note-questions/${encodeURIComponent(questionId)}`, {
+      method: 'DELETE',
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Error deleting note question:', error);
+    return false;
   }
 }
 

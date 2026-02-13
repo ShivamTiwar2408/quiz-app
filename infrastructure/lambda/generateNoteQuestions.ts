@@ -9,6 +9,18 @@ const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
 const bedrockClient = new BedrockRuntimeClient({ region: AWS_REGION });
 
+// Event types for different invocation modes
+interface SingleNoteEvent {
+  mode: 'single';
+  note: Note;
+}
+
+interface ScheduledEvent {
+  mode?: 'scheduled';
+}
+
+type LambdaEvent = SingleNoteEvent | ScheduledEvent;
+
 interface GeneratedQuestion {
   noteId: string;
   ownerId: string;
@@ -49,50 +61,105 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
 }`;
 
   try {
-    const command = new InvokeModelCommand({
-      modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-      contentType: 'application/json',
-      accept: 'application/json',
-      body: JSON.stringify({
-        anthropic_version: 'bedrock-2023-05-31',
-        max_tokens: 1024,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-      }),
-    });
+    // Try Claude 3 Haiku first, fall back to Amazon Nova Lite
+    const models = [
+      {
+        modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+        body: {
+          anthropic_version: 'bedrock-2023-05-31',
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: prompt }],
+        },
+        parseResponse: (body: any) => body.content[0].text,
+      },
+      {
+        modelId: 'amazon.nova-lite-v1:0',
+        body: {
+          messages: [{ role: 'user', content: [{ text: prompt }] }],
+          inferenceConfig: { maxTokens: 1024 },
+        },
+        parseResponse: (body: any) => body.output.message.content[0].text,
+      },
+    ];
 
-    const response = await bedrockClient.send(command);
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-    const content = responseBody.content[0].text;
+    let lastError: Error | null = null;
     
-    // Parse the JSON response
-    const questionData = JSON.parse(content);
+    for (const model of models) {
+      try {
+        const command = new InvokeModelCommand({
+          modelId: model.modelId,
+          contentType: 'application/json',
+          accept: 'application/json',
+          body: JSON.stringify(model.body),
+        });
+
+        const response = await bedrockClient.send(command);
+        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+        const content = model.parseResponse(responseBody);
+        
+        // Parse the JSON response
+        const questionData = JSON.parse(content);
+        
+        return {
+          noteId: note.noteId,
+          ownerId: note.userId || '',
+          question: questionData.question,
+          options: questionData.options,
+          correct_answers: questionData.correct_answers,
+          explanation: questionData.explanation,
+          difficulty: questionData.difficulty || 'medium',
+          generatedAt: new Date().toISOString(),
+          noteTitle: note.title,
+          noteContent: note.content,
+        };
+      } catch (modelError) {
+        console.log(`Model ${model.modelId} failed, trying next...`);
+        lastError = modelError as Error;
+      }
+    }
     
-    return {
-      noteId: note.noteId,
-      ownerId: note.userId || '',
-      question: questionData.question,
-      options: questionData.options,
-      correct_answers: questionData.correct_answers,
-      explanation: questionData.explanation,
-      difficulty: questionData.difficulty || 'medium',
-      generatedAt: new Date().toISOString(),
-      noteTitle: note.title,
-      noteContent: note.content,
-    };
+    throw lastError || new Error('All models failed');
   } catch (error) {
     console.error(`Error generating question for note ${note.noteId}:`, error);
     return null;
   }
 }
 
-export const handler = async (): Promise<void> => {
-  console.log('Starting note question generation job');
+export const handler = async (event: LambdaEvent): Promise<void> => {
   const docClient = getDocClient();
+  
+  // Check if this is a single-note invocation (instant generation)
+  if (event && 'mode' in event && event.mode === 'single' && event.note) {
+    console.log(`Instant generation for note: ${event.note.noteId}`);
+    
+    const note = event.note;
+    
+    // Only generate if quizMe is true
+    if (!note.quizMe) {
+      console.log('Note does not have quizMe enabled, skipping');
+      return;
+    }
+    
+    try {
+      const question = await generateQuestionFromNote(note);
+      
+      if (question) {
+        await docClient.send(new PutCommand({
+          TableName: NOTE_QUESTIONS_TABLE,
+          Item: question,
+        }));
+        console.log(`Generated question for note: ${note.noteId}`);
+      }
+    } catch (error) {
+      console.error(`Error generating question for note ${note.noteId}:`, error);
+      throw error;
+    }
+    
+    return;
+  }
+  
+  // Scheduled batch processing
+  console.log('Starting scheduled note question generation job');
   
   // Calculate timestamp for 24 hours ago
   const oneDayAgo = new Date();

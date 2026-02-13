@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { Question, UserProgress, TopicsMap, Note, QuizState, QuizMode } from '../types';
 import { QuizHeader, QuizQuestion, Sidebar } from '../components';
-import { QuizFilter } from '../hooks/useQuiz';
 
 interface QuizScreenProps {
   user: { email: string };
@@ -92,6 +91,7 @@ export const QuizScreen = memo(function QuizScreen({
       <main className="quiz-content">
         {currentQuestion && (
           <QuizQuestion
+            key={currentQuestion.id}
             question={currentQuestion}
             questionNumber={quizState.currentQuestionIndex + 1}
             totalQuestions={questionsLength}

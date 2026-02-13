@@ -79,7 +79,7 @@ export function useQuiz(): UseQuizReturn {
       
       if (mode === 'notes') {
         // Fetch questions generated from user notes
-        qs = await fetchNoteQuestions(QUESTIONS_PER_QUIZ);
+        qs = await fetchNoteQuestions(QUESTIONS_PER_QUIZ, true);
       } else {
         // Use new SM-2 quiz generation
         const quizType = mapModeToQuizType(mode);
