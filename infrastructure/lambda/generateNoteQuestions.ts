@@ -35,16 +35,40 @@ interface GeneratedQuestion {
 }
 
 async function generateQuestionFromNote(note: Note): Promise<GeneratedQuestion | null> {
-  const prompt = `You are an expert quiz question generator. Based on the following note, create a high-quality multiple choice question to test recall and understanding.
+  const prompt = `You are a Staff-Level Technical Interviewer evaluating senior engineers.
 
-Note Title: ${note.title}
-Note Content: ${note.content}
+Given the following technical content, generate exactly 1 high-quality objective question.
 
-Generate a question that:
-1. Tests understanding of the key concepts in the note
-2. Has 4 options (A, B, C, D)
-3. Has exactly one correct answer
-4. Includes a brief explanation of why the correct answer is right
+The question must:
+1. Primarily test reasoning, trade-offs, failure modes, and mental models.
+2. Allow up to 20–30% conceptual recall (definitions or mechanisms), but never pure memorization.
+3. Be answerable in a few minutes of thinking (not long essays).
+4. Include realistic traps based on common misconceptions.
+5. Generalize beyond the specific content when appropriate.
+6. Avoid trivia, niche edge-case recall, or obscure facts.
+7. Test understanding of *why* a mechanism exists, not just what it does.
+
+Content Title: ${note.title}
+Content: ${note.content}
+
+For the question, output:
+- Question text
+- 4 answer options (A, B, C, D)
+- Correct answer(s)
+- Difficulty (Medium / High / Critical)
+- A very detailed explanation
+
+The explanation MUST:
+1. Begin with fundamentals (define the core concept clearly).
+2. Explain why the correct answers are correct.
+3. Explain why each incorrect option is wrong.
+4. Discuss trade-offs or failure modes if relevant.
+5. Use concrete examples where possible.
+6. Highlight subtle misconceptions strong candidates might have.
+7. Tie reasoning back to real-world system behavior.
+
+The tone should be technically critical and analytical — assume hiring for Staff level.
+If the source material is narrow, expand into adjacent foundational concepts.
 
 Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
 {
@@ -56,8 +80,8 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
     "D": "Fourth option"
   },
   "correct_answers": ["A"],
-  "explanation": "Brief explanation of why this is correct",
-  "difficulty": "medium"
+  "explanation": "Detailed explanation covering: 1) Core concept definition, 2) Why correct answer is right, 3) Why each wrong option is incorrect, 4) Trade-offs and failure modes, 5) Real-world examples",
+  "difficulty": "High"
 }`;
 
   try {
@@ -67,7 +91,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
         body: {
           anthropic_version: 'bedrock-2023-05-31',
-          max_tokens: 1024,
+          max_tokens: 2048,
           messages: [{ role: 'user', content: prompt }],
         },
         parseResponse: (body: any) => body.content[0].text,
@@ -76,7 +100,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         modelId: 'amazon.nova-lite-v1:0',
         body: {
           messages: [{ role: 'user', content: [{ text: prompt }] }],
-          inferenceConfig: { maxTokens: 1024 },
+          inferenceConfig: { maxTokens: 2048 },
         },
         parseResponse: (body: any) => body.output.message.content[0].text,
       },
