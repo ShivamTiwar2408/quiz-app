@@ -23,6 +23,7 @@ type LambdaEvent = SingleNoteEvent | ScheduledEvent;
 
 interface GeneratedQuestion {
   noteId: string;
+  questionId: string;
   ownerId: string;
   question: string;
   options: Record<string, string>;
@@ -34,12 +35,12 @@ interface GeneratedQuestion {
   noteContent: string;
 }
 
-async function generateQuestionFromNote(note: Note): Promise<GeneratedQuestion | null> {
+async function generateQuestionsFromNote(note: Note): Promise<GeneratedQuestion[]> {
   const prompt = `You are a Staff-Level Technical Interviewer evaluating senior engineers.
 
-Given the following technical content, generate exactly 1 high-quality objective question.
+Given the following technical content, generate 5 high-quality objective questions.
 
-The question must:
+Each question must:
 1. Primarily test reasoning, trade-offs, failure modes, and mental models.
 2. Allow up to 20–30% conceptual recall (definitions or mechanisms), but never pure memorization.
 3. Be answerable in a few minutes of thinking (not long essays).
@@ -47,16 +48,17 @@ The question must:
 5. Generalize beyond the specific content when appropriate.
 6. Avoid trivia, niche edge-case recall, or obscure facts.
 7. Test understanding of *why* a mechanism exists, not just what it does.
+8. Cover DIFFERENT aspects of the topic - avoid redundant questions.
 
 Content Title: ${note.title}
 Content: ${note.content}
 
-For the question, output:
+For each question, output:
 - Question text
 - 4 answer options (A, B, C, D)
 - Correct answer(s)
 - Difficulty (Medium / High / Critical)
-- A very detailed explanation
+- A detailed explanation
 
 The explanation MUST:
 1. Begin with fundamentals (define the core concept clearly).
@@ -64,25 +66,27 @@ The explanation MUST:
 3. Explain why each incorrect option is wrong.
 4. Discuss trade-offs or failure modes if relevant.
 5. Use concrete examples where possible.
-6. Highlight subtle misconceptions strong candidates might have.
-7. Tie reasoning back to real-world system behavior.
 
 The tone should be technically critical and analytical — assume hiring for Staff level.
 If the source material is narrow, expand into adjacent foundational concepts.
 
-Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
-{
-  "question": "Your question here?",
-  "options": {
-    "A": "First option",
-    "B": "Second option", 
-    "C": "Third option",
-    "D": "Fourth option"
+Respond ONLY with valid JSON array of 5 questions (no markdown, no code blocks):
+[
+  {
+    "question": "Question 1 here?",
+    "options": { "A": "...", "B": "...", "C": "...", "D": "..." },
+    "correct_answers": ["A"],
+    "explanation": "Explanation for Q1",
+    "difficulty": "High"
   },
-  "correct_answers": ["A"],
-  "explanation": "Detailed explanation covering: 1) Core concept definition, 2) Why correct answer is right, 3) Why each wrong option is incorrect, 4) Trade-offs and failure modes, 5) Real-world examples",
-  "difficulty": "High"
-}`;
+  {
+    "question": "Question 2 here?",
+    "options": { "A": "...", "B": "...", "C": "...", "D": "..." },
+    "correct_answers": ["B"],
+    "explanation": "Explanation for Q2",
+    "difficulty": "Medium"
+  }
+]`;
 
   try {
     // Try Claude 3 Haiku first, fall back to Amazon Nova Lite
@@ -91,7 +95,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
         body: {
           anthropic_version: 'bedrock-2023-05-31',
-          max_tokens: 2048,
+          max_tokens: 8192,
           messages: [{ role: 'user', content: prompt }],
         },
         parseResponse: (body: any) => body.content[0].text,
@@ -100,7 +104,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         modelId: 'amazon.nova-lite-v1:0',
         body: {
           messages: [{ role: 'user', content: [{ text: prompt }] }],
-          inferenceConfig: { maxTokens: 2048 },
+          inferenceConfig: { maxTokens: 8192 },
         },
         parseResponse: (body: any) => body.output.message.content[0].text,
       },
@@ -121,21 +125,24 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         const responseBody = JSON.parse(new TextDecoder().decode(response.body));
         const content = model.parseResponse(responseBody);
         
-        // Parse the JSON response
-        const questionData = JSON.parse(content);
+        // Parse the JSON array response
+        const questionsData = JSON.parse(content);
+        const generatedAt = new Date().toISOString();
         
-        return {
+        // Map each question to our format with unique questionId
+        return questionsData.map((q: any, index: number) => ({
           noteId: note.noteId,
+          questionId: `${note.noteId}_q${index + 1}`,
           ownerId: note.userId || '',
-          question: questionData.question,
-          options: questionData.options,
-          correct_answers: questionData.correct_answers,
-          explanation: questionData.explanation,
-          difficulty: questionData.difficulty || 'medium',
-          generatedAt: new Date().toISOString(),
+          question: q.question,
+          options: q.options,
+          correct_answers: q.correct_answers,
+          explanation: q.explanation,
+          difficulty: q.difficulty || 'Medium',
+          generatedAt,
           noteTitle: note.title,
           noteContent: note.content,
-        };
+        }));
       } catch (modelError) {
         console.log(`Model ${model.modelId} failed, trying next...`);
         lastError = modelError as Error;
@@ -144,8 +151,8 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
     
     throw lastError || new Error('All models failed');
   } catch (error) {
-    console.error(`Error generating question for note ${note.noteId}:`, error);
-    return null;
+    console.error(`Error generating questions for note ${note.noteId}:`, error);
+    return [];
   }
 }
 
@@ -165,17 +172,20 @@ export const handler = async (event: LambdaEvent): Promise<void> => {
     }
     
     try {
-      const question = await generateQuestionFromNote(note);
+      const questions = await generateQuestionsFromNote(note);
       
-      if (question) {
-        await docClient.send(new PutCommand({
-          TableName: NOTE_QUESTIONS_TABLE,
-          Item: question,
-        }));
-        console.log(`Generated question for note: ${note.noteId}`);
+      if (questions.length > 0) {
+        // Store all questions
+        for (const question of questions) {
+          await docClient.send(new PutCommand({
+            TableName: NOTE_QUESTIONS_TABLE,
+            Item: question,
+          }));
+        }
+        console.log(`Generated ${questions.length} questions for note: ${note.noteId}`);
       }
     } catch (error) {
-      console.error(`Error generating question for note ${note.noteId}:`, error);
+      console.error(`Error generating questions for note ${note.noteId}:`, error);
       throw error;
     }
     
@@ -212,7 +222,7 @@ export const handler = async (event: LambdaEvent): Promise<void> => {
     
     for (const note of notes) {
       try {
-        // Check if question already exists for this note (avoid duplicates)
+        // Check if questions already exist for this note (avoid duplicates)
         const existingQuery = new QueryCommand({
           TableName: NOTE_QUESTIONS_TABLE,
           KeyConditionExpression: 'noteId = :noteId',
@@ -224,27 +234,29 @@ export const handler = async (event: LambdaEvent): Promise<void> => {
         
         const existing = await docClient.send(existingQuery);
         
-        // Skip if question was generated recently (within last 24 hours)
+        // Skip if questions were generated recently (within last 24 hours)
         if (existing.Items && existing.Items.length > 0) {
           const existingQuestion = existing.Items[0];
           const generatedAt = new Date(existingQuestion.generatedAt);
           if (generatedAt >= oneDayAgo) {
-            console.log(`Skipping note ${note.noteId} - question already generated recently`);
+            console.log(`Skipping note ${note.noteId} - questions already generated recently`);
             continue;
           }
         }
         
-        // Generate new question
-        const question = await generateQuestionFromNote(note);
+        // Generate new questions
+        const questions = await generateQuestionsFromNote(note);
         
-        if (question) {
-          // Save to DynamoDB
-          await docClient.send(new PutCommand({
-            TableName: NOTE_QUESTIONS_TABLE,
-            Item: question,
-          }));
+        if (questions.length > 0) {
+          // Save all questions to DynamoDB
+          for (const question of questions) {
+            await docClient.send(new PutCommand({
+              TableName: NOTE_QUESTIONS_TABLE,
+              Item: question,
+            }));
+          }
           
-          console.log(`Generated question for note: ${note.noteId}`);
+          console.log(`Generated ${questions.length} questions for note: ${note.noteId}`);
           successCount++;
         } else {
           errorCount++;
