@@ -126,6 +126,29 @@
   .quiz .exp{font-size:13.5px;color:var(--muted);margin-top:8px;display:none}
   .quiz .exp.show{display:block}
 
+  /* ---------- animated architecture SVG ---------- */
+  #archSvg .wire{fill:none;stroke:#3a4a63;stroke-width:1.8}
+  #archSvg .wire.loop{stroke:#5a4a2e;stroke-width:2}
+  #archSvg .pkt{filter:url(#soft)}
+  #archSvg .node rect{fill:var(--panel);stroke:var(--line);stroke-width:1.6;transition:.3s;cursor:pointer}
+  #archSvg .node{cursor:pointer}
+  #archSvg .node .nt{fill:var(--ink);font-size:14px;font-weight:700;text-anchor:middle}
+  #archSvg .node .ns{fill:var(--faint);font-size:10.5px;text-anchor:middle}
+  #archSvg .node.sched rect{stroke:var(--prompt)}
+  #archSvg .node.exec rect{stroke:var(--seq2)}
+  #archSvg .node.kvm rect{stroke:var(--seq3)}
+  #archSvg .node.engine rect{stroke:var(--reject)}
+  #archSvg .node:hover rect{filter:drop-shadow(0 0 9px rgba(74,163,255,.55))}
+  #archSvg .node.active rect{stroke-width:3;filter:drop-shadow(0 0 14px currentColor)}
+  #archSvg .node.active.sched rect{stroke:var(--prompt);color:var(--prompt)}
+  #archSvg .node.active.exec rect{stroke:var(--seq2);color:var(--seq2)}
+  #archSvg .node.active.kvm rect{stroke:var(--seq3);color:var(--seq3)}
+  #archSvg .node.dim{opacity:.32;transition:.3s}
+  #archSvg .el{fill:var(--faint);font-size:10px;text-anchor:middle;letter-spacing:.5px}
+  #archSvg .kvcell{stroke:var(--seq3);stroke-width:1;fill:transparent;transition:fill .4s}
+  #archSvg .kvcell.fill{fill:rgba(245,177,76,.55)}
+  @media(prefers-reduced-motion:reduce){#archSvg .pkt{display:none}}
+
   details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:14px 0;padding:0 18px}
   details summary{cursor:pointer;padding:14px 0;font-weight:650;color:var(--accent);list-style:none}
   details summary::-webkit-details-marker{display:none}
@@ -422,47 +445,79 @@
 <!-- ================= PART 7: ARCHITECTURE ================= -->
 <section id="arch">
   <div class="wrap">
-    <div class="part-tag reveal">Part 7 — The whole machine</div>
-    <h2 class="reveal">vLLM end-to-end: the <span class="hl-prompt">engine</span> and its parts</h2>
-    <p class="reveal">Now we assemble everything into the real architecture. A request flows left → right. Click any box to learn what it does.</p>
+    <div class="part-tag reveal">Part 7 — The whole machine, in motion</div>
+    <h2 class="reveal">vLLM end-to-end: <span class="hl-prompt">watch a request flow through</span></h2>
+    <p class="reveal">Now we assemble everything into the real architecture — and animate it. Below, a request travels through the whole system: text comes in on the left, gets tokenized, enters the <span class="hl-red">Engine Core</span>, loops through the <strong>schedule → forward → postprocess</strong> cycle while the KV blocks fill, and streams back out as words. The glowing dots <em>are</em> your data moving. Press <strong>Play</strong> and follow the narration.</p>
 
-    <div class="stage reveal arch">
-      <div class="cap">click a component</div>
-      <div class="pipe" style="margin-bottom:14px">
-        <div class="box" style="border-color:var(--faint)" data-info="req"><div class="title">requests in</div><div class="sub">your prompts</div></div>
-        <span class="flowarr">→</span>
-        <div class="box sched" data-info="proc"><div class="title">Processor</div><div class="sub">tokenize &amp; pack</div></div>
-        <span class="flowarr">→</span>
-        <div class="box engine" data-info="engine"><div class="title">Engine Core</div><div class="sub">the brain ↓</div></div>
-        <span class="flowarr">→</span>
-        <div class="box" style="border-color:var(--faint)" data-info="out"><div class="title">Output Proc.</div><div class="sub">detokenize</div></div>
-        <span class="flowarr">→</span>
-        <div class="box" style="border-color:var(--faint)" data-info="result"><div class="title">result out</div><div class="sub">your answer</div></div>
+    <div class="stage reveal arch" style="padding-top:34px">
+      <div class="cap" id="archCap">live data flow</div>
+      <svg id="archSvg" viewBox="0 0 960 600" style="width:100%;display:block;font-family:var(--mono)">
+        <defs>
+          <linearGradient id="wgrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4aa3ff"/><stop offset="1" stop-color="#c678dd"/>
+          </linearGradient>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5b6b82"/></marker>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3.2"/></filter>
+        </defs>
+
+        <!-- ===== connector wires ===== -->
+        <!-- top lane -->
+        <path class="wire" d="M150,86 H214" marker-end="url(#ah)"/>
+        <path class="wire" d="M338,86 H402" marker-end="url(#ah)"/>
+        <path class="wire" d="M560,86 H708" marker-end="url(#ah)"/>
+        <path class="wire" d="M832,86 H882" marker-end="url(#ah)"/>
+        <!-- engine down into detail -->
+        <path class="wire" d="M481,118 V176" marker-end="url(#ah)"/>
+        <!-- internal loop edges (triangle: scheduler -> executor -> kv -> back) -->
+        <path id="lp1" class="wire loop" d="M392,300 H566" marker-end="url(#ah)"/>
+        <path id="lp2" class="wire loop" d="M690,346 L520,452" marker-end="url(#ah)"/>
+        <path id="lp3" class="wire loop" d="M404,452 L286,346" marker-end="url(#ah)"/>
+        <!-- result stream up from output box (decorative) -->
+
+        <!-- ===== flowing packets (always moving = the data) ===== -->
+        <circle r="6" fill="url(#wgrad)" class="pkt"><animateMotion dur="6s" repeatCount="indefinite" rotate="0"
+          path="M70,86 H214 M255,86 H402 M481,118 V176"/></circle>
+        <!-- loop packet circling the step() triangle -->
+        <circle r="6.5" fill="#f5b14c" class="pkt"><animateMotion dur="3.4s" repeatCount="indefinite"
+          path="M286,300 H690 L481,470 Z"/></circle>
+        <!-- token stream out: 3 staggered packets engine->output->result -->
+        <circle r="5" fill="#3ecf8e" class="pkt"><animateMotion dur="2.6s" repeatCount="indefinite" path="M481,118 V60 H708 M770,86 H958"/></circle>
+        <circle r="5" fill="#3ecf8e" class="pkt"><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite" path="M481,118 V60 H708 M770,86 H958"/></circle>
+        <circle r="5" fill="#3ecf8e" class="pkt"><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite" path="M481,118 V60 H708 M770,86 H958"/></circle>
+
+        <!-- ===== top lane nodes ===== -->
+        <g class="node" id="n-req" data-info="req"><rect x="30" y="58" width="120" height="56" rx="11"/><text class="nt" x="90" y="82">requests in</text><text class="ns" x="90" y="100">your prompts</text></g>
+        <g class="node sched" id="n-proc" data-info="proc"><rect x="214" y="58" width="124" height="56" rx="11"/><text class="nt" x="276" y="82">Processor</text><text class="ns" x="276" y="100">tokenize &amp; pack</text></g>
+        <g class="node engine" id="n-engine" data-info="engine"><rect x="402" y="58" width="158" height="60" rx="12"/><text class="nt" x="481" y="83">Engine Core</text><text class="ns" x="481" y="101">the brain ↓</text></g>
+        <g class="node" id="n-out" data-info="out"><rect x="708" y="58" width="124" height="56" rx="11"/><text class="nt" x="770" y="82">Output Proc.</text><text class="ns" x="770" y="100">detokenize</text></g>
+        <g class="node" id="n-result" data-info="result"><rect x="882" y="58" width="74" height="56" rx="11"/><text class="nt" x="919" y="82" style="font-size:11px">result</text><text class="ns" x="919" y="100">to you</text></g>
+
+        <!-- ===== engine core detail panel ===== -->
+        <rect x="120" y="176" width="722" height="396" rx="16" fill="none" stroke="#3a2330" stroke-width="1.6" stroke-dasharray="7 6"/>
+        <text x="138" y="202" fill="#ff6b6b" font-size="12" letter-spacing="2">ENGINE CORE — schedule → forward → postprocess, on loop ↺</text>
+
+        <g class="node sched" id="n-sched" data-info="scheduler"><rect x="152" y="256" width="240" height="88" rx="12"/><text class="nt" x="272" y="290">Scheduler</text><text class="ns" x="272" y="310">waiting + running queues</text><text class="ns" x="272" y="326">picks work each step</text></g>
+        <g class="node exec" id="n-exec" data-info="exec"><rect x="570" y="256" width="240" height="88" rx="12"/><text class="nt" x="690" y="290">Model Executor</text><text class="ns" x="690" y="310">forward pass on GPU</text><text class="ns" x="690" y="326">predicts next tokens</text></g>
+        <g class="node kvm" id="n-kv" data-info="kvm"><rect x="330" y="430" width="300" height="118" rx="12"/><text class="nt" x="480" y="458">KV Cache Manager</text><text class="ns" x="480" y="475">hands out &amp; frees blocks</text>
+          <!-- mini block grid that fills -->
+          <g id="kvGrid"></g>
+        </g>
+
+        <!-- edge labels -->
+        <text class="el" x="479" y="292">① schedule → ② forward</text>
+        <text class="el" x="640" y="412" transform="rotate(31 640 412)">tokens + KV write</text>
+        <text class="el" x="322" y="412" transform="rotate(-31 322 412)">③ postprocess ↺</text>
+      </svg>
+
+      <div class="ctrls" style="margin-top:6px">
+        <button class="btn primary" id="archPlay" onclick="archToggle()">▶ Play flow</button>
+        <button class="btn" onclick="archStep()">Step ›</button>
+        <span class="stat" id="archStat" style="flex:1;min-width:220px">Press Play to watch a request travel the whole engine — or click any box to learn its job.</span>
       </div>
-      <div style="border:1.5px dashed var(--reject);border-radius:14px;padding:16px;margin-top:6px">
-        <div style="font-family:var(--mono);font-size:11px;color:var(--reject);margin-bottom:10px">ENGINE CORE — inside the brain</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-          <div class="box exec" data-info="exec"><div class="title">Model Executor</div><div class="sub">runs the GPU math</div></div>
-          <div class="box sched" data-info="scheduler"><div class="title">Scheduler</div><div class="sub">waiting + running queues</div></div>
-          <div class="box kvm" data-info="kvm"><div class="title">KV Cache Manager</div><div class="sub">hands out blocks</div></div>
-        </div>
-      </div>
-      <div id="archInfo" class="callout" style="margin-top:18px"><span class="t">👆 Click any box above</span>Each part has one job. Together they run the schedule → forward pass → postprocess loop, over and over, until every request is done.</div>
+      <div id="archInfo" class="callout" style="margin-top:14px"><span class="t">👆 Tip</span>Each box has one job. Click any of them for a plain-English explanation; press <strong>Play</strong> to see how data flows between them.</div>
     </div>
 
-    <h3 class="reveal">The heartbeat: the <span class="hl-prompt">step loop</span></h3>
-    <p class="reveal">Calling <code>generate()</code> just runs one loop repeatedly. Each turn of the loop is one <code>step()</code>:</p>
-    <div class="stage reveal">
-      <div class="cap">step() — repeats until done</div>
-      <div class="pipe">
-        <div class="box sched" style="cursor:default"><div class="title">1 · Schedule</div><div class="sub">pick requests + blocks</div></div>
-        <span class="flowarr">→</span>
-        <div class="box exec" style="cursor:default"><div class="title">2 · Forward pass</div><div class="sub">GPU predicts next tokens</div></div>
-        <span class="flowarr">→</span>
-        <div class="box kvm" style="cursor:default"><div class="title">3 · Postprocess</div><div class="sub">collect tokens, free finished</div></div>
-        <span class="flowarr">↺</span>
-      </div>
-    </div>
+    <p class="reveal" style="margin-top:18px">That inner triangle — <span class="hl-prompt">Scheduler → Model Executor → back through the KV Cache Manager</span> — is the <strong>step loop</strong>, the heartbeat of vLLM. Calling <code>generate()</code> just spins this loop: <strong>schedule</strong> (pick requests + blocks) → <strong>forward pass</strong> (GPU predicts the next tokens) → <strong>postprocess</strong> (collect tokens, free finished requests), over and over until every request is done. Prefill and every decode step are each one trip around it.</p>
   </div>
 </section>
 
@@ -659,12 +714,61 @@
     scheduler:['Scheduler','The traffic controller. Holds the waiting queue (to be prefilled) and running queue (being decoded), and decides each step which requests run and how many tokens — within the token budget.'],
     kvm:['KV Cache Manager','Owns the block pool and the free-block queue. Hands out KV blocks via allocate_slots, tracks ref-counts for sharing, and frees blocks when requests finish. This is the page table from Part 5.']
   };
+  const archInfoEl=document.getElementById('archInfo');
   document.querySelectorAll('[data-info]').forEach(b=>b.addEventListener('click',()=>{
     const k=b.getAttribute('data-info');const d=archInfo[k];if(!d)return;
-    document.getElementById('archInfo').innerHTML=`<span class="t">${d[0]}</span>${d[1]}`;
-    document.querySelectorAll('[data-info]').forEach(x=>x.style.boxShadow='');
-    b.style.boxShadow='var(--glow)';
+    archInfoEl.innerHTML=`<span class="t">${d[0]}</span>${d[1]}`;
+    document.querySelectorAll('#archSvg .node').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
   }));
+
+  // build KV mini-grid inside the manager box (5 cols x 2 rows)
+  (function(){
+    const g=document.getElementById('kvGrid');if(!g)return;let h='';
+    const x0=360,y0=492,w=22,h0=16,gap=6;
+    for(let r=0;r<2;r++)for(let c=0;c<5;c++){
+      h+=`<rect class="kvcell" id="kv${r*5+c}" x="${x0+c*(w+gap)}" y="${y0+r*(h0+gap)}" width="${w}" height="${h0}" rx="3"/>`;
+    }
+    g.innerHTML=h;
+  })();
+  function kvFill(n){for(let i=0;i<10;i++)document.getElementById('kv'+i).classList.toggle('fill',i<n);}
+
+  // guided playthrough of the architecture
+  const archSteps=[
+    {focus:null,kv:0,cap:'a request arrives',msg:'① A user prompt — "Hi, my name is" — arrives at the engine as plain text.'},
+    {focus:'n-proc',kv:0,cap:'tokenize & pack',msg:'② The Processor splits it into tokens, turns them into IDs, and packs a Request object.'},
+    {focus:'n-engine',kv:0,cap:'into the engine core',msg:'③ The Request enters the Engine Core — the brain that holds the scheduler, executor and KV manager.'},
+    {focus:'n-sched',kv:0,cap:'step ① schedule',msg:'④ SCHEDULE: the Scheduler picks this request from the waiting queue and asks the KV manager for blocks.'},
+    {focus:'n-kv',kv:2,cap:'allocate KV blocks',msg:'⑤ The KV Cache Manager hands out blocks (watch the grid fill) — this is the page table doing its job.'},
+    {focus:'n-exec',kv:3,cap:'step ② forward pass',msg:'⑥ FORWARD PASS: the Model Executor runs the GPU math (PREFILL) and writes K/V into those blocks, producing the first token.'},
+    {focus:'n-kv',kv:4,cap:'step ③ postprocess',msg:'⑦ POSTPROCESS: the new token is collected; the request moves to the running queue. The loop repeats…'},
+    {focus:'n-exec',kv:6,cap:'decode loop ↺',msg:'⑧ DECODE: each loop adds one token, reusing cached KV (no recompute). Blocks fill as the answer grows.'},
+    {focus:'n-out',kv:6,cap:'detokenize & stream',msg:'⑨ The Output Processor turns token IDs back into words and streams them out — you see the answer appear.'},
+    {focus:'n-result',kv:0,cap:'done — blocks freed',msg:'⑩ On the stop token the request finishes and its blocks are FREED instantly for a waiting user. Full circle!'}
+  ];
+  let archI=-1,archTimer=null;
+  function archApply(){
+    const s=archSteps[archI];
+    document.querySelectorAll('#archSvg .node').forEach(n=>{n.classList.remove('active');n.classList.add('dim');});
+    if(s.focus){const el=document.getElementById(s.focus);el.classList.add('active');el.classList.remove('dim');
+      // also un-dim the engine container nodes context
+    } else {document.querySelectorAll('#archSvg .node').forEach(n=>n.classList.remove('dim'));}
+    kvFill(s.kv);
+    document.getElementById('archCap').textContent=s.cap;
+    document.getElementById('archStat').textContent=s.msg;
+    const k=s.focus?s.focus.replace('n-',''):null;
+    const map={proc:'proc',engine:'engine',sched:'scheduler',exec:'exec',kv:'kvm',out:'out',result:'result'};
+    if(k&&archInfo[map[k]]){const d=archInfo[map[k]];archInfoEl.innerHTML=`<span class="t">${d[0]}</span>${d[1]}`;}
+  }
+  function archStep(){archI=(archI+1)%archSteps.length;archApply();}
+  function archToggle(){
+    const btn=document.getElementById('archPlay');
+    if(archTimer){clearInterval(archTimer);archTimer=null;btn.textContent='▶ Play flow';
+      document.querySelectorAll('#archSvg .node').forEach(n=>n.classList.remove('dim'));return;}
+    btn.textContent='⏸ Pause';if(archI<0)archI=0;archApply();
+    archTimer=setInterval(()=>{archI=(archI+1)%archSteps.length;archApply();
+      if(archI===archSteps.length-1){/* keep looping */}},2600);
+  }
 
   // quiz
   function ans(btn){
