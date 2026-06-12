@@ -220,8 +220,24 @@
       <p style="margin:8px 0 0;font-size:14px">From here on, the model only ever sees <span class="hl-prompt">numbers</span>. A token's size in memory has nothing to do with how long the word is — "a" and "antidisestablishmentarianism" each become one (or a few) IDs.</p>
     </div>
 
+    <h3 class="reveal">The <span class="hl-prompt">vocabulary</span> — the model's fixed alphabet</h3>
+    <p class="reveal">That "dictionary" has a proper name: the <strong>vocabulary</strong>. It's a <em>fixed, finite</em> set of known tokens — every model is built around its own. Any text you ever type is expressed <em>only</em> as combinations of these pieces; there's nothing outside the vocab. The number of tokens a model knows is its <strong>vocabulary size</strong>, and it varies a lot by model:</p>
+    <div class="stage reveal">
+      <div class="cap">vocabulary size by model (approx.)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:14.5px">
+        <tr style="color:var(--faint);font-family:var(--mono);font-size:12px;text-align:left"><th style="padding:6px 8px">Model</th><th style="padding:6px 8px">Vocab size (≈)</th></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">GPT-2</td><td style="padding:7px 8px" class="hl-prompt">50,257</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Llama 2 / TinyLlama</td><td style="padding:7px 8px" class="hl-prompt">32,000</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Llama 3.x</td><td style="padding:7px 8px" class="hl-prompt">128,256</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">GPT-4o</td><td style="padding:7px 8px" class="hl-prompt">~200,000</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Gemma</td><td style="padding:7px 8px" class="hl-prompt">~256,000</td></tr>
+      </table>
+      <p style="margin:10px 0 0;font-size:14px">Bigger vocab = each token carries more meaning (fewer pieces per sentence), but a longer list to score every step. Hold onto this number — it comes back <em>twice</em>: it's the length of the probability list the model produces each step (next), and the size of the mask used in guided decoding (Part 8).</p>
+    </div>
+
     <h3 class="reveal">Step B — it generates <span class="hl-kv">one token at a time</span></h3>
-    <p class="reveal">The model reads all your tokens, then predicts the single most likely next token. It <strong>appends</strong> that token to the text and repeats — reading everything again to predict the next one. This loop is called <strong>autoregression</strong>, and it stops when the model emits a special "I'm done" token.</p>
+    <p class="reveal">The model reads all your tokens, then produces a <strong>probability score for every token in the vocabulary</strong> — "how likely is each one to come next?" It picks a token from that list (usually <em>sampling</em> rather than always taking the top one — see below), <strong>appends</strong> it to the text, and repeats — reading everything again to score the next one. This loop is called <strong>autoregression</strong>, and it stops when the model emits a special "I'm done" (end-of-sequence) token.</p>
+    <div class="callout reveal"><span class="t">🎲 Why the same prompt gives different answers</span>The model doesn't always take the single most likely token — it <strong>samples</strong> from the probability list. <strong>Temperature</strong> controls how adventurous that pick is (higher = more random), and <strong>top-p</strong> limits sampling to the most probable tokens that together cover, say, 95% of the probability. That controlled randomness is why ChatGPT rarely repeats itself word-for-word.</p></div>
     <div class="stage reveal">
       <div class="cap">autoregressive generation</div>
       <div id="autoDemo" class="tokrow"></div>
@@ -259,6 +275,7 @@
         <span><span class="dot" style="background:var(--kv)"></span>KV cache — the part we fight over</span>
       </div>
       <p style="margin:12px 0 0;font-size:14px">The model weights and overhead are fixed. The only space we can manage cleverly is the <span class="hl-kv">KV cache</span> — and how well we use it decides how many users we can serve at once.</p>
+      <p style="margin:8px 0 0;font-size:13.5px;color:var(--faint)">Where does ~26 GB come from? Each parameter needs memory: at 2 bytes each (FP16, the common half-precision format), a 13-billion-parameter model = 13B × 2 ≈ 26 GB, before anything else loads.</p>
     </div>
 
     <div class="callout reveal"><span class="t">💸 Why you should care</span>Better memory management = more users per GPU = lower cost per answer. That single sentence is the entire business case for vLLM.</div>
@@ -270,7 +287,7 @@
   <div class="wrap">
     <div class="part-tag reveal">Part 3 — The clever shortcut</div>
     <h2 class="reveal">The <span class="hl-kv">KV cache</span>: don't redo work you've already done</h2>
-    <p class="reveal">Remember the waste from Part 1 — re-reading the whole sequence for every new token? Inside the model, "reading" a token means computing two things for it: a <strong>Key (K)</strong> and a <strong>Value (V)</strong>. Crucially, a token's K and V <em>never change</em> once computed.</p>
+    <p class="reveal">Remember the waste from Part 1 — re-reading the whole sequence for every new token? To predict the next token, the model uses <strong>attention</strong>: each new token "looks back" at every earlier token to decide which ones matter. For that, every token is boiled down to two things — a <strong>Key (K)</strong>, which advertises "here's what I'm about," and a <strong>Value (V)</strong>, which carries "here's the information I contribute." (A third, the <em>Query</em>, is what the current token uses to search the Keys.) You don't need the math — just one fact: a token's <strong>K and V never change</strong> once computed.</p>
     <p class="reveal">So the trick is obvious in hindsight: <strong>compute each token's K and V once, then save them.</strong> That saved store is the <span class="hl-kv">KV cache</span>. Now generating a new token only needs to compute K/V for that <em>one</em> new token and reuse everything cached.</p>
 
     <div class="stage reveal">
@@ -368,6 +385,8 @@
       </div>
       <p style="margin:12px 0 0;font-size:14px">No giant contiguous reservation needed → <span class="hl-green">external fragmentation gone</span>. Blocks are tiny, so a near-empty last block wastes ≤15 tokens → <span class="hl-green">internal fragmentation almost gone</span>.</p>
     </div>
+
+    <div class="callout reveal"><span class="t">⚙️ Why it's called paged <em>attention</em>, not just paged memory</span>Scattering KV across blocks creates a problem: the attention step (Part 3) needs to read <em>all</em> of a sequence's Keys and Values, but now they're spread all over VRAM. So vLLM ships a custom <strong>attention kernel</strong> (GPU code) that follows the page table and reads straight from the scattered blocks — no gathering them into one place first. That kernel is the actual "PagedAttention"; the block bookkeeping is only half the idea.</div>
 
     <h3 class="reveal">Sharing is now free: <span class="hl-prompt">ref-counts</span></h3>
     <p class="reveal">Three answers to the same prompt? They simply <strong>point to the same prompt blocks</strong>. vLLM keeps a <strong>reference count</strong> (<code>ref_cnt</code>) per block — "how many requests use me." Shared prompt blocks just bump the count instead of copying. Memory sharing → solved too.</p>
