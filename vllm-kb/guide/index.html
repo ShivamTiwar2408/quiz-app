@@ -310,6 +310,20 @@
     <p class="reveal">So the trick is obvious in hindsight: <strong>compute each token's k and v vectors once, then save them.</strong> That saved store is the <span class="hl-kv">KV cache</span> — it holds the <em>computed k and v vectors</em>, <strong>not</strong> the W matrices (those already live in the model weights). Generating a new token then only computes k/v for that <em>one</em> new token and reuses every cached vector.</p>
     <div class="callout reveal"><span class="t">⚠️ Common confusion, cleared up</span>The KV cache does <strong>not</strong> store <code>W<sub>K</sub></code>/<code>W<sub>V</sub></code> — those are frozen weights, shared by every token and every request. The cache stores the <strong>output</strong> of applying them: the per-token k and v vectors. That's why cache size grows with the <em>number of tokens</em> (and users), while the weights stay a fixed cost.</div>
 
+    <details class="reveal"><summary>Go deeper: why cache K and V but <em>not</em> Q?</summary>
+      <div class="body">
+        <p>This is the question that explains the name — it's the <strong>KV</strong> cache, not the QKV cache. Let's watch one decode step to see why.</p>
+        <p>Say the model has already generated tokens 0…<em>t</em>−1 and is now producing token <em>t</em>. It computes just <em>one</em> new query, <code>q<sub>t</sub></code>, for the current position. Attention for this step is:</p>
+        <p style="text-align:center"><code>scores = q<sub>t</sub> · [k<sub>0</sub>, k<sub>1</sub>, …, k<sub>t</sub>]ᵀ → softmax → weighted sum of [v<sub>0</sub>, v<sub>1</sub>, …, v<sub>t</sub>]</code></p>
+        <p>Look closely at how each vector gets used over the whole generation — that's where the asymmetry lives:</p>
+        <ul>
+          <li><strong>Every old token's <code>k</code> and <code>v</code> are read again at <em>every</em> future step.</strong> Token 3's k and v are needed when generating token 4, 5, 6, … forever after. Reused many times ⇒ <span class="hl-green">caching them saves enormous recompute</span>.</li>
+          <li><strong>A token's query <code>q<sub>t</sub></code> is used in exactly <em>one</em> step</strong> — the step that generates token <em>t</em>. It's compared against the earlier keys, the token is produced, and then <code>q<sub>t</sub></code> is never needed again. Because of <strong>causal masking</strong>, no later token ever "looks back" using an <em>old</em> query — later tokens look back with <em>their own</em> queries. Used once ⇒ <span class="hl-red">caching it would just waste memory</span>.</li>
+        </ul>
+        <p>So the rule falls out of the math: <strong>K and V are the "looked-at" side</strong> (read by many future queries → cache them); <strong>Q is the "looking" side</strong> (one position's momentary question → discard it after use). That asymmetry is exactly why it's called the KV cache.</p>
+      </div>
+    </details>
+
     <div class="stage reveal">
       <div class="cap">with vs without KV cache</div>
       <div class="vs">
@@ -520,7 +534,9 @@
     <h2 class="reveal"><span class="hl-prompt">Continuous batching</span>: never let the GPU sit idle</h2>
 
     <h3 class="reveal">First — what <em>is</em> a batch, and why bother?</h3>
+    <div class="callout reveal" style="border-left-color:var(--seq2)"><span class="t" style="color:var(--seq2)">📖 Definitions (verbatim, authoritative)</span><strong>Batch</strong> — <em>"The set of examples used in one training iteration."</em> <strong>Batch size</strong> — <em>"The number of examples in a batch."</em> <span style="color:var(--faint)">— Google Machine Learning Glossary.</span> (In our serving case, an "example" is one request being processed in a step.)</div>
     <p class="reveal">A <strong>batch</strong> is simply a group of requests the GPU processes <em>together, in one pass</em>, instead of one at a time. Why does that help? A GPU has thousands of tiny math cores. Running a single request leaves almost all of them idle — like driving a 50-seat bus with one passenger. Batching fills the seats.</p>
+    <div class="callout reveal" style="border-left-color:var(--seq2)"><span class="t" style="color:var(--seq2)">📖 What's a "pass"? — the forward pass</span>That "one pass" through the model is the <strong>forward pass</strong>: the system <em>"processes a batch of examples to yield prediction(s)"</em> <span style="color:var(--faint)">(Google ML Glossary)</span>. In code it's just calling the model on the input — which <em>"executes the model's <code>forward</code>, along with some background operations"</em> <span style="color:var(--faint)">(PyTorch docs)</span>. For an LLM, one forward pass turns the current tokens into the next-token probabilities. The whole batch goes through <em>together</em> in that single pass — that's why batching is efficient.</div>
     <div class="stage reveal">
       <div class="cap">why batch? one request barely uses the GPU</div>
       <div class="vs">
