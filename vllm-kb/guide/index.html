@@ -345,33 +345,45 @@
   <div class="wrap">
     <div class="part-tag reveal">Part 4 — The problem vLLM was born to solve</div>
     <h2 class="reveal">The old way <span class="hl-red">wasted most of the memory</span></h2>
-    <p class="reveal">Before vLLM, each request got one big <strong>contiguous</strong> (single unbroken) chunk of KV memory, sized for the <em>maximum</em> possible answer length — just in case. Almost no one uses the maximum. The rest is wasted. This is <strong>internal fragmentation</strong>.</p>
+    <p class="reveal">We now know <em>what</em> the KV cache is. The question that made vLLM famous is <em>how to store it</em> — because the way everyone did it before turned out to waste most of the GPU's expensive memory. To see why, we have to look under the hood of the older engines first.</p>
+    <h3 class="reveal">First, how the <span class="hl-red">old way</span> actually worked</h3>
+    <p class="reveal">Let's be concrete, because the waste only makes sense once you see the mechanism. Older serving systems (e.g. <strong>FasterTransformer</strong>, HuggingFace <strong>TGI</strong>, and the research system <strong>Orca</strong>) all stored each request's KV cache as <strong>one contiguous slab</strong> — a single unbroken stretch of VRAM. There was <em>no paging</em>: the slab had to be one continuous piece.</p>
+    <div class="card reveal" style="font-size:15px">
+      <p style="margin:0 0 8px"><strong>What's stored in that slab?</strong> Not your prompt text, and not the answer text. It holds the <span class="hl-kv">k and v vectors</span> for <em>every token processed so far</em> — your prompt tokens (written during prefill) plus each token generated after. It grows by one token's worth every decode step.</p>
+      <p style="margin:0 0 8px"><strong>How big a slab does a request get?</strong> Here's the costly decision: the system reserved the slab up front, sized for <code>max_model_len</code> — the <em>largest answer the request could ever produce</em> (say 2,048 tokens) — because the slab can't grow into its neighbors later (it must stay contiguous). So it grabbed the worst case immediately, on arrival.</p>
+      <p style="margin:0"><strong>What if a request needed more than its slab?</strong> It can't — the slab <em>is</em> the maximum, so it never runs out mid-answer. That's the whole point of over-reserving… and exactly why it bleeds memory: nearly every request reserves far more than it uses.</p>
+    </div>
+    <p class="reveal">With a fixed 12&nbsp;GB KV budget and a 256&nbsp;MB slab per request (2,048 tokens × 128&nbsp;KB), the math is brutal: <code>12 GB ÷ 256 MB ≈ <span class="hl-red">48</span></code> requests max — and in practice ~40 once other overheads are counted — on a GPU that could serve hundreds. Two distinct wastes fall out of this:</p>
 
+    <h3 class="reveal">Villain ①: <span class="hl-red">internal</span> fragmentation</h3>
+    <p class="reveal">Waste <em>inside</em> a slab you were already given. You reserved 256&nbsp;MB but the answer was short — so most of <em>your own</em> block sits empty. It's "internal" because the wasted space is locked <strong>inside an allocation that belongs to one request</strong>.</p>
     <div class="stage reveal">
-      <div class="cap">internal fragmentation</div>
+      <div class="cap">internal fragmentation — waste INSIDE one request's slab</div>
       <p style="margin:0 0 10px;font-size:14px">A request reserves room for 2,048 tokens (256&nbsp;MB) but only generates 100 tokens (12.5&nbsp;MB):</p>
       <div style="display:flex;height:46px;border-radius:10px;overflow:hidden;border:1px solid var(--line)">
         <div style="flex:1;background:rgba(62,207,142,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono)">used 12.5 MB</div>
-        <div style="flex:19;background:repeating-linear-gradient(45deg,rgba(255,107,107,.18),rgba(255,107,107,.18) 8px,transparent 8px,transparent 16px);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);color:#ffb3b3">wasted 243.5 MB 😱</div>
+        <div style="flex:19;background:repeating-linear-gradient(45deg,rgba(255,107,107,.18),rgba(255,107,107,.18) 8px,transparent 8px,transparent 16px);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);color:#ffb3b3">wasted 243.5 MB — still reserved by this one request 😱</div>
       </div>
-      <p style="margin:10px 0 0;font-size:14px">On a 12&nbsp;GB KV budget at 256&nbsp;MB each, you fit only <span class="hl-red">~40 requests</span> on a GPU that could easily handle far more.</p>
+      <p style="margin:10px 0 0;font-size:14px">The 243.5&nbsp;MB isn't free for anyone else — it belongs to a request that simply isn't using it.</p>
     </div>
 
-    <p class="reveal">Smarter old systems guessed sizes by task type (chatbot=500, code=2048…). That created a <em>new</em> bug: free gaps that are big enough in total but not <strong>contiguous</strong>, so a new request won't fit. This is <strong>external fragmentation</strong>.</p>
+    <h3 class="reveal">Villain ②: <span class="hl-red">external</span> fragmentation</h3>
+    <p class="reveal">Some systems tried to be clever and guessed smaller sizes per task type (chatbot=500, code=2,048, summary=1,000 tokens). That created a <em>different</em> waste: free gaps <strong>between</strong> requests that are individually too small to fit a new arrival — even though their total is plenty. It's "external" because the wasted space sits <strong>outside every allocation, in the gaps between them</strong>.</p>
     <div class="stage reveal">
-      <div class="cap">external fragmentation</div>
+      <div class="cap">external fragmentation — waste in the gaps BETWEEN slabs</div>
       <div style="display:flex;height:46px;border-radius:10px;overflow:hidden;border:1px solid var(--line);gap:0">
         <div style="flex:5;background:rgba(62,207,142,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono);color:#bff3da">free 500</div>
         <div style="flex:20;background:rgba(74,163,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono)">in use (2048)</div>
         <div style="flex:10;background:rgba(62,207,142,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono);color:#bff3da">free 1000</div>
       </div>
-      <p style="margin:10px 0 0;font-size:14px">1,500 tokens free in total, but a request needing 1,200 <em>contiguous</em> tokens → <span class="hl-red">out-of-memory error</span>, even though the space exists. Frustrating.</p>
+      <p style="margin:10px 0 0;font-size:14px">1,500 tokens free in total, but a request needing 1,200 <em>contiguous</em> tokens → <span class="hl-red">out-of-memory error</span>, because neither gap is big enough alone. The space exists; it's just in the wrong shape.</p>
     </div>
+    <div class="callout analogy reveal"><span class="t">🅿️ The names, made obvious</span>Think of a parking lot. <strong>Internal</strong> = you rented a whole bus bay for your bicycle — wasted space <em>within your own spot</em>. <strong>External</strong> = there are three single gaps scattered around, but a delivery truck needs three <em>adjacent</em> spots and can't fit — wasted space <em>between</em> others' spots.</div>
 
-    <h3 class="reveal">And a third miss: <span class="hl-prompt">no sharing</span></h3>
-    <p class="reveal">Ask for "3 alternative answers" and the old way stored your prompt's KV <strong>three times</strong> — identical copies — because each answer lived in its own contiguous block. Wasteful, since the prompt never changes.</p>
+    <h3 class="reveal">Villain ③: <span class="hl-prompt">no sharing</span></h3>
+    <p class="reveal">Ask for "3 alternative answers" and the old way stored your prompt's KV <strong>three times</strong> — identical copies — because each answer lived in its own separate contiguous slab. Wasteful, since the prompt's k/v vectors never change.</p>
 
-    <div class="callout reveal"><span class="t">🎯 The three villains</span><strong>Internal</strong> fragmentation (over-reserving), <strong>external</strong> fragmentation (unusable gaps), and <strong>no memory sharing</strong>. Keep them in mind — the next section defeats all three with one idea borrowed from operating systems.</div>
+    <div class="callout reveal"><span class="t">🎯 The three villains</span><strong>Internal</strong> fragmentation (over-reserving inside a slab), <strong>external</strong> fragmentation (unusable gaps between slabs), and <strong>no memory sharing</strong>. All three trace back to one root cause: <em>contiguous, reserve-the-maximum allocation</em>. The next section kills the root cause with one idea borrowed from operating systems.</div>
   </div>
 </section>
 
@@ -381,7 +393,50 @@
     <div class="part-tag reveal">Part 5 — The big idea</div>
     <h2 class="reveal"><span class="hl-gpu">PagedAttention</span>: steal the trick your laptop already uses</h2>
     <p class="reveal">Your operating system solved this exact problem decades ago. Programs <em>think</em> they have one long continuous block of memory, but the OS secretly scatters it across small fixed-size <strong>pages</strong> in physical RAM, and a <strong>page table</strong> remembers where each page really lives.</p>
-    <div class="callout analogy reveal"><span class="t">📖 The mapping (memorize this line)</span>In vLLM: <strong>blocks are pages · tokens are bytes · a request is a process.</strong> Everything else follows from this analogy.</div>
+
+    <div class="stage reveal">
+      <div class="cap">how OS virtual memory paging works</div>
+      <svg viewBox="0 0 760 300" style="width:100%;display:block;font-family:var(--mono)">
+        <defs><marker id="pah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5b6b82"/></marker></defs>
+        <!-- virtual side -->
+        <text x="110" y="28" fill="#9fb0c3" font-size="12" text-anchor="middle">What the program sees</text>
+        <text x="110" y="44" fill="#6b7d93" font-size="10.5" text-anchor="middle">virtual memory (contiguous)</text>
+        <g>
+          <rect x="40" y="60" width="140" height="40" rx="7" fill="rgba(74,163,255,.18)" stroke="#4aa3ff"/><text x="110" y="85" fill="#cfe4ff" font-size="13" text-anchor="middle">page 0</text>
+          <rect x="40" y="108" width="140" height="40" rx="7" fill="rgba(74,163,255,.18)" stroke="#4aa3ff"/><text x="110" y="133" fill="#cfe4ff" font-size="13" text-anchor="middle">page 1</text>
+          <rect x="40" y="156" width="140" height="40" rx="7" fill="rgba(74,163,255,.18)" stroke="#4aa3ff"/><text x="110" y="181" fill="#cfe4ff" font-size="13" text-anchor="middle">page 2</text>
+        </g>
+        <!-- page table -->
+        <text x="380" y="28" fill="#9fb0c3" font-size="12" text-anchor="middle">Page table</text>
+        <text x="380" y="44" fill="#6b7d93" font-size="10.5" text-anchor="middle">virtual → physical map</text>
+        <g font-size="12">
+          <rect x="300" y="60" width="160" height="40" rx="7" fill="var(--panel2)" stroke="#f5b14c"/><text x="380" y="85" fill="#ffe6bd" text-anchor="middle">page 0 → frame 9</text>
+          <rect x="300" y="108" width="160" height="40" rx="7" fill="var(--panel2)" stroke="#f5b14c"/><text x="380" y="133" fill="#ffe6bd" text-anchor="middle">page 1 → frame 82</text>
+          <rect x="300" y="156" width="160" height="40" rx="7" fill="var(--panel2)" stroke="#f5b14c"/><text x="380" y="181" fill="#ffe6bd" text-anchor="middle">page 2 → frame 4</text>
+        </g>
+        <!-- physical side -->
+        <text x="650" y="28" fill="#9fb0c3" font-size="12" text-anchor="middle">Physical RAM</text>
+        <text x="650" y="44" fill="#6b7d93" font-size="10.5" text-anchor="middle">scattered frames</text>
+        <g font-size="11">
+          <rect x="590" y="56" width="120" height="26" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="650" y="73" fill="#6b7d93" text-anchor="middle">frame 4 ← pg2</text>
+          <rect x="590" y="86" width="120" height="26" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="650" y="103" fill="#6b7d93" text-anchor="middle">frame 5 (other)</text>
+          <rect x="590" y="116" width="120" height="26" rx="5" fill="rgba(74,163,255,.18)" stroke="#4aa3ff"/><text x="650" y="133" fill="#cfe4ff" text-anchor="middle">frame 9 ← pg0</text>
+          <rect x="590" y="146" width="120" height="26" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="650" y="163" fill="#6b7d93" text-anchor="middle">frame 10 (other)</text>
+          <rect x="590" y="176" width="120" height="26" rx="5" fill="rgba(74,163,255,.18)" stroke="#4aa3ff"/><text x="650" y="193" fill="#cfe4ff" text-anchor="middle">frame 82 ← pg1</text>
+        </g>
+        <!-- arrows -->
+        <path d="M182,80 H298" stroke="#5b6b82" stroke-width="1.5" marker-end="url(#pah)"/>
+        <path d="M182,128 H298" stroke="#5b6b82" stroke-width="1.5" marker-end="url(#pah)"/>
+        <path d="M182,176 H298" stroke="#5b6b82" stroke-width="1.5" marker-end="url(#pah)"/>
+        <path d="M462,80 C520,80 540,128 588,128" fill="none" stroke="#4aa3ff" stroke-width="1.4" marker-end="url(#pah)"/>
+        <path d="M462,128 C520,128 540,188 588,189" fill="none" stroke="#4aa3ff" stroke-width="1.4" marker-end="url(#pah)"/>
+        <path d="M462,176 C510,176 540,70 588,69" fill="none" stroke="#4aa3ff" stroke-width="1.4" marker-end="url(#pah)"/>
+        <text x="380" y="250" fill="#6b7d93" font-size="11.5" text-anchor="middle">Program writes to neat pages 0,1,2 — the OS+page table silently route them to scattered frames 9, 82, 4.</text>
+        <text x="380" y="270" fill="#6b7d93" font-size="11.5" text-anchor="middle">No contiguous block needed → no external fragmentation. (A hardware MMU does this lookup, cached by a TLB.)</text>
+      </svg>
+    </div>
+
+    <div class="callout analogy reveal"><span class="t">📖 The mapping (memorize this line)</span>vLLM applies that <em>exact</em> trick to the KV cache: <strong>blocks are pages · tokens are bytes · a request is a process.</strong> The one difference: the OS uses a hardware chip (the MMU) for the lookup, while vLLM does it in software (the Block Manager). Everything else follows from this analogy.</div>
 
     <h3 class="reveal">KV memory is chopped into small fixed-size <span class="hl-gpu">blocks</span></h3>
     <p class="reveal">Instead of one giant reservation, the KV cache is split into many small <strong>blocks</strong> (16 tokens each, by default). A request grabs only as many blocks as it needs — and they can sit <em>anywhere</em> in physical VRAM. A lightweight <strong>page table</strong> (called the Block Manager) maps the request's neat logical order to the scattered physical blocks.</p>
@@ -411,6 +466,21 @@
     <h3 class="reveal">Sharing is now free: <span class="hl-prompt">ref-counts</span></h3>
     <p class="reveal">Three answers to the same prompt? They simply <strong>point to the same prompt blocks</strong>. vLLM keeps a <strong>reference count</strong> (<code>ref_cnt</code>) per block — "how many requests use me." Shared prompt blocks just bump the count instead of copying. Memory sharing → solved too.</p>
 
+    <h3 class="reveal">How this compares to the engine just before it: <span class="hl-prompt">Orca</span></h3>
+    <p class="reveal">It helps to measure the jump against a real predecessor. <strong>Orca</strong> (2022) was the state-of-the-art research engine right before vLLM, and it introduced the big scheduling win — <em>iteration-level (continuous) batching</em>, which we cover next. But Orca still stored each request's KV in a <strong>contiguous, reserve-the-max slab</strong> — so it kept the fragmentation problems from Part 4.</p>
+    <div class="stage reveal">
+      <div class="cap">Orca (2022) vs vLLM (2023)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr style="color:var(--faint);font-family:var(--mono);font-size:11.5px;text-align:left"><th style="padding:7px 8px">Aspect</th><th style="padding:7px 8px">Orca</th><th style="padding:7px 8px">vLLM</th></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Smart scheduling (continuous batching)</td><td style="padding:7px 8px" class="hl-green">✓ yes (pioneered it)</td><td style="padding:7px 8px" class="hl-green">✓ yes</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">KV memory layout</td><td style="padding:7px 8px" class="hl-red">contiguous slab, reserve max</td><td style="padding:7px 8px" class="hl-green">paged blocks, on demand</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Internal + external fragmentation</td><td style="padding:7px 8px" class="hl-red">suffers both</td><td style="padding:7px 8px" class="hl-green">nearly eliminated</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Prefix / KV sharing</td><td style="padding:7px 8px" class="hl-red">no</td><td style="padding:7px 8px" class="hl-green">yes (ref-counted)</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:7px 8px">Reported throughput</td><td style="padding:7px 8px">baseline</td><td style="padding:7px 8px" class="hl-green">up to ~2–4× higher*</td></tr>
+      </table>
+      <p style="margin:10px 0 0;font-size:13px;color:var(--faint)">*From the vLLM paper's evaluation vs Orca, by recovering the memory Orca wasted and using it for a bigger batch. The lesson: better <em>scheduling</em> alone wasn't enough — vLLM added better <em>memory management</em>, and the two compound.</p>
+    </div>
+
     <details class="reveal"><summary>Go deeper: how big is one block, really?</summary>
       <div class="body">
         <p>One block stores the <strong>k and v vectors</strong> for <code>block_size</code> tokens, across every layer's attention heads. The size formula:</p>
@@ -418,6 +488,20 @@
         <p>For Llama-3 8B in FP16, one <em>token</em> costs ~128&nbsp;KB, so a default 16-token block ≈ <strong>2&nbsp;MB</strong>. If 8&nbsp;GB of VRAM is left for KV cache, that's <strong>~4,096 blocks</strong> to hand out. vLLM computes this number at startup and prints it as the available "GPU blocks."</p>
       </div>
     </details>
+
+    <h3 class="reveal">What actually happens when vLLM <span class="hl-gpu">starts up on a GPU</span></h3>
+    <p class="reveal">Concretely, when you launch vLLM on a GPU it does a one-time setup, in this order — and the numbers it prints come straight from the ideas above:</p>
+    <div class="stage reveal">
+      <div class="cap">vLLM startup sequence</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-gpu" style="font-family:var(--mono);font-weight:700">1</span><div><strong>Load model weights into VRAM.</strong> The frozen W matrices (incl. W<sub>K</sub>/W<sub>V</sub>) land on the GPU — e.g. ~16&nbsp;GB for Llama-3 8B in FP16.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-gpu" style="font-family:var(--mono);font-weight:700">2</span><div><strong>Run a profiling pass.</strong> vLLM does one dummy forward pass to measure peak activation/working memory the model needs to run.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-gpu" style="font-family:var(--mono);font-weight:700">3</span><div><strong>Claim the leftover for KV cache.</strong> Whatever VRAM remains — up to a configurable fraction <code>gpu_memory_utilization</code> (≈0.9 by default) — is carved into fixed-size blocks. vLLM prints e.g. <code># GPU blocks: 4096</code>.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-gpu" style="font-family:var(--mono);font-weight:700">4</span><div><strong>Reserve a few CPU blocks too</strong> (<code># CPU blocks</code>) as overflow swap space — used to temporarily offload a request's KV to system RAM under pressure, then bring it back.</div></div>
+      </div>
+    </div>
+
+    <div class="callout reveal"><span class="t">🧩 Quick clarification: two unrelated things both called "blocks"</span><strong>KV blocks</strong> (this whole section) are <em>memory</em> — slots of VRAM that hold k/v vectors. They are <em>not</em> the same as <strong>CUDA thread blocks</strong>, which are a <em>compute</em> concept: groups of GPU threads that a kernel (like the PagedAttention kernel) launches to do math in parallel. One is where data lives; the other is how work is scheduled. vLLM's cleverness is mostly about the <em>memory</em> kind — the KV blocks. The compute kind is handled by the GPU kernels underneath.</div>
 
     <div class="quiz reveal" data-answer="1">
       <div class="q">Quick check: why are blocks made <em>small</em> (16 tokens) instead of huge?</div>
@@ -434,7 +518,35 @@
   <div class="wrap">
     <div class="part-tag reveal">Part 6 — Serving many people at once</div>
     <h2 class="reveal"><span class="hl-prompt">Continuous batching</span>: never let the GPU sit idle</h2>
-    <p class="reveal">A GPU is happiest doing lots of work in parallel. So vLLM processes <strong>many requests together</strong>. The old "static batching" waited for the whole batch to finish before starting new work — so finished requests left their slots idle while slow ones ran on.</p>
+
+    <h3 class="reveal">First — what <em>is</em> a batch, and why bother?</h3>
+    <p class="reveal">A <strong>batch</strong> is simply a group of requests the GPU processes <em>together, in one pass</em>, instead of one at a time. Why does that help? A GPU has thousands of tiny math cores. Running a single request leaves almost all of them idle — like driving a 50-seat bus with one passenger. Batching fills the seats.</p>
+    <div class="stage reveal">
+      <div class="cap">why batch? one request barely uses the GPU</div>
+      <div class="vs">
+        <div>
+          <div style="font-weight:700;color:var(--reject);margin-bottom:6px">1 request at a time</div>
+          <div style="display:flex;flex-wrap:wrap;gap:3px;max-width:180px;margin:0 auto">
+            <span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span>
+            <!-- generate 49 idle cores -->
+            <span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)"></span>
+          </div>
+          <p style="font-size:12.5px;margin:8px 0 0">~5% of cores busy. You pay for the whole GPU, use a sliver.</p>
+        </div>
+        <div class="mid">vs</div>
+        <div>
+          <div style="font-weight:700;color:var(--seq2);margin-bottom:6px">A batch of requests</div>
+          <div style="display:flex;flex-wrap:wrap;gap:3px;max-width:180px;margin:0 auto">
+            <span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq2)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq3)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--gpu)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq2)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq3)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--gpu)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq2)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq3)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--gpu)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq2)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq3)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--gpu)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--prompt)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq2)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--seq3)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--gpu)"></span>
+          </div>
+          <p style="font-size:12.5px;margin:8px 0 0">Cores packed. Same hardware, far more answers per second.</p>
+        </div>
+      </div>
+      <p style="margin:12px 0 0;font-size:14px"><strong>Practical example:</strong> 4 users ask questions in the same second. Process them one-by-one and each waits for the previous to finish. Put all 4 in a batch and the GPU answers them together in roughly the time it took to do <em>one</em> — because the bottleneck was loading the model weights from memory, which all 4 now share.</p>
+    </div>
+
+    <p class="reveal">So batching is essential. The only question is <em>how</em> you batch — and that's where vLLM beats the old approach.</p>
+    <p class="reveal">The old <strong>static batching</strong> locked a batch at the start: gather N requests, run them together, and <em>wait for the entire batch to finish</em> before admitting anyone new. Since requests finish at wildly different lengths, the short ones sit idle holding their slot while the longest one drags on.</p>
 
     <div class="stage reveal">
       <div class="cap">static vs continuous batching</div>
@@ -461,7 +573,7 @@
     </div>
 
     <h3 class="reveal">Watch it run: three prompts through prefill &amp; decode</h3>
-    <p class="reveal">Three prompts of different lengths (5, 7, 2 tokens). They're flattened into one batch, each gets blocks, prefill fills the cache, then decode adds one token each per step. Press the buttons.</p>
+    <p class="reveal">Three prompts of different lengths (5, 7, 2 tokens), with the default <strong>block size of 16 tokens</strong>. Each prompt needs <code>⌈tokens ÷ 16⌉ = 1</code> block, so it occupies one block partially (e.g. <code>5/16</code> used). They're flattened into one batch; prefill writes their KV vectors; then each decode step appends one token. Watch a finished prompt's block return to the pool. Press the buttons.</p>
     <div class="stage reveal">
       <div class="cap">live: paged KV blocks</div>
       <div class="legend">
@@ -716,20 +828,20 @@
   const batchBtn=document.getElementById('batchBtn');
   const batchStat=document.getElementById('batchStat');
   function renderBatch(){
-    // 8 blocks shown
+    // 8 blocks shown, block_size = 16 tokens
     let cls=Array(8).fill('free'); let lbl=Array(8).fill('free');
-    if(batchPhase>=1){cls[0]='s1';lbl[0]='P1·5tok';cls[1]='s2';lbl[1]='P2·7tok';cls[2]='s3';lbl[2]='P3·2tok';}
-    if(batchPhase>=2){lbl[0]='P1·6tok';lbl[1]='P2·8tok';lbl[2]='P3·3tok';}
-    if(batchPhase>=3){lbl[1]='P2 done';cls[1]='free';lbl[1]='free↺';} // p2 finishes, freed
+    if(batchPhase>=1){cls[0]='s1';lbl[0]='P1·5/16';cls[1]='s2';lbl[1]='P2·7/16';cls[2]='s3';lbl[2]='P3·2/16';}
+    if(batchPhase>=2){lbl[0]='P1·6/16';lbl[1]='P2·8/16';lbl[2]='P3·3/16';}
+    if(batchPhase>=3){cls[1]='free';lbl[1]='freed↺';} // p2 finishes, block returned to pool
     let h='';
-    for(let i=0;i<8;i++)h+=`<div class="blk ${cls[i]}">${i+1}<span class="n">${lbl[i]}</span></div>`;
+    for(let i=0;i<8;i++)h+=`<div class="blk ${cls[i]}">blk ${i+1}<span class="n">${lbl[i]}</span></div>`;
     batchEl.innerHTML=h;
   }
   const batchMsgs=[
-    'Empty cache. 3 prompts waiting (5,7,2 tokens). Press Run prefill.',
-    'PREFILL done: each prompt got 1 block, KV cache filled, first token produced. ↓ Decode',
-    'DECODE step 1: +1 token per prompt — reusing cached KV (no recompute!). ↓ Decode',
-    'DECODE step 2: Prompt 2 hit its stop token → its block is FREED instantly for a waiting request.'
+    'Empty pool of 16-token blocks. 3 prompts waiting (5, 7, 2 tokens). Press Run prefill.',
+    'PREFILL: each prompt needs ⌈tokens/16⌉ = 1 block. KV vectors written; each prompt produces its 1st token. ↓ Decode',
+    'DECODE step 1: +1 token per prompt, appended into the same block (still <16). Cached KV reused — no recompute. ↓ Decode',
+    'DECODE step 2: Prompt 2 hits its stop token → its block returns to the free pool instantly, ready for a waiting request.'
   ];
   const batchBtns=['Run prefill →','Decode step →','Decode step →','Reset'];
   function batchStep(){
