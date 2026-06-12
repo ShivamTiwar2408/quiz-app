@@ -14,6 +14,16 @@ The answer turns out to be a beautiful story about memory — about not wasting 
 
 ---
 
+## Part 0 — Why vLLM was built
+
+Before we dive into how it works, let's understand why it exists — because that frames everything. vLLM came out of UC Berkeley's Sky Computing Lab in twenty twenty-three, and to appreciate it, you have to picture what serving large language models looked like just before.
+
+The earliest approach was naïve, or static, batching: you'd group a handful of requests, run them together, and wait for the slowest one to finish before letting any new request in. Short requests would finish early and just sit there holding their place while a long one dragged on — so the GPU spent much of its time half-empty. Then there was NVIDIA's FasterTransformer, which had beautifully optimized math kernels — fast for a single request — but still used static batching and still reserved memory in big contiguous blocks. HuggingFace had Text Generation Inference, or TGI, which made deployment easy and became popular in production, but at the time carried the same memory inefficiency. And then, in twenty twenty-two, came the real research breakthrough just before vLLM: a system called Orca, which introduced continuous batching — the idea of swapping requests in and out on every single step instead of waiting for a whole batch. That was a big scheduling win.
+
+But here's what the Berkeley team noticed when they profiled all of these. The real bottleneck wasn't the math — it was wasted GPU memory. The existing engines were throwing away sixty to eighty percent of their KV cache memory to fragmentation and over-reservation — problems we'll dissect shortly. Orca had fixed the *scheduling* problem, but nobody had fixed the *memory* problem. And memory was being managed in a surprisingly primitive way — one big contiguous block per request, the way computer programs managed RAM back in the 1950s. Meanwhile, operating systems had solved exactly this problem decades ago, with virtual memory and paging. So the question that launched the whole project was simply: what if we applied paging to the KV cache? That idea became PagedAttention; pairing it with Orca-style continuous batching became vLLM — and on the original benchmarks it delivered up to twenty-four times the throughput of plain HuggingFace Transformers, comfortably beating TGI and Orca too. So that's our destination. Let's start at the very bottom and build up to it.
+
+---
+
 ## Part 1 — What a language model actually does
 
 Let's start at the very bottom. A large language model — an "LLM" — is the thing behind these AI chatbots. And despite all the hype, it has exactly one core skill: **it predicts the next word.** That's genuinely it. Everything else is that one trick, repeated very, very fast.
@@ -150,7 +160,7 @@ And the whole thing runs a simple loop — the heartbeat of vLLM. When you call 
 
 ## Part 8 — The clever extras
 
-Everything up to here is the core, and honestly, if you understand the core, you understand vLLM. But there are five upgrades that bolt on top to squeeze out even more speed. You don't need every detail — just the *why* of each.
+Everything up to here is the core, and honestly, if you understand the core, you understand vLLM. But there are six upgrades that bolt on top. You don't need every detail — just the *why* of each.
 
 **One: chunked prefill.** A really long prompt — say ten thousand tokens — would hog an entire step and stall everyone else's decoding. So vLLM splits a long prompt into chunks and prefills it across several steps, letting quick decodes slip in between. Nobody gets blocked by one greedy request.
 
@@ -162,9 +172,13 @@ Everything up to here is the core, and honestly, if you understand the core, you
 
 **Five: disaggregated prefill and decode.** Remember how prefill is compute-bound and decode is memory-bound — opposite appetites? So why run them on the same GPU? In this setup, you put them on *separate* machines, each tuned for its job. The prefill machine computes the KV cache, then ships it over a fast connection to the decode machine, which generates the answer. Now each side can be scaled independently. Elegant.
 
+**Six: multi-LoRA serving.** Here's a problem that sounds unrelated to memory but uses the same paging trick. A LoRA adapter is a tiny "diff" — often just tens of megabytes — that fine-tunes a big base model for one specific task: a support bot, a coding assistant, a legal summarizer. Now suppose you have a hundred such fine-tunes. The naïve way is a hundred separate deployments — a hundred copies of the multi-gigabyte base model on a hundred GPUs. That's absurd, because they all share the same base. vLLM's fix is to load the base model just once, keep each small adapter in memory alongside it, and — here's the clever part — serve requests for *different* adapters in the *same batch*. Every token still flows through the shared base weights, and each request's own little adapter is applied on top, using specialized GPU kernels — vLLM calls them the Punica, or SGMV, kernels — that do this mixed-adapter math efficiently in a single pass. The result: you serve dozens or hundreds of fine-tuned variants from one base-model deployment. You turn it on with a flag called enable-lora, and tune how many adapters share a batch with max-loras. And notice — adapters not currently needed sit parked in CPU memory and get swapped to the GPU on demand. That's paging again, applied to adapters this time.
+
 ---
 
 ## Part 9 — Scaling to many GPUs and machines
+
+Before we scale out, one practical question worth answering: where does a running vLLM actually live? It's a Python process on a host machine that drives one or more GPUs. The CPU side does the orchestration — the HTTP API server, the tokenizer, the scheduler, the block manager. The GPU side holds the model weights and the KV cache and runs the math kernels. In practice it's almost always packaged as a Docker container — the official image is called vllm-openai, and it exposes an OpenAI-compatible API on port eight thousand. How many containers? Typically just one per node. A model that needs four GPUs through tensor parallelism runs as *one* container, with *one* main process that spawns one worker process per GPU — four of them here. You do *not* run one container per GPU. To handle more traffic, you run more replicas — more containers, more nodes — behind a load balancer, which is data parallelism. With that picture in mind, here are the ways to grow.
 
 What happens when one GPU just isn't enough — either because the model is too big to fit, or because you have too much traffic? Three strategies, and real systems mix all of them.
 

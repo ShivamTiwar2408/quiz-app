@@ -174,6 +174,7 @@
   <div class="brand">vLLM ⚡ Explained</div>
   <div class="links">
     <a href="#intro">Start</a>
+    <a href="#why">Why vLLM</a>
     <a href="#llm">1·LLMs</a>
     <a href="#cost">2·Cost</a>
     <a href="#kv">3·KV Cache</a>
@@ -201,6 +202,32 @@
     </div>
   </div>
   <div class="scrolldown">scroll ↓</div>
+</section>
+
+<!-- ================= PART 0: WHY vLLM ================= -->
+<section id="why">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 0 — Why this was built</div>
+    <h2 class="reveal">What the vLLM creators saw <span class="hl-prompt">missing</span> in 2022</h2>
+    <p class="reveal">vLLM came out of <strong>UC Berkeley's Sky Computing Lab in 2023</strong>. To understand what they fixed, you have to see what serving LLMs looked like just before — and why it frustrated everyone trying to run these models affordably.</p>
+
+    <h3 class="reveal">The landscape before vLLM</h3>
+    <div class="stage reveal">
+      <div class="cap">how people served LLMs before continuous batching + paging</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px">
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-red" style="font-family:var(--mono);font-weight:700;white-space:nowrap">naïve / static batching</span><div>Group a few requests, run them, and <strong>wait for the slowest to finish</strong> before taking new ones. Short requests sit idle holding their slot. The GPU spends much of its time half-empty.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-red" style="font-family:var(--mono);font-weight:700;white-space:nowrap">FasterTransformer</span><div>NVIDIA's highly-optimized kernels — fast at the math, but still static batching and <strong>contiguous, reserve-the-max KV memory</strong>. Great single-request latency, poor throughput under real mixed traffic.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-gold" style="font-family:var(--mono);font-weight:700;white-space:nowrap">HF TGI</span><div>HuggingFace's Text Generation Inference — a production server that made deployment easy, but (at the time) inherited the same contiguous-KV memory waste.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span class="hl-green" style="font-family:var(--mono);font-weight:700;white-space:nowrap">Orca (2022)</span><div>The research breakthrough just before vLLM: it <strong>introduced continuous batching</strong> (swap requests in and out every step). A huge scheduling win — but it <em>still</em> stored each request's KV cache as one contiguous, reserve-the-max slab.</div></div>
+      </div>
+    </div>
+
+    <h3 class="reveal">The gap they spotted</h3>
+    <p class="reveal">The Berkeley team profiled these systems and found the real bottleneck wasn't compute — it was <strong>wasted GPU memory</strong>. Existing engines were squandering <strong>60–80% of the KV cache memory</strong> to fragmentation and over-reservation (the problems we'll dissect in Part 4). Less memory used well = more requests in parallel = higher throughput. Orca had fixed <em>scheduling</em>; nobody had fixed <em>memory</em>.</p>
+    <div class="callout reveal"><span class="t">💡 The insight that started the project</span>Memory was being managed the way 1950s programs managed RAM — one big contiguous block per process. Operating systems had already solved that decades ago with <strong>virtual memory and paging</strong>. <em>"What if we applied paging to the KV cache?"</em> That question became <strong>PagedAttention</strong>, and pairing it with Orca-style continuous batching became vLLM — reported at up to <strong>24× the throughput</strong> of HF Transformers and well above TGI/Orca on the original benchmarks.</div>
+    <p class="reveal">So this guide builds up in exactly that order: first the fundamentals (tokens, KV cache), then the memory problem, then the two ideas that fixed it — and finally the extras (multi-LoRA, speculative decoding, scaling) that turned a research prototype into the most widely-used open inference engine. Let's start at the bottom.</p>
+    <div class="ctrls reveal"><a class="btn primary" href="#llm">Start with the fundamentals →</a></div>
+  </div>
 </section>
 
 <!-- ================= PART 1: LLMs ================= -->
@@ -692,7 +719,7 @@
 <section id="advanced">
   <div class="wrap">
     <div class="part-tag reveal">Part 8 — The clever extras</div>
-    <h2 class="reveal">Five upgrades that make it <span class="hl-green">even faster</span></h2>
+    <h2 class="reveal">Six upgrades that make it <span class="hl-green">even better</span></h2>
     <p class="reveal">Everything so far is the core. These features bolt on top. You don't need all the details — just the <em>why</em> behind each. Expand any card.</p>
 
     <details class="reveal" open><summary>① Chunked prefill — don't let one long prompt hog the GPU</summary>
@@ -719,6 +746,13 @@
       <div class="body">
         <p>Recall: prefill is compute-bound, decode is memory-bound — opposite appetites. So run them on <strong>separate machines</strong>, each tuned for its job. The prefill GPU computes the KV cache, then ships it over a fast connector (e.g. NIXL) to the decode GPU, which generates the answer. Each side scales independently.</p>
       </div></details>
+
+    <details class="reveal"><summary>⑥ Multi-LoRA serving — many fine-tuned models, one GPU</summary>
+      <div class="body">
+        <p><strong>The problem.</strong> A <strong>LoRA adapter</strong> is a tiny "diff" (often just tens of MB) that fine-tunes a big base model for a specific task — a support bot, a coding helper, a legal summarizer. If you have 100 such fine-tunes, the naïve way is <strong>100 separate deployments</strong> — 100 copies of the multi-GB base model loaded on 100 GPUs. Absurdly wasteful, since they all share the same base.</p>
+        <p><strong>vLLM's fix.</strong> Load the base model <em>once</em>, and keep each LoRA adapter as a small add-on in memory. Then — the clever part — requests for <em>different</em> adapters are served <strong>in the same batch</strong>: every token still flows through the shared base weights, and each request's own little adapter is applied on top. Specialized GPU kernels (vLLM's <strong>Punica / SGMV</strong> kernels) do this mixed-adapter math efficiently in one pass, so mixing adapters adds minimal overhead.</p>
+        <p><strong>The payoff:</strong> serve dozens-to-hundreds of fine-tuned variants from a <em>single</em> base-model deployment. Enabled with <code>--enable-lora</code>; tuned with <code>max_loras</code> (how many distinct adapters per batch), <code>max_lora_rank</code>, and <code>max_cpu_loras</code> (how many to keep parked in CPU RAM, swapped to GPU on demand — paging again!).</p>
+      </div></details>
   </div>
 </section>
 
@@ -727,7 +761,47 @@
   <div class="wrap">
     <div class="part-tag reveal">Part 9 — When one GPU isn't enough</div>
     <h2 class="reveal">Scaling to <span class="hl-gpu">many GPUs &amp; many machines</span></h2>
-    <p class="reveal">Big models don't fit on one GPU, and big traffic needs many copies. Three ways to grow:</p>
+
+    <h3 class="reveal">First: where does vLLM actually <span class="hl-prompt">run</span>?</h3>
+    <p class="reveal">A fair question before scaling out: what <em>is</em> a running vLLM, physically? It's a <strong>Python process</strong> on a host machine that drives one or more GPUs. The <strong>CPU side</strong> does the orchestration (HTTP API, tokenizing, the scheduler, the block manager / page table); the <strong>GPU side</strong> holds the model weights + KV cache and runs the math kernels. It's almost always packaged as a <strong>Docker container</strong> — the official image is <code>vllm/vllm-openai</code>, exposing an OpenAI-compatible API on port <code>8000</code>.</p>
+    <div class="stage reveal">
+      <div class="cap">one vLLM deployment on one node (TP = 4 example)</div>
+      <svg viewBox="0 0 820 430" style="width:100%;display:block;font-family:var(--mono)">
+        <defs><marker id="dah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5b6b82"/></marker></defs>
+        <!-- client -->
+        <text x="70" y="115" fill="#9fb0c3" font-size="12" text-anchor="middle">clients</text>
+        <text x="70" y="132" fill="#6b7d93" font-size="10.5" text-anchor="middle">HTTP</text>
+        <path d="M120,120 H188" stroke="#5b6b82" stroke-width="1.6" marker-end="url(#dah)"/>
+        <!-- container outer -->
+        <rect x="190" y="30" width="600" height="370" rx="16" fill="none" stroke="#c678dd" stroke-width="1.8" stroke-dasharray="7 6"/>
+        <text x="206" y="54" fill="#c678dd" font-size="12">🐳 1 container · image vllm/vllm-openai · port 8000</text>
+        <!-- host/CPU box -->
+        <rect x="212" y="70" width="220" height="300" rx="12" fill="rgba(74,163,255,.07)" stroke="#4aa3ff"/>
+        <text x="322" y="92" fill="#4aa3ff" font-size="12" text-anchor="middle">HOST · CPU (1 main process)</text>
+        <g font-size="11">
+          <rect x="230" y="106" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="129" fill="#cfe4ff" text-anchor="middle">API server (FastAPI/Uvicorn)</text>
+          <rect x="230" y="152" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="175" fill="#cfe4ff" text-anchor="middle">Tokenizer / detokenizer</text>
+          <rect x="230" y="198" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="221" fill="#cfe4ff" text-anchor="middle">Scheduler (queues)</text>
+          <rect x="230" y="244" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="267" fill="#cfe4ff" text-anchor="middle">KV block manager</text>
+          <rect x="230" y="290" width="184" height="62" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="316" fill="#9fb0c3" text-anchor="middle">CPU swap space</text><text x="322" y="332" fill="#6b7d93" text-anchor="middle">(overflow KV blocks)</text>
+        </g>
+        <!-- arrow CPU->GPU -->
+        <path d="M434,220 H470" stroke="#5b6b82" stroke-width="1.6" marker-end="url(#dah)"/>
+        <!-- GPU workers -->
+        <rect x="476" y="70" width="298" height="300" rx="12" fill="rgba(245,177,76,.06)" stroke="#f5b14c"/>
+        <text x="625" y="92" fill="#f5b14c" font-size="12" text-anchor="middle">GPUs · 1 worker process each</text>
+        <g font-size="10.5">
+          <!-- 4 gpu worker cards -->
+          <rect x="492" y="106" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="124" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 0 (TP rank 0)</text><text x="556" y="146" fill="#9fb0c3" text-anchor="middle">¼ model weights</text><text x="556" y="164" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="182" fill="#9fb0c3" text-anchor="middle">attn kernels</text><text x="556" y="206" fill="#6b7d93" text-anchor="middle" font-size="9">driver</text>
+          <rect x="630" y="106" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="124" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 1 (rank 1)</text><text x="694" y="146" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="164" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="182" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
+          <rect x="492" y="232" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="250" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 2 (rank 2)</text><text x="556" y="272" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="556" y="290" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="308" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
+          <rect x="630" y="232" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="250" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 3 (rank 3)</text><text x="694" y="272" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="290" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="308" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
+        </g>
+      </svg>
+      <p style="margin:10px 0 0;font-size:14px"><strong>How many containers?</strong> Typically <span class="hl-green">one container per node</span>. A single model that needs 4 GPUs (tensor parallelism) runs as <em>one</em> container with <em>one</em> main process that spawns <em>one worker process per GPU</em> (4 here). You don't run one container per GPU. To serve more <em>traffic</em>, you run more replicas (more containers/nodes) behind a load balancer — that's data parallelism, below.</p>
+    </div>
+
+    <p class="reveal">Now, the ways to grow beyond a single node. Big models don't fit on one GPU, and big traffic needs many copies. Three axes:</p>
     <div class="grid2 reveal">
       <div class="card"><h3 style="margin-top:0;color:var(--seq2)">Tensor Parallelism (TP)</h3><p style="margin:0;font-size:15px">Split <em>each layer's</em> math across several GPUs in one machine. A driver broadcasts the work; all GPUs compute their shard together. Preferred inside a machine because GPUs there share fast links.</p></div>
       <div class="card"><h3 style="margin-top:0;color:var(--prompt)">Pipeline Parallelism (PP)</h3><p style="margin:0;font-size:15px">Put different <em>layers</em> on different machines, like an assembly line. Used to span across machines when one box can't hold the model.</p></div>
