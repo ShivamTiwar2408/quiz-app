@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Understanding vLLM — From Zero to Mature</title>
+<style>
+  :root{
+    /* Consistent component color system — used everywhere */
+    --bg:#0d1117; --bg2:#131a24; --panel:#161e2b; --panel2:#1c2738;
+    --ink:#e6edf3; --muted:#9fb0c3; --faint:#6b7d93;
+    --line:#26334a;
+    --prompt:#4aa3ff;     /* prompts / requests / sequence 1 */
+    --seq2:#3ecf8e;       /* sequence 2 / accept / green */
+    --seq3:#f5b14c;       /* sequence 3 / gold */
+    --kv:#f78c6b;         /* KV cache */
+    --gpu:#c678dd;        /* GPU / paged memory */
+    --reject:#ff6b6b;     /* reject / error / waste */
+    --accent:#4aa3ff;
+    --glow:0 0 0 1px rgba(74,163,255,.25), 0 8px 40px -12px rgba(74,163,255,.35);
+    --radius:16px;
+    --mono:'SF Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:radial-gradient(1200px 700px at 70% -10%,#16233a 0%,var(--bg) 55%);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+  /* ---------- top progress + nav ---------- */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--prompt),var(--seq2),var(--seq3),var(--gpu));z-index:100;transition:width .1s linear}
+  nav{position:fixed;top:0;right:0;left:0;height:56px;display:flex;align-items:center;gap:18px;padding:0 22px;background:rgba(13,17,23,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:90}
+  nav .brand{font-weight:800;letter-spacing:.5px;font-size:15px;background:linear-gradient(90deg,var(--prompt),var(--gpu));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+  nav .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
+  nav .links::-webkit-scrollbar{display:none}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:8px;white-space:nowrap;transition:.2s}
+  nav a:hover{color:var(--ink);background:var(--panel2)}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  section{padding:74px 0 30px;position:relative}
+  .part-tag{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);padding:4px 12px;border-radius:30px;margin-bottom:14px;background:var(--panel)}
+  h1{font-size:clamp(34px,6vw,62px);line-height:1.05;letter-spacing:-1.5px;font-weight:850;margin-bottom:18px}
+  h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.6px;font-weight:800;margin-bottom:14px}
+  h3{font-size:20px;font-weight:700;margin:26px 0 8px;color:var(--ink)}
+  p{color:var(--muted);font-size:16.5px;margin-bottom:14px}
+  p strong{color:var(--ink);font-weight:650}
+  .lead{font-size:19px;color:#c7d4e3}
+  .hl-prompt{color:var(--prompt);font-weight:650}
+  .hl-kv{color:var(--kv);font-weight:650}
+  .hl-gpu{color:var(--gpu);font-weight:650}
+  .hl-green{color:var(--seq2);font-weight:650}
+  .hl-gold{color:var(--seq3);font-weight:650}
+  .hl-red{color:var(--reject);font-weight:650}
+  code{font-family:var(--mono);font-size:.86em;background:var(--panel2);padding:2px 7px;border-radius:6px;color:#cdd9e5;border:1px solid var(--line)}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* cards / panels */
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:18px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;font-size:15.5px}
+  .callout .t{font-weight:700;color:var(--ink);display:block;margin-bottom:3px}
+  .analogy{border-left:3px solid var(--seq3)}
+  .analogy .t{color:var(--seq3)}
+
+  /* ---------- stage (animation canvas) ---------- */
+  .stage{background:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(255,255,255,.012) 38px,rgba(255,255,255,.012) 39px),var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin:20px 0;position:relative;overflow:hidden}
+  .stage .cap{position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:1px}
+
+  /* tokens */
+  .tokrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .tok{font-family:var(--mono);font-size:14px;padding:8px 12px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);position:relative}
+  .tok.id{background:rgba(74,163,255,.14);border-color:rgba(74,163,255,.4);color:#bcd9ff}
+  .tok.new{background:rgba(247,140,107,.16);border-color:rgba(247,140,107,.5);color:#ffc7b3}
+  .arrow{color:var(--faint);font-size:18px}
+
+  /* blocks (KV) */
+  .blocks{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+  .blk{width:64px;height:64px;border-radius:11px;border:1.5px solid var(--line);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--faint);position:relative;transition:.5s}
+  .blk .n{font-size:9px;color:var(--faint)}
+  .blk.s1{background:rgba(74,163,255,.18);border-color:var(--prompt);color:#cfe4ff}
+  .blk.s2{background:rgba(62,207,142,.16);border-color:var(--seq2);color:#bff3da}
+  .blk.s3{background:rgba(245,177,76,.16);border-color:var(--seq3);color:#ffe6bd}
+  .blk.free{border-style:dashed}
+  .blk.half{background:linear-gradient(90deg,rgba(245,177,76,.16) 60%,var(--panel2) 60%)}
+
+  /* legend */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* buttons / interactive */
+  .btn{font-family:var(--sans);font-size:13.5px;font-weight:650;color:var(--ink);background:var(--panel2);border:1px solid var(--line);padding:9px 16px;border-radius:10px;cursor:pointer;transition:.2s}
+  .btn:hover{border-color:var(--accent);background:#1d2a3e}
+  .btn.primary{background:linear-gradient(90deg,#1d4e8a,#214d7a);border-color:#2f6fb0}
+  .ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+  .stat{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .stat b{color:var(--seq2)}
+
+  /* arch diagram */
+  .arch{position:relative}
+  .box{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);transition:.3s;cursor:pointer;position:relative}
+  .box:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-2px)}
+  .box .title{font-weight:700;font-size:14.5px;margin-bottom:2px}
+  .box .sub{font-size:12px;color:var(--faint);font-family:var(--mono)}
+  .box.engine{border-color:var(--reject)}
+  .box.sched{border-color:var(--prompt)}
+  .box.exec{border-color:var(--seq2)}
+  .box.kvm{border-color:var(--seq3)}
+
+  /* flow pipe */
+  .pipe{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+  .flowarr{font-size:22px;color:var(--accent);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* roofline svg helper text */
+  .quiz{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
+  .quiz .q{font-weight:650;color:var(--ink);margin-bottom:10px}
+  .quiz .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:10px 14px;border-radius:9px;margin:7px 0;cursor:pointer;transition:.2s;font-size:14.5px}
+  .quiz .opt:hover{border-color:var(--accent)}
+  .quiz .opt.right{border-color:var(--seq2);background:rgba(62,207,142,.14);color:#cdf6e3}
+  .quiz .opt.wrong{border-color:var(--reject);background:rgba(255,107,107,.12);color:#ffd2d2}
+  .quiz .exp{font-size:13.5px;color:var(--muted);margin-top:8px;display:none}
+  .quiz .exp.show{display:block}
+
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:14px 0;padding:0 18px}
+  details summary{cursor:pointer;padding:14px 0;font-weight:650;color:var(--accent);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:'▸ ';transition:.2s;display:inline-block}
+  details[open] summary::before{transform:rotate(90deg)}
+  details .body{padding-bottom:16px;color:var(--muted);font-size:15px}
+
+  .footer{padding:50px 0 80px;text-align:center;color:var(--faint);font-size:13px;border-top:1px solid var(--line);margin-top:40px}
+  .footer a{color:var(--accent);text-decoration:none}
+
+  .big-num{font-size:clamp(40px,8vw,80px);font-weight:850;line-height:1;background:linear-gradient(90deg,var(--seq2),var(--prompt));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;text-align:center}
+  .vs .mid{font-weight:800;color:var(--faint)}
+  @media(max-width:600px){.vs{grid-template-columns:1fr}}
+
+  .scrolldown{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--faint);font-size:12px;animation:bob 2s infinite}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav>
+  <div class="brand">vLLM ⚡ Explained</div>
+  <div class="links">
+    <a href="#intro">Start</a>
+    <a href="#llm">1·LLMs</a>
+    <a href="#cost">2·Cost</a>
+    <a href="#kv">3·KV Cache</a>
+    <a href="#frag">4·The Problem</a>
+    <a href="#paged">5·PagedAttention</a>
+    <a href="#batching">6·Batching</a>
+    <a href="#arch">7·Architecture</a>
+    <a href="#advanced">8·Advanced</a>
+    <a href="#scale">9·Scaling</a>
+    <a href="#bench">10·Speed</a>
+    <a href="#recap">Recap</a>
+  </div>
+</nav>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" style="min-height:92vh;display:flex;flex-direction:column;justify-content:center">
+  <div class="wrap">
+    <div class="part-tag reveal">A visual guide · no ML background needed</div>
+    <h1 class="reveal">How does <span class="hl-gpu">vLLM</span> serve<br>AI to millions —<br>without melting the GPUs?</h1>
+    <p class="lead reveal" style="max-width:680px">When you chat with an AI, your words take a surprisingly long journey through a machine. This guide opens that black box — one small idea at a time — until you understand <strong>vLLM</strong>, one of the fastest engines that runs large language models in production.</p>
+    <p class="reveal" style="max-width:680px">We start from <em>"what is a token?"</em> and end at multi-GPU, multi-node serving. Every concept gets a picture, a plain-English analogy, and a moving diagram. Scroll at your own pace — nothing here assumes you've seen a neural network before.</p>
+    <div class="ctrls reveal">
+      <a class="btn primary" href="#llm">Begin the journey →</a>
+      <a class="btn" href="lecture-script.md">Prefer to listen? Read the lecture script</a>
+    </div>
+  </div>
+  <div class="scrolldown">scroll ↓</div>
+</section>
+
+<!-- ================= PART 1: LLMs ================= -->
+<section id="llm">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 1 — The foundation</div>
+    <h2 class="reveal">What an LLM actually does: <span class="hl-prompt">predict the next word</span></h2>
+    <p class="reveal">A Large Language Model (LLM) — the thing behind ChatGPT, Claude, Gemini — has exactly <strong>one</strong> core skill: given some text, guess what comes next. That's it. Everything else is that one trick repeated very fast.</p>
+
+    <h3 class="reveal">Step A — your words become <span class="hl-prompt">tokens</span></h3>
+    <p class="reveal">Computers don't read English. So your sentence is chopped into small pieces called <strong>tokens</strong> (roughly word-fragments), and each token is swapped for a number — an <strong>ID</strong> — from the model's dictionary. This is <strong>tokenization</strong>.</p>
+    <div class="stage reveal">
+      <div class="cap">tokenization</div>
+      <div class="tokrow"><span class="tok">Hi</span><span class="tok">,</span><span class="tok">&nbsp;my</span><span class="tok">&nbsp;name</span><span class="tok">&nbsp;is</span></div>
+      <div class="pipe"><span class="flowarr">↓ tokenizer ↓</span></div>
+      <div class="tokrow"><span class="tok id">154</span><span class="tok id">1112</span><span class="tok id">42</span><span class="tok id">756</span><span class="tok id">298</span></div>
+      <p style="margin:8px 0 0;font-size:14px">From here on, the model only ever sees <span class="hl-prompt">numbers</span>. A token's size in memory has nothing to do with how long the word is — "a" and "antidisestablishmentarianism" each become one (or a few) IDs.</p>
+    </div>
+
+    <h3 class="reveal">Step B — it generates <span class="hl-kv">one token at a time</span></h3>
+    <p class="reveal">The model reads all your tokens, then predicts the single most likely next token. It <strong>appends</strong> that token to the text and repeats — reading everything again to predict the next one. This loop is called <strong>autoregression</strong>, and it stops when the model emits a special "I'm done" token.</p>
+    <div class="stage reveal">
+      <div class="cap">autoregressive generation</div>
+      <div id="autoDemo" class="tokrow"></div>
+      <div class="ctrls">
+        <button class="btn primary" onclick="stepAuto()">Generate next token →</button>
+        <button class="btn" onclick="resetAuto()">Reset</button>
+        <span class="stat" id="autoStat">prompt: 5 tokens</span>
+      </div>
+      <p style="margin:10px 0 0;font-size:14px">Notice the catch: to make <em>each</em> new token, the model re-reads the <em>entire</em> growing sequence. By token #500 it's re-reading 500 tokens every single step. That waste is exactly what vLLM is built to fix.</p>
+    </div>
+
+    <div class="callout reveal"><span class="t">🧠 Mental model</span>An LLM is an extremely well-read autocomplete. It doesn't "think ahead" — it commits to one token, then reconsiders everything to pick the next.</div>
+  </div>
+</section>
+
+<!-- ================= PART 2: COST ================= -->
+<section id="cost">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 2 — Why this is expensive</div>
+    <h2 class="reveal">Everything happens on a <span class="hl-gpu">GPU</span>, and GPU memory is tiny &amp; pricey</h2>
+    <p class="reveal">LLMs run on <strong>GPUs</strong> — specialized chips that do massive math in parallel. The scarce resource isn't speed, it's <strong>VRAM</strong> (the GPU's onboard memory). A model's whole world has to fit in VRAM, and VRAM is small and expensive.</p>
+
+    <h3 class="reveal">How a GPU's memory gets divided up</h3>
+    <p class="reveal">Picture the VRAM as a plot of <span class="hl-gpu">land</span>. Several tenants must share it. Example: one NVIDIA A100 with 40&nbsp;GB holding a 13-billion-parameter model.</p>
+    <div class="stage reveal">
+      <div class="cap">GPU VRAM = land with tenants</div>
+      <div id="vramBar" style="display:flex;height:64px;border-radius:12px;overflow:hidden;border:1px solid var(--line)">
+        <div style="flex:26;background:rgba(198,120,221,.35);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);border-right:1px solid var(--bg)">Model weights<br>~26 GB</div>
+        <div style="flex:2;background:rgba(159,176,195,.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);border-right:1px solid var(--bg)">overhead</div>
+        <div style="flex:12;background:rgba(247,140,107,.32);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono)">KV cache<br>~12 GB</div>
+      </div>
+      <div class="legend" style="margin-top:12px">
+        <span><span class="dot" style="background:var(--gpu)"></span>Model weights — fixed, the "brain"</span>
+        <span><span class="dot" style="background:var(--faint)"></span>System overhead</span>
+        <span><span class="dot" style="background:var(--kv)"></span>KV cache — the part we fight over</span>
+      </div>
+      <p style="margin:12px 0 0;font-size:14px">The model weights and overhead are fixed. The only space we can manage cleverly is the <span class="hl-kv">KV cache</span> — and how well we use it decides how many users we can serve at once.</p>
+    </div>
+
+    <div class="callout reveal"><span class="t">💸 Why you should care</span>Better memory management = more users per GPU = lower cost per answer. That single sentence is the entire business case for vLLM.</div>
+  </div>
+</section>
+
+<!-- ================= PART 3: KV CACHE ================= -->
+<section id="kv">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 3 — The clever shortcut</div>
+    <h2 class="reveal">The <span class="hl-kv">KV cache</span>: don't redo work you've already done</h2>
+    <p class="reveal">Remember the waste from Part 1 — re-reading the whole sequence for every new token? Inside the model, "reading" a token means computing two things for it: a <strong>Key (K)</strong> and a <strong>Value (V)</strong>. Crucially, a token's K and V <em>never change</em> once computed.</p>
+    <p class="reveal">So the trick is obvious in hindsight: <strong>compute each token's K and V once, then save them.</strong> That saved store is the <span class="hl-kv">KV cache</span>. Now generating a new token only needs to compute K/V for that <em>one</em> new token and reuse everything cached.</p>
+
+    <div class="stage reveal">
+      <div class="cap">with vs without KV cache</div>
+      <div class="vs">
+        <div>
+          <div style="font-weight:700;color:var(--reject);margin-bottom:6px">❌ Without cache</div>
+          <p style="font-size:13.5px;margin:0">Every step recomputes K/V for <em>all</em> tokens. Step 500 = 500 tokens of work.</p>
+        </div>
+        <div class="mid">→</div>
+        <div>
+          <div style="font-weight:700;color:var(--seq2);margin-bottom:6px">✅ With KV cache</div>
+          <p style="font-size:13.5px;margin:0">Step 500 computes K/V for just <em>1</em> new token, reuses 499 from cache.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="reveal">Two phases fall out of this: <span class="hl-prompt">prefill</span> &amp; <span class="hl-kv">decode</span></h3>
+    <div class="grid2 reveal">
+      <div class="card">
+        <h3 style="margin-top:0;color:var(--prompt)">⚡ Prefill</h3>
+        <p style="margin:0;font-size:15px">Process <strong>all</strong> your prompt tokens at once to fill the KV cache and produce the <em>first</em> new token. Lots of math in parallel → <strong>compute-bound</strong> (limited by raw GPU horsepower).</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;color:var(--kv)">🔁 Decode</h3>
+        <p style="margin:0;font-size:15px">Generate the rest, <strong>one token per step</strong>, reusing the cache. Little math, lots of memory shuffling → <strong>memory-bandwidth-bound</strong> (limited by how fast you can read memory).</p>
+      </div>
+    </div>
+    <div class="callout analogy reveal"><span class="t">🍳 Analogy</span><strong>Prefill</strong> is prepping every ingredient before you start cooking (big upfront burst). <strong>Decode</strong> is plating one dish at a time, reusing the prep. Different bottlenecks — remember this; it explains almost every vLLM design choice later.</div>
+  </div>
+</section>
+
+<!-- ================= PART 4: FRAGMENTATION ================= -->
+<section id="frag">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 4 — The problem vLLM was born to solve</div>
+    <h2 class="reveal">The old way <span class="hl-red">wasted most of the memory</span></h2>
+    <p class="reveal">Before vLLM, each request got one big <strong>contiguous</strong> (single unbroken) chunk of KV memory, sized for the <em>maximum</em> possible answer length — just in case. Almost no one uses the maximum. The rest is wasted. This is <strong>internal fragmentation</strong>.</p>
+
+    <div class="stage reveal">
+      <div class="cap">internal fragmentation</div>
+      <p style="margin:0 0 10px;font-size:14px">A request reserves room for 2,048 tokens (256&nbsp;MB) but only generates 100 tokens (12.5&nbsp;MB):</p>
+      <div style="display:flex;height:46px;border-radius:10px;overflow:hidden;border:1px solid var(--line)">
+        <div style="flex:1;background:rgba(62,207,142,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono)">used 12.5 MB</div>
+        <div style="flex:19;background:repeating-linear-gradient(45deg,rgba(255,107,107,.18),rgba(255,107,107,.18) 8px,transparent 8px,transparent 16px);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);color:#ffb3b3">wasted 243.5 MB 😱</div>
+      </div>
+      <p style="margin:10px 0 0;font-size:14px">On a 12&nbsp;GB KV budget at 256&nbsp;MB each, you fit only <span class="hl-red">~40 requests</span> on a GPU that could easily handle far more.</p>
+    </div>
+
+    <p class="reveal">Smarter old systems guessed sizes by task type (chatbot=500, code=2048…). That created a <em>new</em> bug: free gaps that are big enough in total but not <strong>contiguous</strong>, so a new request won't fit. This is <strong>external fragmentation</strong>.</p>
+    <div class="stage reveal">
+      <div class="cap">external fragmentation</div>
+      <div style="display:flex;height:46px;border-radius:10px;overflow:hidden;border:1px solid var(--line);gap:0">
+        <div style="flex:5;background:rgba(62,207,142,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono);color:#bff3da">free 500</div>
+        <div style="flex:20;background:rgba(74,163,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono)">in use (2048)</div>
+        <div style="flex:10;background:rgba(62,207,142,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono);color:#bff3da">free 1000</div>
+      </div>
+      <p style="margin:10px 0 0;font-size:14px">1,500 tokens free in total, but a request needing 1,200 <em>contiguous</em> tokens → <span class="hl-red">out-of-memory error</span>, even though the space exists. Frustrating.</p>
+    </div>
+
+    <h3 class="reveal">And a third miss: <span class="hl-prompt">no sharing</span></h3>
+    <p class="reveal">Ask for "3 alternative answers" and the old way stored your prompt's KV <strong>three times</strong> — identical copies — because each answer lived in its own contiguous block. Wasteful, since the prompt never changes.</p>
+
+    <div class="callout reveal"><span class="t">🎯 The three villains</span><strong>Internal</strong> fragmentation (over-reserving), <strong>external</strong> fragmentation (unusable gaps), and <strong>no memory sharing</strong>. Keep them in mind — the next section defeats all three with one idea borrowed from operating systems.</div>
+  </div>
+</section>
+
+<!-- ================= PART 5: PAGED ATTENTION ================= -->
+<section id="paged">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 5 — The big idea</div>
+    <h2 class="reveal"><span class="hl-gpu">PagedAttention</span>: steal the trick your laptop already uses</h2>
+    <p class="reveal">Your operating system solved this exact problem decades ago. Programs <em>think</em> they have one long continuous block of memory, but the OS secretly scatters it across small fixed-size <strong>pages</strong> in physical RAM, and a <strong>page table</strong> remembers where each page really lives.</p>
+    <div class="callout analogy reveal"><span class="t">📖 The mapping (memorize this line)</span>In vLLM: <strong>blocks are pages · tokens are bytes · a request is a process.</strong> Everything else follows from this analogy.</div>
+
+    <h3 class="reveal">KV memory is chopped into small fixed-size <span class="hl-gpu">blocks</span></h3>
+    <p class="reveal">Instead of one giant reservation, the KV cache is split into many small <strong>blocks</strong> (16 tokens each, by default). A request grabs only as many blocks as it needs — and they can sit <em>anywhere</em> in physical VRAM. A lightweight <strong>page table</strong> (called the Block Manager) maps the request's neat logical order to the scattered physical blocks.</p>
+
+    <div class="stage reveal">
+      <div class="cap">logical (what the request sees) → physical (reality)</div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Logical view — looks perfectly contiguous:</p>
+      <div class="blocks">
+        <div class="blk s1">blk 0<span class="n">logical</span></div>
+        <div class="blk s1">blk 1<span class="n">logical</span></div>
+        <div class="blk s1">blk 2<span class="n">logical</span></div>
+      </div>
+      <div class="pipe"><span class="flowarr">↓ page table maps each one ↓</span></div>
+      <p style="font-size:13px;color:var(--muted);margin:6px 0 6px">Physical VRAM — scattered, gaps reused by others:</p>
+      <div class="blocks">
+        <div class="blk free">#13<span class="n">someone else</span></div>
+        <div class="blk s1">#502<span class="n">→ blk 0</span></div>
+        <div class="blk free">#105<span class="n">other chat</span></div>
+        <div class="blk s1">#12<span class="n">→ blk 1</span></div>
+        <div class="blk s1">#811<span class="n">→ blk 2</span></div>
+      </div>
+      <p style="margin:12px 0 0;font-size:14px">No giant contiguous reservation needed → <span class="hl-green">external fragmentation gone</span>. Blocks are tiny, so a near-empty last block wastes ≤15 tokens → <span class="hl-green">internal fragmentation almost gone</span>.</p>
+    </div>
+
+    <h3 class="reveal">Sharing is now free: <span class="hl-prompt">ref-counts</span></h3>
+    <p class="reveal">Three answers to the same prompt? They simply <strong>point to the same prompt blocks</strong>. vLLM keeps a <strong>reference count</strong> (<code>ref_cnt</code>) per block — "how many requests use me." Shared prompt blocks just bump the count instead of copying. Memory sharing → solved too.</p>
+
+    <details class="reveal"><summary>Go deeper: how big is one block, really?</summary>
+      <div class="body">
+        <p>One block stores K and V for <code>block_size</code> tokens across every layer's attention heads. The size formula:</p>
+        <p><code>block_bytes = 2 (K&amp;V) × block_size × num_kv_heads × head_dim × bytes_per_element</code></p>
+        <p>For Llama-3 8B in FP16, one <em>token</em> costs ~128&nbsp;KB, so a default 16-token block ≈ <strong>2&nbsp;MB</strong>. If 8&nbsp;GB of VRAM is left for KV cache, that's <strong>~4,096 blocks</strong> to hand out. vLLM computes this number at startup and prints it as the available "GPU blocks."</p>
+      </div>
+    </details>
+
+    <div class="quiz reveal" data-answer="1">
+      <div class="q">Quick check: why are blocks made <em>small</em> (16 tokens) instead of huge?</div>
+      <button class="opt" onclick="ans(this)">Small blocks make the GPU compute faster</button>
+      <button class="opt" onclick="ans(this)">Small blocks minimize wasted space and let memory be allocated flexibly anywhere</button>
+      <button class="opt" onclick="ans(this)">The model can't read large blocks</button>
+      <div class="exp">Right idea: a small block means the only waste is in the final partly-filled block (≤15 tokens), and tiny blocks slot into any free gap — killing both kinds of fragmentation.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PART 6: BATCHING ================= -->
+<section id="batching">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 6 — Serving many people at once</div>
+    <h2 class="reveal"><span class="hl-prompt">Continuous batching</span>: never let the GPU sit idle</h2>
+    <p class="reveal">A GPU is happiest doing lots of work in parallel. So vLLM processes <strong>many requests together</strong>. The old "static batching" waited for the whole batch to finish before starting new work — so finished requests left their slots idle while slow ones ran on.</p>
+
+    <div class="stage reveal">
+      <div class="cap">static vs continuous batching</div>
+      <div class="vs">
+        <div>
+          <div style="font-weight:700;color:var(--reject);margin-bottom:8px">Static batching</div>
+          <div style="display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:11px">
+            <div style="display:flex;gap:4px"><span style="flex:2;background:rgba(74,163,255,.3);border-radius:4px;padding:3px 0">done</span><span style="flex:4;background:repeating-linear-gradient(45deg,rgba(255,107,107,.15),rgba(255,107,107,.15) 6px,transparent 6px,transparent 12px);border-radius:4px;padding:3px 0;color:#ffb3b3">idle 😴</span></div>
+            <div style="display:flex;gap:4px"><span style="flex:6;background:rgba(62,207,142,.3);border-radius:4px;padding:3px 0">still running…</span></div>
+            <div style="display:flex;gap:4px"><span style="flex:1;background:rgba(245,177,76,.3);border-radius:4px;padding:3px 0">done</span><span style="flex:5;background:repeating-linear-gradient(45deg,rgba(255,107,107,.15),rgba(255,107,107,.15) 6px,transparent 6px,transparent 12px);border-radius:4px;padding:3px 0;color:#ffb3b3">idle 😴</span></div>
+          </div>
+        </div>
+        <div class="mid">vs</div>
+        <div>
+          <div style="font-weight:700;color:var(--seq2);margin-bottom:8px">Continuous batching</div>
+          <div style="display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:11px">
+            <div style="display:flex;gap:4px"><span style="flex:2;background:rgba(74,163,255,.3);border-radius:4px;padding:3px 0">done</span><span style="flex:4;background:rgba(198,120,221,.3);border-radius:4px;padding:3px 0">new req!</span></div>
+            <div style="display:flex;gap:4px"><span style="flex:6;background:rgba(62,207,142,.3);border-radius:4px;padding:3px 0">running…</span></div>
+            <div style="display:flex;gap:4px"><span style="flex:1;background:rgba(245,177,76,.3);border-radius:4px;padding:3px 0">done</span><span style="flex:5;background:rgba(74,163,255,.3);border-radius:4px;padding:3px 0">new req!</span></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin:14px 0 0;font-size:14px">The moment a request finishes, its blocks are freed and a waiting request <em>immediately</em> takes the slot. No idle gaps. This works <em>because</em> PagedAttention makes freeing and reusing blocks instant.</p>
+    </div>
+
+    <h3 class="reveal">Watch it run: three prompts through prefill &amp; decode</h3>
+    <p class="reveal">Three prompts of different lengths (5, 7, 2 tokens). They're flattened into one batch, each gets blocks, prefill fills the cache, then decode adds one token each per step. Press the buttons.</p>
+    <div class="stage reveal">
+      <div class="cap">live: paged KV blocks</div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--prompt)"></span>Prompt 1</span>
+        <span><span class="dot" style="background:var(--seq2)"></span>Prompt 2</span>
+        <span><span class="dot" style="background:var(--seq3)"></span>Prompt 3</span>
+        <span><span class="dot" style="background:var(--panel2);border:1px dashed var(--line)"></span>Free</span>
+      </div>
+      <div id="batchBlocks" class="blocks"></div>
+      <div class="ctrls">
+        <button class="btn primary" id="batchBtn" onclick="batchStep()">Run prefill →</button>
+        <button class="btn" onclick="batchReset()">Reset</button>
+        <span class="stat" id="batchStat"></span>
+      </div>
+    </div>
+    <div class="callout reveal"><span class="t">📦 The waiting room</span>New requests sit in a <strong>waiting queue</strong>. Once prefilled, they move to the <strong>running queue</strong> for decoding. A <strong>token budget</strong> (e.g. 2,048 tokens/step) caps how much work fits in one step; long prompts get split (see <em>chunked prefill</em> next).</div>
+  </div>
+</section>
+
+<!-- ================= PART 7: ARCHITECTURE ================= -->
+<section id="arch">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 7 — The whole machine</div>
+    <h2 class="reveal">vLLM end-to-end: the <span class="hl-prompt">engine</span> and its parts</h2>
+    <p class="reveal">Now we assemble everything into the real architecture. A request flows left → right. Click any box to learn what it does.</p>
+
+    <div class="stage reveal arch">
+      <div class="cap">click a component</div>
+      <div class="pipe" style="margin-bottom:14px">
+        <div class="box" style="border-color:var(--faint)" data-info="req"><div class="title">requests in</div><div class="sub">your prompts</div></div>
+        <span class="flowarr">→</span>
+        <div class="box sched" data-info="proc"><div class="title">Processor</div><div class="sub">tokenize &amp; pack</div></div>
+        <span class="flowarr">→</span>
+        <div class="box engine" data-info="engine"><div class="title">Engine Core</div><div class="sub">the brain ↓</div></div>
+        <span class="flowarr">→</span>
+        <div class="box" style="border-color:var(--faint)" data-info="out"><div class="title">Output Proc.</div><div class="sub">detokenize</div></div>
+        <span class="flowarr">→</span>
+        <div class="box" style="border-color:var(--faint)" data-info="result"><div class="title">result out</div><div class="sub">your answer</div></div>
+      </div>
+      <div style="border:1.5px dashed var(--reject);border-radius:14px;padding:16px;margin-top:6px">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--reject);margin-bottom:10px">ENGINE CORE — inside the brain</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div class="box exec" data-info="exec"><div class="title">Model Executor</div><div class="sub">runs the GPU math</div></div>
+          <div class="box sched" data-info="scheduler"><div class="title">Scheduler</div><div class="sub">waiting + running queues</div></div>
+          <div class="box kvm" data-info="kvm"><div class="title">KV Cache Manager</div><div class="sub">hands out blocks</div></div>
+        </div>
+      </div>
+      <div id="archInfo" class="callout" style="margin-top:18px"><span class="t">👆 Click any box above</span>Each part has one job. Together they run the schedule → forward pass → postprocess loop, over and over, until every request is done.</div>
+    </div>
+
+    <h3 class="reveal">The heartbeat: the <span class="hl-prompt">step loop</span></h3>
+    <p class="reveal">Calling <code>generate()</code> just runs one loop repeatedly. Each turn of the loop is one <code>step()</code>:</p>
+    <div class="stage reveal">
+      <div class="cap">step() — repeats until done</div>
+      <div class="pipe">
+        <div class="box sched" style="cursor:default"><div class="title">1 · Schedule</div><div class="sub">pick requests + blocks</div></div>
+        <span class="flowarr">→</span>
+        <div class="box exec" style="cursor:default"><div class="title">2 · Forward pass</div><div class="sub">GPU predicts next tokens</div></div>
+        <span class="flowarr">→</span>
+        <div class="box kvm" style="cursor:default"><div class="title">3 · Postprocess</div><div class="sub">collect tokens, free finished</div></div>
+        <span class="flowarr">↺</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PART 8: ADVANCED ================= -->
+<section id="advanced">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 8 — The clever extras</div>
+    <h2 class="reveal">Five upgrades that make it <span class="hl-green">even faster</span></h2>
+    <p class="reveal">Everything so far is the core. These features bolt on top. You don't need all the details — just the <em>why</em> behind each. Expand any card.</p>
+
+    <details class="reveal" open><summary>① Chunked prefill — don't let one long prompt hog the GPU</summary>
+      <div class="body">
+        <p>A 10,000-token prompt would monopolize a step and stall everyone else's decoding. <strong>Solution:</strong> split a long prompt into fixed-size chunks and prefill it across several steps, letting quick decodes interleave. Smoother for everyone — no single request blocks the line.</p>
+      </div></details>
+
+    <details class="reveal"><summary>② Prefix caching — reuse work across different requests</summary>
+      <div class="body">
+        <p>If many requests share the same opening text (a long system prompt, a document), why recompute its KV every time? vLLM <strong>hashes each completed block</strong> of tokens (chaining in the previous block's hash, so the hash captures the whole prefix). A new request with the same prefix finds the hash, reuses those cached blocks (<code>ref_cnt++</code>), and skips straight to the new part. Huge win for chatbots and RAG.</p>
+      </div></details>
+
+    <details class="reveal"><summary>③ Guided decoding — force valid output (e.g. always valid JSON)</summary>
+      <div class="body">
+        <p>Need the model to only ever output "Positive" or "Negative", or strict JSON? A <strong>finite state machine</strong> (a grammar) tracks which tokens are legal next. At each step, illegal tokens have their score set to <code>-infinity</code> via a <strong>bitmask</strong> — so they can never be picked. The model is gently railroaded into valid output.</p>
+      </div></details>
+
+    <details class="reveal"><summary>④ Speculative decoding — guess ahead, verify in bulk</summary>
+      <div class="body">
+        <p>Decode is slow because it's one token at a time. <strong>Trick:</strong> a tiny, fast "draft" model guesses the next <code>k</code> tokens. The big model then checks all <code>k</code> guesses in a <em>single</em> pass. Correct guesses are kept for free; the first wrong one is rejected and corrected. <strong>Rejection sampling</strong> guarantees the output is identical to what the big model would have produced alone — just faster. vLLM supports n-gram, EAGLE, and Medusa style proposers.</p>
+      </div></details>
+
+    <details class="reveal"><summary>⑤ Disaggregated P/D — put prefill and decode on different GPUs</summary>
+      <div class="body">
+        <p>Recall: prefill is compute-bound, decode is memory-bound — opposite appetites. So run them on <strong>separate machines</strong>, each tuned for its job. The prefill GPU computes the KV cache, then ships it over a fast connector (e.g. NIXL) to the decode GPU, which generates the answer. Each side scales independently.</p>
+      </div></details>
+  </div>
+</section>
+
+<!-- ================= PART 9: SCALING ================= -->
+<section id="scale">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 9 — When one GPU isn't enough</div>
+    <h2 class="reveal">Scaling to <span class="hl-gpu">many GPUs &amp; many machines</span></h2>
+    <p class="reveal">Big models don't fit on one GPU, and big traffic needs many copies. Three ways to grow:</p>
+    <div class="grid2 reveal">
+      <div class="card"><h3 style="margin-top:0;color:var(--seq2)">Tensor Parallelism (TP)</h3><p style="margin:0;font-size:15px">Split <em>each layer's</em> math across several GPUs in one machine. A driver broadcasts the work; all GPUs compute their shard together. Preferred inside a machine because GPUs there share fast links.</p></div>
+      <div class="card"><h3 style="margin-top:0;color:var(--prompt)">Pipeline Parallelism (PP)</h3><p style="margin:0;font-size:15px">Put different <em>layers</em> on different machines, like an assembly line. Used to span across machines when one box can't hold the model.</p></div>
+      <div class="card"><h3 style="margin-top:0;color:var(--seq3)">Data Parallelism (DP)</h3><p style="margin:0;font-size:15px">Run several full copies (replicas) of the engine; a <strong>coordinator</strong> load-balances users across them. This is how you serve more <em>traffic</em>.</p></div>
+      <div class="card"><h3 style="margin-top:0;color:var(--gpu)">Headless + API node</h3><p style="margin:0;font-size:15px">One node runs the public API server; other "headless" nodes just run engine replicas behind it. Clients only ever see the API node.</p></div>
+    </div>
+    <div class="callout analogy reveal"><span class="t">🏭 Analogy</span><strong>TP</strong> = many workers building one car together. <strong>PP</strong> = an assembly line passing the car down. <strong>DP</strong> = many identical factories. Real deployments mix all three.</div>
+  </div>
+</section>
+
+<!-- ================= PART 10: BENCHMARKS ================= -->
+<section id="bench">
+  <div class="wrap">
+    <div class="part-tag reveal">Part 10 — Measuring "fast"</div>
+    <h2 class="reveal">Latency vs throughput, and the <span class="hl-gpu">roofline</span></h2>
+    <p class="reveal">"Fast" means two different things, often in tension:</p>
+    <div class="grid2 reveal">
+      <div class="card"><h3 style="margin-top:0">⏱️ Latency (one user's happiness)</h3>
+        <p style="margin:0 0 6px;font-size:14.5px"><strong>TTFT</strong> — time to first token (how long until you see <em>anything</em>; set by prefill).</p>
+        <p style="margin:0 0 6px;font-size:14.5px"><strong>ITL / TPOT</strong> — time between tokens (how fast it "types"; set by decode).</p>
+        <p style="margin:0;font-size:14.5px"><strong>E2E</strong> — total time for the full answer.</p>
+      </div>
+      <div class="card"><h3 style="margin-top:0">📊 Throughput (the operator's wallet)</h3>
+        <p style="margin:0;font-size:14.5px">Total tokens/second across <em>all</em> users. Bigger batches = more throughput, but each individual user may wait a touch longer. <strong>Goodput</strong> = throughput that still meets your latency promises.</p>
+      </div>
+    </div>
+
+    <h3 class="reveal">The roofline: why bigger batches help — up to a point</h3>
+    <p class="reveal">This is the one chart that ties it together. The hill has two slopes: a rising "memory" wall and a flat "compute" ceiling.</p>
+    <div class="stage reveal">
+      <div class="cap">roofline model</div>
+      <svg viewBox="0 0 520 280" style="width:100%;max-width:520px;display:block;margin:0 auto">
+        <line x1="50" y1="240" x2="500" y2="240" stroke="#3a4a63" stroke-width="1.5"/>
+        <line x1="50" y1="240" x2="50" y2="20" stroke="#3a4a63" stroke-width="1.5"/>
+        <text x="270" y="272" fill="#9fb0c3" font-size="12" text-anchor="middle" font-family="monospace">arithmetic intensity (work per byte) →</text>
+        <text x="18" y="130" fill="#9fb0c3" font-size="12" text-anchor="middle" transform="rotate(-90 18 130)" font-family="monospace">performance →</text>
+        <!-- mem-bound slope -->
+        <line x1="50" y1="240" x2="250" y2="70" stroke="#4aa3ff" stroke-width="3"/>
+        <!-- compute ceiling -->
+        <line x1="250" y1="70" x2="500" y2="70" stroke="#ff6b6b" stroke-width="3"/>
+        <line x1="250" y1="70" x2="250" y2="240" stroke="#3a4a63" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="120" y="150" fill="#4aa3ff" font-size="12" font-family="monospace" transform="rotate(-40 120 150)">memory-bound (decode)</text>
+        <text x="320" y="58" fill="#ff6b6b" font-size="12" font-family="monospace">compute-bound (prefill)</text>
+        <circle id="rfDot" cx="110" cy="189" r="7" fill="#3ecf8e"/>
+        <text id="rfLabel" x="110" y="178" fill="#3ecf8e" font-size="11" text-anchor="middle" font-family="monospace">small batch</text>
+      </svg>
+      <div class="ctrls">
+        <button class="btn primary" onclick="rfBatch(1)">Tiny batch</button>
+        <button class="btn" onclick="rfBatch(2)">Bigger batch</button>
+        <button class="btn" onclick="rfBatch(3)">Big batch</button>
+        <span class="stat" id="rfStat">Decode sits on the blue slope — starved for memory bandwidth.</span>
+      </div>
+      <p style="margin:12px 0 0;font-size:14px">On the <span class="hl-prompt">blue slope</span> you're <strong>memory-bound</strong> (typical of decode) — the GPU's math units sit idle waiting for data. Pack more requests together (continuous batching!) and you climb right toward the <span class="hl-red">red ceiling</span>, finally using the GPU fully. That's <em>why</em> batching is the heart of vLLM.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECAP ================= -->
+<section id="recap">
+  <div class="wrap">
+    <div class="part-tag reveal">The whole story in one breath</div>
+    <h2 class="reveal">You now understand vLLM</h2>
+    <div class="card reveal" style="font-size:16px">
+      <p style="color:var(--ink)">An <span class="hl-prompt">LLM</span> predicts one token at a time, re-reading everything each step. To avoid that waste it saves each token's Key/Value in the <span class="hl-kv">KV cache</span>. That cache is precious GPU memory, and the old way of storing it in big contiguous chunks <span class="hl-red">wasted most of it</span> (internal + external fragmentation) and couldn't share.</p>
+      <p style="color:var(--ink)"><span class="hl-gpu">vLLM</span> borrows the operating-system idea of <strong>paging</strong>: chop KV memory into small <span class="hl-gpu">blocks</span>, map them with a page table, and reference-count for sharing — that's <strong>PagedAttention</strong>. On top, <strong>continuous batching</strong> keeps the GPU busy by swapping finished requests for waiting ones instantly.</p>
+      <p style="color:var(--ink)">The engine runs a simple <strong>schedule → forward → postprocess</strong> loop, splitting work into compute-bound <span class="hl-prompt">prefill</span> and memory-bound <span class="hl-kv">decode</span>. Extras — chunked prefill, prefix caching, guided &amp; speculative decoding, P/D disaggregation — squeeze out more speed. And it all scales across <span class="hl-gpu">many GPUs and machines</span> via tensor/pipeline/data parallelism.</p>
+      <p style="color:var(--ink);margin-bottom:0">The payoff, in one number:</p>
+    </div>
+    <div class="stage reveal" style="text-align:center">
+      <div class="cap">requests served per A100, our example</div>
+      <div class="vs" style="align-items:center">
+        <div><div class="big-num" style="background:linear-gradient(90deg,#ff6b6b,#f5b14c);-webkit-background-clip:text;background-clip:text;color:transparent">~40</div><div style="color:var(--muted);font-size:14px">old contiguous way</div></div>
+        <div class="mid" style="font-size:24px">→</div>
+        <div><div class="big-num">~256</div><div style="color:var(--muted);font-size:14px">with vLLM paging</div></div>
+      </div>
+      <p style="margin:14px 0 0;font-size:15px">Same hardware. <span class="hl-green">~6–8× more users</span>, just by managing memory the way an OS does. That's the magic — and now you understand exactly how.</p>
+    </div>
+
+    <div class="callout reveal"><span class="t">🎧 Keep going</span>There's a companion <a href="lecture-script.md" style="color:var(--accent)">spoken lecture script</a> that narrates this entire journey — listen to it with or without this page open. And the full <a href="https://github.com/ShivamTiwar2408/quiz-app/tree/main/vllm-kb" style="color:var(--accent)">knowledge base</a> has the source blog, diagrams, and transcripts.</div>
+  </div>
+</section>
+
+<div class="footer">
+  <p>Built from the vLLM knowledge base · "Inside vLLM: Anatomy of a High-Throughput LLM Inference System" (Aleksa Gordic) + lecture transcripts.</p>
+  <p style="margin-top:6px">A teaching guide — for exact APIs and current defaults, always check <a href="https://docs.vllm.ai/">docs.vllm.ai</a>.</p>
+</div>
+
+<script>
+  // progress bar + reveal
+  const prog=document.getElementById('progress');
+  const reveals=[...document.querySelectorAll('.reveal')];
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+  reveals.forEach(r=>io.observe(r));
+  addEventListener('scroll',()=>{const h=document.documentElement;const sc=h.scrollTop/(h.scrollHeight-h.clientHeight);prog.style.width=(sc*100)+'%'},{passive:true});
+
+  // Part 1: autoregression demo
+  const promptToks=['154','1112','42','756','298'];
+  const genToks=['Alice','914','601','233','.','</s>'];
+  let autoIdx=0;
+  function renderAuto(){
+    const el=document.getElementById('autoDemo');
+    let h=promptToks.map(t=>`<span class="tok id">${t}</span>`).join('');
+    for(let i=0;i<autoIdx;i++)h+=`<span class="tok new">${genToks[i]}</span>`;
+    el.innerHTML=h;
+    document.getElementById('autoStat').textContent=`prompt: 5 tokens · generated: ${autoIdx} · model re-reads ${5+autoIdx} tokens this step`;
+  }
+  function stepAuto(){if(autoIdx<genToks.length)autoIdx++;renderAuto();}
+  function resetAuto(){autoIdx=0;renderAuto();}
+  renderAuto();
+
+  // Part 6: batching demo
+  let batchPhase=0; // 0 empty,1 prefill,2 decode1,3 decode2, then frees
+  const batchEl=document.getElementById('batchBlocks');
+  const batchBtn=document.getElementById('batchBtn');
+  const batchStat=document.getElementById('batchStat');
+  function renderBatch(){
+    // 8 blocks shown
+    let cls=Array(8).fill('free'); let lbl=Array(8).fill('free');
+    if(batchPhase>=1){cls[0]='s1';lbl[0]='P1·5tok';cls[1]='s2';lbl[1]='P2·7tok';cls[2]='s3';lbl[2]='P3·2tok';}
+    if(batchPhase>=2){lbl[0]='P1·6tok';lbl[1]='P2·8tok';lbl[2]='P3·3tok';}
+    if(batchPhase>=3){lbl[1]='P2 done';cls[1]='free';lbl[1]='free↺';} // p2 finishes, freed
+    let h='';
+    for(let i=0;i<8;i++)h+=`<div class="blk ${cls[i]}">${i+1}<span class="n">${lbl[i]}</span></div>`;
+    batchEl.innerHTML=h;
+  }
+  const batchMsgs=[
+    'Empty cache. 3 prompts waiting (5,7,2 tokens). Press Run prefill.',
+    'PREFILL done: each prompt got 1 block, KV cache filled, first token produced. ↓ Decode',
+    'DECODE step 1: +1 token per prompt — reusing cached KV (no recompute!). ↓ Decode',
+    'DECODE step 2: Prompt 2 hit its stop token → its block is FREED instantly for a waiting request.'
+  ];
+  const batchBtns=['Run prefill →','Decode step →','Decode step →','Reset'];
+  function batchStep(){
+    batchPhase++;
+    if(batchPhase>3){batchReset();return;}
+    renderBatch();
+    batchStat.textContent=batchMsgs[batchPhase];
+    batchBtn.textContent=batchBtns[batchPhase];
+  }
+  function batchReset(){batchPhase=0;renderBatch();batchStat.textContent=batchMsgs[0];batchBtn.textContent=batchBtns[0];}
+  batchReset();
+
+  // Part 7: architecture info
+  const archInfo={
+    req:['Requests in','Your prompts arrive as plain text — possibly thousands at once from many users.'],
+    proc:['Processor','Tokenizes your text into IDs and packs it into a Request object with metadata, then hands it to the engine core.'],
+    engine:['Engine Core','The heart of vLLM. Holds the scheduler, model executor, and KV cache manager, and runs the step loop. On its own it does offline (non-web) inference.'],
+    out:['Output Processor','Turns generated token IDs back into human text and streams it out, token by token.'],
+    result:['Result out','Your answer — streamed so you see words appear as they\'re decoded.'],
+    exec:['Model Executor','Runs the actual neural-network math on the GPU(s) — the forward pass that predicts next tokens. On multiple GPUs this becomes the MultiProcExecutor.'],
+    scheduler:['Scheduler','The traffic controller. Holds the waiting queue (to be prefilled) and running queue (being decoded), and decides each step which requests run and how many tokens — within the token budget.'],
+    kvm:['KV Cache Manager','Owns the block pool and the free-block queue. Hands out KV blocks via allocate_slots, tracks ref-counts for sharing, and frees blocks when requests finish. This is the page table from Part 5.']
+  };
+  document.querySelectorAll('[data-info]').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.getAttribute('data-info');const d=archInfo[k];if(!d)return;
+    document.getElementById('archInfo').innerHTML=`<span class="t">${d[0]}</span>${d[1]}`;
+    document.querySelectorAll('[data-info]').forEach(x=>x.style.boxShadow='');
+    b.style.boxShadow='var(--glow)';
+  }));
+
+  // quiz
+  function ans(btn){
+    const box=btn.closest('.quiz');const correct=+box.dataset.answer;
+    const opts=[...box.querySelectorAll('.opt')];const idx=opts.indexOf(btn);
+    opts.forEach(o=>o.classList.remove('right','wrong'));
+    if(idx===correct){btn.classList.add('right');}else{btn.classList.add('wrong');opts[correct].classList.add('right');}
+    box.querySelector('.exp').classList.add('show');
+  }
+
+  // roofline
+  const dot=document.getElementById('rfDot'),rfL=document.getElementById('rfLabel'),rfS=document.getElementById('rfStat');
+  function rfBatch(n){
+    const pts={1:[110,189,'small batch'],2:[200,113,'bigger'],3:[250,70,'big batch']};
+    const msgs={1:'Decode sits on the blue slope — starved for memory bandwidth, GPU mostly idle.',2:'Batching raises work-per-byte — climbing toward full utilization.',3:'At the red ceiling: GPU fully used (compute-bound). This is the goal.'};
+    const [x,y,l]=pts[n];
+    dot.setAttribute('cx',x);dot.setAttribute('cy',y);
+    rfL.setAttribute('x',x);rfL.setAttribute('y',y-11);rfL.textContent=l;
+    rfS.textContent=msgs[n];
+  }
+</script>
+</body>
+</html>
