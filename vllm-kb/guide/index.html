@@ -607,7 +607,40 @@
       </div>
     </div>
 
-    <div class="callout reveal"><span class="t">🧩 Quick clarification: two unrelated things both called "blocks"</span><strong>KV blocks</strong> (this whole section) are <em>memory</em> — slots of VRAM that hold k/v vectors. They are <em>not</em> the same as <strong>CUDA thread blocks</strong>, which are a <em>compute</em> concept: groups of GPU threads that a kernel (like the PagedAttention kernel) launches to do math in parallel. One is where data lives; the other is how work is scheduled. vLLM's cleverness is mostly about the <em>memory</em> kind — the KV blocks. The compute kind is handled by the GPU kernels underneath.</div>
+    <div class="callout reveal"><span class="t">⚠️ What vLLM does and doesn't claim at load time</span>Notice every step above is about <strong>memory</strong> — weights, activations, KV blocks. vLLM <em>never allocates CUDA cores</em>. That's the single most common misconception, so let's be exact about what the cores even are.</div>
+
+    <h3 class="reveal">So how many <span class="hl-gpu">CUDA cores</span> does the model get?</h3>
+    <p class="reveal">Short answer: <strong>all of them, all the time — because cores aren't allocated.</strong> A GPU's compute units are fixed silicon, shared dynamically across whatever work is running. When the model loads, vLLM claims a slice of <strong>VRAM</strong> (the memory); the <strong>cores</strong> are just the engine the kernels run on — they aren't reserved, partitioned, or "given" to the model.</p>
+    <div class="stage reveal">
+      <div class="cap">fixed compute (not allocated) vs allocated memory — NVIDIA A100 / H100</div>
+      <svg viewBox="0 0 820 250" style="width:100%;display:block;font-family:var(--mono)">
+        <!-- left: fixed compute -->
+        <rect x="20" y="40" width="380" height="190" rx="12" fill="rgba(245,177,76,.06)" stroke="#f5b14c"/>
+        <text x="210" y="62" fill="#f5b14c" font-size="12" text-anchor="middle">FIXED HARDWARE — shared, never allocated</text>
+        <g font-size="11">
+          <rect x="36" y="78" width="348" height="44" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+          <text x="210" y="96" fill="#ffe6bd" text-anchor="middle">CUDA cores (FP32 ALUs)</text>
+          <text x="210" y="113" fill="#9fb0c3" text-anchor="middle" font-size="10">A100: 6,912 · H100 SXM: 16,896</text>
+          <rect x="36" y="128" width="348" height="44" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+          <text x="210" y="146" fill="#ffe6bd" text-anchor="middle">Tensor Cores (matrix-mul units — do the heavy lifting)</text>
+          <text x="210" y="163" fill="#9fb0c3" text-anchor="middle" font-size="10">A100: 432 · H100 SXM: 528</text>
+          <rect x="36" y="178" width="348" height="40" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+          <text x="210" y="200" fill="#9fb0c3" text-anchor="middle" font-size="10.5">grouped into SMs (A100: 108 · H100: 132)</text>
+        </g>
+        <!-- right: allocated memory -->
+        <rect x="420" y="40" width="380" height="190" rx="12" fill="rgba(74,163,255,.07)" stroke="#4aa3ff"/>
+        <text x="610" y="62" fill="#4aa3ff" font-size="12" text-anchor="middle">VRAM — this is what vLLM allocates</text>
+        <g font-size="11">
+          <rect x="436" y="78" width="348" height="34" rx="7" fill="rgba(198,120,221,.18)" stroke="#c678dd"/><text x="610" y="100" fill="#e6c7f0" text-anchor="middle">model weights (fixed, e.g. ~16 GB)</text>
+          <rect x="436" y="118" width="348" height="28" rx="7" fill="rgba(159,176,195,.14)" stroke="var(--line)"/><text x="610" y="137" fill="#9fb0c3" text-anchor="middle" font-size="10">activations / working memory (profiled)</text>
+          <rect x="436" y="152" width="348" height="66" rx="7" fill="rgba(247,140,107,.16)" stroke="var(--kv)"/><text x="610" y="180" fill="#ffc7b3" text-anchor="middle">KV cache blocks</text><text x="610" y="200" fill="#9fb0c3" text-anchor="middle" font-size="10">all leftover VRAM → the "# GPU blocks" number</text>
+        </g>
+      </svg>
+      <p style="margin:12px 0 0;font-size:14px">When a kernel runs (say the PagedAttention kernel), the GPU's scheduler hands its threads to <em>whatever cores are free</em> at that instant — across all 6,912 (A100) or 16,896 (H100) of them. Two requests in the same batch share the same cores in the same launch. There's no per-model core budget to set.</p>
+    </div>
+    <div class="callout reveal"><span class="t">💡 Why vLLM obsesses over memory, not cores</span>This is the deeper reason the whole engine is built around the KV cache. During <strong>decode</strong> you compute one token at a time — that barely uses the thousands of cores, but it must stream all the weights + KV through memory. So decode is <strong>memory-bandwidth-bound</strong>, not core-bound (the roofline, Part 10). The cores sit largely idle; the bottleneck is memory. That's exactly why vLLM spends its cleverness on <em>fitting more in VRAM and batching</em> (to feed those idle cores) rather than on the cores themselves.</div>
+
+    <div class="callout reveal"><span class="t">🧩 And the "blocks" name clash</span><strong>KV blocks</strong> are <em>memory</em> — slots of VRAM holding k/v vectors. <strong>CUDA thread blocks</strong> are <em>compute</em> — groups of threads a kernel launches onto the cores above. Same word, unrelated things: one is where data lives, the other is how a kernel's work is scheduled onto the fixed cores. vLLM's innovation is almost entirely about the <em>memory</em> kind.</div>
 
     <div class="quiz reveal" data-answer="1">
       <div class="q">Quick check: why are blocks made <em>small</em> (16 tokens) instead of huge?</div>
