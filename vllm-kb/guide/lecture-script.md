@@ -156,6 +156,8 @@ Now zoom into the Engine Core, because that's where the magic lives. It has thre
 
 And the whole thing runs a simple loop — the heartbeat of vLLM. When you call "generate," all that really happens is this loop runs over and over. Each turn is one **step**, and a step has three stages: **schedule** — pick the requests and their blocks; **forward pass** — the GPU predicts the next tokens; **postprocess** — collect those tokens and free anything that just finished. Schedule, forward, postprocess. Around and around, until every request is done. That's the engine.
 
+Those boxes are the engine's *logical* parts — so let's ground them in physical reality: where does a running vLLM actually live? It's a Python process on a host machine that drives one or more GPUs. The CPU side does the orchestration — the HTTP API server, the tokenizer, the scheduler, the block manager. The GPU side holds the model weights and the KV cache and runs the math kernels. In practice it's almost always packaged as a Docker container — the official image is called vllm-openai, and it exposes an OpenAI-compatible API on port eight thousand. How many containers? Typically just one per node. A model that needs four GPUs through tensor parallelism runs as *one* container, with *one* main process that spawns one worker process per GPU — four of them here. You do *not* run one container per GPU. To handle more traffic, you run more replicas — more containers, more nodes — behind a load balancer, which is data parallelism, and we'll get to that next.
+
 ---
 
 ## Part 8 — The clever extras
@@ -178,9 +180,7 @@ Everything up to here is the core, and honestly, if you understand the core, you
 
 ## Part 9 — Scaling to many GPUs and machines
 
-Before we scale out, one practical question worth answering: where does a running vLLM actually live? It's a Python process on a host machine that drives one or more GPUs. The CPU side does the orchestration — the HTTP API server, the tokenizer, the scheduler, the block manager. The GPU side holds the model weights and the KV cache and runs the math kernels. In practice it's almost always packaged as a Docker container — the official image is called vllm-openai, and it exposes an OpenAI-compatible API on port eight thousand. How many containers? Typically just one per node. A model that needs four GPUs through tensor parallelism runs as *one* container, with *one* main process that spawns one worker process per GPU — four of them here. You do *not* run one container per GPU. To handle more traffic, you run more replicas — more containers, more nodes — behind a load balancer, which is data parallelism. With that picture in mind, here are the ways to grow.
-
-What happens when one GPU just isn't enough — either because the model is too big to fit, or because you have too much traffic? Three strategies, and real systems mix all of them.
+We just saw that one vLLM deployment is a single container driving its GPUs. So what happens when one GPU — or one node — just isn't enough, either because the model is too big to fit, or because you have too much traffic? Three strategies, and real systems mix all of them.
 
 **Tensor parallelism** splits each individual layer's math across several GPUs inside one machine. A driver GPU broadcasts the work, and all the GPUs compute their shard together. This is preferred *inside* a single machine because those GPUs are connected by very fast links.
 
