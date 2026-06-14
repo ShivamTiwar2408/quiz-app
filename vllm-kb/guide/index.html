@@ -778,6 +778,64 @@
 
     <p class="reveal" style="margin-top:18px">That inner triangle — <span class="hl-prompt">Scheduler → Model Executor → back through the KV Cache Manager</span> — is the <strong>step loop</strong>, the heartbeat of vLLM. Calling <code>generate()</code> just spins this loop: <strong>schedule</strong> (pick requests + blocks) → <strong>forward pass</strong> (GPU predicts the next tokens) → <strong>postprocess</strong> (collect tokens, free finished requests), over and over until every request is done. Prefill and every decode step are each one trip around it.</p>
 
+    <h3 class="reveal">Inside the system design: the <span class="hl-prompt">real components</span></h3>
+    <p class="reveal">Let's go one level deeper than boxes — this is the actual internal design of vLLM's <strong>V1 engine</strong>. Four objects wrap the engine, and the <code>EngineCore</code> inside them holds the parts that do the work. Expand each to see exactly what it does and the real class names you'll meet in the codebase.</p>
+
+    <details class="reveal" open><summary>The 4 wrapper components (input → core → output)</summary>
+      <div class="body">
+        <p>A request passes through four layers around the core:</p>
+        <ul>
+          <li><strong>vLLM config</strong> — every knob: model, cache, parallelism (TP/PP/DP), dtype. Built once at startup and threaded everywhere.</li>
+          <li><strong>Processor</strong> — validates the raw input, tokenizes it, and turns it into an <code>EngineCoreRequest</code> (carrying <code>prompt_token_ids</code>, sampling params, priority, arrival time).</li>
+          <li><strong>EngineCore client</strong> — the handle the outside world uses to talk to the core. In simple offline use it's an <code>InprocClient</code> (literally the core in the same process); at scale it becomes a multiprocess client (<code>DPLBAsyncMPClient</code>) that talks over <strong>ZMQ</strong> sockets.</li>
+          <li><strong>Output processor</strong> — converts the core's raw <code>EngineCoreOutput</code>s back into the <code>RequestOutput</code> the user sees (detokenized text, finish reason).</li>
+        </ul>
+      </div></details>
+
+    <details class="reveal"><summary>Inside EngineCore: executor · scheduler · KV manager · structured-output</summary>
+      <div class="body">
+        <p>The <code>EngineCore</code> itself is made of:</p>
+        <ul>
+          <li><strong>Model Executor</strong> — drives the forward passes. On one GPU it's a <code>UniProcExecutor</code> (a single Worker); on many GPUs it's a <code>MultiProcExecutor</code> (one Worker process per GPU). The Worker owns a <code>model_runner</code> (sampler, KV cache, forward-pass buffers) and an <code>InputBatch</code> (CPU-side buffers + the per-request block tables).</li>
+          <li><strong>Scheduler</strong> — decides which requests run in the next step. Has a <strong>policy</strong> (FCFS or priority), a <strong>waiting</strong> queue and a <strong>running</strong> queue.</li>
+          <li><strong>KV Cache Manager</strong> — the heart of paged attention. Maintains the <code>free_block_queue</code> — a doubly-linked pool of free KV blocks (often hundreds of thousands) — and <code>req_to_blocks</code>, mapping each request to its allocated blocks (its page table).</li>
+          <li><strong>Structured Output Manager</strong> — drives guided decoding (grammar bitmasks; Part 8).</li>
+        </ul>
+      </div></details>
+
+    <details class="reveal"><summary>Startup: the 3 things each GPU Worker does before serving</summary>
+      <div class="body">
+        <p>When the executor builds a Worker, three procedures run (and later run independently on <em>every</em> GPU under <code>MultiProcExecutor</code>):</p>
+        <ul>
+          <li><strong>① Init device</strong> — pin a CUDA device, check dtype support, verify VRAM against <code>gpu_memory_utilization</code>, set up the distributed groups (DP/TP/PP/EP), and create the <code>model_runner</code> + <code>InputBatch</code>.</li>
+          <li><strong>② Load model</strong> — build the architecture, load the weights, call <code>model.eval()</code>, and optionally <code>torch.compile()</code>.</li>
+          <li><strong>③ Initialize KV cache</strong> — get the per-layer KV spec, run a <em>profiling forward pass</em> + GPU memory snapshot to compute how many blocks fit, allocate &amp; bind the KV tensors to the attention layers, and — unless <code>--enforce-eager</code> — capture <strong>CUDA graphs</strong> (pre-recorded GPU work replayed each step to cut kernel-launch overhead).</li>
+        </ul>
+      </div></details>
+
+    <details class="reveal"><summary>One step() in detail: schedule → forward → postprocess</summary>
+      <div class="body">
+        <p>Each turn of the loop has three stages (V1 can mix prefill and decode in the <em>same</em> step — V0 could only do one type at a time):</p>
+        <ul>
+          <li><strong>① Schedule.</strong> <em>Decode requests go first</em> (they're in the running queue). For each, compute how many new tokens (usually 1, more with speculative/async), call <code>allocate_slots</code>, and subtract from the <strong>token budget</strong>. Then admit <strong>prefill</strong> requests from the waiting queue until the budget runs out, moving each WAITING → RUNNING.</li>
+          <li><strong>② Forward pass.</strong> The flattened batch runs through the model; the sampler picks one token per sequence (honoring temperature/top-p, and the grammar bitmask if guided).</li>
+          <li><strong>③ Postprocess.</strong> Append each sampled token to its <code>Request</code>, detokenize, and check stop conditions (length limit, EOS id, <code>stop_token_ids</code>, or stop strings). A finished request is cleaned up — <strong>its KV blocks return to the <code>free_block_queue</code></strong> — and its output is returned (streamed, token-by-token, in serving mode).</li>
+        </ul>
+      </div></details>
+
+    <details class="reveal"><summary>allocate_slots: how the KV manager hands out memory</summary>
+      <div class="body">
+        <p>The scheduler leans on <code>allocate_slots</code> every step. It:</p>
+        <ul>
+          <li><strong>Computes block count</strong> — <code>n = ceil(new_tokens / 16)</code> (16 = default block size). 17 new tokens → 2 blocks.</li>
+          <li><strong>Checks availability</strong> — if the pool can't supply <code>n</code> blocks, it may trigger <strong>recompute preemption</strong>: evict a low-priority request (freeing its blocks back to the pool, to be recomputed later) or skip scheduling this step.</li>
+          <li><strong>Allocates</strong> — pop the first <code>n</code> blocks off the <code>free_block_queue</code> and record them in <code>req_to_blocks[request_id]</code>. With prefix caching on, already-computed blocks are reused first (Part 8).</li>
+        </ul>
+        <p>This is the exact moment the "page table" from Part 5 gets written — logical block → physical block id.</p>
+      </div></details>
+
+    <div class="callout reveal"><span class="t">🏷️ V0 vs V1</span>Everything above describes the <strong>V1 engine</strong> (the current default; V0 is deprecated). The headline V1 wins: it can <strong>mix prefill + decode in one step</strong>, runs the API server and engine in <strong>separate processes</strong> communicating over ZMQ (so tokenization/HTTP never block the GPU loop), and has a cleaner scheduler. Class names may shift release-to-release — the <em>roles</em> are what matter.</div>
+
     <h3 class="reveal">Where does vLLM actually <span class="hl-prompt">run</span>?</h3>
     <p class="reveal">Those boxes are the engine's <em>logical</em> parts. So what <em>is</em> a running vLLM, physically? It's a <strong>Python process</strong> on a host machine that drives one or more GPUs. The <strong>CPU side</strong> does the orchestration (HTTP API, tokenizing, the scheduler, the block manager / page table); the <strong>GPU side</strong> holds the model weights + KV cache and runs the math kernels. It's almost always packaged as a <strong>Docker container</strong> — the official image is <code>vllm/vllm-openai</code>, exposing an OpenAI-compatible API on port <code>8000</code>.</p>
     <div class="stage reveal">
