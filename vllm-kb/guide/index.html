@@ -164,6 +164,23 @@
   .vs .mid{font-weight:800;color:var(--faint)}
   @media(max-width:600px){.vs{grid-template-columns:1fr}}
 
+  /* ---------- section outline tree (left rail) ---------- */
+  #treeToggle{position:fixed;left:14px;top:68px;z-index:80;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:650;cursor:pointer;display:flex;align-items:center;gap:6px}
+  #treeToggle:hover{border-color:var(--accent)}
+  #tree{position:fixed;left:14px;top:108px;bottom:18px;width:248px;z-index:80;background:rgba(13,17,23,.92);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:12px 8px 12px 12px;overflow-y:auto;transition:transform .25s ease,opacity .25s ease;scrollbar-width:thin}
+  #tree.hidden{transform:translateX(-118%);opacity:0;pointer-events:none}
+  #tree::-webkit-scrollbar{width:6px}#tree::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  #tree .th{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);padding:2px 6px 8px}
+  #tree a{display:block;text-decoration:none;color:var(--muted);border-radius:7px;transition:.15s;line-height:1.35}
+  #tree a.l1{font-size:13px;font-weight:650;color:var(--ink);padding:7px 9px;margin-top:3px;border-left:2px solid transparent}
+  #tree a.l1 .pn{font-family:var(--mono);font-size:10.5px;color:var(--accent);margin-right:6px}
+  #tree a.l2{font-size:12px;padding:4px 9px 4px 22px;border-left:2px solid var(--line);margin-left:9px}
+  #tree a:hover{background:var(--panel2);color:var(--ink)}
+  #tree a.l1.active{border-left-color:var(--accent);background:linear-gradient(90deg,rgba(74,163,255,.14),transparent)}
+  #tree a.l2.active{border-left-color:var(--accent);color:var(--ink)}
+  #tree a.l1.active .pn{color:var(--accent)}
+  @media(max-width:1180px){#tree{display:none}#treeToggle{display:none}}
+
   .scrolldown{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--faint);font-size:12px;animation:bob 2s infinite}
   @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
 </style>
@@ -188,6 +205,8 @@
     <a href="#recap">Recap</a>
   </div>
 </nav>
+<button id="treeToggle" onclick="toggleTree()">☰ Outline</button>
+<aside id="tree"><div class="th">Section outline</div><div id="treeNav"></div></aside>
 
 <!-- ================= INTRO ================= -->
 <section id="intro" style="min-height:92vh;display:flex;flex-direction:column;justify-content:center">
@@ -941,6 +960,55 @@
   const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
   reveals.forEach(r=>io.observe(r));
   addEventListener('scroll',()=>{const h=document.documentElement;const sc=h.scrollTop/(h.scrollHeight-h.clientHeight);prog.style.width=(sc*100)+'%'},{passive:true});
+
+  // ---------- auto-built section outline tree + scroll-spy ----------
+  function toggleTree(){document.getElementById('tree').classList.toggle('hidden');}
+  const treeNav=document.getElementById('treeNav');
+  const spy=[];           // flat list of {el, link} for scroll-spy
+  let slug=0;
+  document.querySelectorAll('main, body > section, section').forEach(()=>{}); // noop guard
+  [...document.querySelectorAll('section[id]')].forEach(sec=>{
+    // skip the intro hero from the tree (it's "Start")
+    const tag=sec.querySelector('.part-tag');
+    const h2=sec.querySelector('h2');
+    if(!h2) return;
+    // part number from the part-tag, e.g. "Part 5 — ..."
+    let pn='';
+    if(tag){const m=tag.textContent.match(/Part\s+([0-9]+)/i);pn=m?m[1]:'';}
+    const a=document.createElement('a');
+    a.className='l1';a.href='#'+sec.id;
+    a.innerHTML=(pn!==''?`<span class="pn">${pn}</span>`:'')+h2.textContent.replace(/\s+/g,' ').trim();
+    treeNav.appendChild(a);
+    spy.push({el:sec,link:a});
+    // subsections: only "real" h3s (skip the tiny card-title h3s that just label a card)
+    sec.querySelectorAll('h3').forEach(h3=>{
+      const t=h3.textContent.replace(/\s+/g,' ').trim();
+      // skip emoji-led mini card titles (Prefill/Decode/Latency cards etc.) and the frozen/fresh card heads
+      if(/^[⚡🔁🧊🔥⏱️📊]/.test(t)) return;
+      if(!h3.id){h3.id='s'+(++slug);}
+      const sa=document.createElement('a');
+      sa.className='l2';sa.href='#'+h3.id;
+      sa.textContent=t;
+      treeNav.appendChild(sa);
+      spy.push({el:h3,link:sa});
+    });
+  });
+  // scroll-spy: highlight the entry whose target is nearest above the 120px line
+  function spyScroll(){
+    const y=scrollY+130;let cur=spy[0];
+    for(const s of spy){ if(s.el.getBoundingClientRect().top+scrollY<=y) cur=s; else break; }
+    spy.forEach(s=>s.link.classList.remove('active'));
+    if(cur){cur.link.classList.add('active');
+      // also light up the parent l1 when an l2 is active
+      if(cur.link.classList.contains('l2')){
+        let p=cur.link;while(p&&!(p.classList.contains('l1')))p=p.previousElementSibling;
+        if(p)p.classList.add('active');
+      }
+      cur.link.scrollIntoView({block:'nearest'});
+    }
+  }
+  addEventListener('scroll',spyScroll,{passive:true});
+  spyScroll();
 
   // Part 1: autoregression demo
   const promptToks=['154','1112','42','756','298'];
