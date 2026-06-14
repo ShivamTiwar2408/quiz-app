@@ -779,7 +779,7 @@
     <p class="reveal" style="margin-top:18px">That inner triangle — <span class="hl-prompt">Scheduler → Model Executor → back through the KV Cache Manager</span> — is the <strong>step loop</strong>, the heartbeat of vLLM. Calling <code>generate()</code> just spins this loop: <strong>schedule</strong> (pick requests + blocks) → <strong>forward pass</strong> (GPU predicts the next tokens) → <strong>postprocess</strong> (collect tokens, free finished requests), over and over until every request is done. Prefill and every decode step are each one trip around it.</p>
 
     <h3 class="reveal">Inside the system design: the <span class="hl-prompt">real components</span></h3>
-    <p class="reveal">Let's go one level deeper than boxes — this is the actual internal design of vLLM's <strong>V1 engine</strong>. Four objects wrap the engine, and the <code>EngineCore</code> inside them holds the parts that do the work. Expand each to see exactly what it does and the real class names you'll meet in the codebase.</p>
+    <p class="reveal">Let's go one level deeper than boxes — this is the actual internal design of vLLM's <strong>V1 engine</strong>. At the top sit two entry classes: <code>LLMEngine</code> (synchronous, for offline batch use) and <code>AsyncLLMEngine</code> (async, used by the OpenAI-compatible server). Both wrap the same <code>EngineCore</code>, which holds the parts that do the work. Expand each card for the real class names you'll meet in the codebase.</p>
 
     <details class="reveal" open><summary>The 4 wrapper components (input → core → output)</summary>
       <div class="body">
@@ -834,7 +834,7 @@
         <p>This is the exact moment the "page table" from Part 5 gets written — logical block → physical block id.</p>
       </div></details>
 
-    <div class="callout reveal"><span class="t">🏷️ V0 vs V1</span>Everything above describes the <strong>V1 engine</strong> (the current default; V0 is deprecated). The headline V1 wins: it can <strong>mix prefill + decode in one step</strong>, runs the API server and engine in <strong>separate processes</strong> communicating over ZMQ (so tokenization/HTTP never block the GPU loop), and has a cleaner scheduler. Class names may shift release-to-release — the <em>roles</em> are what matter.</div>
+    <div class="callout reveal"><span class="t">🏷️ V0 vs V1</span>Everything above describes the <strong>V1 engine</strong> (the current default; V0 is deprecated). The headline V1 wins: it can <strong>mix prefill + decode in one step</strong>, and it splits work across <strong>separate processes</strong> communicating over ZMQ — per the official architecture docs, a single-node <code>tp=4</code> deploy runs <strong>6 processes</strong> (1 API server + 1 engine core + 4 GPU workers), and the engine-core count scales to 1 per data-parallel rank (+ a DP coordinator when DP&gt;1). Splitting the API server from the engine means tokenization/HTTP never block the GPU loop. Class names may shift release-to-release — the <em>roles</em> are what matter.</div>
 
     <h3 class="reveal">Where does vLLM actually <span class="hl-prompt">run</span>?</h3>
     <p class="reveal">Those boxes are the engine's <em>logical</em> parts. So what <em>is</em> a running vLLM, physically? It's a <strong>Python process</strong> on a host machine that drives one or more GPUs. The <strong>CPU side</strong> does the orchestration (HTTP API, tokenizing, the scheduler, the block manager / page table); the <strong>GPU side</strong> holds the model weights + KV cache and runs the math kernels. It's almost always packaged as a <strong>Docker container</strong> — the official image is <code>vllm/vllm-openai</code>, exposing an OpenAI-compatible API on port <code>8000</code>.</p>
@@ -849,30 +849,40 @@
         <!-- container outer -->
         <rect x="190" y="30" width="600" height="370" rx="16" fill="none" stroke="#c678dd" stroke-width="1.8" stroke-dasharray="7 6"/>
         <text x="206" y="54" fill="#c678dd" font-size="12">🐳 1 container · image vllm/vllm-openai · port 8000</text>
-        <!-- host/CPU box -->
-        <rect x="212" y="70" width="220" height="300" rx="12" fill="rgba(74,163,255,.07)" stroke="#4aa3ff"/>
-        <text x="322" y="92" fill="#4aa3ff" font-size="12" text-anchor="middle">HOST · CPU (1 main process)</text>
-        <g font-size="11">
-          <rect x="230" y="106" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="129" fill="#cfe4ff" text-anchor="middle">API server (FastAPI/Uvicorn)</text>
-          <rect x="230" y="152" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="175" fill="#cfe4ff" text-anchor="middle">Tokenizer / detokenizer</text>
-          <rect x="230" y="198" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="221" fill="#cfe4ff" text-anchor="middle">Scheduler (queues)</text>
-          <rect x="230" y="244" width="184" height="38" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="267" fill="#cfe4ff" text-anchor="middle">KV block manager</text>
-          <rect x="230" y="290" width="184" height="62" rx="7" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="316" fill="#9fb0c3" text-anchor="middle">CPU swap space</text><text x="322" y="332" fill="#6b7d93" text-anchor="middle">(overflow KV blocks)</text>
+        <!-- host/CPU: two separate processes -->
+        <text x="322" y="90" fill="#4aa3ff" font-size="11" text-anchor="middle">HOST · CPU — separate processes</text>
+        <!-- API server process -->
+        <rect x="212" y="100" width="220" height="110" rx="11" fill="rgba(74,163,255,.07)" stroke="#4aa3ff"/>
+        <text x="322" y="118" fill="#4aa3ff" font-size="10.5" text-anchor="middle">① API Server process</text>
+        <g font-size="10.5">
+          <rect x="226" y="128" width="192" height="32" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="148" fill="#cfe4ff" text-anchor="middle">HTTP API (FastAPI/Uvicorn)</text>
+          <rect x="226" y="168" width="192" height="32" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="188" fill="#cfe4ff" text-anchor="middle">tokenize / detokenize</text>
         </g>
-        <!-- arrow CPU->GPU -->
-        <path d="M434,220 H470" stroke="#5b6b82" stroke-width="1.6" marker-end="url(#dah)"/>
+        <!-- ZMQ link -->
+        <path d="M322,210 V232" stroke="#5b6b82" stroke-width="1.4" marker-end="url(#dah)"/><path d="M322,232 V210" stroke="#5b6b82" stroke-width="1.4" marker-end="url(#dah)"/>
+        <text x="360" y="225" fill="#6b7d93" font-size="9.5">ZMQ</text>
+        <!-- Engine core process -->
+        <rect x="212" y="232" width="220" height="130" rx="11" fill="rgba(255,107,107,.06)" stroke="#ff6b6b"/>
+        <text x="322" y="250" fill="#ff6b6b" font-size="10.5" text-anchor="middle">② Engine Core process (busy loop)</text>
+        <g font-size="10.5">
+          <rect x="226" y="260" width="192" height="30" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="279" fill="#ffd2d2" text-anchor="middle">Scheduler (waiting/running)</text>
+          <rect x="226" y="296" width="192" height="30" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="315" fill="#ffd2d2" text-anchor="middle">KV cache manager</text>
+          <rect x="226" y="332" width="192" height="24" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="322" y="348" fill="#9fb0c3" text-anchor="middle" font-size="9.5">+ CPU swap space (overflow KV)</text>
+        </g>
+        <!-- arrow Engine core -> GPU workers -->
+        <path d="M434,295 H470" stroke="#5b6b82" stroke-width="1.6" marker-end="url(#dah)"/>
         <!-- GPU workers -->
-        <rect x="476" y="70" width="298" height="300" rx="12" fill="rgba(245,177,76,.06)" stroke="#f5b14c"/>
-        <text x="625" y="92" fill="#f5b14c" font-size="12" text-anchor="middle">GPUs · 1 worker process each</text>
+        <rect x="476" y="100" width="298" height="262" rx="12" fill="rgba(245,177,76,.06)" stroke="#f5b14c"/>
+        <text x="625" y="120" fill="#f5b14c" font-size="11" text-anchor="middle">③ GPU Worker processes (1 per GPU)</text>
         <g font-size="10.5">
           <!-- 4 gpu worker cards -->
-          <rect x="492" y="106" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="124" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 0 (TP rank 0)</text><text x="556" y="146" fill="#9fb0c3" text-anchor="middle">¼ model weights</text><text x="556" y="164" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="182" fill="#9fb0c3" text-anchor="middle">attn kernels</text><text x="556" y="206" fill="#6b7d93" text-anchor="middle" font-size="9">driver</text>
-          <rect x="630" y="106" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="124" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 1 (rank 1)</text><text x="694" y="146" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="164" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="182" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
-          <rect x="492" y="232" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="250" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 2 (rank 2)</text><text x="556" y="272" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="556" y="290" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="308" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
-          <rect x="630" y="232" width="128" height="116" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="250" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 3 (rank 3)</text><text x="694" y="272" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="290" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="308" fill="#9fb0c3" text-anchor="middle">attn kernels</text>
+          <rect x="492" y="132" width="128" height="104" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="150" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 0 (TP rank 0)</text><text x="556" y="170" fill="#9fb0c3" text-anchor="middle">¼ model weights</text><text x="556" y="188" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="206" fill="#9fb0c3" text-anchor="middle">model runner</text><text x="556" y="224" fill="#6b7d93" text-anchor="middle" font-size="8.5">attn kernels · CUDA graphs</text>
+          <rect x="630" y="132" width="128" height="104" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="150" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 1 (rank 1)</text><text x="694" y="170" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="188" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="206" fill="#9fb0c3" text-anchor="middle">model runner</text>
+          <rect x="492" y="246" width="128" height="104" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="556" y="264" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 2 (rank 2)</text><text x="556" y="284" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="556" y="302" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="556" y="320" fill="#9fb0c3" text-anchor="middle">model runner</text>
+          <rect x="630" y="246" width="128" height="104" rx="8" fill="var(--panel)" stroke="var(--gpu)"/><text x="694" y="264" fill="#e6c7f0" text-anchor="middle" font-size="11">GPU 3 (rank 3)</text><text x="694" y="284" fill="#9fb0c3" text-anchor="middle">¼ weights</text><text x="694" y="302" fill="#ffc7b3" text-anchor="middle">KV blocks</text><text x="694" y="320" fill="#9fb0c3" text-anchor="middle">model runner</text>
         </g>
       </svg>
-      <p style="margin:10px 0 0;font-size:14px"><strong>How many containers?</strong> Typically <span class="hl-green">one container per node</span>. A single model that needs 4 GPUs (tensor parallelism) runs as <em>one</em> container with <em>one</em> main process that spawns <em>one worker process per GPU</em> (4 here). You don't run one container per GPU. To serve more <em>traffic</em>, you run more replicas (more containers/nodes) behind a load balancer — that's data parallelism, covered in Part 9.</p>
+      <p style="margin:10px 0 0;font-size:14px"><strong>How many processes &amp; containers?</strong> In V1, the API server and the engine core are <span class="hl-green">separate processes</span> talking over ZMQ — so HTTP/tokenization never blocks the GPU loop. A <code>tp=4</code> single-node deploy = <strong>6 processes</strong>: 1 API server + 1 engine core + 4 GPU workers (one per GPU). All inside <span class="hl-green">one container per node</span> — you don't run one container per GPU. For more <em>traffic</em>, add replicas (more containers/nodes) behind a load balancer — that's data parallelism (Part 9), which adds 1 engine core per DP rank and a DP coordinator process.</p>
     </div>
   </div>
 </section>
