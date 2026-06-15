@@ -567,7 +567,25 @@
       <p style="margin:12px 0 0;font-size:14px">No giant contiguous reservation needed → <span class="hl-green">external fragmentation gone</span>. Blocks are tiny, so a near-empty last block wastes ≤15 tokens → <span class="hl-green">internal fragmentation almost gone</span>.</p>
     </div>
 
-    <div class="callout reveal"><span class="t">⚙️ Why it's called paged <em>attention</em>, not just paged memory</span>Scattering KV across blocks creates a problem: the attention step (Part 3) needs to read <em>all</em> of a sequence's Keys and Values, but now they're spread all over VRAM. So vLLM ships a custom <strong>attention kernel</strong> (GPU code) that follows the page table and reads straight from the scattered blocks — no gathering them into one place first. That kernel is the actual "PagedAttention"; the block bookkeeping is only half the idea.</div>
+    <div class="callout reveal"><span class="t">⚙️ Why it's called paged <em>attention</em>, not just paged memory</span>Scattering KV across blocks creates a problem: the attention step (Part 3) needs to read <em>all</em> of a sequence's Keys and Values, but now they're spread all over VRAM. So the attention <strong>kernel</strong> (GPU code) must follow the page table and read straight from the scattered blocks — no gathering them into one place first. That paged-aware kernel is the actual "PagedAttention"; the block bookkeeping is only half the idea.</div>
+
+    <h3 class="reveal">Where <span class="hl-gpu">FlashAttention</span> fits in</h3>
+    <p class="reveal">A natural question: isn't <strong>FlashAttention</strong> the famous fast-attention trick? Yes — and it's a core part of vLLM. But it's <em>not</em> a competitor to PagedAttention; <strong>they compose</strong>, each solving a different problem.</p>
+    <div class="stage reveal">
+      <div class="cap">FlashAttention vs PagedAttention — different jobs, used together</div>
+      <div class="grid2">
+        <div class="card" style="margin:0;border-color:var(--gpu)">
+          <h3 style="margin-top:0;color:var(--gpu)">⚡ FlashAttention — the math</h3>
+          <p style="margin:0;font-size:14.5px">A kernel that computes attention <strong>without ever writing the giant N×N attention matrix to memory</strong>. It streams over the K/V in tiles, keeping running softmax stats on-chip (in fast SRAM). Result: far less memory traffic and no quadratic memory blow-up — the speed of each attention step.</p>
+        </div>
+        <div class="card" style="margin:0;border-color:var(--kv)">
+          <h3 style="margin-top:0;color:var(--kv)">📄 PagedAttention — the layout</h3>
+          <p style="margin:0;font-size:14.5px">Decides <strong>where the K/V live</strong> — scattered 16-token blocks plus a page table — so memory isn't wasted (Part 4). It doesn't compute attention; it organizes the data the attention kernel reads.</p>
+        </div>
+      </div>
+      <p style="margin:12px 0 0;font-size:14px">vLLM's FlashAttention backend is <strong>paged-aware</strong>: it does FlashAttention's tiled math, but instead of reading one contiguous K/V buffer it follows each request's <strong>block table</strong> to gather tiles from the scattered blocks. So you get FlashAttention's speed <em>and</em> PagedAttention's memory efficiency in one kernel.</p>
+    </div>
+    <div class="callout reveal"><span class="t">🔌 The attention layer is pluggable</span>"FlashAttention" is one of several interchangeable <strong>attention backends</strong> vLLM picks at startup (the "set the backend to FlashAttention" step from the worker init). The registry includes <code>FLASH_ATTN</code> (the default on most NVIDIA GPUs), <code>FLASHINFER</code>, <code>TRITON_ATTN</code>, and specialized MLA backends like <code>FLASHMLA</code> (for models such as DeepSeek). You can override it with <code>--attention-backend FLASH_ATTN</code>. They all consume the same paged KV blocks — the backend is just <em>how</em> the attention math runs on the hardware.</div>
 
     <h3 class="reveal">Sharing is now free: <span class="hl-prompt">ref-counts</span></h3>
     <p class="reveal">Three answers to the same prompt? They simply <strong>point to the same prompt blocks</strong>. vLLM keeps a <strong>reference count</strong> (<code>ref_cnt</code>) per block — "how many requests use me." Shared prompt blocks just bump the count instead of copying. Memory sharing → solved too.</p>
