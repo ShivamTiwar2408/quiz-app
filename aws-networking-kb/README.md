@@ -1,40 +1,49 @@
-# AWS Networking — From Zero to the VPC Picture
+# AWS Networking — A Reference Guide to VPC and Its Building Blocks
 
-A first-principles, visual guide to AWS networking, built in the same style as the
-[vLLM guide](../vllm-kb/guide/index.html).
+A clear, neutral, professional reference to how networking works inside Amazon Web
+Services. Each entity is defined on its own terms and paired with a hand-drawn SVG
+diagram. It is a general reference — not tied to any one service or use case.
 
 **Live page:** https://shivamtiwar2408.github.io/quiz-app/aws-networking-kb/guide/index.html
 
-## What it covers
+## Contents
 
-The guide builds up, one concept at a time, around a single running question:
-*"What really happens when you put a Lambda inside a VPC — and why do its calls to
-Bedrock/S3/DynamoDB suddenly time out?"*
+**Foundations**
+- §1 VPC — Virtual Private Cloud
+- §2 CIDR & IP addressing
+- §3 Subnets (public vs private)
+- §4 Private & public IP addresses
 
-1. **VPC** — your isolated virtual network and CIDR notation
-2. **Subnets** — public vs private (decided purely by the route table)
-3. **Private vs public IPs** — and why a VPC Lambda only ever gets a private one
-4. **Route tables** — destination→target, and longest-prefix match (interactive demo)
-5. **Internet Gateway** — the public door, and its public-IP requirement
-6. **NAT Gateway** — the outbound-only valve, and its two-meter pricing
-7. **Security Groups** — the stateful, allow-only firewall
-8. **ENI** — the virtual network card that *literally* lives in the subnet
-9. **Hyperplane ENIs** — how Lambda plugs in, and the "just use a public subnet" trap debunked
-10. **VPC Endpoints** — gateway (free, S3/DynamoDB) vs interface (PrivateLink)
-11. **The before & after picture** — elaborate SVG diagrams tying it all together
+**Routing & connectivity**
+- §5 Route tables (longest-prefix match)
+- §6 Internet gateway
+- §7 NAT gateway
+
+**Security**
+- §8 Security groups
+- §9 Network ACLs
+
+**Interfaces & private access**
+- §10 Elastic network interface (ENI)
+- §11 VPC endpoints — §11a Gateway endpoint, §11b Interface endpoint (PrivateLink)
+
+**Synthesis**
+- §12 How it all fits together
+- Quick comparison tables (IGW vs NAT, gateway vs interface endpoint, SG vs NACL)
 
 ## Sources
 
-Every technical claim is drawn from official AWS documentation:
+Every definition and behaviour is drawn from official AWS documentation:
 
-- Amazon VPC User Guide — *How Amazon VPC works* and *NAT gateways*
-- AWS PrivateLink — *Concepts* (interface vs gateway endpoints)
-- AWS Lambda Developer Guide — *Giving Lambda functions access to resources in a VPC*
-  (Lambda-managed VPC, internet access when attached, Hyperplane ENIs)
+- **Amazon VPC User Guide** — *How Amazon VPC works*; *NAT gateways*;
+  *Infrastructure security* (security groups vs network ACLs)
+- **Amazon EC2 User Guide** — *Elastic network interfaces*
+- **AWS PrivateLink documentation** — *Concepts* (VPC endpoint types)
 
 ## Tech
 
-Single self-contained `guide/index.html` — no build step, no dependencies. All
-diagrams are hand-authored inline SVG; the small amount of JavaScript powers the
-scroll reveal, outline navigation, the interactive route-table demo, and the quizzes.
-Served as a static file by the repo's GitHub Pages workflow.
+A single self-contained `guide/index.html` — no build step, no dependencies. It uses a
+documentation layout (sticky sidebar table of contents + content column), entity
+definition blocks, comparison tables, and inline SVG reference diagrams. The only
+JavaScript highlights the active section in the sidebar. Served as a static file by
+the repository's existing GitHub Pages workflow.

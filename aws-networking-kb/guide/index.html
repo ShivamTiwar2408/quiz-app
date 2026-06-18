@@ -3,825 +3,626 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AWS Networking — From Zero to the VPC Picture</title>
-<meta name="description" content="A first-principles visual guide to AWS networking: VPC, subnets, public/private IPs, route tables, internet gateway, NAT gateway, security groups, ENIs, Hyperplane, and VPC endpoints — built around what happens when you put a Lambda in a VPC.">
+<title>AWS Networking — A Reference Guide to VPC and Its Building Blocks</title>
+<meta name="description" content="A clear, professional reference to Amazon VPC networking: VPC, subnets, CIDR, private/public IPs, route tables, internet gateway, NAT gateway, security groups, network ACLs, elastic network interfaces (ENIs), and gateway & interface VPC endpoints — each explained with a diagram. Sourced from official AWS documentation.">
 <style>
   :root{
     --bg:#0d1117; --bg2:#131a24; --panel:#161e2b; --panel2:#1c2738;
     --ink:#e6edf3; --muted:#9fb0c3; --faint:#6b7d93;
     --line:#26334a;
-    --prompt:#4aa3ff;     /* primary blue — VPC / requests */
-    --seq2:#3ecf8e;       /* green — allowed / private endpoints */
-    --seq3:#f5b14c;       /* gold — route tables / NAT */
-    --kv:#f78c6b;         /* orange — ENI / data */
-    --gpu:#c678dd;        /* purple — compute / Lambda */
-    --reject:#ff6b6b;     /* red — blocked / dropped */
-    --accent:#4aa3ff;
-    --glow:0 0 0 1px rgba(74,163,255,.25), 0 8px 40px -12px rgba(74,163,255,.35);
-    --radius:16px;
+    --blue:#4aa3ff; --green:#3ecf8e; --gold:#f5b14c; --orange:#f78c6b;
+    --purple:#c678dd; --red:#ff6b6b; --accent:#4aa3ff;
+    --radius:14px;
     --mono:'SF Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{background:radial-gradient(1200px 700px at 70% -10%,#16233a 0%,var(--bg) 55%);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
 
-  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--prompt),var(--seq2),var(--seq3),var(--gpu));z-index:100;transition:width .1s linear}
-  nav{position:fixed;top:0;right:0;left:0;height:56px;display:flex;align-items:center;gap:18px;padding:0 22px;background:rgba(13,17,23,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:90}
-  nav .brand{font-weight:800;letter-spacing:.5px;font-size:15px;background:linear-gradient(90deg,var(--prompt),var(--gpu));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-  nav .links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}
-  nav .links::-webkit-scrollbar{display:none}
-  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:8px;white-space:nowrap;transition:.2s}
-  nav a:hover{color:var(--ink);background:var(--panel2)}
+  /* top bar */
+  header.top{position:fixed;inset:0 0 auto 0;height:54px;display:flex;align-items:center;gap:16px;padding:0 20px;background:rgba(13,17,23,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:50}
+  header.top .brand{font-weight:750;font-size:14.5px;letter-spacing:.2px}
+  header.top .brand b{color:var(--blue)}
+  header.top .meta{margin-left:auto;font-size:12px;color:var(--faint);font-family:var(--mono)}
+  @media(max-width:900px){header.top .meta{display:none}}
 
-  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
-  section{padding:74px 0 30px;position:relative}
-  .part-tag{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);padding:4px 12px;border-radius:30px;margin-bottom:14px;background:var(--panel)}
-  h1{font-size:clamp(34px,6vw,62px);line-height:1.05;letter-spacing:-1.5px;font-weight:850;margin-bottom:18px}
-  h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.6px;font-weight:800;margin-bottom:14px}
-  h3{font-size:20px;font-weight:700;margin:26px 0 8px;color:var(--ink)}
-  p{color:var(--muted);font-size:16.5px;margin-bottom:14px}
+  /* layout: sidebar + content */
+  .shell{display:grid;grid-template-columns:280px 1fr;max-width:1280px;margin:0 auto;padding-top:54px}
+  @media(max-width:980px){.shell{grid-template-columns:1fr}}
+  aside.toc{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow-y:auto;border-right:1px solid var(--line);padding:24px 14px 60px 22px;scrollbar-width:thin}
+  aside.toc::-webkit-scrollbar{width:6px}aside.toc::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  aside.toc .grp{font-family:var(--mono);font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);margin:18px 0 6px}
+  aside.toc a{display:block;color:var(--muted);text-decoration:none;font-size:13.5px;padding:5px 10px;border-radius:7px;border-left:2px solid transparent;line-height:1.4}
+  aside.toc a:hover{background:var(--panel2);color:var(--ink)}
+  aside.toc a.active{color:var(--ink);border-left-color:var(--blue);background:linear-gradient(90deg,rgba(74,163,255,.12),transparent)}
+  #tocToggle{display:none}
+  @media(max-width:980px){
+    aside.toc{position:fixed;z-index:60;top:54px;left:0;width:280px;background:var(--bg);transform:translateX(-105%);transition:transform .25s}
+    aside.toc.open{transform:none}
+    #tocToggle{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:650;cursor:pointer}
+  }
+
+  main{padding:30px 40px 90px;min-width:0}
+  @media(max-width:600px){main{padding:24px 18px 80px}}
+
+  .hero{padding:26px 0 18px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .hero .kicker{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  h1{font-size:clamp(28px,4.4vw,44px);line-height:1.1;letter-spacing:-1px;font-weight:800;margin-bottom:14px}
+  .hero p{font-size:17px;color:#c7d4e3;max-width:760px}
+
+  section{padding:38px 0 8px;scroll-margin-top:70px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:none}
+  h2{font-size:clamp(22px,3vw,30px);letter-spacing:-.4px;font-weight:750;margin-bottom:6px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  h2 .num{font-family:var(--mono);font-size:15px;color:var(--blue);font-weight:600}
+  h3{font-size:17px;font-weight:700;margin:22px 0 8px}
+  p{color:var(--muted);font-size:16px;margin-bottom:13px;max-width:820px}
   p strong{color:var(--ink);font-weight:650}
-  ul,ol{color:var(--muted);font-size:16.5px;margin:0 0 14px 22px}
-  li{margin-bottom:7px}
+  .def{font-size:16.5px;color:#cdd9e5;border-left:3px solid var(--blue);background:var(--panel);padding:12px 18px;border-radius:0 10px 10px 0;margin:14px 0;max-width:820px}
+  .def b{color:#fff}
+  ul,ol{color:var(--muted);font-size:16px;margin:0 0 14px 22px;max-width:820px}
+  li{margin-bottom:6px}
   li strong{color:var(--ink);font-weight:650}
-  .lead{font-size:19px;color:#c7d4e3}
-  .hl-prompt{color:var(--prompt);font-weight:650}
-  .hl-kv{color:var(--kv);font-weight:650}
-  .hl-gpu{color:var(--gpu);font-weight:650}
-  .hl-green{color:var(--seq2);font-weight:650}
-  .hl-gold{color:var(--seq3);font-weight:650}
-  .hl-red{color:var(--reject);font-weight:650}
-  code{font-family:var(--mono);font-size:.86em;background:var(--panel2);padding:2px 7px;border-radius:6px;color:#cdd9e5;border:1px solid var(--line)}
+  code{font-family:var(--mono);font-size:.85em;background:var(--panel2);padding:2px 7px;border-radius:6px;color:#cdd9e5;border:1px solid var(--line)}
+  a.inline{color:var(--blue);text-decoration:none}a.inline:hover{text-decoration:underline}
 
-  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
-  .reveal.in{opacity:1;transform:none}
+  .analogy{border-left:3px solid var(--gold);background:var(--panel);padding:11px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:820px}
+  .analogy b{color:var(--gold)}
+  .note{border-left:3px solid var(--green);background:var(--panel);padding:11px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:820px}
+  .note b{color:var(--green)}
+  .warn{border-left:3px solid var(--red);background:var(--panel);padding:11px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:820px}
+  .warn b{color:var(--red)}
 
-  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:18px 0}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
-  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;font-size:15.5px}
-  .callout .t{font-weight:700;color:var(--ink);display:block;margin-bottom:3px}
-  .analogy{border-left:3px solid var(--seq3)}
-  .analogy .t{color:var(--seq3)}
-  .warn{border-left:3px solid var(--reject)}
-  .warn .t{color:var(--reject)}
+  figure{margin:18px 0;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px 12px;max-width:900px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-size:12.5px;color:var(--faint);text-align:center;margin-top:10px;font-family:var(--mono)}
 
-  .stage{background:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(255,255,255,.012) 38px,rgba(255,255,255,.012) 39px),var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin:20px 0;position:relative;overflow:hidden}
-  .stage .cap{position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:1px}
-  .stage svg{display:block;width:100%;height:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:14px 0;max-width:900px}
+  th{color:var(--faint);font-family:var(--mono);font-size:11.5px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted)}
+  td strong{color:var(--ink)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
+  .tag.g{color:var(--green);border-color:rgba(62,207,142,.4)}
+  .tag.r{color:var(--red);border-color:rgba(255,107,107,.4)}
+  .tag.b{color:var(--blue);border-color:rgba(74,163,255,.4)}
 
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:14px 0 2px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:4px 0 2px;justify-content:center}
   .legend span{display:inline-flex;align-items:center;gap:6px}
   .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
 
-  .btn{font-family:var(--sans);font-size:13.5px;font-weight:650;color:var(--ink);background:var(--panel2);border:1px solid var(--line);padding:9px 16px;border-radius:10px;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block}
-  .btn:hover{border-color:var(--accent);background:#1d2a3e}
-  .btn.primary{background:linear-gradient(90deg,#1d4e8a,#214d7a);border-color:#2f6fb0}
-  .ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
-  .stat{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
-  .stat b{color:var(--seq2)}
-
-  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:6px 0}
-  th{color:var(--faint);font-family:var(--mono);font-size:12px;text-align:left;padding:6px 8px;font-weight:600}
-  td{padding:8px 8px;border-top:1px solid var(--line);vertical-align:top}
-  .rt td{font-family:var(--mono);font-size:13px}
-
-  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:14px 0;padding:0 18px}
-  details summary{cursor:pointer;padding:14px 0;font-weight:650;color:var(--accent);list-style:none}
-  details summary::-webkit-details-marker{display:none}
-  details summary::before{content:'▸ ';transition:.2s;display:inline-block}
-  details[open] summary::before{transform:rotate(90deg)}
-  details .body{padding-bottom:16px;color:var(--muted);font-size:15px}
-
-  .quiz{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
-  .quiz .q{font-weight:650;color:var(--ink);margin-bottom:10px}
-  .quiz .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:10px 14px;border-radius:9px;margin:7px 0;cursor:pointer;transition:.2s;font-size:14.5px}
-  .quiz .opt:hover{border-color:var(--accent)}
-  .quiz .opt.right{border-color:var(--seq2);background:rgba(62,207,142,.14);color:#cdf6e3}
-  .quiz .opt.wrong{border-color:var(--reject);background:rgba(255,107,107,.12);color:#ffd2d2}
-  .quiz .exp{font-size:13.5px;color:var(--muted);margin-top:8px;display:none}
-  .quiz .exp.show{display:block}
-
-  .footer{padding:50px 0 80px;text-align:center;color:var(--faint);font-size:13px;border-top:1px solid var(--line);margin-top:40px}
-  .footer a{color:var(--accent);text-decoration:none}
-
-  .big-num{font-size:clamp(40px,8vw,80px);font-weight:850;line-height:1;background:linear-gradient(90deg,var(--seq2),var(--prompt));-webkit-background-clip:text;background-clip:text;color:transparent}
-
-  /* SVG shared helpers */
-  .svgbox{fill:var(--panel);stroke:var(--line);stroke-width:1.6;rx:10}
+  /* SVG helpers */
   .lbl{fill:var(--ink);font-size:13px;font-weight:700;text-anchor:middle;font-family:var(--sans)}
+  .lblL{fill:var(--ink);font-size:12.5px;font-weight:700;text-anchor:start;font-family:var(--sans)}
   .sub{fill:var(--faint);font-size:10.5px;text-anchor:middle;font-family:var(--mono)}
-  .wire{fill:none;stroke:#3a4a63;stroke-width:1.8}
-  .wire.ok{stroke:var(--seq2)}
-  .wire.nat{stroke:var(--seq3)}
-  .wire.bad{stroke:var(--reject);stroke-dasharray:5 4}
-  .flowtxt{fill:var(--faint);font-size:10px;text-anchor:middle;font-family:var(--mono)}
+  .subL{fill:var(--faint);font-size:10px;text-anchor:start;font-family:var(--mono)}
+  .box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+  .wire{fill:none;stroke:#46597a;stroke-width:1.8}
+  .wire.g{stroke:var(--green)}.wire.gold{stroke:var(--gold)}.wire.b{stroke:var(--blue)}
+  .wire.bad{stroke:var(--red);stroke-dasharray:5 4}
+  .flow{fill:var(--faint);font-size:10px;text-anchor:middle;font-family:var(--mono)}
 
-  #treeToggle{position:fixed;left:14px;top:68px;z-index:80;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:650;cursor:pointer;display:flex;align-items:center;gap:6px}
-  #treeToggle:hover{border-color:var(--accent)}
-  #tree{position:fixed;left:14px;top:108px;bottom:18px;width:256px;z-index:80;background:rgba(13,17,23,.92);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:12px 8px 12px 12px;overflow-y:auto;transition:transform .25s ease,opacity .25s ease;scrollbar-width:thin}
-  #tree.hidden{transform:translateX(-118%);opacity:0;pointer-events:none}
-  #tree::-webkit-scrollbar{width:6px}#tree::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
-  #tree .th{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);padding:2px 6px 8px}
-  #tree a{display:block;text-decoration:none;color:var(--muted);border-radius:7px;transition:.15s;line-height:1.35}
-  #tree a.l1{font-size:13px;font-weight:650;color:var(--ink);padding:7px 9px;margin-top:3px;border-left:2px solid transparent}
-  #tree a.l1 .pn{font-family:var(--mono);font-size:10.5px;color:var(--accent);margin-right:6px}
-  #tree a:hover{background:var(--panel2);color:var(--ink)}
-  #tree a.l1.active{border-left-color:var(--accent);background:linear-gradient(90deg,rgba(74,163,255,.14),transparent)}
-  #tree a.l1.active .pn{color:var(--accent)}
-  @media(max-width:1180px){#tree{display:none}#treeToggle{display:none}}
-
-  .scrolldown{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--faint);font-size:12px;animation:bob 2s infinite}
-  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
-  @media(prefers-reduced-motion:reduce){.pkt{display:none!important}}
+  .footer{padding:34px 0 10px;color:var(--faint);font-size:13px;max-width:820px}
+  .footer a{color:var(--blue);text-decoration:none}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:14px 0;padding:0 16px;max-width:820px}
+  details summary{cursor:pointer;padding:12px 0;font-weight:650;color:var(--blue);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:'▸ ';display:inline-block;transition:.2s}
+  details[open] summary::before{transform:rotate(90deg)}
+  details .body{padding-bottom:14px;font-size:14.5px;color:var(--muted)}
 </style>
 </head>
 <body>
-<div id="progress"></div>
-<nav>
-  <div class="brand">AWS Networking 🌐 Explained</div>
-  <div class="links">
-    <a href="#intro">Start</a>
-    <a href="#why">Why</a>
-    <a href="#vpc">1·VPC</a>
-    <a href="#subnets">2·Subnets</a>
-    <a href="#ips">3·IPs</a>
-    <a href="#routes">4·Routes</a>
-    <a href="#igw">5·IGW</a>
-    <a href="#nat">6·NAT</a>
-    <a href="#sg">7·Security Groups</a>
-    <a href="#eni">8·ENI</a>
-    <a href="#hyperplane">9·Hyperplane</a>
-    <a href="#endpoints">10·Endpoints</a>
-    <a href="#picture">11·The Picture</a>
-    <a href="#recap">Recap</a>
-  </div>
-</nav>
-<button id="treeToggle" onclick="toggleTree()">☰ Outline</button>
-<aside id="tree"><div class="th">Section outline</div><div id="treeNav"></div></aside>
+<header class="top">
+  <button id="tocToggle" onclick="document.querySelector('.toc').classList.toggle('open')">☰ Contents</button>
+  <div class="brand">AWS Networking · <b>VPC Reference</b></div>
+  <div class="meta">sourced from official AWS docs</div>
+</header>
 
-<!-- ================= INTRO ================= -->
-<section id="intro" style="min-height:92vh;display:flex;flex-direction:column;justify-content:center">
-  <div class="wrap">
-    <div class="part-tag reveal">A first-principles visual guide · no networking background needed</div>
-    <h1 class="reveal">What really happens<br>when you put a <span class="hl-gpu">Lambda</span><br>inside a <span class="hl-prompt">VPC</span>?</h1>
-    <p class="lead reveal" style="max-width:700px">Cloud networking looks like a wall of acronyms — VPC, subnet, CIDR, route table, IGW, NAT, ENI, PrivateLink. Underneath, it's a small set of ideas that fit together like plumbing. This guide builds them up <strong>one pipe at a time</strong>.</p>
-    <p class="reveal" style="max-width:700px">Every concept gets a plain-English definition, a real-world analogy, and a diagram you can actually trace with your finger. We end by drawing the <strong>before-and-after picture</strong> of a serverless function moving into a private network — and you'll understand exactly why each piece is there.</p>
-    <div class="ctrls reveal">
-      <a class="btn primary" href="#vpc">Begin the journey →</a>
-      <a class="btn" href="#picture">Jump to the big picture</a>
+<div class="shell">
+  <aside class="toc">
+    <div class="grp">Foundations</div>
+    <a href="#overview">Overview &amp; the mental model</a>
+    <a href="#vpc">1 · VPC</a>
+    <a href="#cidr">2 · CIDR &amp; IP addressing</a>
+    <a href="#subnets">3 · Subnets</a>
+    <a href="#ips">4 · Private &amp; public IPs</a>
+    <div class="grp">Routing &amp; connectivity</div>
+    <a href="#routes">5 · Route tables</a>
+    <a href="#igw">6 · Internet gateway</a>
+    <a href="#nat">7 · NAT gateway</a>
+    <div class="grp">Security</div>
+    <a href="#sg">8 · Security groups</a>
+    <a href="#nacl">9 · Network ACLs</a>
+    <div class="grp">Interfaces &amp; private access</div>
+    <a href="#eni">10 · Elastic network interface (ENI)</a>
+    <a href="#endpoints">11 · VPC endpoints</a>
+    <a href="#gateway-ep">11a · Gateway endpoint</a>
+    <a href="#interface-ep">11b · Interface endpoint</a>
+    <div class="grp">Synthesis</div>
+    <a href="#together">12 · How it fits together</a>
+    <a href="#compare">Quick comparison tables</a>
+    <a href="#sources">Sources</a>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">Amazon VPC Reference Guide</div>
+      <h1>AWS Networking, from the ground up</h1>
+      <p>A clear, neutral reference to the building blocks of networking inside Amazon Web Services. Each entity is defined on its own terms, paired with a diagram, and placed in the larger picture. Every technical statement is drawn from official AWS documentation; sources are listed at the end.</p>
     </div>
-  </div>
-  <div class="scrolldown">scroll ↓</div>
-</section>
 
-<!-- ================= WHY ================= -->
-<section id="why">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 0 — The thread we'll follow</div>
-    <h2 class="reveal">One concrete question pulls the whole map together</h2>
-    <p class="reveal">Abstract networking is hard to remember. So we'll hang every concept on a single real scenario:</p>
-    <div class="callout analogy reveal"><span class="t">🧵 The running example</span>You have an <strong>AWS Lambda function</strong> that calls services like Amazon Bedrock, S3, and DynamoDB. Today it just works. Now you need it to also reach a resource that lives <em>only</em> inside a private network. So you "put the Lambda in a VPC" — and suddenly its calls to Bedrock and S3 start timing out. <strong>Why?</strong></p>
-    <p class="reveal">Answering that "why" requires understanding the VPC, its subnets, how IP addresses and route tables steer traffic, the difference between an internet gateway and a NAT gateway, what a security group does, and — the star of the show — the <strong>ENI</strong>, the virtual network card that is the <em>actual thing</em> that "lives inside" a network. By the end you'll be able to draw the before/after yourself.</p>
-    <div class="callout reveal"><span class="t">📚 Sources</span>Every fact here is drawn from the official AWS documentation: the <em>Amazon VPC User Guide</em> ("How Amazon VPC works", NAT gateways), the <em>AWS PrivateLink</em> guide (VPC endpoints), and the <em>AWS Lambda Developer Guide</em> (VPC networking &amp; Hyperplane ENIs). Links are in the recap.</p>
-  </div>
-</section>
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h2><span class="num">§0</span> Overview &amp; the mental model</h2>
+      <p>Networking in AWS is organised around the <strong>Virtual Private Cloud (VPC)</strong> — a private, isolated network you define in the cloud. Everything else in this guide is something that lives <em>inside</em> a VPC, controls <em>traffic</em> within it, or connects it to the <em>outside</em>.</p>
+      <p>It helps to group the pieces into four layers:</p>
+      <ul>
+        <li><strong>The space</strong> — the VPC itself, its IP range (CIDR), and the subnets that divide it.</li>
+        <li><strong>The steering</strong> — route tables decide where traffic goes; gateways (internet gateway, NAT gateway) are the exits.</li>
+        <li><strong>The guards</strong> — security groups and network ACLs decide what traffic is allowed.</li>
+        <li><strong>The interfaces</strong> — the elastic network interface (ENI) is the virtual network card every resource plugs into; VPC endpoints are private on-ramps to AWS services.</li>
+      </ul>
+      <div class="def">A useful first principle: <b>a resource isn't "in" a VPC directly — its network interface (ENI) is.</b> The ENI sits in one subnet, and that subnet's route table and the ENI's security groups govern everything the resource can reach. Keep this in mind; it makes the rest of the model click.</div>
 
-<!-- ================= PART 1: VPC ================= -->
-<section id="vpc">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 1 — The container</div>
-    <h2 class="reveal">The <span class="hl-prompt">VPC</span>: your own private slice of the cloud network</h2>
-    <p class="reveal">A <strong>VPC (Virtual Private Cloud)</strong> is, in AWS's own words, <em>"a virtual network dedicated to your AWS account, logically isolated from other virtual networks in the AWS Cloud."</em> It is the outermost box that everything else lives inside.</p>
-    <p class="reveal">When you create one, you give it an IP address range using <strong>CIDR notation</strong> — for example <code>10.0.0.0/16</code>. That range is the pool of private addresses every resource inside the VPC will draw from.</p>
+      <figure>
+        <svg viewBox="0 0 880 360" role="img" aria-label="A map of AWS VPC components: a VPC containing public and private subnets with route tables, an internet gateway and NAT gateway as exits, security groups around resources, ENIs, and VPC endpoints">
+          <!-- VPC -->
+          <rect x="14" y="20" width="620" height="324" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="30" y="44" class="lblL" fill="var(--blue)">VPC — your isolated network (CIDR 10.0.0.0/16)</text>
 
-    <div class="callout analogy reveal"><span class="t">🏢 Analogy</span>A VPC is like <strong>leasing a private floor in a giant office building</strong>. AWS owns the building and the public street outside; your floor is fenced off from every other tenant. <code>10.0.0.0/16</code> is the range of desk numbers you're allowed to assign on your floor.</p></div>
+          <!-- public subnet -->
+          <rect x="36" y="60" width="270" height="130" rx="11" fill="rgba(245,177,76,.07)" stroke="var(--gold)" stroke-width="1.5"/>
+          <text x="50" y="82" class="lblL" fill="var(--gold)">Public subnet</text>
+          <rect x="54" y="96" width="110" height="44" rx="8" class="box"/><text x="109" y="123" class="lbl" font-size="11.5">NAT GW</text>
+          <rect x="178" y="96" width="110" height="44" rx="8" class="box"/><text x="233" y="123" class="lbl" font-size="11.5">Public EC2</text>
+          <text x="50" y="166" class="subL">route table → 0.0.0.0/0 → Internet Gateway</text>
 
-    <h3 class="reveal">CIDR in one minute</h3>
-    <p class="reveal">CIDR (<em>Classless Inter-Domain Routing</em>) writes an IP range as <code>address/prefix</code>. The number after the slash says <strong>how many leading bits are fixed</strong> — the rest are free to vary, and those define the size of the range.</p>
-    <div class="card reveal">
+          <!-- private subnet -->
+          <rect x="36" y="200" width="270" height="126" rx="11" fill="rgba(62,207,142,.06)" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="50" y="222" class="lblL" fill="var(--green)">Private subnet</text>
+          <rect x="54" y="236" width="110" height="44" rx="8" class="box"/><text x="109" y="263" class="lbl" font-size="11.5">App / DB</text>
+          <rect x="178" y="236" width="110" height="44" rx="8" class="box"/><text x="233" y="258" class="lbl" font-size="10.5">Interface</text><text x="233" y="272" class="lbl" font-size="10.5">endpoint</text>
+          <text x="50" y="302" class="subL">route table → local + endpoints (no IGW route)</text>
+
+          <!-- route table center -->
+          <rect x="330" y="120" width="288" height="120" rx="11" class="box" stroke="var(--gold)"/>
+          <text x="474" y="146" class="lbl" fill="var(--gold)">Route tables</text>
+          <text x="474" y="168" class="sub">decide where each packet is sent</text>
+          <text x="474" y="190" class="sub">destination CIDR → target</text>
+          <text x="474" y="212" class="sub">(local · IGW · NAT · endpoint)</text>
+
+          <!-- gateways exits -->
+          <rect x="660" y="60" width="200" height="58" rx="11" class="box" stroke="var(--blue)"/>
+          <text x="760" y="86" class="lbl">Internet Gateway</text><text x="760" y="104" class="sub">public door, in + out</text>
+          <rect x="660" y="138" width="200" height="58" rx="11" class="box"/>
+          <text x="760" y="164" class="lbl">The Internet 🌍</text>
+          <rect x="660" y="216" width="200" height="58" rx="11" class="box" stroke="var(--green)"/>
+          <text x="760" y="240" class="lbl" font-size="12">AWS services</text><text x="760" y="258" class="sub">S3·DynamoDB·etc</text>
+          <rect x="660" y="294" width="200" height="44" rx="11" class="box"/>
+          <text x="760" y="321" class="lbl" font-size="12">Other networks (VPN/peering)</text>
+
+          <line x1="306" y1="125" x2="330" y2="150" class="wire gold"/>
+          <line x1="306" y1="250" x2="330" y2="210" class="wire gold"/>
+          <line x1="618" y1="150" x2="660" y2="100" class="wire b"/>
+          <line x1="618" y1="200" x2="660" y2="240" class="wire g"/>
+          <line x1="860" y1="89" x2="860" y2="138" class="wire b"/>
+        </svg>
+        <figcaption>The whole picture: space (VPC + subnets) · steering (route tables + gateways) · destinations. Each piece is explained below.</figcaption>
+      </figure>
+    </section>
+
+    <!-- VPC -->
+    <section id="vpc">
+      <h2><span class="num">§1</span> VPC — Virtual Private Cloud</h2>
+      <div class="def"><b>VPC:</b> a virtual network dedicated to your AWS account, <em>logically isolated</em> from all other virtual networks in the AWS Cloud. You define its IP range, add subnets, attach gateways, and associate security groups. <span class="sub" style="font-size:11px;color:var(--faint)">— Amazon VPC User Guide</span></div>
+      <p>The VPC is the outermost boundary. Resources inside it can communicate with each other; nothing outside can reach in, and nothing inside can reach out, until <em>you</em> add a route and a gateway. This "closed by default" posture is the foundation of VPC security — every path to the outside world is something you explicitly create.</p>
+      <p>A VPC is scoped to a single AWS <strong>Region</strong>, but it spans all the <strong>Availability Zones (AZs)</strong> in that Region — so you can place resources across physically separate datacentres for resilience while staying in one network.</p>
+      <div class="analogy"><b>Analogy:</b> a VPC is like leasing a private, fenced-off floor in a large building. AWS owns the building and the street outside; your floor is yours alone, and you decide where to cut doors.</div>
+    </section>
+
+    <!-- CIDR -->
+    <section id="cidr">
+      <h2><span class="num">§2</span> CIDR &amp; IP addressing</h2>
+      <p>When you create a VPC you give it an IP range in <strong>CIDR notation</strong> (<em>Classless Inter-Domain Routing</em>), such as <code>10.0.0.0/16</code>. Subnets then carve smaller ranges out of it.</p>
+      <p>CIDR writes a range as <code>address/prefix</code>. The prefix is the number of <strong>fixed leading bits</strong>; the remaining bits are free and define how many addresses the block contains. A smaller prefix means a larger block.</p>
       <table>
-        <tr><th>CIDR</th><th>Fixed bits</th><th>Addresses</th><th>Meaning</th></tr>
-        <tr><td><code>10.0.0.0/16</code></td><td>16</td><td>~65,536</td><td>A whole VPC</td></tr>
-        <tr><td><code>10.0.1.0/24</code></td><td>24</td><td>256</td><td>One subnet inside it</td></tr>
-        <tr><td><code>0.0.0.0/0</code></td><td>0</td><td>everything</td><td>"any destination" — the default route (remember this one!)</td></tr>
+        <tr><th>CIDR</th><th>Fixed bits</th><th>Approx. addresses</th><th>Typical use</th></tr>
+        <tr><td><code>10.0.0.0/16</code></td><td>16</td><td>65,536</td><td>An entire VPC</td></tr>
+        <tr><td><code>10.0.1.0/24</code></td><td>24</td><td>256</td><td>A single subnet</td></tr>
+        <tr><td><code>10.0.1.8/29</code></td><td>29</td><td>8</td><td>A tiny block</td></tr>
+        <tr><td><code>0.0.0.0/0</code></td><td>0</td><td>all addresses</td><td>"Any destination" — the default route</td></tr>
       </table>
-      <p style="margin:8px 0 0;font-size:14px"><strong>Smaller prefix = bigger range.</strong> <code>/16</code> is huge; <code>/24</code> is a neighbourhood; <code>/32</code> is a single address.</p>
-    </div>
+      <div class="note"><b>Remember <code>0.0.0.0/0</code>.</b> It means "everything / anywhere". As a route destination it's the catch-all that points at the internet, and you'll see it again in route tables, the internet gateway, and the NAT gateway.</div>
+    </section>
 
-    <div class="stage reveal">
-      <div class="cap">a VPC is the outer boundary — nothing inside it is reachable from outside by default</div>
-      <svg viewBox="0 0 800 260" role="img" aria-label="A VPC drawn as an isolated box containing empty space, separate from the AWS public network and the internet">
-        <rect x="20" y="30" width="470" height="200" rx="14" fill="rgba(74,163,255,.06)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="40" y="58" fill="var(--prompt)" font-size="15" font-weight="800" font-family="var(--sans)">Your VPC</text>
-        <text x="40" y="78" class="sub" text-anchor="start">10.0.0.0/16 — isolated, private to your account</text>
-        <text x="255" y="150" class="sub" font-size="12">(empty for now — we'll add subnets next)</text>
-        <rect x="560" y="40" width="210" height="80" rx="12" class="svgbox"/>
-        <text x="665" y="74" class="lbl">Other AWS accounts</text>
-        <text x="665" y="94" class="sub">completely walled off</text>
-        <rect x="560" y="150" width="210" height="70" rx="12" class="svgbox"/>
-        <text x="665" y="182" class="lbl">The Internet</text>
-        <text x="665" y="201" class="sub">no path in or out yet</text>
-        <line x1="490" y1="130" x2="555" y2="120" class="wire bad"/>
-        <line x1="490" y1="150" x2="555" y2="180" class="wire bad"/>
-        <text x="525" y="110" class="flowtxt" fill="var(--reject)">✕</text>
-      </svg>
-      <div class="legend"><span><span class="dot" style="background:var(--prompt)"></span>VPC boundary</span><span><span class="dot" style="background:var(--reject)"></span>no connectivity by default</span></div>
-    </div>
-    <p class="reveal">A brand-new custom VPC is <strong>sealed</strong>. Resources inside can talk to each other, but there is no path to the internet or to other networks until <em>you</em> add one. That "sealed by default" property is the whole point — you opt into every connection.</p>
-  </div>
-</section>
+    <!-- SUBNETS -->
+    <section id="subnets">
+      <h2><span class="num">§3</span> Subnets</h2>
+      <div class="def"><b>Subnet:</b> a range of IP addresses within a VPC. You launch AWS resources into subnets. Each subnet resides in exactly one Availability Zone.</div>
+      <p>Subnets partition the VPC's address space and let you separate tiers of an application — for example, public-facing web servers in one subnet and databases in another. AWS itself recommends putting resources that <em>shouldn't</em> be reachable from the internet into <strong>private subnets</strong>.</p>
+      <h3>Public vs private — the defining rule</h3>
+      <div class="warn"><b>There is no "public" checkbox.</b> A subnet is <strong>public</strong> only because its route table sends internet-bound traffic (<code>0.0.0.0/0</code>) to an <strong>internet gateway</strong>. A subnet with no such route is <strong>private</strong>. The construct is identical — the route table is what makes the difference.</div>
+      <figure>
+        <svg viewBox="0 0 820 220" role="img" aria-label="Two subnets in a VPC that are identical except that the public subnet's route table points to an internet gateway">
+          <rect x="14" y="16" width="792" height="190" rx="13" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="30" y="40" class="lblL" fill="var(--blue)">VPC · 10.0.0.0/16</text>
+          <rect x="40" y="58" width="350" height="130" rx="11" fill="rgba(245,177,76,.07)" stroke="var(--gold)" stroke-width="1.5"/>
+          <text x="215" y="84" class="lbl" fill="var(--gold)">PUBLIC subnet · 10.0.0.0/24</text>
+          <text x="215" y="116" class="sub" font-size="11.5">route table:</text>
+          <text x="215" y="136" class="sub" font-size="11.5" fill="var(--gold)">local + 0.0.0.0/0 → Internet Gateway</text>
+          <text x="215" y="166" class="sub">→ resources here can face the internet</text>
+          <rect x="430" y="58" width="350" height="130" rx="11" fill="rgba(62,207,142,.06)" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="605" y="84" class="lbl" fill="var(--green)">PRIVATE subnet · 10.0.1.0/24</text>
+          <text x="605" y="116" class="sub" font-size="11.5">route table:</text>
+          <text x="605" y="136" class="sub" font-size="11.5" fill="var(--green)">local only — no route to an IGW</text>
+          <text x="605" y="166" class="sub">→ resources here are hidden from the internet</text>
+        </svg>
+        <figcaption>Same subnet construct; the route table alone decides "public" vs "private".</figcaption>
+      </figure>
+    </section>
 
-<!-- ================= PART 2: SUBNETS ================= -->
-<section id="subnets">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 2 — Dividing the space</div>
-    <h2 class="reveal"><span class="hl-prompt">Subnets</span>: rooms within your floor</h2>
-    <p class="reveal">A <strong>subnet</strong> is <em>"a range of IP addresses in your VPC"</em> — a slice of the VPC's CIDR. You launch resources (EC2 instances, ENIs, etc.) <em>into</em> subnets, not directly into the VPC. Each subnet lives in exactly <strong>one Availability Zone</strong> (a physically separate datacentre), which is how you spread across AZs for resilience.</p>
+    <!-- IPs -->
+    <section id="ips">
+      <h2><span class="num">§4</span> Private &amp; public IP addresses</h2>
+      <p>Every network interface in a VPC has a <strong>private IPv4 address</strong> drawn from its subnet's range (e.g. <code>10.0.1.42</code>). Private addresses are routable only inside the VPC and any networks privately connected to it.</p>
+      <p>A <strong>public IPv4 address</strong> is globally routable from the internet. A resource only has one if it's assigned — either auto-assigned (a subnet attribute) or via an <strong>Elastic IP address</strong>, a static public IP you allocate and can move between resources.</p>
+      <div class="analogy"><b>Analogy:</b> a private IP is a desk extension — only diallable from inside the building. A public IP is a public phone number the outside world can call. Many private desks can share one public number through an operator (NAT, §7).</div>
+      <div class="warn"><b>Key fact:</b> by default a resource in a custom (non-default) subnet gets a private IP but <em>no</em> public IP. Without a public IP — or a NAT in the path — it cannot exchange traffic with the internet directly. This is central to how the internet gateway and NAT gateway differ (§6–§7).</div>
+    </section>
 
-    <div class="callout analogy reveal"><span class="t">🚪 Analogy</span>If the VPC is your office floor, subnets are the <strong>individual rooms</strong>. Each room holds a block of desk numbers (<code>10.0.1.0/24</code>), and each room is in a specific part of the building (an Availability Zone).</p></div>
-
-    <h3 class="reveal">The crucial distinction: public vs private subnet</h3>
-    <p class="reveal">Here's the single most important — and most misunderstood — fact in AWS networking:</p>
-    <div class="callout reveal"><span class="t">💡 A subnet is "public" or "private" purely because of its route table</span>There is no checkbox that makes a subnet public. A subnet is <strong>public</strong> if its route table sends internet-bound traffic (<code>0.0.0.0/0</code>) to an <strong>internet gateway</strong>. It is <strong>private</strong> if it has no such route. Same subnet construct — the routing decides the label.</p></div>
-
-    <div class="stage reveal">
-      <div class="cap">one VPC, two subnets in two AZs — identical except for where their routes point</div>
-      <svg viewBox="0 0 800 280" role="img" aria-label="A VPC containing a public subnet and a private subnet in two availability zones">
-        <rect x="20" y="20" width="760" height="240" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="40" y="44" fill="var(--prompt)" font-size="14" font-weight="800" font-family="var(--sans)">VPC · 10.0.0.0/16</text>
-
-        <rect x="50" y="70" width="330" height="160" rx="12" fill="rgba(245,177,76,.07)" stroke="var(--seq3)" stroke-width="1.8"/>
-        <text x="215" y="96" class="lbl" fill="var(--seq3)">PUBLIC subnet</text>
-        <text x="215" y="115" class="sub">10.0.0.0/24 · AZ-a</text>
-        <text x="215" y="150" class="sub" font-size="11">route table has:</text>
-        <text x="215" y="168" class="sub" font-size="11" fill="var(--seq3)">0.0.0.0/0 → Internet Gateway</text>
-        <text x="215" y="200" class="sub" font-size="11">→ resources here CAN face the internet</text>
-
-        <rect x="420" y="70" width="330" height="160" rx="12" fill="rgba(62,207,142,.06)" stroke="var(--seq2)" stroke-width="1.8"/>
-        <text x="585" y="96" class="lbl" fill="var(--seq2)">PRIVATE subnet</text>
-        <text x="585" y="115" class="sub">10.0.1.0/24 · AZ-b</text>
-        <text x="585" y="150" class="sub" font-size="11">route table has:</text>
-        <text x="585" y="168" class="sub" font-size="11" fill="var(--seq2)">local only — no 0.0.0.0/0 → IGW</text>
-        <text x="585" y="200" class="sub" font-size="11">→ resources here are hidden from the internet</text>
-      </svg>
-    </div>
-    <p class="reveal">Hold this thought — it's the key that unlocks the Lambda mystery later. We'll define route tables and the internet gateway in the next two parts, then this picture will be fully legible.</p>
-  </div>
-</section>
-
-<!-- ================= PART 3: IPs ================= -->
-<section id="ips">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 3 — Addresses</div>
-    <h2 class="reveal"><span class="hl-kv">Private</span> vs <span class="hl-prompt">public</span> IP addresses</h2>
-    <p class="reveal">Every networked resource needs an address. In a VPC there are two kinds, and the difference matters enormously.</p>
-    <div class="grid2 reveal">
-      <div class="card">
-        <h3 style="margin-top:0">🏠 Private IP</h3>
-        <p style="font-size:15px">Drawn from the subnet's CIDR (e.g. <code>10.0.1.42</code>). Only routable <em>inside</em> the VPC and connected private networks. Every resource gets one. The internet cannot reach a private IP directly.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin-top:0">🌍 Public IP</h3>
-        <p style="font-size:15px">A globally-routable address reachable from the internet. A resource only gets one if it's explicitly assigned (auto-assigned in a public subnet, or via an <strong>Elastic IP</strong> — a static public IP you own).</p>
-      </div>
-    </div>
-
-    <div class="callout analogy reveal"><span class="t">📮 Analogy</span>A private IP is your <strong>desk extension number</strong> — only dialable from inside the building. A public IP is the building's <strong>public phone number</strong> the outside world can call. Many desks can share one public number through the front-desk operator (that operator is NAT — coming up in Part 6).</p></div>
-
-    <div class="callout warn reveal"><span class="t">⚠️ The fact that breaks intuitions later</span>AWS says: by default an instance in a non-default subnet <em>"has a private IPv4 address, but no public IPv4 address."</em> And critically — a <strong>VPC-attached Lambda function never gets a public IP at all</strong>, even in a public subnet. Keep this; it's why "just use a public subnet" does <em>not</em> fix the Lambda. We'll prove it in Part 9.</p></div>
-  </div>
-</section>
-
-<!-- ================= PART 4: ROUTE TABLES ================= -->
-<section id="routes">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 4 — The steering logic</div>
-    <h2 class="reveal"><span class="hl-gold">Route tables</span>: the signposts that decide where packets go</h2>
-    <p class="reveal">AWS defines a route table as <em>"a set of rules, called routes, that determine where network traffic from your VPC is directed."</em> Each subnet is associated with exactly one route table. Every route has two parts:</p>
-    <ul class="reveal">
-      <li><strong>Destination</strong> — a CIDR range of where the traffic is headed (e.g. <code>10.0.0.0/16</code>, or <code>0.0.0.0/0</code> for "anywhere").</li>
-      <li><strong>Target</strong> — the gateway, interface, or connection to send that traffic through (e.g. <code>local</code>, an internet gateway, a NAT gateway, an endpoint).</li>
-    </ul>
-
-    <div class="callout analogy reveal"><span class="t">🗺️ Analogy</span>A route table is the <strong>set of road signs at an intersection</strong>: "Local addresses → straight ahead", "Everywhere else → take the highway ramp". The packet reads the signs and turns accordingly.</p></div>
-
-    <h3 class="reveal">The golden rule: longest-prefix match wins</h3>
-    <p class="reveal">When a packet could match more than one route, the router picks the <strong>most specific</strong> one — the route with the longest prefix (the biggest <code>/number</code>). This one rule explains how VPC endpoints later "steal" traffic away from the NAT. Try it:</p>
-
-    <div class="stage reveal">
-      <div class="cap">interactive · pick a destination, watch which route wins</div>
-      <table class="rt" style="margin-bottom:14px">
-        <tr><th>Destination</th><th>Target</th><th></th></tr>
-        <tr><td>10.0.0.0/16</td><td>local</td><td id="r-local" class="sub"></td></tr>
-        <tr><td>52.119.0.0/20 <span class="sub">(DynamoDB prefix list)</span></td><td>Gateway Endpoint</td><td id="r-ddb" class="sub"></td></tr>
-        <tr><td>0.0.0.0/0</td><td>NAT Gateway</td><td id="r-nat" class="sub"></td></tr>
+    <!-- ROUTE TABLES -->
+    <section id="routes">
+      <h2><span class="num">§5</span> Route tables</h2>
+      <div class="def"><b>Route table:</b> a set of rules ("routes") that determine where network traffic from a subnet is directed. Each subnet is associated with exactly one route table.</div>
+      <p>Every route has a <strong>destination</strong> (a CIDR range) and a <strong>target</strong> (where to send traffic for that range). Common targets: <code>local</code> (within the VPC), an internet gateway, a NAT gateway, a VPC endpoint, a peering connection, or a transit/virtual private gateway.</p>
+      <table class="rt">
+        <tr><th>Destination</th><th>Target</th><th>Meaning</th></tr>
+        <tr><td><code>10.0.0.0/16</code></td><td><code>local</code></td><td>Traffic within the VPC stays local (always present)</td></tr>
+        <tr><td><code>0.0.0.0/0</code></td><td><code>igw-…</code></td><td>Everything else → the internet (makes the subnet public)</td></tr>
+        <tr><td><code>0.0.0.0/0</code></td><td><code>nat-…</code></td><td>Everything else → a NAT gateway (private subnet egress)</td></tr>
+        <tr><td><code>pl-… (S3)</code></td><td><code>vpce-…</code></td><td>S3 traffic → a gateway endpoint</td></tr>
       </table>
-      <div class="ctrls">
-        <button class="btn" onclick="routeDemo('10.0.1.9')">Packet → 10.0.1.9 (a peer in the VPC)</button>
-        <button class="btn" onclick="routeDemo('52.119.16.4')">Packet → DynamoDB</button>
-        <button class="btn" onclick="routeDemo('140.82.121.3')">Packet → some website</button>
-      </div>
-      <p class="stat" id="routeStat" style="margin-top:14px">Pick a destination above to see which route matches and wins.</p>
-    </div>
-    <div class="callout reveal"><span class="t">🔑 Why this matters</span>The DynamoDB route (<code>/20</code>, 20 fixed bits) is <strong>more specific</strong> than the catch-all <code>0.0.0.0/0</code> (<code>/0</code>). So DynamoDB traffic takes the Gateway Endpoint and <em>never touches the NAT</em> — even though both routes technically match. That's longest-prefix match doing real work.</p></div>
-  </div>
-</section>
+      <h3>The golden rule: longest-prefix match wins</h3>
+      <p>When a packet's destination matches more than one route, the router uses the <strong>most specific</strong> route — the one with the longest prefix (largest <code>/n</code>). This single rule is why a VPC endpoint can divert S3 traffic away from a NAT gateway: a service prefix-list route is more specific than the catch-all <code>0.0.0.0/0</code>.</p>
+      <figure>
+        <svg viewBox="0 0 820 200" role="img" aria-label="Longest prefix match: a packet to a service prefix takes the more specific endpoint route instead of the default route">
+          <rect x="40" y="80" width="150" height="48" rx="9" class="box"/><text x="115" y="109" class="lbl">A packet</text>
+          <rect x="300" y="28" width="220" height="44" rx="9" class="box" stroke="var(--green)"/>
+          <text x="410" y="49" class="lbl" font-size="12" fill="var(--green)">pl-S3  (/20, specific)</text><text x="410" y="64" class="sub">→ Gateway endpoint ✓ WINS</text>
+          <rect x="300" y="92" width="220" height="44" rx="9" class="box"/>
+          <text x="410" y="113" class="lbl" font-size="12">10.0.0.0/16 (/16)</text><text x="410" y="128" class="sub">→ local</text>
+          <rect x="300" y="152" width="220" height="40" rx="9" class="box" stroke="var(--gold)"/>
+          <text x="410" y="177" class="lbl" font-size="12" fill="var(--gold)">0.0.0.0/0 (/0) → NAT</text>
+          <line x1="190" y1="100" x2="300" y2="50" class="wire g"/>
+          <line x1="190" y1="104" x2="300" y2="114" class="wire"/>
+          <line x1="190" y1="108" x2="300" y2="172" class="wire gold"/>
+          <text x="640" y="55" class="subL" fill="var(--green)">most specific match → chosen</text>
+          <text x="640" y="175" class="subL">catch-all → ignored when a better match exists</text>
+        </svg>
+        <figcaption>Among matching routes, the longest prefix (most specific) always wins.</figcaption>
+      </figure>
+    </section>
 
-<!-- ================= PART 5: IGW ================= -->
-<section id="igw">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 5 — The door to the internet</div>
-    <h2 class="reveal">The <span class="hl-prompt">Internet Gateway</span> (IGW): the only public doorway</h2>
-    <p class="reveal">An <strong>internet gateway</strong> is a component you attach to your VPC that <em>"enables your instances to connect to the internet through the Amazon EC2 network edge."</em> It does two jobs: it provides a target for internet-bound routes, and it performs <strong>1:1 NAT</strong> between a resource's private IP and its public IP.</p>
+    <!-- IGW -->
+    <section id="igw">
+      <h2><span class="num">§6</span> Internet gateway (IGW)</h2>
+      <div class="def"><b>Internet gateway:</b> a horizontally-scaled, redundant VPC component that enables communication between resources in your VPC and the internet. One IGW is attached per VPC.</div>
+      <p>It does two things: it serves as the <strong>target</strong> for internet-bound routes (<code>0.0.0.0/0</code>), and it performs <strong>one-to-one NAT</strong> between a resource's private IP and its public IP. Traffic flows <em>both</em> ways — the IGW supports inbound connections to resources that have a public address (e.g. a public web server).</p>
+      <div class="warn"><b>Hard requirement:</b> the internet gateway only routes for a resource that <em>has a public IP address</em>, because it maps private↔public one-to-one. A resource with only a private IP has nothing to map to, so its internet-bound packets are dropped. This is precisely the gap the NAT gateway fills.</div>
+      <figure>
+        <svg viewBox="0 0 820 210" role="img" aria-label="Internet gateway routes a public-IP resource to the internet but drops a private-only resource">
+          <rect x="14" y="16" width="430" height="180" rx="13" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="30" y="40" class="lblL" fill="var(--blue)">VPC · public subnet</text>
+          <rect x="40" y="56" width="180" height="56" rx="9" class="box" stroke="var(--green)"/>
+          <text x="130" y="80" class="lbl" font-size="12">Resource A</text><text x="130" y="98" class="sub">private + public IP</text>
+          <rect x="40" y="124" width="180" height="56" rx="9" class="box" stroke="var(--red)"/>
+          <text x="130" y="148" class="lbl" font-size="12">Resource B</text><text x="130" y="166" class="sub">private IP only</text>
+          <rect x="300" y="78" width="120" height="60" rx="11" class="box" stroke="var(--blue)"/>
+          <text x="360" y="104" class="lbl">IGW</text><text x="360" y="122" class="sub">1:1 NAT</text>
+          <line x1="220" y1="84" x2="300" y2="100" class="wire g"/>
+          <line x1="220" y1="152" x2="300" y2="118" class="wire bad"/>
+          <text x="262" y="148" class="flow" fill="var(--red)">dropped ✕</text>
+          <rect x="560" y="78" width="240" height="60" rx="11" class="box"/>
+          <text x="680" y="114" class="lbl">The Internet 🌍</text>
+          <line x1="420" y1="108" x2="560" y2="108" class="wire g"/>
+        </svg>
+        <figcaption>The IGW serves resources with a public IP; private-only resources need a NAT.</figcaption>
+      </figure>
+    </section>
 
-    <div class="callout warn reveal"><span class="t">⚠️ The IGW has a hard requirement</span>The internet gateway will <strong>only</strong> route traffic for a resource that <em>has a public IP address</em>. It maps private↔public one-to-one. If a resource has only a private IP, the IGW has nothing to translate to — so it <strong>drops the packet</strong>. This single rule is the reason a NAT gateway has to exist.</p></div>
+    <!-- NAT -->
+    <section id="nat">
+      <h2><span class="num">§7</span> NAT gateway</h2>
+      <div class="def"><b>NAT gateway:</b> a Network Address Translation service that lets resources in a private subnet connect <em>outbound</em> to services outside the VPC, while preventing the outside from initiating connections <em>inbound</em>.</div>
+      <p>A <strong>public NAT gateway</strong> is placed in a <em>public</em> subnet and is given an <strong>Elastic IP</strong>. The path for a private resource reaching the internet is:</p>
+      <ol>
+        <li>The resource sends a packet outward; its route table says <code>0.0.0.0/0 → NAT gateway</code>.</li>
+        <li>The NAT gateway rewrites the packet's source to its own address.</li>
+        <li>It forwards to the <strong>internet gateway</strong>, which maps the NAT's address to its Elastic (public) IP.</li>
+        <li>Replies return to the Elastic IP → NAT → translated back to the original private resource.</li>
+      </ol>
+      <p>Because connections must originate inside the VPC, the NAT gateway gives private resources outbound reach without exposing them to unsolicited inbound traffic. (A <strong>private NAT gateway</strong> variant routes to other VPCs or on-premises networks via a transit/virtual private gateway, with no Elastic IP and no internet.)</p>
+      <div class="analogy"><b>Analogy:</b> the NAT gateway is the building's front-desk operator. Staff can dial out, but every outgoing call shows the building's one public number, and the outside world can only ever call that number back — never a private desk directly. The operator only connects calls that began inside.</div>
+      <figure>
+        <svg viewBox="0 0 820 220" role="img" aria-label="A private subnet resource reaches the internet through a NAT gateway in the public subnet and then the internet gateway">
+          <rect x="14" y="16" width="620" height="190" rx="13" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="28" y="38" class="lblL" fill="var(--blue)">VPC</text>
+          <rect x="30" y="104" width="240" height="86" rx="10" fill="rgba(62,207,142,.06)" stroke="var(--green)" stroke-width="1.4"/>
+          <text x="150" y="126" class="lbl" fill="var(--green)" font-size="12">PRIVATE subnet</text>
+          <rect x="56" y="138" width="188" height="40" rx="8" class="box"/><text x="150" y="163" class="lbl" font-size="11.5">App (private IP only)</text>
+          <rect x="300" y="40" width="320" height="150" rx="10" fill="rgba(245,177,76,.06)" stroke="var(--gold)" stroke-width="1.4"/>
+          <text x="460" y="62" class="lbl" fill="var(--gold)" font-size="12">PUBLIC subnet</text>
+          <rect x="330" y="76" width="260" height="42" rx="8" class="box" stroke="var(--gold)"/>
+          <text x="460" y="96" class="lbl" font-size="11.5">NAT gateway</text><text x="460" y="112" class="sub">Elastic IP 52.x.x.x</text>
+          <rect x="330" y="132" width="260" height="42" rx="8" class="box" stroke="var(--blue)"/>
+          <text x="460" y="158" class="lbl" font-size="11.5">Internet gateway</text>
+          <rect x="668" y="92" width="138" height="56" rx="11" class="box"/>
+          <text x="737" y="125" class="lbl">Internet 🌍</text>
+          <line x1="244" y1="158" x2="330" y2="100" class="wire gold"/>
+          <text x="288" y="118" class="flow" fill="var(--gold)">src rewritten</text>
+          <line x1="460" y1="118" x2="460" y2="132" class="wire gold"/>
+          <line x1="590" y1="152" x2="668" y2="124" class="wire g"/>
+        </svg>
+        <figcaption>Outbound-only path: private resource → NAT (public subnet) → IGW → internet.</figcaption>
+      </figure>
+      <div class="note"><b>Two cost meters.</b> A NAT gateway bills on an <strong>hourly rate</strong> (for existing) <em>plus</em> a <strong>per-GB data-processing rate</strong> (for traffic through it). The hourly part is fixed; the per-GB part scales with volume — which is what gateway endpoints (§11a) can offload.</div>
+    </section>
 
-    <div class="stage reveal">
-      <div class="cap">the IGW only works for resources that own a public IP</div>
-      <svg viewBox="0 0 800 240" role="img" aria-label="An internet gateway routing a resource with a public IP successfully, and dropping a resource with only a private IP">
-        <rect x="20" y="20" width="430" height="200" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="40" y="44" fill="var(--prompt)" font-size="13" font-weight="800" font-family="var(--sans)">Public subnet</text>
+    <!-- SECURITY GROUPS -->
+    <section id="sg">
+      <h2><span class="num">§8</span> Security groups</h2>
+      <div class="def"><b>Security group:</b> a virtual firewall that controls inbound and outbound traffic at the level of an individual resource's network interface. It is <em>stateful</em> and supports <em>allow rules only</em>.</div>
+      <ul>
+        <li><strong>Stateful:</strong> if you allow a request out, the corresponding reply is automatically allowed back in — you don't write a return rule.</li>
+        <li><strong>Allow-only:</strong> there are no deny rules. Anything not explicitly allowed is denied.</li>
+        <li><strong>All rules evaluated:</strong> the security group considers all of its rules before deciding to permit traffic. Rules can reference other security groups, not just IP ranges.</li>
+      </ul>
+      <div class="analogy"><b>Analogy:</b> a bouncer with a guest list who also has a good memory — only listed names get in, and anyone they let out is allowed back without re-checking.</div>
+      <figure>
+        <svg viewBox="0 0 820 170" role="img" aria-label="A stateful security group allowing outbound HTTPS and automatically permitting the return traffic">
+          <rect x="250" y="28" width="320" height="116" rx="13" fill="rgba(62,207,142,.06)" stroke="var(--green)" stroke-width="2"/>
+          <text x="410" y="52" class="lbl" fill="var(--green)">Security group (on the ENI)</text>
+          <text x="410" y="72" class="sub">outbound: allow 443 ✓   ·   inbound: none needed</text>
+          <rect x="300" y="86" width="220" height="42" rx="8" class="box"/><text x="410" y="112" class="lbl" font-size="12">Resource</text>
+          <line x1="570" y1="96" x2="710" y2="96" class="wire g"/><text x="640" y="88" class="flow" fill="var(--green)">request out (443)</text>
+          <line x1="710" y1="120" x2="570" y2="120" class="wire g"/><text x="640" y="138" class="flow" fill="var(--green)">reply auto-allowed</text>
+          <rect x="710" y="76" width="96" height="60" rx="10" class="box"/><text x="758" y="110" class="lbl">Service</text>
+        </svg>
+        <figcaption>Stateful filtering: allowing the outbound request implicitly permits the inbound reply.</figcaption>
+      </figure>
+    </section>
 
-        <rect x="50" y="64" width="170" height="64" rx="10" class="svgbox" stroke="var(--seq2)"/>
-        <text x="135" y="90" class="lbl">Resource A</text>
-        <text x="135" y="110" class="sub">priv 10.0.0.5 + pub 54.x.x.x</text>
-
-        <rect x="50" y="142" width="170" height="64" rx="10" class="svgbox" stroke="var(--reject)"/>
-        <text x="135" y="168" class="lbl">Resource B</text>
-        <text x="135" y="188" class="sub">priv 10.0.0.6 · NO public IP</text>
-
-        <rect x="300" y="95" width="120" height="70" rx="12" class="svgbox" stroke="var(--prompt)"/>
-        <text x="360" y="125" class="lbl">IGW</text>
-        <text x="360" y="144" class="sub">1:1 NAT</text>
-
-        <line x1="220" y1="96" x2="300" y2="120" class="wire ok"/>
-        <line x1="220" y1="174" x2="300" y2="140" class="wire bad"/>
-        <text x="265" y="165" class="flowtxt" fill="var(--reject)">dropped ✕</text>
-
-        <rect x="560" y="95" width="210" height="70" rx="12" class="svgbox"/>
-        <text x="665" y="130" class="lbl">The Internet 🌍</text>
-        <line x1="420" y1="130" x2="560" y2="130" class="wire ok"/>
-      </svg>
-      <div class="legend"><span><span class="dot" style="background:var(--seq2)"></span>has public IP → reaches internet</span><span><span class="dot" style="background:var(--reject)"></span>private only → IGW drops it</span></div>
-    </div>
-    <p class="reveal">So an IGW alone is not enough for private resources. Something must give the private resource a public face. That something is the <strong>NAT gateway</strong>.</p>
-  </div>
-</section>
-
-<!-- ================= PART 6: NAT ================= -->
-<section id="nat">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 6 — Outbound-only internet for private resources</div>
-    <h2 class="reveal">The <span class="hl-gold">NAT Gateway</span>: a one-way valve to the internet</h2>
-    <p class="reveal">AWS defines it precisely: a NAT gateway lets <em>"instances in a private subnet connect to services outside your VPC, but external services can't initiate a connection with those instances."</em> It is <strong>outbound-only</strong> — perfect for a backend that needs to call APIs but must never accept unsolicited inbound traffic.</p>
-
-    <h3 class="reveal">How it actually works</h3>
-    <p class="reveal">A <strong>public NAT gateway</strong> sits in a <em>public</em> subnet and owns an <strong>Elastic IP</strong> (a static public address). The flow, per AWS:</p>
-    <ol class="reveal">
-      <li>The private resource sends a packet to the internet. Its route table says <code>0.0.0.0/0 → NAT gateway</code>.</li>
-      <li>The NAT gateway <strong>rewrites the source</strong> from the resource's private IP to the NAT's own private IP.</li>
-      <li>It forwards to the <strong>internet gateway</strong>, which maps the NAT's private IP to its Elastic (public) IP.</li>
-      <li>Replies come back to the Elastic IP → NAT → translated back to the original private resource.</li>
-    </ol>
-
-    <div class="callout analogy reveal"><span class="t">🛎️ Analogy</span>The NAT gateway is the building's <strong>front-desk operator</strong>. Staff (private resources) can dial out, but every outgoing call shows the building's public number. The outside world can only ever call that one number back — it can never directly ring a private desk. And the operator only connects calls that started inside.</p></div>
-
-    <div class="stage reveal">
-      <div class="cap">private resource → NAT (in public subnet) → IGW → internet</div>
-      <svg viewBox="0 0 800 250" role="img" aria-label="A private subnet resource reaching the internet via a NAT gateway in the public subnet and then the internet gateway">
-        <rect x="20" y="20" width="600" height="210" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="36" y="42" fill="var(--prompt)" font-size="12" font-weight="800" font-family="var(--sans)">VPC</text>
-
-        <rect x="40" y="120" width="250" height="90" rx="11" fill="rgba(62,207,142,.06)" stroke="var(--seq2)" stroke-width="1.6"/>
-        <text x="165" y="142" class="lbl" fill="var(--seq2)">PRIVATE subnet</text>
-        <rect x="70" y="152" width="190" height="44" rx="9" class="svgbox"/>
-        <text x="165" y="178" class="lbl">App resource (private IP only)</text>
-
-        <rect x="330" y="50" width="270" height="160" rx="11" fill="rgba(245,177,76,.06)" stroke="var(--seq3)" stroke-width="1.6"/>
-        <text x="465" y="72" class="lbl" fill="var(--seq3)">PUBLIC subnet</text>
-        <rect x="360" y="86" width="210" height="48" rx="9" class="svgbox" stroke="var(--seq3)"/>
-        <text x="465" y="106" class="lbl">NAT Gateway</text>
-        <text x="465" y="124" class="sub">Elastic IP 52.x.x.x</text>
-        <rect x="360" y="150" width="210" height="48" rx="9" class="svgbox" stroke="var(--prompt)"/>
-        <text x="465" y="178" class="lbl">Internet Gateway</text>
-
-        <rect x="660" y="110" width="120" height="70" rx="12" class="svgbox"/>
-        <text x="720" y="150" class="lbl">Internet 🌍</text>
-
-        <line x1="260" y1="170" x2="360" y2="120" class="wire nat"/>
-        <text x="300" y="135" class="flowtxt" fill="var(--seq3)">src→NAT IP</text>
-        <line x1="465" y1="134" x2="465" y2="150" class="wire nat"/>
-        <line x1="570" y1="174" x2="660" y2="150" class="wire ok"/>
-        <circle class="pkt" r="4" fill="var(--seq3)"><animateMotion dur="2.4s" repeatCount="indefinite" path="M260,170 L360,120"/></circle>
-      </svg>
-    </div>
-
-    <div class="callout warn reveal"><span class="t">💸 Two separate costs (this matters in Part 10)</span>A NAT gateway bills you on <strong>two independent meters</strong>: an <strong>hourly charge</strong> just for existing, <em>plus</em> a <strong>per-GB data-processing charge</strong> on every byte that flows through it. The hourly fee is fixed; the per-GB fee scales with traffic. Remember this — it's exactly what VPC endpoints optimise.</p></div>
-  </div>
-</section>
-
-<!-- ================= PART 7: SECURITY GROUPS ================= -->
-<section id="sg">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 7 — The firewall</div>
-    <h2 class="reveal"><span class="hl-green">Security Groups</span>: a stateful firewall around each resource</h2>
-    <p class="reveal">Route tables decide <em>where</em> a packet can go. A <strong>security group</strong> decides <em>whether</em> it's allowed at all. It's a virtual firewall attached to a resource's network interface, with separate <strong>inbound</strong> and <strong>outbound</strong> rules.</p>
-    <p class="reveal">Two defining properties:</p>
-    <ul class="reveal">
-      <li><strong>Allow-only.</strong> Rules only <em>permit</em> traffic — there are no "deny" rules. Anything not explicitly allowed is implicitly denied.</li>
-      <li><strong>Stateful.</strong> If you allow a request out, the reply is automatically allowed back in (and vice-versa). You don't write a return rule.</li>
-    </ul>
-
-    <div class="callout analogy reveal"><span class="t">🛡️ Analogy</span>A security group is a <strong>bouncer with a guest list</strong>. Only names on the list get in. And it remembers: if it let someone <em>out</em> to grab something from their car, it lets them back <em>in</em> without rechecking the list. (Contrast: a <em>Network ACL</em> is the building's perimeter gate — stateless, and operates per-subnet rather than per-resource.)</p></div>
-
-    <div class="stage reveal">
-      <div class="cap">stateful: outbound 443 allowed ⇒ the response is allowed back automatically</div>
-      <svg viewBox="0 0 800 180" role="img" aria-label="A security group allowing outbound HTTPS and automatically permitting the return traffic">
-        <rect x="250" y="30" width="300" height="120" rx="14" fill="rgba(62,207,142,.06)" stroke="var(--seq2)" stroke-width="2"/>
-        <text x="400" y="56" class="lbl" fill="var(--seq2)">Security Group</text>
-        <text x="400" y="78" class="sub">Outbound: allow 443 ✓   Inbound: (none needed)</text>
-        <rect x="300" y="95" width="200" height="40" rx="9" class="svgbox"/>
-        <text x="400" y="120" class="lbl">Lambda / resource</text>
-
-        <line x1="550" y1="100" x2="690" y2="100" class="wire ok"/>
-        <text x="620" y="92" class="flowtxt" fill="var(--seq2)">request out (443)</text>
-        <line x1="690" y1="125" x2="550" y2="125" class="wire ok"/>
-        <text x="620" y="145" class="flowtxt" fill="var(--seq2)">reply auto-allowed</text>
-        <rect x="690" y="80" width="90" height="60" rx="10" class="svgbox"/>
-        <text x="735" y="115" class="lbl">API</text>
-      </svg>
-    </div>
-    <p class="reveal">For most setups, <code>allowAllOutbound</code> on the resource's security group plus a rule on the <em>destination</em> (e.g. an endpoint) permitting inbound 443 from it is all you need.</p>
-  </div>
-</section>
-
-<!-- ================= PART 8: ENI ================= -->
-<section id="eni">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 8 — The star of the show</div>
-    <h2 class="reveal">The <span class="hl-kv">ENI</span>: the virtual network card that actually "lives in" the subnet</h2>
-    <p class="reveal">This is the concept that makes everything else click. An <strong>ENI (Elastic Network Interface)</strong> is a <strong>virtual network card</strong>. Exactly as a physical server has a physical NIC that plugs into a switch and gives it a presence on the network, an ENI is the software equivalent for cloud compute.</p>
-
-    <h3 class="reveal">What an ENI carries</h3>
-    <p class="reveal">An ENI bundles together everything needed to be "on the network":</p>
-    <div class="stage reveal">
-      <div class="cap">anatomy of an ENI</div>
-      <svg viewBox="0 0 800 250" role="img" aria-label="The anatomy of an elastic network interface showing private IP, MAC, subnet binding, security groups, and route table">
-        <rect x="270" y="40" width="260" height="170" rx="16" fill="rgba(247,140,107,.08)" stroke="var(--kv)" stroke-width="2.2"/>
-        <text x="400" y="68" class="lbl" fill="var(--kv)" font-size="15">ENI</text>
-        <text x="400" y="86" class="sub">a virtual network card</text>
-        <line x1="290" y1="98" x2="510" y2="98" stroke="var(--line)"/>
-        <text x="400" y="118" class="sub" font-size="11.5">• one or more private IPs (from the subnet)</text>
-        <text x="400" y="138" class="sub" font-size="11.5">• a MAC address</text>
-        <text x="400" y="158" class="sub" font-size="11.5">• bound to ONE subnet (⇒ one AZ)</text>
-        <text x="400" y="178" class="sub" font-size="11.5">• one or more security groups</text>
-        <text x="400" y="198" class="sub" font-size="11.5">• uses its subnet's route table</text>
-
-        <rect x="30" y="95" width="180" height="60" rx="11" class="svgbox" stroke="var(--gpu)"/>
-        <text x="120" y="120" class="lbl">Compute</text>
-        <text x="120" y="139" class="sub">EC2 / Lambda / RDS</text>
-        <line x1="210" y1="125" x2="270" y2="125" class="wire"/>
-        <text x="240" y="116" class="flowtxt">attaches</text>
-
-        <rect x="590" y="95" width="180" height="60" rx="11" class="svgbox" stroke="var(--prompt)"/>
-        <text x="680" y="120" class="lbl">The subnet</text>
-        <text x="680" y="139" class="sub">+ its route table</text>
-        <line x1="530" y1="125" x2="590" y2="125" class="wire"/>
-        <text x="560" y="116" class="flowtxt">lives in</text>
-      </svg>
-    </div>
-
-    <div class="callout reveal"><span class="t">🧠 The mental model that unlocks AWS networking</span>When people say <em>"the Lambda is in the VPC,"</em> what is <strong>literally</strong> in the VPC is an <strong>ENI sitting in a subnet</strong>. The compute itself lives elsewhere and reaches the network <em>through</em> that ENI. So the ENI's subnet → its route table → its security group together decide <strong>everything</strong> the attached compute can and cannot reach.</p></div>
-
-    <div class="callout analogy reveal"><span class="t">🔌 Analogy</span>The ENI is the <strong>network port on the wall plus the cable plugged into it</strong>. Your computer (compute) can be anywhere, but the moment its cable plugs into a specific wall port, it inherits that room's address range, that room's signs (route table), and that room's door policy (security group). Move the cable to a different room and everything about its connectivity changes — even though the computer didn't move.</p></div>
-  </div>
-</section>
-
-<!-- ================= PART 9: HYPERPLANE ================= -->
-<section id="hyperplane">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 9 — How Lambda plugs in</div>
-    <h2 class="reveal"><span class="hl-gpu">Hyperplane ENIs</span> and the Lambda mystery, solved</h2>
-    <p class="reveal">Now we can answer the question from Part 0. First, two facts straight from the AWS Lambda docs:</p>
-    <ul class="reveal">
-      <li><strong>Every Lambda already runs in a VPC</strong> — one that is <em>"owned and managed by the Lambda service,"</em> invisible to you, with internet access. That's why an un-configured Lambda can call Bedrock/S3/DynamoDB freely.</li>
-      <li>When you attach a Lambda to <em>your</em> VPC, Lambda creates a <strong>Hyperplane ENI</strong> — a special managed ENI — inside your chosen subnet. <em>"By default, Lambda functions have access to the public internet. When you attach your function to a VPC, it can only access resources available within that VPC."</em></li>
-    </ul>
-
-    <h3 class="reveal">What a Hyperplane ENI is</h3>
-    <p class="reveal">An ordinary VPC would create one ENI per resource. Lambda is massively concurrent, so it uses <strong>Hyperplane ENIs</strong>: one shared ENI is created per unique <strong>(subnet × security group)</strong> combination, and reused across thousands of concurrent executions. Each supports up to ~65,000 connections; Lambda scales them automatically. This is why VPC Lambdas no longer suffer the old multi-second cold-start penalty — the ENI is set up ahead of time and shared, not built per-invocation.</p>
-
-    <div class="callout warn reveal"><span class="t">🎯 The "just use a public subnet" trap — debunked</span>The AWS docs state it flatly: <em>"Connecting a function to a public subnet doesn't give it internet access or a public IP address."</em> A VPC Lambda's Hyperplane ENI <strong>only ever gets a private IP</strong>. And from Part 5, the IGW drops anything without a public IP. So a Lambda in a public subnet still <strong>cannot</strong> reach the internet. It <em>must</em> sit in a private subnet and egress via a NAT gateway (or via VPC endpoints).</p></div>
-
-    <h3 class="reveal">So, why did Bedrock and S3 start timing out?</h3>
-    <div class="card reveal">
-      <p style="margin:0"><strong>Before:</strong> the Lambda lived in the AWS-managed Lambda network, which has a built-in public path. Bedrock, S3, DynamoDB, ECR — all reachable for free, zero config.</p>
-      <p style="margin:12px 0 0"><strong>After attaching your VPC:</strong> the Lambda's traffic now flows through a Hyperplane ENI in <em>your private subnet</em>. That subnet has no route to the internet. So unless you add a NAT gateway (or endpoints), every call to a public AWS endpoint has nowhere to go — and hangs until it times out. The container image pull from ECR can even fail at cold start, so the function never boots.</p>
-    </div>
-    <p class="reveal">The fix is exactly the plumbing we've been building: a <strong>NAT gateway</strong> to restore outbound internet for the public AWS APIs, and — for the resource that lives only inside a network — a <strong>VPC endpoint</strong>. Which brings us to the last piece.</p>
-
-    <div class="quiz reveal" data-answer="2">
-      <div class="q">A VPC-attached Lambda in a <em>public</em> subnet still can't reach the internet. Why?</div>
-      <button class="opt" onclick="ans(this)">The public subnet's route table is wrong by default</button>
-      <button class="opt" onclick="ans(this)">Security groups block all outbound traffic by default</button>
-      <button class="opt" onclick="ans(this)">A VPC Lambda's ENI only gets a private IP, and the IGW drops traffic from resources with no public IP</button>
-      <button class="opt" onclick="ans(this)">Lambda doesn't support public subnets at all</button>
-      <div class="exp">Correct: the Hyperplane ENI never receives a public IP, and the internet gateway only routes for resources that have one. No public IP ⇒ IGW drops the packet ⇒ no internet, regardless of subnet label. You need a NAT gateway in a private-subnet setup.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= PART 10: ENDPOINTS ================= -->
-<section id="endpoints">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 10 — Private doorways to AWS services</div>
-    <h2 class="reveal"><span class="hl-green">VPC Endpoints</span>: reach AWS services without the public internet</h2>
-    <p class="reveal">A <strong>VPC endpoint</strong> lets resources in your VPC reach AWS services over the AWS private network — no internet, no NAT. There are two flavours, and the distinction is exam-and-bill critical.</p>
-
-    <div class="grid2 reveal">
-      <div class="card">
-        <h3 style="margin-top:0;color:var(--seq2)">Gateway Endpoint</h3>
-        <p style="font-size:15px"><strong>S3 and DynamoDB only</strong> — these are the only two services that support it. It is <strong>not</strong> an ENI: it's a <strong>route-table entry</strong> pointing at a managed <em>prefix list</em>. Traffic to S3/DynamoDB matches that specific route (longest-prefix match!) and goes straight to the AWS backbone. <strong>Free</strong> — no hourly fee, no data charge.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin-top:0;color:var(--prompt)">Interface Endpoint (PrivateLink)</h3>
-        <p style="font-size:15px"><strong>Almost every other service</strong> (Bedrock, ECR, CloudWatch Logs, SQS, KMS…). It <em>is</em> an <strong>ENI with a private IP</strong> placed in your subnet. With <em>private DNS</em> enabled, the service's normal hostname resolves to that private IP. Costs an <strong>hourly fee + per-GB</strong>, per AZ.</p>
-      </div>
-    </div>
-
-    <div class="callout reveal"><span class="t">📌 Why only S3 &amp; DynamoDB get the free gateway</span>Gateway endpoints were AWS's first-generation design (built for the two highest-volume, most universal services). PrivateLink interface endpoints are the general-purpose successor — they work across VPN, Direct Connect, peering, and cross-account, which route-table-based gateway endpoints cannot. Every service launched since uses the interface model. So Bedrock doesn't "lack" a feature — S3/DynamoDB are the special exceptions.</p></div>
-
-    <div class="stage reveal">
-      <div class="cap">gateway endpoint = a route (free) · interface endpoint = an ENI in your subnet (paid)</div>
-      <svg viewBox="0 0 800 270" role="img" aria-label="Gateway endpoint as a route table entry to S3 and DynamoDB versus interface endpoint as an ENI for Bedrock">
-        <rect x="20" y="20" width="760" height="230" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="36" y="42" fill="var(--prompt)" font-size="12" font-weight="800" font-family="var(--sans)">Your VPC · private subnet</text>
-
-        <rect x="50" y="100" width="150" height="70" rx="11" class="svgbox" stroke="var(--gpu)"/>
-        <text x="125" y="130" class="lbl">Lambda ENI</text>
-        <text x="125" y="149" class="sub">private IP</text>
-
-        <!-- gateway path -->
-        <rect x="300" y="60" width="180" height="56" rx="10" fill="rgba(62,207,142,.08)" stroke="var(--seq2)" stroke-width="1.6"/>
-        <text x="390" y="84" class="lbl" fill="var(--seq2)">Gateway Endpoint</text>
-        <text x="390" y="102" class="sub">route entry · FREE</text>
-        <line x1="200" y1="120" x2="300" y2="92" class="wire ok"/>
-        <text x="250" y="98" class="flowtxt" fill="var(--seq2)">pl-s3 / pl-ddb</text>
-
-        <rect x="560" y="50" width="200" height="76" rx="11" class="svgbox"/>
-        <text x="660" y="82" class="lbl">S3 · DynamoDB</text>
-        <text x="660" y="101" class="sub">on AWS backbone</text>
-        <line x1="480" y1="88" x2="560" y2="88" class="wire ok"/>
-
-        <!-- interface path -->
-        <rect x="300" y="160" width="180" height="56" rx="10" fill="rgba(74,163,255,.08)" stroke="var(--prompt)" stroke-width="1.6"/>
-        <text x="390" y="184" class="lbl" fill="var(--prompt)">Interface Endpoint</text>
-        <text x="390" y="202" class="sub">an ENI · hourly + per-GB</text>
-        <line x1="200" y1="150" x2="300" y2="188" class="wire"/>
-        <text x="250" y="186" class="flowtxt">private DNS</text>
-
-        <rect x="560" y="150" width="200" height="76" rx="11" class="svgbox"/>
-        <text x="660" y="182" class="lbl">Bedrock · ECR · Logs</text>
-        <text x="660" y="201" class="sub">via PrivateLink</text>
-        <line x1="480" y1="188" x2="560" y2="188" class="wire"/>
-      </svg>
-    </div>
-
-    <div class="callout reveal"><span class="t">💡 Back to "what do endpoints achieve if I keep the NAT?"</span>You keep the NAT for Bedrock/ECR/Logs, yes. But adding the <strong>free</strong> S3 + DynamoDB gateway endpoints diverts your <em>highest-volume</em> traffic off the NAT's <strong>per-GB</strong> meter (the hourly fee is sunk either way). You also shrink the blast radius — your data stores stay reachable even if the NAT is unhealthy. Near-zero effort, can only help.</p></div>
-
-    <div class="quiz reveal" data-answer="1">
-      <div class="q">You add an S3 Gateway Endpoint but keep a NAT gateway for Bedrock. What changes for S3 traffic?</div>
-      <button class="opt" onclick="ans(this)">Nothing — S3 still goes through the NAT</button>
-      <button class="opt" onclick="ans(this)">S3 traffic takes the more-specific endpoint route and bypasses the NAT (no per-GB NAT charge)</button>
-      <button class="opt" onclick="ans(this)">S3 becomes unreachable until you delete the NAT</button>
-      <button class="opt" onclick="ans(this)">You now pay an hourly fee for the gateway endpoint</button>
-      <div class="exp">Correct: longest-prefix match sends S3 traffic to the gateway endpoint (its prefix-list route is more specific than 0.0.0.0/0 → NAT). It rides the AWS backbone for free, off the NAT's per-GB meter. Gateway endpoints have no hourly or data charge.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= PART 11: THE PICTURE ================= -->
-<section id="picture">
-  <div class="wrap">
-    <div class="part-tag reveal">Part 11 — Putting it all together</div>
-    <h2 class="reveal">The before &amp; after picture</h2>
-    <p class="reveal">Everything we've built now assembles into the two diagrams that answer the original question. Trace each arrow — you now know what every box means.</p>
-
-    <h3 class="reveal">BEFORE — VPC-less Lambda</h3>
-    <p class="reveal">The compute <em>and</em> its ENI live in the AWS-managed Lambda network. A built-in path reaches every public AWS service. Nothing in your account is involved. The catch: no way to reach a resource that lives only inside a private network.</p>
-    <div class="stage reveal">
-      <div class="cap">today · zero networking config · everything reachable for free</div>
-      <svg viewBox="0 0 800 290" role="img" aria-label="Before: a VPC-less Lambda in the AWS-managed network reaching Bedrock, S3, DynamoDB and ECR directly">
-        <rect x="20" y="30" width="360" height="230" rx="14" fill="rgba(198,120,221,.06)" stroke="var(--gpu)" stroke-width="2"/>
-        <text x="40" y="54" fill="var(--gpu)" font-size="12.5" font-weight="800" font-family="var(--sans)">AWS-managed Lambda network</text>
-        <text x="40" y="72" class="sub" text-anchor="start">(not your VPC — you configure nothing)</text>
-        <rect x="55" y="92" width="290" height="70" rx="11" class="svgbox" stroke="var(--gpu)"/>
-        <text x="200" y="120" class="lbl">Lambda (your container)</text>
-        <text x="200" y="139" class="sub">FastAPI · boto3</text>
-        <rect x="95" y="180" width="210" height="56" rx="10" class="svgbox" stroke="var(--kv)"/>
-        <text x="200" y="205" class="lbl" fill="var(--kv)">AWS-managed ENI</text>
-        <text x="200" y="223" class="sub">AWS-controlled routing</text>
-        <line x1="200" y1="162" x2="200" y2="180" class="wire"/>
-
-        <line x1="380" y1="208" x2="470" y2="150" class="wire ok"/>
-        <text x="430" y="150" class="flowtxt" fill="var(--seq2)">direct public path</text>
-
-        <rect x="480" y="40" width="290" height="210" rx="12" fill="rgba(62,207,142,.04)" stroke="var(--line)"/>
-        <text x="625" y="62" class="sub">PUBLIC AWS SERVICE ENDPOINTS</text>
-        <rect x="500" y="78" width="120" height="46" rx="9" class="svgbox"/><text x="560" y="106" class="lbl">Bedrock</text>
-        <rect x="635" y="78" width="120" height="46" rx="9" class="svgbox"/><text x="695" y="106" class="lbl">S3</text>
-        <rect x="500" y="140" width="120" height="46" rx="9" class="svgbox"/><text x="560" y="168" class="lbl">DynamoDB</text>
-        <rect x="635" y="140" width="120" height="46" rx="9" class="svgbox"/><text x="695" y="168" class="lbl">ECR</text>
-        <rect x="567" y="200" width="120" height="40" rx="9" class="svgbox" stroke="var(--reject)"/><text x="627" y="225" class="lbl" fill="var(--reject)" font-size="11">private-only res ✕</text>
-        <circle class="pkt" r="4" fill="var(--seq2)"><animateMotion dur="2.2s" repeatCount="indefinite" path="M305,208 L500,101"/></circle>
-      </svg>
-      <div class="legend"><span><span class="dot" style="background:var(--gpu)"></span>AWS-managed (not yours)</span><span><span class="dot" style="background:var(--seq2)"></span>works for free</span><span><span class="dot" style="background:var(--reject)"></span>cannot reach private-only resources</span></div>
-    </div>
-
-    <h3 class="reveal">AFTER — VPC-enabled Lambda (the tuned design)</h3>
-    <p class="reveal">The compute <em>doesn't move</em> — but its traffic now tunnels through a Hyperplane ENI in <strong>your private subnet</strong>. From there: the private-only resource is reachable via <strong>PrivateLink</strong>; Bedrock/ECR/Logs egress via the <strong>NAT gateway</strong>; and S3/DynamoDB take the <strong>free gateway endpoints</strong>, bypassing the NAT meter.</p>
-    <div class="stage reveal">
-      <div class="cap">after · ENI in your private subnet · routing you control</div>
-      <svg viewBox="0 0 800 440" role="img" aria-label="After: a VPC Lambda with a Hyperplane ENI in a private subnet, routing to gateway endpoints, a NAT gateway, and a PrivateLink interface endpoint">
-        <!-- managed compute -->
-        <rect x="250" y="14" width="300" height="56" rx="11" fill="rgba(198,120,221,.06)" stroke="var(--gpu)" stroke-width="1.6"/>
-        <text x="400" y="38" class="lbl" fill="var(--gpu)">Lambda compute (still AWS-managed)</text>
-        <text x="400" y="57" class="sub">Hyperplane tunnels its traffic into your VPC ↓</text>
-
-        <!-- VPC -->
-        <rect x="20" y="86" width="760" height="338" rx="14" fill="rgba(74,163,255,.045)" stroke="var(--prompt)" stroke-width="2"/>
-        <text x="36" y="108" fill="var(--prompt)" font-size="12" font-weight="800" font-family="var(--sans)">YOUR VPC · 10.0.0.0/16</text>
-
-        <!-- private subnet -->
-        <rect x="40" y="120" width="380" height="288" rx="12" fill="rgba(62,207,142,.05)" stroke="var(--seq2)" stroke-width="1.6"/>
-        <text x="60" y="142" class="lbl" fill="var(--seq2)" text-anchor="start" font-size="12">PRIVATE_WITH_EGRESS subnet</text>
-        <rect x="120" y="156" width="220" height="58" rx="10" class="svgbox" stroke="var(--kv)"/>
-        <text x="230" y="180" class="lbl" fill="var(--kv)">Hyperplane ENI</text>
-        <text x="230" y="199" class="sub">private IP · SG · this subnet</text>
-        <text x="230" y="234" class="sub" font-size="10.5">subnet route table decides the path:</text>
-
-        <!-- three route choices -->
-        <rect x="60" y="248" width="150" height="48" rx="9" class="svgbox" stroke="var(--seq2)"/>
-        <text x="135" y="268" class="lbl" font-size="11.5" fill="var(--seq2)">pl-s3 / pl-ddb</text>
-        <text x="135" y="285" class="sub" font-size="9.5">→ Gateway Endpt</text>
-
-        <rect x="225" y="248" width="150" height="48" rx="9" class="svgbox" stroke="var(--seq3)"/>
-        <text x="300" y="268" class="lbl" font-size="11.5" fill="var(--seq3)">0.0.0.0/0</text>
-        <text x="300" y="285" class="sub" font-size="9.5">→ NAT Gateway</text>
-
-        <rect x="143" y="316" width="150" height="48" rx="9" class="svgbox" stroke="var(--prompt)"/>
-        <text x="218" y="336" class="lbl" font-size="11.5" fill="var(--prompt)">private-only res</text>
-        <text x="218" y="353" class="sub" font-size="9.5">→ Interface Endpt</text>
-
-        <line x1="180" y1="214" x2="135" y2="248" class="wire ok"/>
-        <line x1="260" y1="214" x2="300" y2="248" class="wire nat"/>
-        <line x1="230" y1="214" x2="218" y2="316" class="wire"/>
-
-        <!-- public subnet w/ NAT -->
-        <rect x="440" y="120" width="150" height="120" rx="12" fill="rgba(245,177,76,.06)" stroke="var(--seq3)" stroke-width="1.6"/>
-        <text x="515" y="142" class="lbl" fill="var(--seq3)" font-size="11">PUBLIC subnet</text>
-        <rect x="455" y="152" width="120" height="40" rx="8" class="svgbox" stroke="var(--seq3)"/>
-        <text x="515" y="177" class="lbl" font-size="11">NAT GW</text>
-        <rect x="455" y="198" width="120" height="34" rx="8" class="svgbox" stroke="var(--prompt)"/>
-        <text x="515" y="220" class="lbl" font-size="11">IGW</text>
-        <line x1="375" y1="272" x2="455" y2="172" class="wire nat"/>
-
-        <!-- endpoints column targets -->
-        <rect x="610" y="120" width="160" height="50" rx="10" class="svgbox" stroke="var(--seq2)"/>
-        <text x="690" y="142" class="lbl" font-size="11.5">S3 · DynamoDB</text>
-        <text x="690" y="160" class="sub" font-size="9.5">free · AWS backbone</text>
-        <line x1="210" y1="272" x2="610" y2="150" class="wire ok"/>
-
-        <rect x="610" y="250" width="160" height="50" rx="10" class="svgbox"/>
-        <text x="690" y="272" class="lbl" font-size="11.5">Bedrock·ECR·Logs</text>
-        <text x="690" y="290" class="sub" font-size="9.5">via NAT → IGW → 🌍</text>
-        <line x1="575" y1="172" x2="610" y2="262" class="wire nat"/>
-
-        <rect x="610" y="330" width="160" height="56" rx="10" class="svgbox" stroke="var(--prompt)"/>
-        <text x="690" y="354" class="lbl" font-size="11.5">Private-only resource</text>
-        <text x="690" y="372" class="sub" font-size="9.5">PrivateLink (no internet)</text>
-        <line x1="293" y1="340" x2="610" y2="356" class="wire"/>
-      </svg>
-      <div class="legend">
-        <span><span class="dot" style="background:var(--seq2)"></span>free gateway endpoint (S3/DDB)</span>
-        <span><span class="dot" style="background:var(--seq3)"></span>NAT path (Bedrock/ECR/Logs)</span>
-        <span><span class="dot" style="background:var(--prompt)"></span>PrivateLink interface endpoint</span>
-        <span><span class="dot" style="background:var(--kv)"></span>the ENI = "Lambda in the VPC"</span>
-      </div>
-    </div>
-
-    <h3 class="reveal">How every destination is reached — before vs after</h3>
-    <div class="card reveal" style="overflow-x:auto">
+    <!-- NACL -->
+    <section id="nacl">
+      <h2><span class="num">§9</span> Network ACLs</h2>
+      <div class="def"><b>Network ACL (NACL):</b> an optional, <em>stateless</em> firewall that controls traffic at the <em>subnet</em> level, supporting both allow and deny rules evaluated in number order.</div>
+      <p>Where a security group wraps a single resource, a network ACL wraps an entire subnet — acting as a coarse, secondary guard rail. AWS guidance: use security groups as the primary control, and add NACLs for defence-in-depth (e.g. to deny a specific range, or to protect a subnet even if a resource is launched with the wrong security group).</p>
       <table>
-        <tr><th>Destination</th><th>Before (VPC-less)</th><th>After (VPC-enabled)</th></tr>
-        <tr><td><strong>Private-only resource</strong></td><td class="hl-red">unreachable</td><td class="hl-green">Interface Endpoint (PrivateLink) — the reason for the change</td></tr>
-        <tr><td><strong>Bedrock</strong></td><td>direct managed path</td><td>ENI → 0.0.0.0/0 → NAT → IGW → public endpoint</td></tr>
-        <tr><td><strong>ECR</strong> (image pull)</td><td>direct managed path</td><td>NAT → IGW (⚠️ no NAT ⇒ cold start fails)</td></tr>
-        <tr><td><strong>CloudWatch Logs</strong></td><td>direct managed path</td><td>NAT (or its own interface endpoint)</td></tr>
-        <tr><td><strong>S3</strong></td><td>direct managed path</td><td class="hl-green">Gateway Endpoint (free)</td></tr>
-        <tr><td><strong>DynamoDB</strong></td><td>direct managed path</td><td class="hl-green">Gateway Endpoint (free)</td></tr>
+        <tr><th>Characteristic</th><th>Security group</th><th>Network ACL</th></tr>
+        <tr><td><strong>Operates at</strong></td><td>Resource / ENI level</td><td>Subnet level</td></tr>
+        <tr><td><strong>State</strong></td><td>Stateful (return traffic auto-allowed)</td><td>Stateless (must allow return traffic explicitly)</td></tr>
+        <tr><td><strong>Rule types</strong></td><td>Allow only</td><td>Allow <em>and</em> deny</td></tr>
+        <tr><td><strong>Evaluation</strong></td><td>All rules considered</td><td>In ascending rule-number order, first match wins</td></tr>
       </table>
-    </div>
-    <div class="callout warn reveal"><span class="t">⚠️ Why NAT is mandatory after the change</span>A <code>PRIVATE_WITH_EGRESS</code> subnet has no internet gateway route of its own. Attaching the VPC strips the Lambda of the free public path it had. Without the NAT, Bedrock/S3/DDB calls hang to timeout <em>and</em> the ECR image pull fails at cold start — so the function never boots. That's the whole reason the NAT is there.</p></div>
-  </div>
-</section>
+    </section>
 
-<!-- ================= RECAP ================= -->
-<section id="recap">
-  <div class="wrap">
-    <div class="part-tag reveal">Recap — the whole map on one page</div>
-    <h2 class="reveal">Twelve ideas, one coherent system</h2>
-    <div class="card reveal">
+    <!-- ENI -->
+    <section id="eni">
+      <h2><span class="num">§10</span> Elastic network interface (ENI)</h2>
+      <div class="def"><b>Elastic network interface:</b> a logical networking component in a VPC that represents a <em>virtual network card</em>. Its attributes follow it as it is attached to, detached from, and reattached to instances. <span style="color:var(--faint);font-size:11px">(In the console &amp; EC2 API it's simply called a "network interface".)</span></div>
+      <p>The ENI is the component that is <em>actually</em> "in" a subnet. Compute attaches to it; the ENI provides the resource's presence on the network. According to AWS, an ENI can carry:</p>
+      <ul>
+        <li>A <strong>primary private IPv4</strong> address (and optional secondary private IPv4s), from the subnet's range.</li>
+        <li><strong>IPv6</strong> addresses (if the subnet has an IPv6 range).</li>
+        <li>One <strong>Elastic IP</strong> per private IPv4, and one public IPv4.</li>
+        <li>A <strong>MAC address</strong>.</li>
+        <li>One or more <strong>security groups</strong>.</li>
+        <li>A <strong>source/destination check</strong> flag (disabled for NAT/router/firewall appliances).</li>
+      </ul>
+      <p>An ENI is bound to <strong>one subnet</strong> (hence one Availability Zone). Each instance has a <strong>primary</strong> network interface that can't be detached; you can add <strong>secondary</strong> ENIs and even move them — with their IPs and security groups — to another instance, redirecting traffic. Some ENIs are <strong>requester-managed</strong>: created and operated by AWS services on your behalf (interface endpoints and many managed services use these).</p>
+      <figure>
+        <svg viewBox="0 0 820 250" role="img" aria-label="Anatomy of an ENI: it attaches to compute on one side and lives in a subnet on the other, carrying IPs, MAC, security groups and using the subnet route table">
+          <rect x="290" y="34" width="240" height="184" rx="15" fill="rgba(247,140,107,.08)" stroke="var(--orange)" stroke-width="2.2"/>
+          <text x="410" y="60" class="lbl" fill="var(--orange)" font-size="14.5">ENI</text>
+          <text x="410" y="78" class="sub">virtual network card</text>
+          <line x1="308" y1="90" x2="512" y2="90" stroke="var(--line)"/>
+          <text x="410" y="108" class="sub" font-size="11">• private IPv4 (+ secondaries)</text>
+          <text x="410" y="127" class="sub" font-size="11">• MAC address</text>
+          <text x="410" y="146" class="sub" font-size="11">• security group(s)</text>
+          <text x="410" y="165" class="sub" font-size="11">• optional Elastic / public IP</text>
+          <text x="410" y="184" class="sub" font-size="11">• src/dest check flag</text>
+          <text x="410" y="205" class="sub" font-size="11">• bound to ONE subnet / AZ</text>
+          <rect x="40" y="98" width="190" height="62" rx="11" class="box" stroke="var(--purple)"/>
+          <text x="135" y="124" class="lbl">Compute</text><text x="135" y="143" class="sub">EC2 · RDS · Lambda · …</text>
+          <line x1="230" y1="128" x2="290" y2="128" class="wire"/><text x="260" y="120" class="flow">attaches to</text>
+          <rect x="590" y="98" width="190" height="62" rx="11" class="box" stroke="var(--blue)"/>
+          <text x="685" y="124" class="lbl">Subnet</text><text x="685" y="143" class="sub">+ its route table</text>
+          <line x1="530" y1="128" x2="590" y2="128" class="wire"/><text x="560" y="120" class="flow">lives in</text>
+        </svg>
+        <figcaption>The ENI bridges compute to the network; its subnet, IPs, and security groups define reachability.</figcaption>
+      </figure>
+      <div class="note"><b>Why this matters:</b> because reachability is a property of the ENI's subnet and security groups, "moving a resource onto a network" really means "placing its ENI in a subnet". Routing, IP type, and firewall rules all follow from where that interface sits.</div>
+    </section>
+
+    <!-- ENDPOINTS -->
+    <section id="endpoints">
+      <h2><span class="num">§11</span> VPC endpoints</h2>
+      <div class="def"><b>VPC endpoint:</b> a way to connect resources in your VPC to AWS services (and some third-party / cross-account resources) <em>privately</em> — over the AWS network, without an internet gateway or NAT device.</div>
+      <p>Endpoints keep service traffic off the public internet, which improves security and can cut NAT data-processing costs. There are two main types for reaching AWS services, and they work very differently. The next two sub-sections cover each.</p>
+    </section>
+
+    <section id="gateway-ep">
+      <h2><span class="num">§11a</span> Gateway endpoint</h2>
+      <div class="def"><b>Gateway endpoint:</b> a VPC endpoint that targets <strong>Amazon S3 or DynamoDB</strong> — and only those two services. It is implemented as a <em>route-table entry</em>, not an interface, and there is <strong>no charge</strong> for it. <span style="color:var(--faint);font-size:11px">Gateway endpoints do not use AWS PrivateLink.</span></div>
+      <p>You add a gateway endpoint to one or more route tables. AWS installs a route whose destination is the service's <strong>managed prefix list</strong> (e.g. <code>pl-xxxx</code> — the set of IP ranges S3 or DynamoDB uses in the Region) and whose target is the endpoint. Traffic to the service then matches that route — and, by longest-prefix match (§5), takes the endpoint instead of a NAT or internet gateway, riding the AWS backbone directly.</p>
+      <ul>
+        <li><strong>Services:</strong> S3 and DynamoDB only.</li>
+        <li><strong>Mechanism:</strong> a route to a prefix list — no ENI, no private IP.</li>
+        <li><strong>Cost:</strong> free (no hourly fee, no data-processing fee).</li>
+        <li><strong>Reach:</strong> only from within the VPC it's attached to (a route table is local to its VPC).</li>
+      </ul>
+      <figure>
+        <svg viewBox="0 0 820 180" role="img" aria-label="A gateway endpoint adds a route to S3 or DynamoDB's prefix list, sending traffic to the AWS backbone for free">
+          <rect x="40" y="64" width="170" height="56" rx="10" class="box"/><text x="125" y="88" class="lbl" font-size="12">Resource in VPC</text><text x="125" y="106" class="sub">private IP</text>
+          <rect x="300" y="56" width="220" height="72" rx="11" class="box" stroke="var(--green)"/>
+          <text x="410" y="84" class="lbl" fill="var(--green)">Gateway endpoint</text>
+          <text x="410" y="104" class="sub">a route to pl-S3 / pl-DynamoDB</text>
+          <text x="410" y="120" class="sub">FREE</text>
+          <rect x="610" y="56" width="170" height="72" rx="11" class="box"/>
+          <text x="695" y="88" class="lbl" font-size="12.5">S3 · DynamoDB</text><text x="695" y="108" class="sub">AWS backbone</text>
+          <line x1="210" y1="92" x2="300" y2="92" class="wire g"/>
+          <line x1="520" y1="92" x2="610" y2="92" class="wire g"/>
+        </svg>
+        <figcaption>A route-based, no-cost private path — exclusive to S3 and DynamoDB.</figcaption>
+      </figure>
+    </section>
+
+    <section id="interface-ep">
+      <h2><span class="num">§11b</span> Interface endpoint (AWS PrivateLink)</h2>
+      <div class="def"><b>Interface endpoint:</b> a VPC endpoint powered by <strong>AWS PrivateLink</strong> that is implemented as an <em>elastic network interface with a private IP</em> placed in your subnet. It supports most AWS services (and partner / cross-account services) — for example Bedrock, ECR, CloudWatch Logs, SQS, KMS, Secrets Manager.</div>
+      <p>For each subnet you choose, AWS creates an <strong>endpoint network interface</strong> (a requester-managed ENI) with a private IP. With <strong>private DNS</strong> enabled, the service's normal DNS name resolves to that private IP inside your VPC, so existing SDK/API calls transparently use the endpoint. Traffic stays on the AWS network and never traverses the public internet.</p>
+      <ul>
+        <li><strong>Services:</strong> most AWS services and PrivateLink-enabled third-party/partner services.</li>
+        <li><strong>Mechanism:</strong> an ENI with a private IP in your subnet; resolved by DNS.</li>
+        <li><strong>Cost:</strong> an hourly charge per endpoint (per AZ) plus a per-GB data-processing charge.</li>
+        <li><strong>Reach:</strong> works from the VPC and, unlike gateway endpoints, over VPN, Direct Connect, peering, and across accounts.</li>
+      </ul>
+      <figure>
+        <svg viewBox="0 0 820 190" role="img" aria-label="An interface endpoint places an ENI with a private IP in the subnet; private DNS resolves the service name to it and traffic reaches the service via PrivateLink">
+          <rect x="14" y="20" width="540" height="150" rx="13" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="30" y="42" class="lblL" fill="var(--blue)">Your VPC · subnet</text>
+          <rect x="40" y="66" width="180" height="58" rx="10" class="box"/><text x="130" y="90" class="lbl" font-size="12">Resource</text><text x="130" y="108" class="sub">SDK call → service DNS</text>
+          <rect x="300" y="60" width="220" height="70" rx="11" class="box" stroke="var(--blue)"/>
+          <text x="410" y="86" class="lbl" fill="var(--blue)">Interface endpoint</text>
+          <text x="410" y="105" class="sub">ENI · private IP · private DNS</text>
+          <text x="410" y="121" class="sub">hourly + per-GB</text>
+          <line x1="220" y1="95" x2="300" y2="95" class="wire b"/><text x="260" y="86" class="flow">private DNS</text>
+          <rect x="610" y="60" width="190" height="70" rx="11" class="box" stroke="var(--green)"/>
+          <text x="705" y="90" class="lbl" font-size="12">AWS / partner service</text><text x="705" y="110" class="sub">via PrivateLink</text>
+          <line x1="554" y1="95" x2="610" y2="95" class="wire"/>
+        </svg>
+        <figcaption>An ENI-based private on-ramp; the general mechanism for nearly all services.</figcaption>
+      </figure>
+      <div class="note"><b>Why two types exist:</b> gateway endpoints were AWS's first design, built for the two highest-volume services (S3, DynamoDB) as a free, route-based shortcut. Interface endpoints / PrivateLink are the general successor — they work across more connectivity scenarios (VPN, Direct Connect, peering, cross-account), which a local route table cannot. Every service introduced since uses the interface model.</div>
+    </section>
+
+    <!-- TOGETHER -->
+    <section id="together">
+      <h2><span class="num">§12</span> How it fits together</h2>
+      <p>A request leaving a resource in a VPC is shaped by these components in sequence:</p>
+      <ol>
+        <li>The resource sends traffic through its <strong>ENI</strong> (§10), which sits in a <strong>subnet</strong> (§3).</li>
+        <li>The ENI's <strong>security group</strong> (§8) must allow the traffic; the subnet's <strong>network ACL</strong> (§9) may also filter it.</li>
+        <li>The subnet's <strong>route table</strong> (§5) selects a target by longest-prefix match:
+          <ul>
+            <li>destined for the VPC → <code>local</code>;</li>
+            <li>destined for S3/DynamoDB with a <strong>gateway endpoint</strong> (§11a) → the AWS backbone, free;</li>
+            <li>destined for another service with an <strong>interface endpoint</strong> (§11b) → its private-IP ENI;</li>
+            <li>destined for the internet from a public resource → the <strong>internet gateway</strong> (§6);</li>
+            <li>destined for the internet from a private resource → the <strong>NAT gateway</strong> (§7) → internet gateway.</li>
+          </ul>
+        </li>
+      </ol>
+      <figure>
+        <svg viewBox="0 0 880 300" role="img" aria-label="End-to-end: a resource's ENI in a subnet, filtered by security group and NACL, with the route table choosing among local, gateway endpoint, interface endpoint, NAT gateway, or internet gateway">
+          <rect x="14" y="16" width="600" height="268" rx="14" fill="rgba(74,163,255,.05)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="30" y="40" class="lblL" fill="var(--blue)">VPC</text>
+
+          <rect x="34" y="54" width="250" height="210" rx="11" fill="rgba(62,207,142,.05)" stroke="var(--green)" stroke-width="1.4"/>
+          <text x="50" y="76" class="lblL" fill="var(--green)" font-size="12">Subnet  (NACL guards the edge)</text>
+          <rect x="60" y="90" width="200" height="52" rx="9" class="box" stroke="var(--orange)"/>
+          <text x="160" y="112" class="lbl" font-size="12">Resource + ENI</text><text x="160" y="129" class="sub">security group filters</text>
+          <rect x="60" y="156" width="200" height="46" rx="9" class="box" stroke="var(--gold)"/>
+          <text x="160" y="183" class="lbl" font-size="12" fill="var(--gold)">Route table</text>
+          <text x="160" y="226" class="sub" font-size="10">longest-prefix match</text>
+          <text x="160" y="242" class="sub" font-size="10">picks one target →</text>
+
+          <!-- targets -->
+          <rect x="330" y="60" width="270" height="34" rx="8" class="box"/><text x="465" y="82" class="lbl" font-size="11">local — within the VPC</text>
+          <rect x="330" y="104" width="270" height="34" rx="8" class="box" stroke="var(--green)"/><text x="465" y="126" class="lbl" font-size="11" fill="var(--green)">gateway endpoint → S3 / DynamoDB</text>
+          <rect x="330" y="148" width="270" height="34" rx="8" class="box" stroke="var(--blue)"/><text x="465" y="170" class="lbl" font-size="11" fill="var(--blue)">interface endpoint → other services</text>
+          <rect x="330" y="192" width="270" height="34" rx="8" class="box" stroke="var(--gold)"/><text x="465" y="214" class="lbl" font-size="11" fill="var(--gold)">NAT gateway → (private egress)</text>
+          <rect x="330" y="236" width="270" height="34" rx="8" class="box"/><text x="465" y="258" class="lbl" font-size="11">internet gateway → (public)</text>
+          <line x1="260" y1="179" x2="330" y2="77" class="wire"/>
+          <line x1="260" y1="179" x2="330" y2="121" class="wire g"/>
+          <line x1="260" y1="179" x2="330" y2="165" class="wire b"/>
+          <line x1="260" y1="179" x2="330" y2="209" class="wire gold"/>
+          <line x1="260" y1="179" x2="330" y2="253" class="wire"/>
+
+          <rect x="640" y="104" width="220" height="78" rx="11" class="box" stroke="var(--green)"/>
+          <text x="750" y="138" class="lbl" font-size="12">AWS services (private)</text><text x="750" y="158" class="sub">no internet needed</text>
+          <rect x="640" y="206" width="220" height="64" rx="11" class="box"/>
+          <text x="750" y="242" class="lbl">Internet 🌍</text>
+          <line x1="600" y1="121" x2="640" y2="135" class="wire g"/>
+          <line x1="600" y1="165" x2="640" y2="150" class="wire b"/>
+          <line x1="600" y1="209" x2="640" y2="232" class="wire gold"/>
+          <line x1="600" y1="253" x2="640" y2="244" class="wire"/>
+        </svg>
+        <figcaption>One coherent flow: ENI → security group / NACL → route table → the right exit.</figcaption>
+      </figure>
+    </section>
+
+    <!-- COMPARE -->
+    <section id="compare">
+      <h2>Quick comparison tables</h2>
+      <h3>Internet gateway vs NAT gateway</h3>
       <table>
-        <tr><th>Concept</th><th>One-line truth</th></tr>
-        <tr><td><strong>VPC</strong></td><td>Your isolated virtual network; a sealed box defined by a CIDR like <code>10.0.0.0/16</code>.</td></tr>
-        <tr><td><strong>Subnet</strong></td><td>An IP slice of the VPC in one AZ; resources launch into it.</td></tr>
-        <tr><td><strong>Public vs private subnet</strong></td><td>Decided <em>only</em> by whether the route table sends <code>0.0.0.0/0</code> to an IGW.</td></tr>
-        <tr><td><strong>Private / public IP</strong></td><td>Private = internal only; public = internet-routable. VPC Lambdas get private only.</td></tr>
-        <tr><td><strong>Route table</strong></td><td>Destination→target signs; <strong>longest-prefix match wins</strong>.</td></tr>
-        <tr><td><strong>Internet Gateway</strong></td><td>The public door; only routes for resources that have a public IP.</td></tr>
-        <tr><td><strong>NAT Gateway</strong></td><td>Outbound-only valve; lets private resources reach the internet. Hourly + per-GB.</td></tr>
-        <tr><td><strong>Security Group</strong></td><td>Stateful, allow-only firewall on the ENI.</td></tr>
-        <tr><td><strong>ENI</strong></td><td>The virtual NIC that <em>literally</em> lives in the subnet; the compute reaches the network through it.</td></tr>
-        <tr><td><strong>Hyperplane ENI</strong></td><td>Lambda's shared ENI, one per (subnet × SG); private IP only — never public.</td></tr>
-        <tr><td><strong>Gateway Endpoint</strong></td><td>Free route-based private access — S3 &amp; DynamoDB only.</td></tr>
-        <tr><td><strong>Interface Endpoint</strong></td><td>An ENI for PrivateLink to almost every other service; hourly + per-GB.</td></tr>
+        <tr><th></th><th>Internet gateway</th><th>NAT gateway</th></tr>
+        <tr><td><strong>Direction</strong></td><td>Inbound &amp; outbound</td><td>Outbound only</td></tr>
+        <tr><td><strong>Used by</strong></td><td>Public-subnet resources with a public IP</td><td>Private-subnet resources (private IP only)</td></tr>
+        <tr><td><strong>Lives in</strong></td><td>Attached to the VPC</td><td>A public subnet (public NAT) with an Elastic IP</td></tr>
+        <tr><td><strong>Cost</strong></td><td>No charge for the gateway itself</td><td>Hourly + per-GB data processing</td></tr>
       </table>
-    </div>
+      <h3>Gateway endpoint vs interface endpoint</h3>
+      <table>
+        <tr><th></th><th>Gateway endpoint</th><th>Interface endpoint (PrivateLink)</th></tr>
+        <tr><td><strong>Services</strong></td><td>S3 &amp; DynamoDB only</td><td>Most AWS &amp; partner services</td></tr>
+        <tr><td><strong>Mechanism</strong></td><td>Route-table entry to a prefix list</td><td>An ENI with a private IP in your subnet</td></tr>
+        <tr><td><strong>DNS</strong></td><td>Uses the service's public DNS (routed via the route)</td><td>Private DNS resolves the name to the ENI</td></tr>
+        <tr><td><strong>Cost</strong></td><td><span class="tag g">Free</span></td><td>Hourly per AZ + per-GB</td></tr>
+        <tr><td><strong>Reach beyond the VPC</strong></td><td>VPC-local only</td><td>Also VPN, Direct Connect, peering, cross-account</td></tr>
+      </table>
+      <h3>Security group vs network ACL</h3>
+      <table>
+        <tr><th></th><th>Security group</th><th>Network ACL</th></tr>
+        <tr><td><strong>Scope</strong></td><td>Resource / ENI</td><td>Subnet</td></tr>
+        <tr><td><strong>State</strong></td><td>Stateful</td><td>Stateless</td></tr>
+        <tr><td><strong>Rules</strong></td><td>Allow only</td><td>Allow &amp; deny</td></tr>
+        <tr><td><strong>Evaluation</strong></td><td>All rules</td><td>Numbered order, first match</td></tr>
+      </table>
+    </section>
 
-    <h3 class="reveal">The one sentence to remember</h3>
-    <div class="callout reveal"><span class="t">🧭 North star</span>"Putting compute in a VPC" means <strong>placing an ENI in a subnet</strong> — and from that moment the subnet's <strong>route table</strong> (where it can go), its IP type (public vs private), and its <strong>security group</strong> (what's allowed) govern everything. Reachability you got for free outside the VPC must now be rebuilt with a NAT gateway and/or VPC endpoints.</p></div>
-
-    <details class="reveal">
-      <summary>Sources (all official AWS documentation)</summary>
-      <div class="body">
-        <ul style="margin-top:8px">
-          <li>Amazon VPC User Guide — <em>How Amazon VPC works</em> (VPC, subnets, route tables, internet access).</li>
-          <li>Amazon VPC User Guide — <em>NAT gateways</em> (public/private NAT, Elastic IP, IGW interaction).</li>
-          <li>AWS PrivateLink — <em>Concepts</em> (interface vs gateway endpoints, endpoint network interfaces, private DNS).</li>
-          <li>AWS Lambda Developer Guide — <em>Giving Lambda functions access to resources in a VPC</em> (Lambda-managed VPC, internet access when attached, Hyperplane ENIs, public-subnet caveat).</li>
-        </ul>
-        <p style="margin-top:8px;font-size:13.5px">Figures are illustrative; consult AWS pricing pages for current NAT and interface-endpoint rates.</p>
+    <!-- SOURCES -->
+    <section id="sources">
+      <h2>Sources</h2>
+      <p>Every definition and behaviour described here is drawn from official AWS documentation:</p>
+      <ul>
+        <li><strong>Amazon VPC User Guide</strong> — <em>How Amazon VPC works</em> (VPC, subnets, route tables, internet access); <em>NAT gateways</em>; <em>Infrastructure security</em> (security groups vs network ACLs).</li>
+        <li><strong>Amazon EC2 User Guide</strong> — <em>Elastic network interfaces</em> (ENI attributes, primary/secondary, requester-managed).</li>
+        <li><strong>AWS PrivateLink documentation</strong> — <em>Concepts</em> (VPC endpoint types, endpoint network interfaces, gateway vs interface endpoints, private DNS).</li>
+      </ul>
+      <div class="footer">
+        <p>A neutral reference to Amazon VPC networking. Diagrams hand-authored in SVG. Figures (e.g. pricing) are descriptive — consult the current AWS pricing pages for exact rates.</p>
+        <p style="margin-top:8px">Built as a companion to the <a href="../../vllm-kb/guide/index.html">vLLM guide</a> in this repository.</p>
       </div>
-    </details>
-
-    <p class="reveal" style="margin-top:24px">You started not knowing what a VPC was. You can now read the before/after diagram of a Lambda moving into a private network and explain every arrow — including why the NAT is non-negotiable and why a public subnet wouldn't have saved you. That's the whole foundation.</p>
-  </div>
-  <div class="footer">
-    <p>A first-principles guide to AWS networking · built in the style of the <a href="../../vllm-kb/guide/index.html">vLLM guide</a>.</p>
-    <p style="margin-top:8px">Facts sourced from official AWS documentation. Diagrams hand-drawn in SVG.</p>
-  </div>
-</section>
+    </section>
+  </main>
+</div>
 
 <script>
-  // progress bar
-  const prog=document.getElementById('progress');
-  addEventListener('scroll',()=>{const h=document.documentElement;const sc=h.scrollTop/(h.scrollHeight-h.clientHeight);prog.style.width=(sc*100)+'%';},{passive:true});
-
-  // reveal on scroll
-  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-  // outline tree
-  function toggleTree(){document.getElementById('tree').classList.toggle('hidden');}
-  const treeNav=document.getElementById('treeNav');const spy=[];
-  document.querySelectorAll('section').forEach(sec=>{
-    const h=sec.querySelector('h1,h2');if(!h)return;
-    const tag=sec.querySelector('.part-tag');
-    let pn='';if(tag){const m=tag.textContent.match(/Part\s+([0-9]+)/i);pn=m?m[1]:'';}
-    const a=document.createElement('a');a.className='l1';a.href='#'+sec.id;
-    a.innerHTML=(pn!==''?`<span class="pn">${pn}</span>`:'')+h.textContent.replace(/\s+/g,' ').trim();
-    treeNav.appendChild(a);spy.push({el:sec,link:a});
-  });
-  function spyScroll(){const y=scrollY+130;let cur=spy[0];
-    for(const s of spy){if(s.el.getBoundingClientRect().top+scrollY<=y)cur=s;else break;}
-    spy.forEach(s=>s.link.classList.remove('active'));
-    if(cur){cur.link.classList.add('active');cur.link.scrollIntoView({block:'nearest'});}}
-  addEventListener('scroll',spyScroll,{passive:true});spyScroll();
-
-  // route-table longest-prefix demo
-  function ipToInt(ip){return ip.split('.').reduce((a,o)=>(a<<8)+ (+o),0)>>>0;}
-  function inCidr(ip,cidr){const [base,bits]=cidr.split('/');const m=bits==0?0:(~0<<(32-bits))>>>0;return (ipToInt(ip)&m)===(ipToInt(base)&m);}
-  const routes=[{cidr:'10.0.0.0/16',el:'r-local',name:'local (peer in VPC)'},{cidr:'52.119.0.0/20',el:'r-ddb',name:'Gateway Endpoint → DynamoDB'},{cidr:'0.0.0.0/0',el:'r-nat',name:'NAT Gateway'}];
-  function routeDemo(ip){
-    let best=null,bestBits=-1;
-    routes.forEach(r=>{document.getElementById(r.el).textContent='';
-      const bits=+r.cidr.split('/')[1];
-      if(inCidr(ip,r.cidr)){if(bits>bestBits){bestBits=bits;best=r;}}});
-    routes.forEach(r=>{const bits=+r.cidr.split('/')[1];const cell=document.getElementById(r.el);
-      if(inCidr(ip,r.cidr)){cell.textContent=(r===best)?'✓ WINS (most specific)':'matches';cell.style.color=(r===best)?'var(--seq2)':'var(--faint)';}
-      else{cell.textContent='—';cell.style.color='var(--faint)';}});
-    document.getElementById('routeStat').innerHTML=`Packet to <b style="color:var(--prompt)">${ip}</b> → matches the <b>/${bestBits}</b> route → sent via <b>${best.name}</b>. Longest-prefix match: the most specific route always wins.`;
+  // active-section highlighting in the TOC
+  const links=[...document.querySelectorAll('aside.toc a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const secs=[...document.querySelectorAll('section[id]')];
+  function onScroll(){
+    const y=scrollY+90;let cur=secs[0];
+    for(const s of secs){if(s.offsetTop<=y)cur=s;else break;}
+    links.forEach(a=>a.classList.remove('active'));
+    const a=cur&&map.get(cur.id);if(a){a.classList.add('active');a.scrollIntoView({block:'nearest'});}
   }
-
-  // quiz
-  function ans(btn){const box=btn.closest('.quiz');const correct=+box.dataset.answer;
-    const opts=[...box.querySelectorAll('.opt')];const idx=opts.indexOf(btn);
-    opts.forEach(o=>o.classList.remove('right','wrong'));
-    if(idx===correct){btn.classList.add('right');}else{btn.classList.add('wrong');opts[correct].classList.add('right');}
-    box.querySelector('.exp').classList.add('show');}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  // close mobile TOC after click
+  links.forEach(a=>a.addEventListener('click',()=>document.querySelector('.toc').classList.remove('open')));
 </script>
 </body>
 </html>
