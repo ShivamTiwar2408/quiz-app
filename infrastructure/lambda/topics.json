@@ -157,6 +157,7 @@
     "RBAC",
     "SAML",
     "SSLTLS",
+    "SSRF",
     "SecretsManagement"
   ],
   "Storage Systems": [
