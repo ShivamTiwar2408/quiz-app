@@ -1,7 +1,9 @@
 name: Deploy GitHub Pages
 
 # Auto-publishes the repository to GitHub Pages on every push to main.
-# The vLLM guide is served at: /vllm-kb/guide/index.html
+# Static guides served from the repo root:
+#   - vLLM guide:           /vllm-kb/guide/index.html
+#   - AWS networking guide: /aws-networking-kb/guide/index.html
 
 on:
   push:
