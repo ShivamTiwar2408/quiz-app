@@ -1,0 +1,3437 @@
+{
+  "canto": 3,
+  "title": "The Status Quo",
+  "source": "https://www.srimadbhagavatamclass.com/",
+  "total_questions": 246,
+  "questions": [
+    {
+      "id": 1,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "When Krishna came to Hastinapura before the war to make a peace treaty, He first went to whose house?",
+      "options": {
+        "a": "Indra",
+        "b": "Vidura",
+        "c": "Duryodhana",
+        "d": "Karna"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 2,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "When Vidura spoke words of wisdom to Dhritarashtra, what happened?",
+      "options": {
+        "a": "Dhritarashtra valued them",
+        "b": "Vidura was insulted by Duryodhana",
+        "c": "Duryodhana angrily asked him to leave the place",
+        "d": "Both b and c"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 3,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "After leaving Hastinapura, Vidura did what?",
+      "options": {
+        "a": "Went to Dwaraka",
+        "b": "Went to the Pandavas",
+        "c": "Travelled to Holy places",
+        "d": "Went in seclusion in the forest"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 4,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "At which place did Vidura learn that all his relatives had died?",
+      "options": {
+        "a": "Prabhasa",
+        "b": "Indraprastha",
+        "c": "Kanyakumari",
+        "d": "Dwaraka"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 5,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "Vidura met Uddhava at the bank of which river?",
+      "options": {
+        "a": "Narmada",
+        "b": "Yamuna",
+        "c": "Ganga",
+        "d": "Saraswati"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 6,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "Vidura asked Uddhava about the welfare of whom?",
+      "options": {
+        "a": "Vasudeva and Devaki",
+        "b": "The sons of Lord Krishna",
+        "c": "Pandavas",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 7,
+      "canto": 3,
+      "chapter": 1,
+      "chapter_title": "Questions by Vidura",
+      "question": "Who was Samba in his previous birth?",
+      "options": {
+        "a": "Ganesh",
+        "b": "Kartikeya",
+        "c": "Lakshmana",
+        "d": "Chitraketu"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 8,
+      "canto": 3,
+      "chapter": 2,
+      "chapter_title": "Remembrance of Lord Krishna",
+      "question": "At the age of ______ years Uddhava was absorbed in the service of Lord Krishna.",
+      "options": {
+        "a": "5",
+        "b": "12",
+        "c": "23",
+        "d": "54"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 9,
+      "canto": 3,
+      "chapter": 2,
+      "chapter_title": "Remembrance of Lord Krishna",
+      "question": "When Vidura asked about the welfare of Lord Krishna and His family and devotees, Vidura noticed that Uddhava______.",
+      "options": {
+        "a": "Was in total ecstasy",
+        "b": "Eyes were in tears due to separation from the Lord",
+        "c": "Had assimilated extensive love for the Lord",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 10,
+      "canto": 3,
+      "chapter": 2,
+      "chapter_title": "Remembrance of Lord Krishna",
+      "question": "Uddhava said it pained him to see Krishna______.",
+      "options": {
+        "a": "Standing before King Ugrasena and giving explanations to the king",
+        "b": "Begging pardon from His parents for His inability to serve them",
+        "c": "In His childhood living incognito from fear of Kamsa",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 11,
+      "canto": 3,
+      "chapter": 2,
+      "chapter_title": "Remembrance of Lord Krishna",
+      "question": "Uddhava narrated the pastime of ______ to Vidura.",
+      "options": {
+        "a": "Lord Krishna playing at the banks of Yamuna with His cowherd friends and calves",
+        "b": "Killing of various asuras sent by Kamsa",
+        "c": "Teaching lessons to Indra and Kaliya",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 12,
+      "canto": 3,
+      "chapter": 2,
+      "chapter_title": "Remembrance of Lord Krishna",
+      "question": "The last pastime of Lord Sri Krishna in Vrindavan explained by Uddhava to Vidura was______.",
+      "options": {
+        "a": "Govardhan Lila",
+        "b": "Kaliya daman",
+        "c": "Rasa Lila",
+        "d": "Killing of Dhenukasura"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 13,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "The Lord learned all Vedas simply by hearing them once from __________.",
+      "options": {
+        "a": "His father Nanda Maharaj",
+        "b": "His father Vasudeva",
+        "c": "His teacher Sandipani Muni",
+        "d": "His friend Sudama"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 14,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "Rukmini, whom the Lord carried away to marry was the daughter of King __________.",
+      "options": {
+        "a": "Jarasandha",
+        "b": "Bhismaka",
+        "c": "Chedi",
+        "d": "Jambavan"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 15,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "By subduing 7 bulls, the Lord achieved the hand of Princess __________.",
+      "options": {
+        "a": "Lakshmana",
+        "b": "Satyabhama",
+        "c": "Nagnajiti",
+        "d": "Mitravrinda"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 16,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "__________ was the son of Dharitri, who had held 16000 princesses as captives.",
+      "options": {
+        "a": "Narakasura",
+        "b": "Madhu",
+        "c": "Keshi",
+        "d": "Mayadanava"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 17,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "Lord begot in each and every wife ________ sons.",
+      "options": {
+        "a": "1",
+        "b": "10",
+        "c": "18",
+        "d": "25"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 18,
+      "canto": 3,
+      "chapter": 3,
+      "chapter_title": "The Lord's Pastimes Out of Vrindavan",
+      "question": "Maharaja Yudhistira performed ______ horse sacrifices induced by Krishna.",
+      "options": {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "d": "4"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 19,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "The Lord asked Uddhava to go to _____ to spend the rest of his days.",
+      "options": {
+        "a": "Vrndavana",
+        "b": "JagannathPuri",
+        "c": "Badarikashrama",
+        "d": "Rameswaram"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 20,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "In His last lila, the Lord was sitting and resting against a young _____ tree.",
+      "options": {
+        "a": "Mango",
+        "b": "Banyan",
+        "c": "Tamaal",
+        "d": "Kadamba"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 21,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "During His ending lila, while the Lord spoke with Uddhava, _____ approached that place.",
+      "options": {
+        "a": "Maitreya",
+        "b": "Vidhura",
+        "c": "Vasudeva",
+        "d": "Balarama"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 22,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "Uddhava desired only to _____.",
+      "options": {
+        "a": "Engage in the loving service of the Lord's lotus feet",
+        "b": "Always remember the Lord",
+        "c": "Serve the Lord from his mind, body and soul",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 23,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "The Lord resides in Badarikashrama in His incarnation as _____.",
+      "options": {
+        "a": "NaraNarayana Rsi",
+        "b": "Vamanadeva",
+        "c": "Vyasadeva",
+        "d": "Parasurama"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 24,
+      "canto": 3,
+      "chapter": 4,
+      "chapter_title": "Vidura Approaches Maitreya",
+      "question": "Vidura was instructed by Uddhava to receive transcendental knowledge from _____.",
+      "options": {
+        "a": "Maitreya Muni",
+        "b": "NaraNarayana Rsi",
+        "c": "Yudhistira",
+        "d": "Bhisma"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 25,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "Vidura met Maitreya Rsi at the banks of which river?",
+      "options": {
+        "a": "Ganga",
+        "b": "Yamuna",
+        "c": "Kaveri",
+        "d": "Tapi"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 26,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "What did Vidura inquire from Maitreya Rsi about?",
+      "options": {
+        "a": "The transcendental devotional service of the Lord",
+        "b": "How Lord accepts incarnations and creates cosmic manifestation all perfectly",
+        "c": "The auspicious characteristics of the Lord in His different incarnations",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 27,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "Vidura is pained to see how common people's duration is spoiled by what?",
+      "options": {
+        "a": "Presentations of philosophical speculations",
+        "b": "Theoretical ultimate goals of life",
+        "c": "Different modes of ritual",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 28,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "Vidura was formerly which King?",
+      "options": {
+        "a": "Yamaraja",
+        "b": "Viswaksena",
+        "c": "Bhoja",
+        "d": "Dasaratha"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 29,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "What transforms into false ego, manifested in 3 phases?",
+      "options": {
+        "a": "Mahatattva",
+        "b": "Absolute truth",
+        "c": "The Supreme Lord",
+        "d": "Material energy"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 30,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "The false ego transforms into mind by interaction with which mode?",
+      "options": {
+        "a": "Goodness",
+        "b": "Passion",
+        "c": "Ignorance",
+        "d": "B and c"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 31,
+      "canto": 3,
+      "chapter": 5,
+      "chapter_title": "Vidura's Talks with Maitreya",
+      "question": "The sky is the product of what?",
+      "options": {
+        "a": "Fire",
+        "b": "Water",
+        "c": "Earth",
+        "d": "Sound"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 32,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "The pure soul is in pure consciousness and never out of consciousness due to what? How then does he become engaged in nescience?",
+      "options": {
+        "a": "Time",
+        "b": "Situations",
+        "c": "Dreams",
+        "d": "Any of the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 33,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "With the Lord as Supersoul in every heart, why do a living being's activities result in what?",
+      "options": {
+        "a": "Misfortune",
+        "b": "Misery",
+        "c": "A and B",
+        "d": "Joy"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 34,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "(Not provided on the source page)",
+      "options": {},
+      "answer": null
+    },
+    {
+      "id": 35,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "Who \"always enjoy happiness\"?",
+      "options": {
+        "a": "Lowest of fool",
+        "b": "Transcendentalists",
+        "c": "Both a and b",
+        "d": "Persons in between"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 36,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "By serving what is one enabled to develop transcendental ecstasy in service of the Personality of Godhead?",
+      "options": {
+        "a": "The common man by philanthropy",
+        "b": "Children",
+        "c": "The feet of the spiritual master",
+        "d": "Deity at the temple"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 37,
+      "canto": 3,
+      "chapter": 7,
+      "chapter_title": "Further Inquires by Vidura",
+      "question": "Vidura also inquired on which topic?",
+      "options": {
+        "a": "Regulations for offering respects to forefathers",
+        "b": "Fruitive results of charity and penance",
+        "c": "How the Supreme Lord be completely satisfied",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 38,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "Sanat-Kumara accompanied by great sages inquired from ________ about truths regarding the Supreme Personality of Godhead.",
+      "options": {
+        "a": "Lord Brahma",
+        "b": "Lord Sankarsana",
+        "c": "Lord Indra",
+        "d": "Narada Muni"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 39,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "Parasara and Brahaspati both heard the glories of Srimad-Bhagavatam from ________.",
+      "options": {
+        "a": "Sanat-Kumara",
+        "b": "Lord Sankarsana",
+        "c": "Sankhyayana Muni",
+        "d": "Narada Muni"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 40,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "The Lord lay down for ______ thousand yuga cycles in His internal potency.",
+      "options": {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "d": "4"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 41,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "Brahma could realize the Supreme Lord_________.",
+      "options": {
+        "a": "By seeing into the eternal time",
+        "b": "By looking into the stem of the lotus flower",
+        "c": "By concentrating his mind on the Supreme Lord",
+        "d": "By wandering in space"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 42,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "At the end of ______ years, when his meditation on the Supreme Lord was complete, he could see the Supreme within his own heart.",
+      "options": {
+        "a": "10",
+        "b": "100",
+        "c": "1000",
+        "d": "10000"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 43,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "The gold on the summit of the coral mountain was mocked by_________.",
+      "options": {
+        "a": "Lord's helmet",
+        "b": "Luster of Lord's body",
+        "c": "Upper cloth of the Lord",
+        "d": "Flower garland of the Lord"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 44,
+      "canto": 3,
+      "chapter": 8,
+      "chapter_title": "Manifestation of Brahma from Garbhodakasayi Vishnu",
+      "question": "Thus Lord Brahma got surcharged with the mode of ________, became inclined to create.",
+      "options": {
+        "a": "Goodness",
+        "b": "Passion",
+        "c": "Ignorance",
+        "d": "All the above"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 45,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "Brahma surrenders unto the Supreme Lord because________.",
+      "options": {
+        "a": "Of Lord's Supreme most form of eternal, bliss and knowledge",
+        "b": "There is no change or deterioration of Lord's internal potency",
+        "c": "Though the cause of cosmic manifestation, Lord is untouched by matter",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 46,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "Brahma considers common people unfortunate because________.",
+      "options": {
+        "a": "They are bereft of the all auspicious performance of chanting and hearing",
+        "b": "They are overwhelmed by strong sex urges and indefatigable anger",
+        "c": "They are constantly perplexed by hunger, thirst, severe cold etc",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 47,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "The tree of planetary system has grown by first penetrating the material nature as__________.",
+      "options": {
+        "a": "Brahma",
+        "b": "Siva",
+        "c": "Vishnu",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 48,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "Brahma is situated in an abode which will continue to exist for a time duration of ______ parardhas.",
+      "options": {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "d": "4"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 49,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "Lord Brahma is empowered by the introspection of________.",
+      "options": {
+        "a": "Creation",
+        "b": "Annihilation",
+        "c": "Maintenance",
+        "d": "All the above"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 50,
+      "canto": 3,
+      "chapter": 9,
+      "chapter_title": "Brahma's Prayers for Creative Energy",
+      "question": "Lord had appeared before Brahma in His personal form as ________ to instruct.",
+      "options": {
+        "a": "Krishna",
+        "b": "Vamana",
+        "c": "Narayana",
+        "d": "Rama"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 51,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "Brahma engaged in penances for ___ celestial years and applied himself in devotional service of the Lord.",
+      "options": {
+        "a": "1",
+        "b": "10",
+        "c": "100",
+        "d": "1000"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 52,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "___ Planetary systems were created by Brahma for inhabitation by the living entities.",
+      "options": {
+        "a": "4",
+        "b": "14",
+        "c": "27",
+        "d": "48"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 53,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "___ is primeval source of interaction of the 3 modes of material nature.",
+      "options": {
+        "a": "Time",
+        "b": "Earth",
+        "c": "Air",
+        "d": "Fire"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 54,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "There are ___ kinds of annihilations due to eternal time.",
+      "options": {
+        "a": "3",
+        "b": "5",
+        "c": "7",
+        "d": "9"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 55,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "The sense perception is created in ___ creation.",
+      "options": {
+        "a": "2",
+        "b": "3",
+        "c": "4",
+        "d": "5"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 56,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "8th creation is that of lower species of life which are of ___ varieties.",
+      "options": {
+        "a": "4",
+        "b": "12",
+        "c": "28",
+        "d": "45"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 57,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "The dog, jackal, tiger, monkey all have ___ nails in their claws. They are the product of 8th creation.",
+      "options": {
+        "a": "4",
+        "b": "5",
+        "c": "6",
+        "d": "8"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 58,
+      "canto": 3,
+      "chapter": 10,
+      "chapter_title": "Divisions of the Creation",
+      "question": "In human race mode of ___ is very prominent.",
+      "options": {
+        "a": "Goodness",
+        "b": "Passion",
+        "c": "Ignorance",
+        "d": "All the above"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 59,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "______ are the ultimate state of the manifest universe.",
+      "options": {
+        "a": "Atoms",
+        "b": "Molecules",
+        "c": "Elements",
+        "d": "Gases"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 60,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "100 trutis make 1 _________.",
+      "options": {
+        "a": "Trasarenus",
+        "b": "Vedha",
+        "c": "Lava",
+        "d": "Nimesa"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 61,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "There are _______ fortnights in a month.",
+      "options": {
+        "a": "2",
+        "b": "15",
+        "c": "30",
+        "d": "52"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 62,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "A combination of _______ day and night of demigods form 1 complete calendar year for the human being.",
+      "options": {
+        "a": "1",
+        "b": "7",
+        "c": "12",
+        "d": "25"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 63,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "The aggregate number of years all millenniums combined is equal to ________ thousand years of demigods.",
+      "options": {
+        "a": "2",
+        "b": "12",
+        "c": "18",
+        "d": "26"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 64,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "Every Manu enjoys a life of a little more than _______ sets of 4 millenniums.",
+      "options": {
+        "a": "12",
+        "b": "27",
+        "c": "71",
+        "d": "100"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 65,
+      "canto": 3,
+      "chapter": 11,
+      "chapter_title": "Calculation of Time, from the Atom",
+      "question": "The layers of elements covering the universes are each _______ times thicker than the one before.",
+      "options": {
+        "a": "2",
+        "b": "4",
+        "c": "8",
+        "d": "10"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 66,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "The chief of the demigods who was born out of Brahma's anger was ___.",
+      "options": {
+        "a": "Rudra",
+        "b": "Kumaras",
+        "c": "Manu",
+        "d": "Porajapati"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 67,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "Rudra has ___ wives.",
+      "options": {
+        "a": "3",
+        "b": "7",
+        "c": "11",
+        "d": "24"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 68,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "___ was born from deliberation of Brahma.",
+      "options": {
+        "a": "Rudra",
+        "b": "Narada",
+        "c": "Daksha",
+        "d": "Bhrgu"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 69,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "Religion was manifested from the ___ of Brahma.",
+      "options": {
+        "a": "Back",
+        "b": "Breast",
+        "c": "Ears",
+        "d": "Mouth"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 70,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "Brahma's daughter's name was ___.",
+      "options": {
+        "a": "Vasi",
+        "b": "Vak",
+        "c": "Vapi",
+        "d": "Vayi"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 71,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "The 4 Vedas became manifest from the ___ face of Brahma.",
+      "options": {
+        "a": "Front",
+        "b": "Back",
+        "c": "East",
+        "d": "West"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 72,
+      "canto": 3,
+      "chapter": 12,
+      "chapter_title": "Creation of the Kumaras and Others",
+      "question": "Svayambhuva Manu and Satarupa had ___ children.",
+      "options": {
+        "a": "5",
+        "b": "100",
+        "c": "1000",
+        "d": "Innumerable"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 73,
+      "canto": 3,
+      "chapter": 13,
+      "chapter_title": "The Appearance of Lord Varaha",
+      "question": "The Supreme Lord as boar came out of Brahma's ________.",
+      "options": {
+        "a": "Forehead",
+        "b": "Eyes",
+        "c": "Nostril",
+        "d": "Ears"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 74,
+      "canto": 3,
+      "chapter": 13,
+      "chapter_title": "The Appearance of Lord Varaha",
+      "question": "Lord in the form of boar had ________ complexion.",
+      "options": {
+        "a": "Greenish",
+        "b": "Bluish",
+        "c": "Grayish",
+        "d": "Blackish"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 75,
+      "canto": 3,
+      "chapter": 13,
+      "chapter_title": "The Appearance of Lord Varaha",
+      "question": "________ are the plates of sacrifice of the Lord.",
+      "options": {
+        "a": "Ears",
+        "b": "Mouth",
+        "c": "Tongue",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 76,
+      "canto": 3,
+      "chapter": 13,
+      "chapter_title": "The Appearance of Lord Varaha",
+      "question": "Lord Boar took the earth on His tusks and got it out of ________.",
+      "options": {
+        "a": "Clouds",
+        "b": "Ground",
+        "c": "Water",
+        "d": "Mountain"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 77,
+      "canto": 3,
+      "chapter": 13,
+      "chapter_title": "The Appearance of Lord Varaha",
+      "question": "Lord's ________ is the place for three desires.",
+      "options": {
+        "a": "Neck",
+        "b": "Tusks",
+        "c": "Tongue",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 78,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Diti's father's name was ________.",
+      "options": {
+        "a": "Kardama Muni",
+        "b": "Kashyapa",
+        "c": "Daksha",
+        "d": "Svyambhuva Manu"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 79,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Daksha Prajapati had married ________ of his daughters to Kashyapa Muni.",
+      "options": {
+        "a": "2",
+        "b": "8",
+        "c": "13",
+        "d": "18"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 80,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Diti approached her husband to have children at ________.",
+      "options": {
+        "a": "Most inauspicious hour",
+        "b": "The time when horrible-looking ghosts are visible",
+        "c": "The time when Lord Siva travels with his ghost companions",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 81,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Diti, after realizing her fault of not listening to her husband, begged him to bless her so that she may not be cursed by Lord Siva and also Lord Siva ________.",
+      "options": {
+        "a": "Is her brother-in-law",
+        "b": "Is the worshippable Lord of all women",
+        "c": "Is the fulfiller of all material desires",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 82,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Kashyapa foretold Diti that the sons in her womb ________.",
+      "options": {
+        "a": "Would cause constant lamentation to all the 3 worlds",
+        "b": "Would kill poor, faultless living entities, torture women etc,",
+        "c": "Will be killed by the Supreme Personality of Godhead",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 83,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "Kasyapa also said to Diti that her grandson Prahlad ________.",
+      "options": {
+        "a": "Will be the topmost devotee of the Lord and would be the greatest of the great souls",
+        "b": "Will be always situated in transcendental ecstasy",
+        "c": "Will enter spiritual sky at the end of his life",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 84,
+      "canto": 3,
+      "chapter": 14,
+      "chapter_title": "Pregnancy of Diti in the Evening",
+      "question": "On hearing the future spoken by her husband, Diti ________.",
+      "options": {
+        "a": "Was pleased",
+        "b": "Was furious",
+        "c": "Was bewildered",
+        "d": "Was anxious"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 85,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "Diti's children were in her womb for ______ years.",
+      "options": {
+        "a": "10",
+        "b": "12",
+        "c": "100",
+        "d": "1000"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 86,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "The trees of the Vaikuntha planets are ______.",
+      "options": {
+        "a": "Spiritual and personal",
+        "b": "Always in all seasons filled with flowers and fruits",
+        "c": "Wish fulfilling trees",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 87,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "______ is given special preference by the Lord among all flowers and leaves.",
+      "options": {
+        "a": "Tulasi",
+        "b": "Campaka",
+        "c": "Bakula",
+        "d": "Parijata"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 88,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "The ladies of Vaikunta planets always desire to ______.",
+      "options": {
+        "a": "Receive the grace of the Supreme Lord",
+        "b": "Wear beautiful ornaments",
+        "c": "Look beautiful",
+        "d": "Be the best"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 89,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "Vaikuntha puri has ______ entrances.",
+      "options": {
+        "a": "1",
+        "b": "3",
+        "c": "5",
+        "d": "7"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 90,
+      "canto": 3,
+      "chapter": 15,
+      "chapter_title": "Description of the Kingdom of God",
+      "question": "The 4 boy sages headed by Sanaka were stopped by ______ at the 7th entrance of Vaikuntha.",
+      "options": {
+        "a": "Lord Narayana",
+        "b": "2 door keepers Jaya and Vijaya",
+        "c": "Laxmi, the goddess of fortune",
+        "d": "Other sages"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 91,
+      "canto": 3,
+      "chapter": 16,
+      "chapter_title": "The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
+      "question": "Lord Narayana came at the entrance of Vaikuntha and spoke to the sages ________.",
+      "options": {
+        "a": "That the disrespect shown by His doorkeepers is actually shown by Him as they are His servants",
+        "b": "That He would take the offense on Himself",
+        "c": "That He is begging forgiveness from the sages",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 92,
+      "canto": 3,
+      "chapter": 16,
+      "chapter_title": "The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
+      "question": "The Lord says His heart is captivated by ________.",
+      "options": {
+        "a": "Who are gladdened in heart and who respect the brahmanas",
+        "b": "Who look upon brahmanas as His own Self",
+        "c": "Who praise the Brahmanas",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 93,
+      "canto": 3,
+      "chapter": 16,
+      "chapter_title": "The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
+      "question": "Lord considers it as a favor ________.",
+      "options": {
+        "a": "If the sages order that His servants, after reaping the fruit of their transgression, may return to His presence very soon",
+        "b": "If the time of exile of His servants may expire very soon",
+        "c": "Both a and b",
+        "d": "None of the above"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 94,
+      "canto": 3,
+      "chapter": 16,
+      "chapter_title": "The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
+      "question": "Jaya and Vijaya would get their birth in a demoniac family but would always be firmly united with the Lord in thought through mental concentration intensified by ________.",
+      "options": {
+        "a": "Anger",
+        "b": "Love",
+        "c": "Separation",
+        "d": "Frustration"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 95,
+      "canto": 3,
+      "chapter": 17,
+      "chapter_title": "Victory of Hiranyaksha Over All the Directions of the Universe",
+      "question": "When the 2 demons appeared from the womb of Diti _______.",
+      "options": {
+        "a": "There were earthquakes and appeared that there was fire everywhere",
+        "b": "Inauspicious planets like Saturn, meteors, comets appeared",
+        "c": "Luminaries in heavens were screened by masses of clouds",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 96,
+      "canto": 3,
+      "chapter": 17,
+      "chapter_title": "Victory of Hiranyaksha Over All the Directions of the Universe",
+      "question": "Only _______ were seized from fear on seeing all inauspiciousness spread everywhere.",
+      "options": {
+        "a": "4 sons of Brahma",
+        "b": "Indra",
+        "c": "Animals",
+        "d": "Jaya and Viyaya"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 97,
+      "canto": 3,
+      "chapter": 17,
+      "chapter_title": "Victory of Hiranyaksha Over All the Directions of the Universe",
+      "question": "Hiranyaksa's main motive was _______.",
+      "options": {
+        "a": "To reign the universe",
+        "b": "To kill his brother Hiranyakashipu",
+        "c": "Just to satisfy Hiranyakashipu",
+        "d": "To please Vishnu"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 98,
+      "canto": 3,
+      "chapter": 17,
+      "chapter_title": "Victory of Hiranyaksha Over All the Directions of the Universe",
+      "question": "Vibhavari is the home of _______, the lord of the aquatic creatures.",
+      "options": {
+        "a": "Varuna",
+        "b": "Vayu",
+        "c": "Agni",
+        "d": "Indra"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 99,
+      "canto": 3,
+      "chapter": 17,
+      "chapter_title": "Victory of Hiranyaksha Over All the Directions of the Universe",
+      "question": "Varuna guided Hiranyaksha to fight with _______ to his full satisfaction.",
+      "options": {
+        "a": "Brahma",
+        "b": "Vishnu",
+        "c": "Indra",
+        "d": "Hiranyakashipu"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 100,
+      "canto": 3,
+      "chapter": 18,
+      "chapter_title": "The Battle Between Lord Boar and the Demon Hiranyaksha",
+      "question": "Haryaksa is another name for ________.",
+      "options": {
+        "a": "Hiranyaksha",
+        "b": "Hiranyakashipu",
+        "c": "Kashyapa",
+        "d": "Diti"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 101,
+      "canto": 3,
+      "chapter": 18,
+      "chapter_title": "The Battle Between Lord Boar and the Demon Hiranyaksha",
+      "question": "Lord Varaha appeared in the form of ________ when fighting with Hiranyaksha.",
+      "options": {
+        "a": "Elephant",
+        "b": "Human",
+        "c": "Boar",
+        "d": "Tortoise"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 102,
+      "canto": 3,
+      "chapter": 18,
+      "chapter_title": "The Battle Between Lord Boar and the Demon Hiranyaksha",
+      "question": "When Lord was fighting with Hiranyaksha, mother Earth ________.",
+      "options": {
+        "a": "Was set afloat on the surface of the ocean by the Lord",
+        "b": "Was sunk deep down in the ocean",
+        "c": "Was captured by the demon",
+        "d": "Was in the arms of the Lord"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 103,
+      "canto": 3,
+      "chapter": 18,
+      "chapter_title": "The Battle Between Lord Boar and the Demon Hiranyaksha",
+      "question": "The Lord struck the demon with ________.",
+      "options": {
+        "a": "A club",
+        "b": "A mace",
+        "c": "With His chakra",
+        "d": "With arrows"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 104,
+      "canto": 3,
+      "chapter": 18,
+      "chapter_title": "The Battle Between Lord Boar and the Demon Hiranyaksha",
+      "question": "________ asked Lord Varaha to kill Hiranyaksha before the demoniac hour.",
+      "options": {
+        "a": "Brahma",
+        "b": "Siva",
+        "c": "Indra",
+        "d": "Mother Earth"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 105,
+      "canto": 3,
+      "chapter": 19,
+      "chapter_title": "The Killing of the Demon Hiranyaksha",
+      "question": "Hiranyaksha attacked the Lord by ________.",
+      "options": {
+        "a": "Throwing a mace against the Lord",
+        "b": "Hurling his trident towards the Lord",
+        "c": "Striking his fist on the Lord's chest",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 106,
+      "canto": 3,
+      "chapter": 19,
+      "chapter_title": "The Killing of the Demon Hiranyaksha",
+      "question": "The demon Hiranyaksa was finally dead when Lord ________.",
+      "options": {
+        "a": "Slapped him in the root of the ear",
+        "b": "Cut his neck by His Sudarshan Chakra",
+        "c": "Hit him on his head by His mace",
+        "d": "Shot him with His powerful arrow"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 107,
+      "canto": 3,
+      "chapter": 19,
+      "chapter_title": "The Killing of the Demon Hiranyaksha",
+      "question": "The Lord's incarnation as boar was spoken to Vidura by ________.",
+      "options": {
+        "a": "Lord Krishna",
+        "b": "Sage Maitreya",
+        "c": "Narada Muni",
+        "d": "King Yudhistira"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 108,
+      "canto": 3,
+      "chapter": 19,
+      "chapter_title": "The Killing of the Demon Hiranyaksha",
+      "question": "Kausarava is another name of sage ________.",
+      "options": {
+        "a": "Maitreya",
+        "b": "Durvasa",
+        "c": "Narada",
+        "d": "Vasistha"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 109,
+      "canto": 3,
+      "chapter": 19,
+      "chapter_title": "The Killing of the Demon Hiranyaksha",
+      "question": "The benedictions offered on faithful hearing of the Lord's incarnation as boar and the killing of Hiranyaksa is ________.",
+      "options": {
+        "a": "It promotes strength to one's vital organs",
+        "b": "It confers extraordinary merit, wealth, fame etc.",
+        "c": "He is relieved of killing of even a Brahmana",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 110,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "Vidura met Maitreya at ———–.",
+      "options": {
+        "a": "Hardwar",
+        "b": "Rishikesh",
+        "c": "Badrinath",
+        "d": "Vrndavan"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 111,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "The material nature was impregnated by —————- and thus material elements were produced.",
+      "options": {
+        "a": "Maha Vishnu",
+        "b": "Garbhdakshayi Vishnu",
+        "c": "Kshirodakshayi Vishnu",
+        "d": "Brahma"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 112,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "The coverings of ignorance were created by Brahma's ———–.",
+      "options": {
+        "a": "Neck",
+        "b": "Legs",
+        "c": "Back",
+        "d": "Shadow"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 113,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "The effulgent form of daytime were picked up by ———–.",
+      "options": {
+        "a": "Demons",
+        "b": "Demigods",
+        "c": "Bhutas",
+        "d": "Gandharvas"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 114,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "The ———— appeared before the demons with the form of a young woman.",
+      "options": {
+        "a": "Evening twilight",
+        "b": "Dawn",
+        "c": "Afternoon",
+        "d": "Midnight"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 115,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "Visvavasu and Gandharvas took possession of ————.",
+      "options": {
+        "a": "Sunlight",
+        "b": "Moonlight",
+        "c": "Twilight",
+        "d": "Starlight"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 116,
+      "canto": 3,
+      "chapter": 20,
+      "chapter_title": "Conversation Between Maitreya and Vidura",
+      "question": "Brahma's hair was transformed to __________.",
+      "options": {
+        "a": "Snakes",
+        "b": "Ferocious serpent",
+        "c": "Nagas",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 117,
+      "canto": 3,
+      "chapter": 22,
+      "chapter_title": "The Marriage of Kardama Muni and Devahuti",
+      "question": "Devahuti had heard about Kardama Muni from ———— and had thus fixed her mind on Kardama Muni.",
+      "options": {
+        "a": "Narada Muni",
+        "b": "Her father",
+        "c": "Lord Himself",
+        "d": "Lord Brahma"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 118,
+      "canto": 3,
+      "chapter": 22,
+      "chapter_title": "The Marriage of Kardama Muni and Devahuti",
+      "question": "Hiranyaksha attacked the Lord by ____________.",
+      "options": {
+        "a": "Throwing a mace against the Lord",
+        "b": "Hurling his trident towards the Lord",
+        "c": "Striking his fist on the Lord's chest",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 119,
+      "canto": 3,
+      "chapter": 22,
+      "chapter_title": "The Marriage of Kardama Muni and Devahuti",
+      "question": "The condition which Kardama Muni placed before agreeing for his marriage with Devahuti was ______.",
+      "options": {
+        "a": "He would not bear any children in his wife's womb",
+        "b": "Every year he would have a new wife",
+        "c": "After she gets children from him, he would accept a life of devotional service",
+        "d": "They would always live as ascetics"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 120,
+      "canto": 3,
+      "chapter": 22,
+      "chapter_title": "The Marriage of Kardama Muni and Devahuti",
+      "question": "(Not provided on the source page)",
+      "options": {},
+      "answer": null
+    },
+    {
+      "id": 121,
+      "canto": 3,
+      "chapter": 22,
+      "chapter_title": "The Marriage of Kardama Muni and Devahuti",
+      "question": "Svayambhuva Manu lived for ————— cycles of the 4 ages completely engaged in matters regarding Vaasudeva.",
+      "options": {
+        "a": "12",
+        "b": "37",
+        "c": "71",
+        "d": "100"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 122,
+      "canto": 3,
+      "chapter": 25,
+      "chapter_title": "The Glories of Devotional Service",
+      "question": "Lord Kapila explained the path of the transcendentalists to His mother as __________.",
+      "options": {
+        "a": "He was very keen to deliver her",
+        "b": "A duty towards His mother",
+        "c": "She had uncontaminated desire for transcendental realization",
+        "d": "He was the Supreme Lord"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 123,
+      "canto": 3,
+      "chapter": 25,
+      "chapter_title": "The Glories of Devotional Service",
+      "question": "The symptoms of a sadhu are __________.",
+      "options": {
+        "a": "Tolerant, merciful and friendly",
+        "b": "Peaceful and sublime",
+        "c": "Abides by the scriptures",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 124,
+      "canto": 3,
+      "chapter": 25,
+      "chapter_title": "The Glories of Devotional Service",
+      "question": "Sankhya philosophy is __________.",
+      "options": {
+        "a": "Pure Bhakthi Yoga",
+        "b": "Combination of devotional service and mystic realization",
+        "c": "Mystic realization only",
+        "d": "Karma and Jnana"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 125,
+      "canto": 3,
+      "chapter": 25,
+      "chapter_title": "The Glories of Devotional Service",
+      "question": "When the devotees accept Lord as their __________, they are not deprived of their possessions.",
+      "options": {
+        "a": "Friend, Relative, Son, Preceptor",
+        "b": "Benefactor",
+        "c": "Supreme Deity",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 126,
+      "canto": 3,
+      "chapter": 25,
+      "chapter_title": "The Glories of Devotional Service",
+      "question": "The only means of attaining perfection of life is __________.",
+      "options": {
+        "a": "Engage in intensive practice of devotional service",
+        "b": "Know Sankhya philosophy very well",
+        "c": "Be completely engaged in mystic Yoga",
+        "d": "To be in complete meditation"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 127,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Sankhya philosophy deals with the____.",
+      "options": {
+        "a": "Observational study of devotional service",
+        "b": "Analytical study of devotional service",
+        "c": "Philosophical study of devotional service",
+        "d": "Deductive study of devotional service"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 128,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Sankhya philosophy has been explained by____.",
+      "options": {
+        "a": "Lord Kapiladev",
+        "b": "Brahma",
+        "c": "Narada",
+        "d": "Maitreya"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 129,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The whole world is illusioned by ____ due to which the common conditioned soul cannot see the Supreme Personality of Godhead.",
+      "options": {
+        "a": "The darkness of cloud",
+        "b": "The gross ignorance",
+        "c": "The supreme energy",
+        "d": "The three modes of material nature"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 130,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The Supreme Personality of Godhead is called vibhu because____.",
+      "options": {
+        "a": "He is the most effulgent Person",
+        "b": "He is the supplier of all material energies",
+        "c": "He is omnipresent",
+        "d": "The material energies cannot act on Him"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 131,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Why the material world was created for the sufferings of the conditioned souls____.",
+      "options": {
+        "a": "For the nitya-baddhas – who are eternally conditioned",
+        "b": "The rectify the enjoying temperament of the conditioned souls",
+        "c": "For anyone who pretends to enjoy",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 132,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The material modes are also said to be tricolor with red, white, blue____.",
+      "options": {
+        "a": "Red as mode of passion, White as mode of ignorance, Blue as mode of goodness",
+        "b": "Red as mode of passion, White as mode of goodness, Blue as mode of ignorance",
+        "c": "Red as mode of goodness, White as mode of ignorance, Blue as mode of passion",
+        "d": "Red as mode of ignorance, White as mode of passion, Blue as mode of goodness"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 133,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "____ is the cause of ones conditional life.",
+      "options": {
+        "a": "Material Consciousness",
+        "b": "Krishna Consciousness",
+        "c": "God Consciousness",
+        "d": "Consciousness of the supreme Brahman"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 134,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The influence of maya on conditioned souls can be eradicated by____.",
+      "options": {
+        "a": "Serving the respective demigods",
+        "b": "Serving Krishna",
+        "c": "By trying hard using one's intelligence",
+        "d": "None of the above"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 135,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Which of the following statements is correct?",
+      "options": {
+        "a": "The individual conditioned souls have no choice in terms of accepting a particular type of body",
+        "b": "The living entity is the cause of his own suffering",
+        "c": "The living entity can also be the cause of his eternal happiness",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 136,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Product of Prakriti (material) nature and the Supreme Lord is____.",
+      "options": {
+        "a": "Material consciousness",
+        "b": "Manifest and unmanifest material world",
+        "c": "Cosmic manifestation only",
+        "d": "Living entities only"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 137,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Which of the following is correct? i) Material nature is ever existing ii) Material nature sometimes appears and disappears iii) Cosmic manifestation is ever existing iv) Cosmic manifestation sometimes appears and disappears",
+      "options": {
+        "a": "Only i",
+        "b": "Only ii",
+        "c": "Both i and iv",
+        "d": "Both ii and iii"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 138,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Pradhana means____.",
+      "options": {
+        "a": "Material nature in its subtle stage",
+        "b": "The stage where cause and effect are not clearly manifested",
+        "c": "Condition of the material nature immediately previous to its manifestation",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 139,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "When ____ agitates the neutral state of material nature, it begins to produce varieties of manifestations.",
+      "options": {
+        "a": "Circumstances",
+        "b": "Time",
+        "c": "The 3 modes",
+        "d": "Living Entity"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 140,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The living force____.",
+      "options": {
+        "a": "Is a component of the Spiritual world",
+        "b": "Is a component of the material world",
+        "c": "Is produced by the interactions of the material elements",
+        "d": "Is produced by the interactions of 24 material elements"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 141,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "In the beginning, from clear consciousness, the first contamination sprang up. This is called ____. This is also represented as different senses and sense organs and gives us an illusion of advancement of civilization.",
+      "options": {
+        "a": "False ego",
+        "b": "Mode of goodness",
+        "c": "Mind",
+        "d": "Intelligence"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 142,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "However advanced a man is, if he is not fixed in Krishna Consciousness, he will simply accept and reject and will never be able to fix his ____ on a particular subject matter.",
+      "options": {
+        "a": "False ego",
+        "b": "Body",
+        "c": "Mind",
+        "d": "Intelligence"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 143,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "____ is the discriminating power to understand an object and it helps the senses to make choices.",
+      "options": {
+        "a": "False ego",
+        "b": "Body",
+        "c": "Mind",
+        "d": "Intelligence"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 144,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The False ego of the living entity is known by the name of Lord ____.",
+      "options": {
+        "a": "Sankarsana",
+        "b": "Aniruddha",
+        "c": "Pradyumna",
+        "d": "Vasudeva"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 145,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The Mind of the living entity is known by the name of Lord ____.",
+      "options": {
+        "a": "Sankarsana",
+        "b": "Aniruddha",
+        "c": "Pradyumna",
+        "d": "Vasudeva"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 146,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "It is stated in Vedanta Sutra that ____ is the origin of all objects of material possession and by that one can dissolve this material existence.",
+      "options": {
+        "a": "Sound",
+        "b": "Body",
+        "c": "Mind",
+        "d": "Intelligence"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 147,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "In the fire there is ____.",
+      "options": {
+        "a": "Sound, touch and form",
+        "b": "Sound, touch, form and taste",
+        "c": "Sound and touch",
+        "d": "Only sound"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 148,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The planetary systems are considered to form different bodily parts of the Universal form of the Lord. In this, the ____ is considered as sole of the Supreme Lord, ____ as belly and ____ as head.",
+      "options": {
+        "a": "Patala, Earth, Brahmaloka",
+        "b": "Brahmaloka, Earth, Patala",
+        "c": "Earth, Brahmaloka, Patala",
+        "d": "Patala, Brahmaloka, Earth"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 149,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "____ is considered as the eyes of the Supreme Personality of Godhead.",
+      "options": {
+        "a": "Moon",
+        "b": "Earth",
+        "c": "Sky",
+        "d": "Sun"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 150,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "Presiding deity of mind is ____, of intelligence is ____, of false ego is ____.",
+      "options": {
+        "a": "Brahma, Siva, Sun",
+        "b": "Brahma, Siva, Moon",
+        "c": "Sun, Moon, Brahma",
+        "d": "Moon, Brahma, Siva"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 151,
+      "canto": 3,
+      "chapter": 26,
+      "chapter_title": "Fundamental Principles of Material Nature",
+      "question": "The analytical study of the elements of material nature and the concentration of the mind upon the Supersoul are the sum and substance of the ____ philosophical system.",
+      "options": {
+        "a": "Hatha Yoga",
+        "b": "Jnana",
+        "c": "Sankhya",
+        "d": "Mayavada"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 152,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "\"Avikaara\" means without change. What is the unchanging position of a living entity?",
+      "options": {
+        "a": "Dovetail his energy with the Supreme Lord",
+        "b": "Practicing devotional service under a bonafide spiritual master",
+        "c": "Doing everything for Krsna without claiming proprietorship",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 153,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "A main difference between the conditioned soul and a devotee is:",
+      "options": {
+        "a": "Conditioned soul does not own responsibility of his actions",
+        "b": "Devotee owns responsibility of his actions",
+        "c": "Devotee does not own responsibility of his actions",
+        "d": "None of the above"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 154,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "One desiring material liberation (from birth and death) must turn to:",
+      "options": {
+        "a": "Opening hospitals",
+        "b": "Opening educational institutions",
+        "c": "Devotional Service",
+        "d": "Opening charity institutions"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 155,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "Because we've associated with material nature since time immemorial, we've grown accustomed to attachment with this temporary material nature.",
+      "options": {
+        "a": "Conditioned soul does not own responsibility of his actions",
+        "b": "Devotee owns responsibility of his actions",
+        "c": "Devotee does not own responsibility of his actions",
+        "d": "None of the above"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 156,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "Consciousness acts in 3 stages under material conception. To become Krishna Conscious, one transcends these 3 stages, which are:",
+      "options": {
+        "a": "Morn, noon, evening",
+        "b": "Awake, asleep, deep sleep",
+        "c": "Awake, sleep, dream stage",
+        "d": "Birth, death, old age"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 157,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "A pure devotee can realize the SPG's presence in everything by the reflection of His ______.",
+      "options": {
+        "a": "knowledge",
+        "b": "energy",
+        "c": "glories",
+        "d": "face"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 158,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "Identifying \"everything in relationship to the body is mine\" is ______, but identifying as eternal servitor of the Supreme Lord is ______.",
+      "options": {
+        "a": "False ego, ego",
+        "b": "Powerless, powerful",
+        "c": "Not glorious, glorious",
+        "d": "Bad, good"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 159,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "Though a devotee appears merged in the 24 elements of matter, he is understood to be awake and free from ______.",
+      "options": {
+        "a": "Ego",
+        "b": "False ego",
+        "c": "Pride",
+        "d": "Thoughts"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 160,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "Since material nature is eternally attracted to the spirit soul, how can the spirit soul be released?",
+      "options": {
+        "a": "By seriously discharging devotional service",
+        "b": "By seriously practicing mystic yoga",
+        "c": "By seriously performing one's duties",
+        "d": "By seriously acquiring jnana"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 161,
+      "canto": 3,
+      "chapter": 27,
+      "chapter_title": "Understanding Material Nature",
+      "question": "\"Aatmarama\" means:",
+      "options": {
+        "a": "One who rejoices in the self",
+        "b": "One fixed in spiritual activities in relationship with the Supreme soul",
+        "c": "One who enjoys in the spiritual atmosphere",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 162,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Lord Kapiladev explains the yoga system known as ___.",
+      "options": {
+        "a": "Hatha Yoga",
+        "b": "Astaanga Yoga",
+        "c": "Jnana Yoga",
+        "d": "Patanjali Yoga"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 163,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "The ultimate achievement in yoga practice is ___.",
+      "options": {
+        "a": "Realize Lord Brahma",
+        "b": "Realize Lord Vishnu",
+        "c": "Realize Lord Shiva",
+        "d": "Concentrate on voidness"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 164,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Number of circles of vital air circulation within the body.",
+      "options": {
+        "a": "3",
+        "b": "4",
+        "c": "5",
+        "d": "6"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 165,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Process used to eradicate contamination of physiological condition.",
+      "options": {
+        "a": "Hatha Yoga",
+        "b": "Yama",
+        "c": "Praanaayaama",
+        "d": "Niyama"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 166,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "To be free from 3 modes, one meditates on ___.",
+      "options": {
+        "a": "Life air",
+        "b": "The Supreme Personality of Godhead",
+        "c": "Mind",
+        "d": "Restraining of senses"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 167,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "SPG's countenance, eyes, and body comparisons.",
+      "options": {
+        "a": "Lotuslike, interior of lotus, blue lotus petals",
+        "b": "Smiling, lotus petals, bimba fruit",
+        "c": "Lotuslike, lotus petals, kadamba tree",
+        "d": "Blissful, bimba fruit, monsoon cloud"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 168,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Mark on chest and item around neck.",
+      "options": {
+        "a": "Lotus, Kaustuba gem",
+        "b": "Kaustuba gem, Lotus flower",
+        "c": "Srivatsa, Kaustuba gem",
+        "d": "Lotus flower, Kaustuba gem"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 169,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Meaning of \"Sarva-loka-namaskrtam.\"",
+      "options": {
+        "a": "Worshippable on earth",
+        "b": "By devotees in every planet",
+        "c": "By everyone in every planet",
+        "d": "By demigods"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 170,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Devotee first concentrates mind on Lord's ___.",
+      "options": {
+        "a": "Navel",
+        "b": "Eyes",
+        "c": "Lotus feet",
+        "d": "Face"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 171,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Marks adorning the lotus feet.",
+      "options": {
+        "a": "Thunderbolt, goad, banner, lotus",
+        "b": "Thunderbolt, mace, goad, lotus",
+        "c": "Conch shell, thunderbolt, goad, lotus",
+        "d": "Conch shell, mace, lotus, flower"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 172,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Meditating on ___ frees one from ignorance; ruby ___ dispels gloom.",
+      "options": {
+        "a": "Lotus feet, nails",
+        "b": "Thigh, hair",
+        "c": "Eyes, eye lids",
+        "d": "Chest, Srivatsa"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 173,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Origin of holy Ganges waters borne by Lord Shiva.",
+      "options": {
+        "a": "Mandakini",
+        "b": "Hairs of Lord Shiva",
+        "c": "Itself",
+        "d": "Foot wash of Lord Vishnu"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 174,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "SPG's ___ is the storehouse of all energy.",
+      "options": {
+        "a": "Eyes",
+        "b": "Thighs",
+        "c": "Feet",
+        "d": "Abdomen"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 175,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Lord's ___ is foundation of the entire universe.",
+      "options": {
+        "a": "Eyes",
+        "b": "4 arms",
+        "c": "Feet",
+        "d": "Navel"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 176,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Lord's ___ is source of transcendental pleasure for mind and satisfaction for eyes.",
+      "options": {
+        "a": "Chest",
+        "b": "Eyes",
+        "c": "4 arms",
+        "d": "Navel"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 177,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Lord's ___ are sources of powers of demigods.",
+      "options": {
+        "a": "Chest",
+        "b": "Eyes",
+        "c": "4 arms",
+        "d": "Navel"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 178,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Lord's ___ represents pure living entities engaged in His service.",
+      "options": {
+        "a": "Mace",
+        "b": "Pearl Necklace",
+        "c": "Earrings",
+        "d": "Armlets"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 179,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "To be aloof from sex attraction, see SPG's ___ and ___.",
+      "options": {
+        "a": "Eyes and ears",
+        "b": "Smile and eyebrows",
+        "c": "Nose and Mouth",
+        "d": "Head and hair"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 180,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "Mind ___ engaged = nirbija yoga; mind ___ = sabija-yoga.",
+      "options": {
+        "a": "Reluctantly, not thinking",
+        "b": "Totally, partially thinking",
+        "c": "Fully, not thinking",
+        "d": "Forcibly, constantly thinking"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 181,
+      "canto": 3,
+      "chapter": 28,
+      "chapter_title": "Kapila's Instructions on the Execution of Devotional Service",
+      "question": "The 4 principles (suddha-advaita, dvaita-advaita, visista-advaita, dvaita) belong to ___ doctrine.",
+      "options": {
+        "a": "Vaishnava",
+        "b": "Smaarta",
+        "c": "Buddhist",
+        "d": "Mayavada"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 182,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "Understanding everything by examining its nature and characteristics is called acquirement of knowledge. But the basic principle for acquiring knowledge is____.",
+      "options": {
+        "a": "Bhakthi Yoga",
+        "b": "Jnana Yoga",
+        "c": "Karma Yoga",
+        "d": "Dhyana Yoga"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 183,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "The body is born on a certain death and immediately influence of ___ acts upon it.",
+      "options": {
+        "a": "Place",
+        "b": "Circumstances",
+        "c": "Time",
+        "d": "Matter"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 184,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "In the ___ time factor has no influence.",
+      "options": {
+        "a": "Material world",
+        "b": "Cosmic creation",
+        "c": "Spiritual World",
+        "d": "Bhramaloka"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 185,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "Devotional Service executed by a person who is envious, proud, violent and angry and who is a separatist is considered to be in ___.",
+      "options": {
+        "a": "The mode of ignorance",
+        "b": "The mode of passion",
+        "c": "The mode of goodness",
+        "d": "Transcendence"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 186,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "The worship of deities in the temple by a separatist, with a motive for material enjoyment, fame and opulence, is devotion ___.",
+      "options": {
+        "a": "The mode of ignorance",
+        "b": "The mode of passion",
+        "c": "The mode of goodness",
+        "d": "Transcendence"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 187,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "A Separatist is one who___.",
+      "options": {
+        "a": "Should not think separate from the Lord but should think one with the Lord",
+        "b": "Sees his interest as separate from that of the Supreme Lord",
+        "c": "Considers himself separate from others",
+        "d": "Separates others from the Lord"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 188,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "When one worships the SPG and offers the results of his activities to the Lord, his devotion is in___.",
+      "options": {
+        "a": "The mode of ignorance",
+        "b": "The mode of passion",
+        "c": "The mode of goodness",
+        "d": "Transcendence"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 189,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "Devotional service rendered without any desire for material and spiritual benefits – Anyaabhilaasita Sunyam is in___.",
+      "options": {
+        "a": "The mode of ignorance",
+        "b": "The mode of passion",
+        "c": "The mode of goodness",
+        "d": "Transcendence"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 190,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "When a devotee is promoted to the spiritual world, Vaikuntha, the liberation called Salokya gives him___.",
+      "options": {
+        "a": "The bodily features same as those of the Supreme Person",
+        "b": "To be a personal associate of the Supreme Lord",
+        "c": "The opulence equal to the opulence of the Supreme Lord",
+        "d": "To live in the same planet, Vaikuntha as the Supreme Lord"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 191,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "When a devotee is promoted to the spiritual world, Vaikuntha, the liberation called Saarsti gives him___.",
+      "options": {
+        "a": "The bodily features same as those of the Supreme Person",
+        "b": "To be a personal associate of the Supreme Lord",
+        "c": "The opulence equal to the opulence of the Supreme Lord",
+        "d": "To live in the same planet, Vaikuntha as the Supreme Lord"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 192,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "When a devotee is promoted to the spiritual world, Vaikuntha, the liberation called Saamipya gives him___.",
+      "options": {
+        "a": "The bodily features same as those of the Supreme Person",
+        "b": "To be a personal associate of the Supreme Lord",
+        "c": "The opulence equal to the opulence of the Supreme Lord",
+        "d": "To live in the same planet, Vaikuntha as the Supreme Lord"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 193,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "When a devotee is promoted to the spiritual world, Vaikuntha, the liberation called Saarupya gives him___.",
+      "options": {
+        "a": "The bodily features same as those of the Supreme Person",
+        "b": "To be a personal associate of the Supreme Lord",
+        "c": "The opulence equal to the opulence of the Supreme Lord",
+        "d": "To live in the same planet, Vaikuntha as the Supreme Lord"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 194,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "In the spiritual world, the chief planet is___.",
+      "options": {
+        "a": "Krishnaloka",
+        "b": "Vaikuntha Loka",
+        "c": "Brahmaloka",
+        "d": "Svargaloka"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 195,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "A neophyte devotee considers the arca-vigraha (Deity form) as___.",
+      "options": {
+        "a": "Representation of SPG",
+        "b": "Non different from SPG",
+        "c": "Does not relate to SPG",
+        "d": "Statue"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 196,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "An advanced devotee considers the arca-vigraha (Deity form) as___.",
+      "options": {
+        "a": "Representation of SPG",
+        "b": "Non different from SPG",
+        "c": "Does not relate to SPG",
+        "d": "Statue"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 197,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "A pure devotee should execute devotional service by giving greatest respect to the ___ and the___.",
+      "options": {
+        "a": "Spirit soul and body",
+        "b": "Friends and relatives",
+        "c": "Spiritual Master and aacaryaas",
+        "d": "Inner self and outer self"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 198,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "A pure devotee should try to avoid the company of ___.",
+      "options": {
+        "a": "Any person",
+        "b": "Relatives",
+        "c": "Parents",
+        "d": "People who are not spiritually advanced"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 199,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "The individual soul when fully saturated with Krishna consciousness, can understand the presence of___.",
+      "options": {
+        "a": "Spirit soul",
+        "b": "Super soul",
+        "c": "Supreme Person",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 200,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "Performing ___, one should worship the Deity of SPG until one realizes the presence of the Lord in his heart as well as hearts of other living entities.",
+      "options": {
+        "a": "Prescribed duties",
+        "b": "Temple duties",
+        "c": "Personal work",
+        "d": "Meditation"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 201,
+      "canto": 3,
+      "chapter": 29,
+      "chapter_title": "Explanation of Devotional Service by Lord Kapila",
+      "question": "All natural phenomena like sun shining, wind blowing, rain pouring etc. happen under the superintendence of ___.",
+      "options": {
+        "a": "Brahma",
+        "b": "Demigods",
+        "c": "Lord Shiva",
+        "d": "Supreme Personality of Godhead"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 202,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "The main function of the time factor, which is the representative of SPG is to______.",
+      "options": {
+        "a": "Create everything",
+        "b": "Destroy everything",
+        "c": "Self realization",
+        "d": "Maintain everything"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 203,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "Whatever is produced by the materialist for so-called happiness, the SPG as ______ destroys and so the living entity ______.",
+      "options": {
+        "a": "Time, laments",
+        "b": "Time, rejoices",
+        "c": "Lord, cries",
+        "d": "Age, rejoices"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 204,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "(Not provided on the source page)",
+      "options": {},
+      "answer": null
+    },
+    {
+      "id": 205,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "Everyone is satisfied with his standard of living, however abominable it may be. This is because of the ______.",
+      "options": {
+        "a": "Mode of goodness",
+        "b": "Covering of illusionary energy",
+        "c": "Thought of equality",
+        "d": "Transcendental nature"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 206,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "Maya has 2 phases of activities. Aavaranaatmika and Praksepaatmikaa. Aavaranaatmika means ______ and Praksepaatmikaa means ______.",
+      "options": {
+        "a": "Surrounded, Pulling up",
+        "b": "Pulling up, Surrounded",
+        "c": "Pulling down, Covering",
+        "d": "Covering, pulling down"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 207,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "All our attempts to be happy in this material world are simply a delusion offered by______.",
+      "options": {
+        "a": "Brahma",
+        "b": "Lord Siva",
+        "c": "Maya",
+        "d": "Jiva"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 208,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "The result of material enjoyment is that one takes with him ______ only and not ______ after death.",
+      "options": {
+        "a": "Material benefits, sinful reactions",
+        "b": "Sinful reactions, material benefits",
+        "c": "Good memories, material benefits",
+        "d": "Good memories, sinful reactions"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 209,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "The messengers of Yamaraja are called ______.",
+      "options": {
+        "a": "Brahaspatis",
+        "b": "Brahmanas",
+        "c": "Devatas",
+        "d": "Yamadutaas"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 210,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "The best use of money as long as it is within our possession is to spend it to acquire______.",
+      "options": {
+        "a": "Krishna Consciousness",
+        "b": "Maya",
+        "c": "Material benefits",
+        "d": "Good karmic reactions"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 211,
+      "canto": 3,
+      "chapter": 30,
+      "chapter_title": "Description by Lord Kapila of Adverse Fruitive Activities",
+      "question": "The livelihood of those who are trying to advance in Krishna Consciousness must be very ______ and ______.",
+      "options": {
+        "a": "Fair, uncomplicated",
+        "b": "Complicated, complex",
+        "c": "Rigid, complex",
+        "d": "Flexible, many branched"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 212,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "Regarding \"retah-kanaasrayah,\" what takes shelter in a particle of semen to create life in the womb?",
+      "options": {
+        "a": "Semen",
+        "b": "Material body",
+        "c": "Soul of the living entity",
+        "d": "Supersoul"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 213,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "Within how many months of conception do the seven essential bodily ingredients come into existence?",
+      "options": {
+        "a": "Three",
+        "b": "Four",
+        "c": "Five",
+        "d": "Six"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 214,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "The consciousness of the baby within the womb develops from which month?",
+      "options": {
+        "a": "Five",
+        "b": "Six",
+        "c": "Seven",
+        "d": "Eight"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 215,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "In his frightful womb condition, the living entity does what toward the SPG?",
+      "options": {
+        "a": "Demands",
+        "b": "Respects",
+        "c": "Deals",
+        "d": "Prays"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 216,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "To get free from the threefold miseries, living entities must do what unto Him only?",
+      "options": {
+        "a": "Surrender",
+        "b": "Respect",
+        "c": "See",
+        "d": "Demand"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 217,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "The miserly intelligent are called:",
+      "options": {
+        "a": "Krpana dhih",
+        "b": "Udaara",
+        "c": "Anaarya",
+        "d": "None of the above"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 218,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "A Brahman who uses human intelligence for spiritual realization is called:",
+      "options": {
+        "a": "Krpana dhih",
+        "b": "Udaara",
+        "c": "Anaarya",
+        "d": "None of the above"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 219,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "Which external energy captures the newborn child, beginning the cycle of birth and death?",
+      "options": {
+        "a": "Maha maya",
+        "b": "Yoga maya",
+        "c": "Rudra maya",
+        "d": "Deva maya"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 220,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "How many years did Sukadeva Gosvami live within his mother's womb?",
+      "options": {
+        "a": "15",
+        "b": "16",
+        "c": "17",
+        "d": "18"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 221,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "Lust is the product of:",
+      "options": {
+        "a": "Mode of goodness",
+        "b": "Mode of passion",
+        "c": "Mode of ignorance",
+        "d": "All the above"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 222,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "Anger is the product of:",
+      "options": {
+        "a": "Mode of goodness",
+        "b": "Mode of passion",
+        "c": "Mode of ignorance",
+        "d": "All the above"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 223,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "What is described as maya's wonderful creation to keep conditioned souls in shackles?",
+      "options": {
+        "a": "Man",
+        "b": "Woman",
+        "c": "Children",
+        "d": "Old people"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 224,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "In which social order is restricted association with women allowed?",
+      "options": {
+        "a": "Brahmacharya",
+        "b": "Grahastha",
+        "c": "Vanaprastha",
+        "d": "Sannyasa"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 225,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "When encaged in the material body the living entity is called ___, and when free is called ___.",
+      "options": {
+        "a": "jiva bhuta, brahma bhuta",
+        "b": "brahma bhuta, jiva bhuta",
+        "c": "karmi, jnani",
+        "d": "jnani, karmi"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 226,
+      "canto": 3,
+      "chapter": 31,
+      "chapter_title": "Lord Kapila's Instructions on the Movements of the Living Entities",
+      "question": "It is best to control the senses by performing which yoga, serving Madana Mohana?",
+      "options": {
+        "a": "Hatha Yoga",
+        "b": "Dhyana Yoga",
+        "c": "Jnana Yoga",
+        "d": "Bhakthi Yoga"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 227,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "The objective of grahamedhi is ______ and that of grahastha is ______.",
+      "options": {
+        "a": "sense gratification, self realization",
+        "b": "self realization, sense gratification",
+        "c": "self realization, bringing up children",
+        "d": "sense gratification, family care taking"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 228,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "Pravrtti dharma means activities performed for ______ and nivrtti dharma means activities performed for ______.",
+      "options": {
+        "a": "satisfaction of the Supreme, sense gratification",
+        "b": "sense gratification, satisfaction of the Supreme",
+        "c": "happiness, growth",
+        "d": "maintenance, self respect"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 229,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "Brahma dies at the end of ______ paraardhas.",
+      "options": {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "d": "4"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 230,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "That which is subjected to change i.e material world is called ______.",
+      "options": {
+        "a": "Pradhaana",
+        "b": "Parasya cintakha",
+        "c": "Vyaakrta",
+        "d": "Avyaakrta"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 231,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "That which does not change i.e the abode of the Supreme Lord is called ______.",
+      "options": {
+        "a": "Pradhaana",
+        "b": "Parasya cintakha",
+        "c": "Vyaakrta",
+        "d": "Avyaakrta"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 232,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "A pure devotee is free from attachment and detachment because he leads his life for the ______ of the Supreme.",
+      "options": {
+        "a": "Blessings",
+        "b": "Grace",
+        "c": "Pleasure",
+        "d": "Favors"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 233,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "In pure Krishna Consciousness or knowledge in purity when one tries to understand the Absolute truth, one realizes Him as ______.",
+      "options": {
+        "a": "Impersonal Brahman",
+        "b": "Paramatma",
+        "c": "Supreme Person",
+        "d": "Brahmajyoti"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 234,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "One can appreciate the Absolute Truth properly and with all relishable pleasure only through one path and that is ______.",
+      "options": {
+        "a": "Charity",
+        "b": "Pious activities",
+        "c": "Jnana yoga",
+        "d": "Devotional Service"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 235,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "There are _____ processes of devotional service.",
+      "options": {
+        "a": "5",
+        "b": "7",
+        "c": "9",
+        "d": "11"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 236,
+      "canto": 3,
+      "chapter": 32,
+      "chapter_title": "Entanglement in Fruitive Activities",
+      "question": "There are _____ devotional activities of which _____ are prominent.",
+      "options": {
+        "a": "28, 4",
+        "b": "56, 8",
+        "c": "64, 5",
+        "d": "84, 9"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 237,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "______ is also called as 'Aja'.",
+      "options": {
+        "a": "Brahma",
+        "b": "Durga",
+        "c": "Shiva",
+        "d": "Yudhistira"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 238,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "Bhakthi Rasaamrata Sindhu is written by ______.",
+      "options": {
+        "a": "Sanatana Gosvami",
+        "b": "Jiva Gosvami",
+        "c": "Rupa Gosvami",
+        "d": "Krishnadas Kaviraj Gosvami"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 239,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "Hari Bhakthi Vilasa is written by ______.",
+      "options": {
+        "a": "Sanatana Gosvami",
+        "b": "Jiva Gosvami",
+        "c": "Rupa Gosvami",
+        "d": "Krishnadas Kaviraj Gosvami"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 240,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "______ is so perfect that simply by following the rules and regulations and executing them under direction of Spiritual Master, one is liberated from clutches of Maya.",
+      "options": {
+        "a": "Jnana Yoga",
+        "b": "Devotional Service",
+        "c": "Hatha Yoga",
+        "d": "Meditation"
+      },
+      "answer": "b"
+    },
+    {
+      "id": 241,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "The actual identity of the living entity as described by Lord Chaitanya is \"Jivera svarapa haya – krsnera nitya dasa\" – this means ______.",
+      "options": {
+        "a": "Living entity is merged with the Supreme Lord",
+        "b": "Krishna always helps the Jivas",
+        "c": "Jivas are always independent and do not need Krishna",
+        "d": "Living entity is eternally the servitor of the Supreme Lord"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 242,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "Devahuti's father's name is ______, son's name is ______, husband's name is ______.",
+      "options": {
+        "a": "Svaayambhuva Manu, Kapila Dev, Kardama Muni",
+        "b": "Kardama Muni, Kapila Dev, Svaayambhuva Manu",
+        "c": "Kapila Dev, Svaayambhuva Manu, Kardama Muni",
+        "d": "Kapila Dev, Kardama Muni, Svaayambhuva Manu"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 243,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "At the end of her life, Devahuti was transported to ______ planet.",
+      "options": {
+        "a": "Vaikuntha",
+        "b": "Earth",
+        "c": "Kapila Vaikuntha",
+        "d": "Goloka Vrindavana"
+      },
+      "answer": "c"
+    },
+    {
+      "id": 244,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "The palace where Devahuti achieved her perfection is called ______.",
+      "options": {
+        "a": "Siddhapada",
+        "b": "Mahapada",
+        "c": "Vishnupada",
+        "d": "Brahmapada"
+      },
+      "answer": "a"
+    },
+    {
+      "id": 245,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "Lord Kapila Dev is eternally staying at ______ in trance to deliver the conditioned souls.",
+      "options": {
+        "a": "Himalayas",
+        "b": "Siddhapada",
+        "c": "Ananda Tirtha",
+        "d": "Ganga Sagara Tirtha"
+      },
+      "answer": "d"
+    },
+    {
+      "id": 246,
+      "canto": 3,
+      "chapter": 33,
+      "chapter_title": "Activities of Kapila",
+      "question": "The carrier of Supreme Personality of Godhead is ______.",
+      "options": {
+        "a": "Swan",
+        "b": "Garuda",
+        "c": "Eagle",
+        "d": "Peacock"
+      },
+      "answer": "b"
+    }
+  ]
+}

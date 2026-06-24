@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Śrīmad Bhāgavatam Quiz</title>
+<style>
+  :root{
+    --bg:#1a1206; --bg2:#241910; --panel:#2c1f12; --panel2:#3a2a18;
+    --ink:#f5ecd9; --muted:#c9b48f; --faint:#9a8463;
+    --line:#4a3622; --gold:#e0a93f; --saffron:#ef8a3c;
+    --green:#5cb878; --red:#e0625c; --accent:#e0a93f;
+    --radius:16px;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:radial-gradient(1100px 600px at 50% -8%,#2e2110 0%,var(--bg) 60%);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .wrap{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+
+  header{text-align:center;padding:18px 0 8px}
+  header .om{font-size:34px;color:var(--gold);line-height:1}
+  header h1{font-family:var(--serif);font-size:clamp(22px,4.5vw,30px);font-weight:700;margin:6px 0 4px;letter-spacing:.3px}
+  header .sub{color:var(--muted);font-size:13.5px}
+  header .src{color:var(--faint);font-size:11.5px;margin-top:6px;font-style:italic}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:16px 0;box-shadow:0 8px 30px -16px rgba(0,0,0,.6)}
+
+  /* topic picker */
+  .picker h2{font-family:var(--serif);font-size:19px;margin-bottom:4px}
+  .picker p{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  select,.btn{font-family:var(--sans);font-size:15px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:11px 14px;cursor:pointer}
+  select{flex:1;min-width:200px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:38px}
+  .btn{font-weight:650;transition:.15s;white-space:nowrap}
+  .btn:hover{border-color:var(--gold)}
+  .btn.primary{background:linear-gradient(90deg,var(--saffron),var(--gold));color:#2a1a06;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.07)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .meta{font-size:12.5px;color:var(--faint);margin-top:4px}
+  label.lenwrap{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+
+  /* progress */
+  .pbar{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden;margin:4px 0 16px}
+  .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--saffron),var(--gold));width:0;transition:width .3s}
+  .qcount{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .qcount .score{color:var(--gold);font-weight:650}
+
+  /* question */
+  .qtext{font-size:18px;font-weight:600;line-height:1.45;margin:6px 0 16px}
+  .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:1.5px solid var(--line);color:var(--ink);padding:13px 15px;border-radius:12px;margin:9px 0;cursor:pointer;transition:.15s;font-size:15.5px;line-height:1.4}
+  .opt:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
+  .opt .k{flex:0 0 26px;height:26px;border-radius:7px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;text-transform:uppercase;color:var(--gold)}
+  .opt:disabled{cursor:default}
+  .opt.correct{border-color:var(--green);background:rgba(92,184,120,.16)}
+  .opt.correct .k{background:var(--green);color:#0c2413;border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:rgba(224,98,92,.14)}
+  .opt.wrong .k{background:var(--red);color:#2a0c0a;border-color:var(--red)}
+  .opt .mark{margin-left:auto;font-size:17px;align-self:center}
+
+  .explain{margin-top:8px;border-left:3px solid var(--gold);background:rgba(224,169,63,.08);padding:12px 15px;border-radius:0 10px 10px 0;font-size:14.5px;color:var(--muted);display:none}
+  .explain.show{display:block}
+  .explain b{color:var(--ink)}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+
+  /* results */
+  .results{text-align:center}
+  .scorebig{font-size:54px;font-weight:800;font-family:var(--serif);background:linear-gradient(90deg,var(--saffron),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+  .scorelbl{color:var(--muted);font-size:15px;margin-bottom:4px}
+  .pct{font-size:15px;color:var(--gold);font-weight:650}
+  .verdict{font-family:var(--serif);font-size:19px;margin:12px 0 4px}
+  .review{text-align:left;margin-top:20px}
+  .review h3{font-size:15px;color:var(--faint);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;font-weight:650}
+  .ritem{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;background:var(--panel)}
+  .ritem .rq{font-weight:600;font-size:15px;margin-bottom:8px}
+  .ritem .ra{font-size:14px;margin:3px 0}
+  .ritem .ra .tag{display:inline-block;width:120px;color:var(--faint)}
+  .ritem .ra.you.ok{color:var(--green)}
+  .ritem .ra.you.no{color:var(--red)}
+  .ritem .ra.sol{color:var(--green)}
+  .ritem .rex{font-size:13.5px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+  .badge.ok{background:rgba(92,184,120,.2);color:var(--green)}
+  .badge.no{background:rgba(224,98,92,.2);color:var(--red)}
+
+  .hide{display:none}
+  footer{text-align:center;color:var(--faint);font-size:12px;margin-top:30px}
+  .loading{text-align:center;color:var(--muted);padding:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="om">ॐ</div>
+    <h1 id="appTitle">Śrīmad Bhāgavatam Quiz</h1>
+    <div class="sub">Test your knowledge, chapter by chapter</div>
+    <div class="src" id="appSrc"></div>
+  </header>
+
+  <!-- TOPIC PICKER -->
+  <section id="pickerView" class="card picker">
+    <h2>Choose a chapter</h2>
+    <p>Pick a chapter and how many questions you'd like, then begin.</p>
+    <div class="controls">
+      <select id="topicSelect" aria-label="Select chapter"></select>
+    </div>
+    <div class="controls">
+      <label class="lenwrap">Questions:
+        <select id="lenSelect" style="flex:0 0 auto;min-width:90px">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="0">All</option>
+        </select>
+      </label>
+      <label class="lenwrap"><input type="checkbox" id="shuffleChk" checked> Shuffle</label>
+    </div>
+    <div class="meta" id="topicMeta"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn primary" id="startBtn">Start quiz →</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quizView" class="card hide">
+    <div class="qcount"><span id="qPos">Question 1</span><span class="score" id="qScore">Score: 0</span></div>
+    <div class="pbar"><i id="pbar"></i></div>
+    <div class="qtext" id="qText"></div>
+    <div id="optWrap"></div>
+    <div class="explain" id="explain"></div>
+    <div class="nav">
+      <button class="btn" id="quitBtn">Quit</button>
+      <button class="btn primary hide" id="nextBtn">Next →</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="resultsView" class="card results hide">
+    <div class="scorelbl">You scored</div>
+    <div class="scorebig" id="rScore">0 / 0</div>
+    <div class="pct" id="rPct"></div>
+    <div class="verdict" id="rVerdict"></div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn primary" id="retryBtn">Retry this chapter</button>
+      <button class="btn" id="homeBtn">Pick another</button>
+    </div>
+    <div class="review" id="review"></div>
+  </section>
+
+  <div class="loading hide" id="loading">Loading questions…</div>
+  <footer>Śrīmad Bhāgavatam Canto 3 quiz · explanations sourced from Vedabase verse translations.</footer>
+</div>
+
+<script>
+const DATA_URL = 'data/bhagavatam-canto3.json';
+let DATA=null, quiz=[], idx=0, score=0, answered=false, results=[];
+
+const $ = id => document.getElementById(id);
+const show = (...ids) => {['pickerView','quizView','resultsView','loading'].forEach(v=>$(v).classList.add('hide')); ids.forEach(i=>$(i).classList.remove('hide'));}
+
+// deterministic-ish shuffle (Math.random is fine for a quiz)
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+async function init(){
+  show('loading');
+  try{
+    const r = await fetch(DATA_URL);
+    DATA = await r.json();
+  }catch(e){ $('loading').textContent='Could not load questions: '+e.message; return; }
+  $('appTitle').textContent = DATA.title || 'Śrīmad Bhāgavatam Quiz';
+  $('appSrc').textContent = DATA.source ? 'Source: '+DATA.source : '';
+  const sel = $('topicSelect');
+  sel.innerHTML = DATA.topics.map((t,i)=>`<option value="${i}">${t.name} — ${t.questions.length} Q</option>`).join('');
+  updateMeta();
+  sel.addEventListener('change', updateMeta);
+  show('pickerView');
+}
+function updateMeta(){
+  const t = DATA.topics[+$('topicSelect').value];
+  $('topicMeta').textContent = `This chapter has ${t.questions.length} questions.`;
+}
+
+function start(){
+  const t = DATA.topics[+$('topicSelect').value];
+  let qs = t.questions.slice();
+  if($('shuffleChk').checked) qs = shuffle(qs);
+  const n = +$('lenSelect').value;
+  if(n>0) qs = qs.slice(0, n);
+  quiz = qs; idx=0; score=0; results=[];
+  show('quizView');
+  renderQ();
+}
+
+function renderQ(){
+  answered=false;
+  const q = quiz[idx];
+  $('qPos').textContent = `Question ${idx+1} of ${quiz.length}`;
+  $('qScore').textContent = `Score: ${score}`;
+  $('pbar').style.width = (idx/quiz.length*100)+'%';
+  $('qText').textContent = q.question;
+  $('explain').className='explain'; $('explain').innerHTML='';
+  $('nextBtn').classList.add('hide');
+  const wrap = $('optWrap'); wrap.innerHTML='';
+  // present options in given order (a,b,c,d)
+  q.options.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.dataset.key=o.key;
+    b.innerHTML=`<span class="k">${o.key}</span><span class="otext">${o.text}</span><span class="mark"></span>`;
+    b.addEventListener('click',()=>choose(o.key,b));
+    wrap.appendChild(b);
+  });
+}
+
+function choose(key, btn){
+  if(answered) return;
+  answered=true;
+  const q = quiz[idx];
+  const correct = q.answer;
+  const isRight = key===correct;
+  if(isRight) score++;
+  results.push({q, chosen:key, correct, isRight});
+  // mark all
+  [...$('optWrap').children].forEach(b=>{
+    const k=b.dataset.key;
+    b.disabled=true;
+    if(k===correct){b.classList.add('correct'); b.querySelector('.mark').textContent='✓';}
+    else if(k===key){b.classList.add('wrong'); b.querySelector('.mark').textContent='✗';}
+  });
+  $('qScore').textContent = `Score: ${score}`;
+  // explanation
+  const ex=$('explain');
+  ex.innerHTML = `<b>${isRight?'Correct!':'Not quite.'}</b> ${q.explanation||''}`;
+  ex.classList.add('show');
+  $('nextBtn').classList.remove('hide');
+  $('nextBtn').textContent = (idx===quiz.length-1)?'See results →':'Next →';
+}
+
+function next(){
+  idx++;
+  if(idx>=quiz.length){ showResults(); }
+  else renderQ();
+}
+
+function showResults(){
+  show('resultsView');
+  const total=quiz.length, pct=Math.round(score/total*100);
+  $('rScore').textContent = `${score} / ${total}`;
+  $('rPct').textContent = `${pct}%`;
+  $('pbar').style.width='100%';
+  let v='Keep studying — every verse is a step on the path. 🪔';
+  if(pct>=90) v='Excellent! A true student of the Bhāgavatam. 🌸';
+  else if(pct>=70) v='Well done! Strong understanding. 🙏';
+  else if(pct>=50) v='Good effort — review the explanations below. 📖';
+  $('rVerdict').textContent=v;
+  // review
+  const rv=$('review');
+  rv.innerHTML='<h3>Review &amp; explanations</h3>';
+  results.forEach((r,i)=>{
+    const optMap={}; r.q.options.forEach(o=>optMap[o.key]=o.text);
+    const chosenTxt = optMap[r.chosen]||'—';
+    const correctTxt = optMap[r.correct]||'—';
+    const div=document.createElement('div');
+    div.className='ritem';
+    div.innerHTML = `
+      <div class="rq">${i+1}. ${r.q.question}
+        <span class="badge ${r.isRight?'ok':'no'}">${r.isRight?'correct':'wrong'}</span></div>
+      <div class="ra you ${r.isRight?'ok':'no'}"><span class="tag">Your answer:</span> ${r.chosen.toUpperCase()}. ${chosenTxt}</div>
+      ${r.isRight?'':`<div class="ra sol"><span class="tag">Correct answer:</span> ${r.correct.toUpperCase()}. ${correctTxt}</div>`}
+      <div class="rex">${r.q.explanation||''}</div>`;
+    rv.appendChild(div);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+$('startBtn').addEventListener('click',start);
+$('nextBtn').addEventListener('click',next);
+$('quitBtn').addEventListener('click',()=>{ if(results.length) showResults(); else show('pickerView'); });
+$('retryBtn').addEventListener('click',start);
+$('homeBtn').addEventListener('click',()=>show('pickerView'));
+init();
+</script>
+</body>
+</html>
