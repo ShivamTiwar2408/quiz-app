@@ -3,282 +3,350 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Śrīmad Bhāgavatam Quiz</title>
+<title>Quiz · pick a topic</title>
 <style>
   :root{
-    --bg:#1a1206; --bg2:#241910; --panel:#2c1f12; --panel2:#3a2a18;
-    --ink:#f5ecd9; --muted:#c9b48f; --faint:#9a8463;
-    --line:#4a3622; --gold:#e0a93f; --saffron:#ef8a3c;
-    --green:#5cb878; --red:#e0625c; --accent:#e0a93f;
-    --radius:16px;
+    --bg:#0f1320; --bg2:#141a2b; --panel:#182033; --panel2:#1f2940;
+    --ink:#e8eef7; --muted:#a6b4ca; --faint:#6f7f9a;
+    --line:#2a3650; --accent:#5b9dff; --accent2:#9b7bff;
+    --green:#46c98b; --red:#f0635c; --gold:#e0a93f;
+    --radius:14px;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
-    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:radial-gradient(1100px 600px at 50% -8%,#2e2110 0%,var(--bg) 60%);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
-  .wrap{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
 
-  header{text-align:center;padding:18px 0 8px}
-  header .om{font-size:34px;color:var(--gold);line-height:1}
-  header h1{font-family:var(--serif);font-size:clamp(22px,4.5vw,30px);font-weight:700;margin:6px 0 4px;letter-spacing:.3px}
-  header .sub{color:var(--muted);font-size:13.5px}
-  header .src{color:var(--faint);font-size:11.5px;margin-top:6px;font-style:italic}
+  .app{display:grid;grid-template-columns:300px 1fr;height:100vh}
 
-  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:16px 0;box-shadow:0 8px 30px -16px rgba(0,0,0,.6)}
+  /* ---------- sidebar tree ---------- */
+  aside{background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  aside .head{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+  aside .head .t{font-weight:800;font-size:16px;letter-spacing:.3px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  aside .head .s{font-size:11.5px;color:var(--faint);margin-top:2px}
+  .search{margin:10px 16px 6px}
+  .search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 11px;font-size:13.5px}
+  .search input::placeholder{color:var(--faint)}
+  .tree{flex:1;overflow-y:auto;padding:6px 10px 24px;scrollbar-width:thin}
+  .tree::-webkit-scrollbar{width:7px}.tree::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  .topic>.row{display:flex;align-items:center;gap:7px;padding:8px 9px;border-radius:8px;cursor:pointer;font-weight:650;font-size:14px;color:var(--ink);user-select:none}
+  .topic>.row:hover{background:var(--panel)}
+  .topic>.row .caret{transition:.18s;color:var(--faint);font-size:11px;width:12px;display:inline-block}
+  .topic.open>.row .caret{transform:rotate(90deg)}
+  .topic>.row .cnt{margin-left:auto;font-size:11px;color:var(--faint);font-family:var(--mono)}
+  .kids{display:none;margin:2px 0 6px 6px;border-left:1px solid var(--line);padding-left:8px}
+  .topic.open>.kids{display:block}
+  .leaf{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:.12s}
+  .leaf:hover{background:var(--panel);color:var(--ink)}
+  .leaf.active{background:linear-gradient(90deg,rgba(91,157,255,.18),transparent);color:var(--ink);border-left:2px solid var(--accent);margin-left:-2px}
+  .leaf .lc{margin-left:auto;font-size:10.5px;color:var(--faint);font-family:var(--mono)}
+  .leaf .dot{flex:0 0 6px;height:6px;border-radius:50%;background:var(--line)}
+  .leaf.active .dot{background:var(--accent)}
 
-  /* topic picker */
-  .picker h2{font-family:var(--serif);font-size:19px;margin-bottom:4px}
-  .picker p{color:var(--muted);font-size:14px;margin-bottom:14px}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-  select,.btn{font-family:var(--sans);font-size:15px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:11px 14px;cursor:pointer}
-  select{flex:1;min-width:200px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:38px}
-  .btn{font-weight:650;transition:.15s;white-space:nowrap}
-  .btn:hover{border-color:var(--gold)}
-  .btn.primary{background:linear-gradient(90deg,var(--saffron),var(--gold));color:#2a1a06;border-color:transparent}
-  .btn.primary:hover{filter:brightness(1.07)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
+  /* ---------- main ---------- */
+  main{overflow-y:auto;min-height:0;position:relative}
+  .mwrap{max-width:760px;margin:0 auto;padding:30px 28px 80px}
+  .mobile-bar{display:none}
+
+  .empty{text-align:center;color:var(--muted);padding:80px 20px}
+  .empty .big{font-size:42px;margin-bottom:12px}
+  .empty h2{font-weight:700;font-size:22px;color:var(--ink);margin-bottom:6px}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:16px 0}
+
+  /* setup card */
+  .crumb{font-size:12.5px;color:var(--faint);font-family:var(--mono);margin-bottom:6px}
+  .setup h2{font-size:21px;font-weight:700;margin-bottom:4px}
+  .setup p{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  label.lw{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+  select{font-family:var(--sans);font-size:14px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:8px 12px;cursor:pointer}
+  .btn{font-family:var(--sans);font-size:15px;font-weight:650;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:11px 18px;cursor:pointer;transition:.15s;white-space:nowrap}
+  .btn:hover:not(:disabled){border-color:var(--accent)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
   .row{display:flex;gap:10px;flex-wrap:wrap}
-  .meta{font-size:12.5px;color:var(--faint);margin-top:4px}
-  label.lenwrap{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
 
-  /* progress */
-  .pbar{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden;margin:4px 0 16px}
-  .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--saffron),var(--gold));width:0;transition:width .3s}
+  /* progress + question */
   .qcount{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
   .qcount .score{color:var(--gold);font-weight:650}
-
-  /* question */
-  .qtext{font-size:18px;font-weight:600;line-height:1.45;margin:6px 0 16px}
-  .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:1.5px solid var(--line);color:var(--ink);padding:13px 15px;border-radius:12px;margin:9px 0;cursor:pointer;transition:.15s;font-size:15.5px;line-height:1.4}
-  .opt:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
-  .opt .k{flex:0 0 26px;height:26px;border-radius:7px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;text-transform:uppercase;color:var(--gold)}
-  .opt:disabled{cursor:default}
-  .opt.correct{border-color:var(--green);background:rgba(92,184,120,.16)}
-  .opt.correct .k{background:var(--green);color:#0c2413;border-color:var(--green)}
-  .opt.wrong{border-color:var(--red);background:rgba(224,98,92,.14)}
-  .opt.wrong .k{background:var(--red);color:#2a0c0a;border-color:var(--red)}
+  .pbar{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden;margin-bottom:18px}
+  .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .3s}
+  .qtext{font-size:18px;font-weight:600;line-height:1.45;margin:4px 0 8px}
+  .multi-hint{font-size:12.5px;color:var(--gold);margin-bottom:12px;display:none}
+  .multi-hint.show{display:block}
+  .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:1.5px solid var(--line);color:var(--ink);padding:13px 15px;border-radius:11px;margin:9px 0;cursor:pointer;transition:.13s;font-size:15px;line-height:1.4}
+  .opt:hover:not(.locked){border-color:var(--accent);transform:translateY(-1px)}
+  .opt .k{flex:0 0 26px;height:26px;border-radius:7px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;text-transform:uppercase;color:var(--accent)}
+  .opt.sel{border-color:var(--accent);background:rgba(91,157,255,.12)}
+  .opt.sel .k{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .opt.locked{cursor:default}
+  .opt.correct{border-color:var(--green);background:rgba(70,201,139,.15)}
+  .opt.correct .k{background:var(--green);color:#04210f;border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:rgba(240,99,92,.14)}
+  .opt.wrong .k{background:var(--red);color:#2a0707;border-color:var(--red)}
   .opt .mark{margin-left:auto;font-size:17px;align-self:center}
-
-  .explain{margin-top:8px;border-left:3px solid var(--gold);background:rgba(224,169,63,.08);padding:12px 15px;border-radius:0 10px 10px 0;font-size:14.5px;color:var(--muted);display:none}
+  .explain{margin-top:8px;border-left:3px solid var(--accent);background:rgba(91,157,255,.08);padding:12px 15px;border-radius:0 10px 10px 0;font-size:14px;color:var(--muted);display:none}
   .explain.show{display:block}
   .explain b{color:var(--ink)}
   .nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 
   /* results */
   .results{text-align:center}
-  .scorebig{font-size:54px;font-weight:800;font-family:var(--serif);background:linear-gradient(90deg,var(--saffron),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
-  .scorelbl{color:var(--muted);font-size:15px;margin-bottom:4px}
+  .scorebig{font-size:50px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+  .scorelbl{color:var(--muted);font-size:14px}
   .pct{font-size:15px;color:var(--gold);font-weight:650}
-  .verdict{font-family:var(--serif);font-size:19px;margin:12px 0 4px}
-  .review{text-align:left;margin-top:20px}
-  .review h3{font-size:15px;color:var(--faint);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;font-weight:650}
+  .verdict{font-size:18px;margin:10px 0 4px}
+  .review{text-align:left;margin-top:22px}
+  .review h3{font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;font-weight:650}
   .ritem{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;background:var(--panel)}
   .ritem .rq{font-weight:600;font-size:15px;margin-bottom:8px}
-  .ritem .ra{font-size:14px;margin:3px 0}
-  .ritem .ra .tag{display:inline-block;width:120px;color:var(--faint)}
-  .ritem .ra.you.ok{color:var(--green)}
-  .ritem .ra.you.no{color:var(--red)}
-  .ritem .ra.sol{color:var(--green)}
-  .ritem .rex{font-size:13.5px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
-  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
-  .badge.ok{background:rgba(92,184,120,.2);color:var(--green)}
-  .badge.no{background:rgba(224,98,92,.2);color:var(--red)}
+  .ritem .ra{font-size:13.5px;margin:3px 0}
+  .ritem .ra .tag{display:inline-block;width:118px;color:var(--faint)}
+  .ritem .ra.you.ok{color:var(--green)} .ritem .ra.you.no{color:var(--red)} .ritem .ra.sol{color:var(--green)}
+  .ritem .rex{font-size:13px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
+  .badge.ok{background:rgba(70,201,139,.2);color:var(--green)} .badge.no{background:rgba(240,99,92,.2);color:var(--red)}
 
-  .hide{display:none}
-  footer{text-align:center;color:var(--faint);font-size:12px;margin-top:30px}
-  .loading{text-align:center;color:var(--muted);padding:40px}
+  .hide{display:none!important}
+  .scrim{display:none}
+
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr}
+    aside{position:fixed;inset:0 40% 0 0;z-index:30;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.5);right:auto;width:78%}
+    aside.open{transform:none}
+    .mobile-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:10}
+    .mobile-bar .ham{font-size:20px;cursor:pointer}
+    .mwrap{padding:18px 16px 70px}
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25;display:none}
+    .scrim.show{display:block}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="om">ॐ</div>
-    <h1 id="appTitle">Śrīmad Bhāgavatam Quiz</h1>
-    <div class="sub">Test your knowledge, chapter by chapter</div>
-    <div class="src" id="appSrc"></div>
-  </header>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="head">
+      <div class="t">📚 Quiz Library</div>
+      <div class="s" id="libMeta">loading…</div>
+    </div>
+    <div class="search"><input id="search" placeholder="Filter topics…" autocomplete="off"></div>
+    <div class="tree" id="tree"></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
 
-  <!-- TOPIC PICKER -->
-  <section id="pickerView" class="card picker">
-    <h2>Choose a chapter</h2>
-    <p>Pick a chapter and how many questions you'd like, then begin.</p>
-    <div class="controls">
-      <select id="topicSelect" aria-label="Select chapter"></select>
-    </div>
-    <div class="controls">
-      <label class="lenwrap">Questions:
-        <select id="lenSelect" style="flex:0 0 auto;min-width:90px">
-          <option value="5">5</option>
-          <option value="10" selected>10</option>
-          <option value="20">20</option>
-          <option value="0">All</option>
-        </select>
-      </label>
-      <label class="lenwrap"><input type="checkbox" id="shuffleChk" checked> Shuffle</label>
-    </div>
-    <div class="meta" id="topicMeta"></div>
-    <div class="row" style="margin-top:16px">
-      <button class="btn primary" id="startBtn">Start quiz →</button>
-    </div>
-  </section>
+  <!-- MAIN -->
+  <main>
+    <div class="mobile-bar"><span class="ham" id="ham">☰</span><b>Quiz</b></div>
+    <div class="mwrap">
+      <!-- empty -->
+      <div id="emptyView" class="empty">
+        <div class="big">📖</div>
+        <h2>Pick a topic to begin</h2>
+        <p>Choose a subtopic from the tree on the left. Answer the questions, see your score, and read the explanation for each.</p>
+      </div>
 
-  <!-- QUIZ -->
-  <section id="quizView" class="card hide">
-    <div class="qcount"><span id="qPos">Question 1</span><span class="score" id="qScore">Score: 0</span></div>
-    <div class="pbar"><i id="pbar"></i></div>
-    <div class="qtext" id="qText"></div>
-    <div id="optWrap"></div>
-    <div class="explain" id="explain"></div>
-    <div class="nav">
-      <button class="btn" id="quitBtn">Quit</button>
-      <button class="btn primary hide" id="nextBtn">Next →</button>
-    </div>
-  </section>
+      <!-- setup -->
+      <div id="setupView" class="card setup hide">
+        <div class="crumb" id="setupCrumb"></div>
+        <h2 id="setupName"></h2>
+        <p id="setupDesc"></p>
+        <div class="controls">
+          <label class="lw">Questions:
+            <select id="lenSelect"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option><option value="0">All</option></select>
+          </label>
+          <label class="lw"><input type="checkbox" id="shuffleChk" checked> Shuffle</label>
+        </div>
+        <div class="row" style="margin-top:16px"><button class="btn primary" id="startBtn">Start quiz →</button></div>
+      </div>
 
-  <!-- RESULTS -->
-  <section id="resultsView" class="card results hide">
-    <div class="scorelbl">You scored</div>
-    <div class="scorebig" id="rScore">0 / 0</div>
-    <div class="pct" id="rPct"></div>
-    <div class="verdict" id="rVerdict"></div>
-    <div class="row" style="justify-content:center;margin-top:14px">
-      <button class="btn primary" id="retryBtn">Retry this chapter</button>
-      <button class="btn" id="homeBtn">Pick another</button>
-    </div>
-    <div class="review" id="review"></div>
-  </section>
+      <!-- quiz -->
+      <div id="quizView" class="card hide">
+        <div class="qcount"><span id="qPos">Question 1</span><span class="score" id="qScore">Score: 0</span></div>
+        <div class="pbar"><i id="pbar"></i></div>
+        <div class="qtext" id="qText"></div>
+        <div class="multi-hint" id="multiHint">⚑ Select all that apply, then press Check.</div>
+        <div id="optWrap"></div>
+        <div class="explain" id="explain"></div>
+        <div class="nav">
+          <button class="btn" id="quitBtn">Quit</button>
+          <div style="display:flex;gap:10px">
+            <button class="btn primary hide" id="checkBtn">Check</button>
+            <button class="btn primary hide" id="nextBtn">Next →</button>
+          </div>
+        </div>
+      </div>
 
-  <div class="loading hide" id="loading">Loading questions…</div>
-  <footer>Śrīmad Bhāgavatam Canto 3 quiz · explanations sourced from Vedabase verse translations.</footer>
+      <!-- results -->
+      <div id="resultsView" class="card results hide">
+        <div class="scorelbl">You scored</div>
+        <div class="scorebig" id="rScore">0 / 0</div>
+        <div class="pct" id="rPct"></div>
+        <div class="verdict" id="rVerdict"></div>
+        <div class="row" style="justify-content:center;margin-top:14px">
+          <button class="btn primary" id="retryBtn">Retry</button>
+          <button class="btn" id="anotherBtn">Pick another</button>
+        </div>
+        <div class="review" id="review"></div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <script>
-const DATA_URL = 'data/bhagavatam-canto3.json';
-let DATA=null, quiz=[], idx=0, score=0, answered=false, results=[];
+const $=id=>document.getElementById(id);
+let MANIFEST=null, current=null; // current = {topicName, leaf:{name,set,count}}
+let quiz=[], idx=0, score=0, selected=new Set(), locked=false, results=[];
+const setCache={};
 
-const $ = id => document.getElementById(id);
-const show = (...ids) => {['pickerView','quizView','resultsView','loading'].forEach(v=>$(v).classList.add('hide')); ids.forEach(i=>$(i).classList.remove('hide'));}
-
-// deterministic-ish shuffle (Math.random is fine for a quiz)
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function showMain(id){['emptyView','setupView','quizView','resultsView'].forEach(v=>$(v).classList.add('hide'));$(id).classList.remove('hide');}
 
 async function init(){
-  show('loading');
-  try{
-    const r = await fetch(DATA_URL);
-    DATA = await r.json();
-  }catch(e){ $('loading').textContent='Could not load questions: '+e.message; return; }
-  $('appTitle').textContent = DATA.title || 'Śrīmad Bhāgavatam Quiz';
-  $('appSrc').textContent = DATA.source ? 'Source: '+DATA.source : '';
-  const sel = $('topicSelect');
-  sel.innerHTML = DATA.topics.map((t,i)=>`<option value="${i}">${t.name} — ${t.questions.length} Q</option>`).join('');
-  updateMeta();
-  sel.addEventListener('change', updateMeta);
-  show('pickerView');
-}
-function updateMeta(){
-  const t = DATA.topics[+$('topicSelect').value];
-  $('topicMeta').textContent = `This chapter has ${t.questions.length} questions.`;
+  try{ MANIFEST=await (await fetch('data/manifest.json')).json(); }
+  catch(e){ $('libMeta').textContent='failed to load'; return; }
+  $('libMeta').textContent=`${MANIFEST.tree.length} topics · ${MANIFEST.total_questions.toLocaleString()} questions`;
+  buildTree();
 }
 
-function start(){
-  const t = DATA.topics[+$('topicSelect').value];
-  let qs = t.questions.slice();
-  if($('shuffleChk').checked) qs = shuffle(qs);
-  const n = +$('lenSelect').value;
-  if(n>0) qs = qs.slice(0, n);
-  quiz = qs; idx=0; score=0; results=[];
-  show('quizView');
-  renderQ();
+function buildTree(filter=''){
+  const tree=$('tree'); tree.innerHTML='';
+  const f=filter.trim().toLowerCase();
+  MANIFEST.tree.forEach((topic,ti)=>{
+    const matchKids=topic.children.filter(c=>!f|| c.name.toLowerCase().includes(f)||topic.name.toLowerCase().includes(f));
+    if(f && matchKids.length===0) return;
+    const tEl=document.createElement('div'); tEl.className='topic'+((f||ti===0)?' open':'');
+    const total=topic.children.reduce((s,c)=>s+c.count,0);
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<span class="caret">▶</span><span class="tn">${topic.name}</span><span class="cnt">${total}</span>`;
+    row.addEventListener('click',()=>tEl.classList.toggle('open'));
+    tEl.appendChild(row);
+    const kids=document.createElement('div'); kids.className='kids';
+    (f?matchKids:topic.children).forEach(leaf=>{
+      const lEl=document.createElement('div'); lEl.className='leaf'; lEl.dataset.set=leaf.set;
+      lEl.innerHTML=`<span class="dot"></span><span class="ln">${leaf.name}</span><span class="lc">${leaf.count}</span>`;
+      lEl.addEventListener('click',()=>selectLeaf(topic,leaf,lEl));
+      kids.appendChild(lEl);
+    });
+    tEl.appendChild(kids);
+    tree.appendChild(tEl);
+  });
+}
+
+function selectLeaf(topic,leaf,el){
+  document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  current={topicName:topic.name,leaf};
+  $('setupCrumb').textContent=topic.name;
+  $('setupName').textContent=leaf.name;
+  $('setupDesc').textContent=`${leaf.count} question${leaf.count!==1?'s':''} available. Choose how many and begin.`;
+  showMain('setupView');
+  closeSidebar();
+}
+
+async function loadSet(sid){
+  if(setCache[sid]) return setCache[sid];
+  const d=await (await fetch(`data/sets/${sid}.json`)).json();
+  setCache[sid]=d.questions; return d.questions;
+}
+
+async function start(){
+  let qs=await loadSet(current.leaf.set);
+  if($('shuffleChk').checked) qs=shuffle(qs);
+  const n=+$('lenSelect').value; if(n>0) qs=qs.slice(0,n);
+  quiz=qs; idx=0; score=0; results=[];
+  showMain('quizView'); renderQ();
 }
 
 function renderQ(){
-  answered=false;
-  const q = quiz[idx];
-  $('qPos').textContent = `Question ${idx+1} of ${quiz.length}`;
-  $('qScore').textContent = `Score: ${score}`;
-  $('pbar').style.width = (idx/quiz.length*100)+'%';
-  $('qText').textContent = q.question;
+  locked=false; selected=new Set();
+  const q=quiz[idx];
+  const multi=q.correct.length>1;
+  $('qPos').textContent=`Question ${idx+1} of ${quiz.length}`;
+  $('qScore').textContent=`Score: ${score}`;
+  $('pbar').style.width=(idx/quiz.length*100)+'%';
+  $('qText').textContent=q.question;
+  $('multiHint').className='multi-hint'+(multi?' show':'');
   $('explain').className='explain'; $('explain').innerHTML='';
   $('nextBtn').classList.add('hide');
-  const wrap = $('optWrap'); wrap.innerHTML='';
-  // present options in given order (a,b,c,d)
+  $('checkBtn').classList.toggle('hide',!multi);  // single-select auto-checks on click
+  const wrap=$('optWrap'); wrap.innerHTML='';
   q.options.forEach(o=>{
-    const b=document.createElement('button');
-    b.className='opt'; b.dataset.key=o.key;
-    b.innerHTML=`<span class="k">${o.key}</span><span class="otext">${o.text}</span><span class="mark"></span>`;
-    b.addEventListener('click',()=>choose(o.key,b));
+    const b=document.createElement('button'); b.className='opt'; b.dataset.key=o.key;
+    b.innerHTML=`<span class="k">${o.key}</span><span class="ot">${o.text}</span><span class="mark"></span>`;
+    b.addEventListener('click',()=>onOpt(o.key,b,multi));
     wrap.appendChild(b);
   });
 }
 
-function choose(key, btn){
-  if(answered) return;
-  answered=true;
-  const q = quiz[idx];
-  const correct = q.answer;
-  const isRight = key===correct;
-  if(isRight) score++;
-  results.push({q, chosen:key, correct, isRight});
-  // mark all
-  [...$('optWrap').children].forEach(b=>{
-    const k=b.dataset.key;
-    b.disabled=true;
-    if(k===correct){b.classList.add('correct'); b.querySelector('.mark').textContent='✓';}
-    else if(k===key){b.classList.add('wrong'); b.querySelector('.mark').textContent='✗';}
-  });
-  $('qScore').textContent = `Score: ${score}`;
-  // explanation
-  const ex=$('explain');
-  ex.innerHTML = `<b>${isRight?'Correct!':'Not quite.'}</b> ${q.explanation||''}`;
-  ex.classList.add('show');
-  $('nextBtn').classList.remove('hide');
-  $('nextBtn').textContent = (idx===quiz.length-1)?'See results →':'Next →';
+function onOpt(key,btn,multi){
+  if(locked) return;
+  if(multi){
+    if(selected.has(key)){selected.delete(key);btn.classList.remove('sel');}
+    else{selected.add(key);btn.classList.add('sel');}
+  } else {
+    selected=new Set([key]); grade();
+  }
 }
 
-function next(){
-  idx++;
-  if(idx>=quiz.length){ showResults(); }
-  else renderQ();
+function grade(){
+  locked=true;
+  const q=quiz[idx];
+  const correct=new Set(q.correct);
+  const chosen=[...selected];
+  const isRight = chosen.length===correct.size && chosen.every(k=>correct.has(k));
+  if(isRight) score++;
+  results.push({q,chosen:chosen.slice().sort(),correct:[...correct].sort(),isRight});
+  [...$('optWrap').children].forEach(b=>{
+    const k=b.dataset.key; b.classList.add('locked'); b.classList.remove('sel');
+    if(correct.has(k)){b.classList.add('correct');b.querySelector('.mark').textContent='✓';}
+    else if(selected.has(k)){b.classList.add('wrong');b.querySelector('.mark').textContent='✗';}
+  });
+  $('qScore').textContent=`Score: ${score}`;
+  const ex=$('explain');
+  ex.innerHTML=`<b>${isRight?'Correct!':'Not quite.'}</b> ${q.explanation||''}`;
+  ex.classList.add('show');
+  $('checkBtn').classList.add('hide');
+  $('nextBtn').classList.remove('hide');
+  $('nextBtn').textContent=(idx===quiz.length-1)?'See results →':'Next →';
 }
+
+function next(){ idx++; if(idx>=quiz.length) showResults(); else renderQ(); }
 
 function showResults(){
-  show('resultsView');
+  showMain('resultsView');
   const total=quiz.length, pct=Math.round(score/total*100);
-  $('rScore').textContent = `${score} / ${total}`;
-  $('rPct').textContent = `${pct}%`;
-  $('pbar').style.width='100%';
-  let v='Keep studying — every verse is a step on the path. 🪔';
-  if(pct>=90) v='Excellent! A true student of the Bhāgavatam. 🌸';
-  else if(pct>=70) v='Well done! Strong understanding. 🙏';
-  else if(pct>=50) v='Good effort — review the explanations below. 📖';
+  $('rScore').textContent=`${score} / ${total}`; $('rPct').textContent=`${pct}%`;
+  let v='Keep practicing — review the explanations below. 📘';
+  if(pct>=90)v='Outstanding! 🏆'; else if(pct>=70)v='Great work! 👏'; else if(pct>=50)v='Solid — a bit more review. 📖';
   $('rVerdict').textContent=v;
-  // review
-  const rv=$('review');
-  rv.innerHTML='<h3>Review &amp; explanations</h3>';
+  const rv=$('review'); rv.innerHTML='<h3>Review &amp; explanations</h3>';
   results.forEach((r,i)=>{
-    const optMap={}; r.q.options.forEach(o=>optMap[o.key]=o.text);
-    const chosenTxt = optMap[r.chosen]||'—';
-    const correctTxt = optMap[r.correct]||'—';
-    const div=document.createElement('div');
-    div.className='ritem';
-    div.innerHTML = `
-      <div class="rq">${i+1}. ${r.q.question}
-        <span class="badge ${r.isRight?'ok':'no'}">${r.isRight?'correct':'wrong'}</span></div>
-      <div class="ra you ${r.isRight?'ok':'no'}"><span class="tag">Your answer:</span> ${r.chosen.toUpperCase()}. ${chosenTxt}</div>
-      ${r.isRight?'':`<div class="ra sol"><span class="tag">Correct answer:</span> ${r.correct.toUpperCase()}. ${correctTxt}</div>`}
+    const m={}; r.q.options.forEach(o=>m[o.key]=o.text);
+    const fmt=ks=>ks.map(k=>`${k.toUpperCase()}. ${m[k]||'—'}`).join('<br>');
+    const div=document.createElement('div'); div.className='ritem';
+    div.innerHTML=`<div class="rq">${i+1}. ${r.q.question}<span class="badge ${r.isRight?'ok':'no'}">${r.isRight?'correct':'wrong'}</span></div>
+      <div class="ra you ${r.isRight?'ok':'no'}"><span class="tag">Your answer:</span> ${r.chosen.length?fmt(r.chosen):'—'}</div>
+      ${r.isRight?'':`<div class="ra sol"><span class="tag">Correct answer:</span> ${fmt(r.correct)}</div>`}
       <div class="rex">${r.q.explanation||''}</div>`;
     rv.appendChild(div);
   });
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.querySelector('main').scrollTo({top:0,behavior:'smooth'});
 }
 
+// sidebar mobile
+function closeSidebar(){$('sidebar').classList.remove('open');$('scrim').classList.remove('show');}
+$('ham').addEventListener('click',()=>{$('sidebar').classList.add('open');$('scrim').classList.add('show');});
+$('scrim').addEventListener('click',closeSidebar);
+$('search').addEventListener('input',e=>buildTree(e.target.value));
 $('startBtn').addEventListener('click',start);
+$('checkBtn').addEventListener('click',()=>{ if(selected.size) grade(); });
 $('nextBtn').addEventListener('click',next);
-$('quitBtn').addEventListener('click',()=>{ if(results.length) showResults(); else show('pickerView'); });
+$('quitBtn').addEventListener('click',()=>{ if(results.length) showResults(); else showMain('setupView'); });
 $('retryBtn').addEventListener('click',start);
-$('homeBtn').addEventListener('click',()=>show('pickerView'));
+$('anotherBtn').addEventListener('click',()=>showMain(current?'setupView':'emptyView'));
 init();
 </script>
 </body>
