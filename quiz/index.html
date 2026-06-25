@@ -251,11 +251,15 @@ function buildTree(filter=''){
   MANIFEST.tree.forEach((topic,ti)=>{
     const matchKids=topic.children.filter(c=>!f|| c.name.toLowerCase().includes(f)||topic.name.toLowerCase().includes(f));
     if(f && matchKids.length===0) return;
-    const tEl=document.createElement('div'); tEl.className='topic'+((f||ti===0)?' open':'');
+    const tEl=document.createElement('div'); tEl.className='topic'+(f?' open':'');
     const total=topic.children.reduce((s,c)=>s+c.count,0);
     const row=document.createElement('div'); row.className='row';
     row.innerHTML=`<span class="caret">▶</span><span class="tn">${topic.name}</span><span class="cnt">${total}</span>`;
-    row.addEventListener('click',()=>tEl.classList.toggle('open'));
+    row.addEventListener('click',()=>{
+      const wasOpen=tEl.classList.contains('open');
+      document.querySelectorAll('.topic.open').forEach(t=>t.classList.remove('open'));
+      if(!wasOpen) tEl.classList.add('open');   // accordion: only one open at a time
+    });
     tEl.appendChild(row);
     const kids=document.createElement('div'); kids.className='kids';
     (f?matchKids:topic.children).forEach(leaf=>{
@@ -278,7 +282,8 @@ function activateLeaf(topic,leaf){
   const el=document.querySelector(`.leaf[data-set="${cssEsc(leaf.set)}"]`);
   if(el){
     el.classList.add('active');
-    el.closest('.topic')?.classList.add('open');     // expand the parent topic
+    document.querySelectorAll('.topic.open').forEach(t=>t.classList.remove('open')); // accordion
+    el.closest('.topic')?.classList.add('open');     // expand only the parent topic
     el.scrollIntoView({block:'nearest'});
   }
   applyTheme(topic.name);
