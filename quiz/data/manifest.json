@@ -731,27 +731,27 @@
     {
      "name": "Ch 1: Questions by Vidura",
      "set": "bhagavatam-canto3-ch1",
-     "count": 20
+     "count": 27
     },
     {
      "name": "Ch 2: Remembrance of Lord Krsna",
      "set": "bhagavatam-canto3-ch2",
-     "count": 20
+     "count": 25
     },
     {
      "name": "Ch 3: The Lord's Pastimes Out of Vrndavana",
      "set": "bhagavatam-canto3-ch3",
-     "count": 20
+     "count": 26
     },
     {
      "name": "Ch 4: Vidura Approaches Maitreya",
      "set": "bhagavatam-canto3-ch4",
-     "count": 20
+     "count": 26
     },
     {
      "name": "Ch 5: Vidura's Talks with Maitreya",
      "set": "bhagavatam-canto3-ch5",
-     "count": 20
+     "count": 27
     },
     {
      "name": "Ch 6: Creation of the Universal Form",
@@ -761,72 +761,72 @@
     {
      "name": "Ch 7: Further Inquiries by Vidura",
      "set": "bhagavatam-canto3-ch7",
-     "count": 20
+     "count": 25
     },
     {
      "name": "Ch 8: Manifestation of Brahma from Garbhodakasayi Visnu",
      "set": "bhagavatam-canto3-ch8",
-     "count": 20
+     "count": 27
     },
     {
      "name": "Ch 9: Brahma's Prayers for Creative Energy",
      "set": "bhagavatam-canto3-ch9",
-     "count": 20
+     "count": 26
     },
     {
      "name": "Ch 10: Divisions of the Creation",
      "set": "bhagavatam-canto3-ch10",
-     "count": 20
+     "count": 28
     },
     {
      "name": "Ch 11: Calculation of Time, from the Atom",
      "set": "bhagavatam-canto3-ch11",
-     "count": 21
+     "count": 28
     },
     {
      "name": "Ch 12: Creation of the Kumaras and Others",
      "set": "bhagavatam-canto3-ch12",
-     "count": 21
+     "count": 28
     },
     {
      "name": "Ch 13: The Appearance of Lord Varaha",
      "set": "bhagavatam-canto3-ch13",
-     "count": 20
+     "count": 25
     },
     {
      "name": "Ch 14: Pregnancy of Diti in the Evening",
      "set": "bhagavatam-canto3-ch14",
-     "count": 20
+     "count": 27
     },
     {
      "name": "Ch 15: Description of the Kingdom of God",
      "set": "bhagavatam-canto3-ch15",
-     "count": 20
+     "count": 26
     },
     {
      "name": "Ch 16: The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
      "set": "bhagavatam-canto3-ch16",
-     "count": 23
+     "count": 27
     },
     {
      "name": "Ch 17: Victory of Hiranyaksa in All Directions",
      "set": "bhagavatam-canto3-ch17",
-     "count": 19
+     "count": 24
     },
     {
      "name": "Ch 18: The Battle Between Lord Boar and the Demon Hiranyaksa",
      "set": "bhagavatam-canto3-ch18",
-     "count": 17
+     "count": 22
     },
     {
      "name": "Ch 19: The Killing of the Demon Hiranyaksa",
      "set": "bhagavatam-canto3-ch19",
-     "count": 21
+     "count": 26
     },
     {
      "name": "Ch 20: Conversation Between Maitreya and Vidura",
      "set": "bhagavatam-canto3-ch20",
-     "count": 21
+     "count": 28
     },
     {
      "name": "Ch 21: Conversation Between Manu and Kardama",
@@ -836,7 +836,7 @@
     {
      "name": "Ch 22: The Marriage of Kardama Muni and Devahuti",
      "set": "bhagavatam-canto3-ch22",
-     "count": 20
+     "count": 24
     },
     {
      "name": "Ch 23: Devahuti's Lamentation",
@@ -851,47 +851,47 @@
     {
      "name": "Ch 25: The Glories of Devotional Service",
      "set": "bhagavatam-canto3-ch25",
-     "count": 18
+     "count": 23
     },
     {
      "name": "Ch 26: Fundamental Principles of Material Nature",
      "set": "bhagavatam-canto3-ch26",
-     "count": 20
+     "count": 45
     },
     {
      "name": "Ch 27: Understanding Material Nature",
      "set": "bhagavatam-canto3-ch27",
-     "count": 16
+     "count": 26
     },
     {
      "name": "Ch 28: Kapila's Instructions on the Execution of Devotional Service",
      "set": "bhagavatam-canto3-ch28",
-     "count": 20
+     "count": 40
     },
     {
      "name": "Ch 29: Explanation of Devotional Service by Lord Kapila",
      "set": "bhagavatam-canto3-ch29",
-     "count": 20
+     "count": 40
     },
     {
      "name": "Ch 30: Description by Lord Kapila of Adverse Fruitive Activities",
      "set": "bhagavatam-canto3-ch30",
-     "count": 17
+     "count": 26
     },
     {
      "name": "Ch 31: Lord Kapila's Instructions on the Movements of the Living Entities",
      "set": "bhagavatam-canto3-ch31",
-     "count": 18
+     "count": 33
     },
     {
      "name": "Ch 32: Entanglement in Fruitive Activities",
      "set": "bhagavatam-canto3-ch32",
-     "count": 17
+     "count": 27
     },
     {
      "name": "Ch 33: Activities of Kapila",
      "set": "bhagavatam-canto3-ch33",
-     "count": 18
+     "count": 28
     }
    ]
   },
@@ -966,6 +966,6 @@
    ]
   }
  ],
- "total_questions": 2327,
+ "total_questions": 2570,
  "total_sets": 173
 }

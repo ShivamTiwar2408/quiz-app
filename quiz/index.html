@@ -219,7 +219,31 @@ async function init(){
   catch(e){ $('libMeta').textContent='failed to load'; return; }
   $('libMeta').textContent=`${MANIFEST.tree.length} topics · ${MANIFEST.total_questions.toLocaleString()} questions`;
   buildTree();
+  window.addEventListener('hashchange', route);
+  route();   // honor a deep link on first load
 }
+
+// ---- hash routing: #/<set-id> ----
+function findBySet(setId){
+  for(const topic of MANIFEST.tree){
+    const leaf=topic.children.find(c=>c.set===setId);
+    if(leaf) return {topic,leaf};
+  }
+  return null;
+}
+function route(){
+  const m=(location.hash||'').match(/^#\/(.+)$/);
+  if(!m){ // no route → empty/home state
+    document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
+    applyTheme(''); current=null; showMain('emptyView'); return;
+  }
+  const hit=findBySet(decodeURIComponent(m[1]));
+  if(!hit){ showMain('emptyView'); return; }
+  // make sure the leaf is present in the DOM (search filter may have hidden it)
+  if(!document.querySelector(`.leaf[data-set="${cssEsc(hit.leaf.set)}"]`)){ $('search').value=''; buildTree(); }
+  activateLeaf(hit.topic, hit.leaf);
+}
+function cssEsc(s){ return (window.CSS&&CSS.escape)?CSS.escape(s):s.replace(/[^a-zA-Z0-9_-]/g,'\\$&'); }
 
 function buildTree(filter=''){
   const tree=$('tree'); tree.innerHTML='';
@@ -237,7 +261,7 @@ function buildTree(filter=''){
     (f?matchKids:topic.children).forEach(leaf=>{
       const lEl=document.createElement('div'); lEl.className='leaf'; lEl.dataset.set=leaf.set;
       lEl.innerHTML=`<span class="dot"></span><span class="ln">${leaf.name}</span><span class="lc">${leaf.count}</span>`;
-      lEl.addEventListener('click',()=>selectLeaf(topic,leaf,lEl));
+      lEl.addEventListener('click',()=>{ location.hash='#/'+encodeURIComponent(leaf.set); });
       kids.appendChild(lEl);
     });
     tEl.appendChild(kids);
@@ -249,9 +273,14 @@ function applyTheme(topicName){
   const bhagavatam = /bh[aā]gavatam|śr[iī]mad/i.test(topicName||'');
   document.body.classList.toggle('theme-bhagavatam', bhagavatam);
 }
-function selectLeaf(topic,leaf,el){
+function activateLeaf(topic,leaf){
   document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
+  const el=document.querySelector(`.leaf[data-set="${cssEsc(leaf.set)}"]`);
+  if(el){
+    el.classList.add('active');
+    el.closest('.topic')?.classList.add('open');     // expand the parent topic
+    el.scrollIntoView({block:'nearest'});
+  }
   applyTheme(topic.name);
   current={topicName:topic.name,leaf};
   $('setupCrumb').textContent=topic.name;
