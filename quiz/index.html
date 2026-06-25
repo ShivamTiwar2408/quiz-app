@@ -13,11 +13,21 @@
     --radius:14px;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
     --mono:ui-monospace,'SF Mono',Menlo,monospace;
+    --appbg:radial-gradient(900px 500px at 50% -10%,#1a2138 0%,var(--bg) 60%);
+  }
+  /* ---- Śrīmad Bhāgavatam: bright, warm, happy theme ---- */
+  body.theme-bhagavatam{
+    --bg:#fbf3e4; --bg2:#fff9ef; --panel:#fffdf8; --panel2:#fdf2dd;
+    --ink:#3a2c17; --muted:#6e5a3c; --faint:#a98f63;
+    --line:#ecdcbd; --accent:#e08a2c; --accent2:#d9633a;
+    --green:#3a9d6a; --red:#d8584f; --gold:#c98a14;
+    --appbg:radial-gradient(900px 460px at 50% -8%,#fff4dc 0%,#fbf3e4 55%);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
+  body{background:var(--appbg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;transition:background .4s ease}
 
   .app{display:grid;grid-template-columns:300px 1fr;height:100vh}
+  aside,.card,.opt,select,.btn,.search input{transition:background .4s ease,border-color .4s ease,color .4s ease}
 
   /* ---------- sidebar tree ---------- */
   aside{background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
@@ -73,7 +83,7 @@
   .qcount .score{color:var(--gold);font-weight:650}
   .pbar{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden;margin-bottom:18px}
   .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .3s}
-  .qtext{font-size:18px;font-weight:600;line-height:1.45;margin:4px 0 8px}
+  .qtext{font-size:18px;font-weight:600;line-height:1.45;margin:4px 0 8px;color:var(--ink)}
   .multi-hint{font-size:12.5px;color:var(--gold);margin-bottom:12px;display:none}
   .multi-hint.show{display:block}
   .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:1.5px solid var(--line);color:var(--ink);padding:13px 15px;border-radius:11px;margin:9px 0;cursor:pointer;transition:.13s;font-size:15px;line-height:1.4}
@@ -235,9 +245,14 @@ function buildTree(filter=''){
   });
 }
 
+function applyTheme(topicName){
+  const bhagavatam = /bh[aā]gavatam|śr[iī]mad/i.test(topicName||'');
+  document.body.classList.toggle('theme-bhagavatam', bhagavatam);
+}
 function selectLeaf(topic,leaf,el){
   document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
+  applyTheme(topic.name);
   current={topicName:topic.name,leaf};
   $('setupCrumb').textContent=topic.name;
   $('setupName').textContent=leaf.name;
