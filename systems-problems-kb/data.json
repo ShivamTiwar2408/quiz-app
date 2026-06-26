@@ -1,0 +1,591 @@
+{
+  "title": "Distributed Systems Problems — a field guide",
+  "subtitle": "27 classic problems across beginner, intermediate and advanced tiers — the what, how & why, with the year each was named, its solutions, and real papers & links.",
+  "tiers": [
+    {
+      "id": "beginner",
+      "name": "Beginner",
+      "blurb": "Foundational failure modes every backend engineer hits — load, caching, queries, and the basics of reliability.",
+      "topics": [
+        {
+          "id": "thundering-herd",
+          "name": "The thundering herd problem",
+          "premise": "Occurs when a single event (a resource becoming available, a lock releasing, a connection opening) wakes up a large number of waiting processes/threads at once, even though only one can make progress. The rest wake, contend, fail, and go back to sleep — wasting CPU and scheduling. At scale the churn can degrade or stall the system, including the process that \"wins\".",
+          "year": "1990s-era systems/networking folklore (no single coining year). Documented in The Jargon File; widely discussed in the Unix/Linux kernel community (e.g. the accept() wake-up debates).",
+          "why": "Many waiters block on the same synchronization primitive or resource. When the event fires, the kernel/runtime wakes ALL of them instead of one, so they all race for a resource only one can hold — producing a contention spike and wasted work.",
+          "solutions": [
+            ["Wake-one / exclusive wake", "Kernel wakes a single waiter per event. Linux added EPOLLEXCLUSIVE to epoll() in kernel 4.5 (2016); Windows IOCP can wake one thread per event."],
+            ["Serialized acceptance", "One thread accepts work and dispatches it, rather than many threads blocking on the same accept()."],
+            ["Exponential backoff + jitter", "When clients retry after a shared event, randomize timing so they don't all re-converge on the same instant."],
+            ["Request coalescing / leader", "Designate one worker to do the work while others wait for its result (closely related to the cache-stampede lock fix)."]
+          ],
+          "papers": "No single canonical academic paper — an OS/networking-practice term. Documented in The Jargon File (v4.4.7). The jitter remedy: Marc Brooker, \"Exponential Backoff And Jitter\", AWS Architecture Blog, 2015.",
+          "links": [
+            ["Thundering herd problem — Wikipedia", "https://en.wikipedia.org/wiki/Thundering_herd_problem"],
+            ["Exponential Backoff And Jitter — AWS", "https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/"],
+            ["epoll(7) man page (EPOLLEXCLUSIVE)", "https://man7.org/linux/man-pages/man7/epoll.7.html"]
+          ],
+          "takeaway": "Wake one, not the whole herd — and when clients must retry, scatter them with jitter."
+        },
+        {
+          "id": "cache-stampede",
+          "name": "Cache stampede",
+          "premise": "Also called dog-piling or a cache miss storm. When a popular cached value expires under high load, many concurrent requests all miss the cache at the same moment and simultaneously try to recompute the same value. Instead of one expensive recomputation the system does thousands at once, often hammering the database — a form of cascading failure.",
+          "year": "Industry/ops term from the high-traffic web era of the mid-to-late 2000s (memcached-heavy architectures); no single coining date. First rigorous academic treatment: Vattani, Chierichetti & Lowenstein (2015).",
+          "why": "A hot key has a single expiry time. The moment it expires, every in-flight request sees a miss; none knows the others are already recomputing, so they all recompute redundantly. More traffic + longer recompute = wider window and more duplicate work.",
+          "solutions": [
+            ["Locking / request coalescing", "On a miss, the first request takes a lock and recomputes while others wait or serve stale — only one recomputation happens."],
+            ["Probabilistic early expiration (XFetch)", "Each reader independently rolls a dice to refresh BEFORE the TTL expires, with probability rising as expiry nears, so refreshes are staggered."],
+            ["External / async recomputation", "A background process refreshes hot keys ahead of expiry, so user requests never trigger the recompute."],
+            ["Serve-stale-while-revalidate", "Return the slightly stale value immediately and refresh in the background."]
+          ],
+          "papers": "Vattani, Chierichetti & Lowenstein, \"Optimal Probabilistic Cache Stampede Prevention\", PVLDB 8(8):886–897, 2015 (verified via DBLP + ACM DOI 10.14778/2757807.2757813). Also: Allspaw & Robbins, Web Operations, O'Reilly, 2010.",
+          "links": [
+            ["Cache stampede — Wikipedia", "https://en.wikipedia.org/wiki/Cache_stampede"],
+            ["Optimal Probabilistic Cache Stampede Prevention (PDF)", "https://www.vldb.org/pvldb/vol8/p886-vattani.pdf"],
+            ["DBLP record", "https://dblp.org/rec/journals/pvldb/VattaniCL15.html"]
+          ],
+          "takeaway": "Don't let a hot key expire for everyone at once — coalesce the recompute or refresh it early and probabilistically."
+        },
+        {
+          "id": "n-plus-1",
+          "name": "N+1 query problem",
+          "premise": "Occurs when fetching a list of N parent records and then issuing one more query per record to load related data — 1 query for the list plus N for the children, N+1 total. What should be one or two queries balloons into hundreds, and per-query round-trip latency dominates. Most common with ORMs and lazy loading.",
+          "year": "A software-engineering/database term from ORM practice, popularized in the early-to-mid 2000s as Hibernate/ActiveRecord went mainstream. No single founding paper or precise year.",
+          "why": "ORMs lazy-load associations by default. When you iterate a collection and touch each item's related object, the ORM transparently issues a fresh query for each one — the developer sees simple property access in a loop but the framework silently emits N round trips.",
+          "solutions": [
+            ["Eager loading", "Tell the ORM to load associations up front (Django select_related/prefetch_related, Rails includes, Hibernate fetch joins)."],
+            ["JOIN fetch", "Use a single SQL JOIN to pull parents and children together."],
+            ["Batch / IN-clause loading", "Collect the IDs and fetch all children with one WHERE id IN (...) query."],
+            ["DataLoader / batching layer", "In GraphQL stacks, a DataLoader coalesces per-item lookups within a tick into one batched query."],
+            ["Bulk writes", "For the write equivalent, use bulk insert/update instead of saving in a loop."]
+          ],
+          "papers": "No formal academic paper — an ORM/industry-practice concept. Discussed in Martin Fowler, Patterns of Enterprise Application Architecture, Addison-Wesley, 2002 (lazy-load / data-access context).",
+          "links": [
+            ["Django select_related docs", "https://docs.djangoproject.com/en/stable/ref/models/querysets/#select-related"],
+            ["N+1 queries — Sentry", "https://docs.sentry.io/product/issues/issue-details/performance-issues/n-one-queries/"],
+            ["The N+1 problem — Baeldung", "https://www.baeldung.com/cs/n-plus-1-problem"]
+          ],
+          "takeaway": "If you're querying inside a loop, you're probably doing N+1 — fetch the related data in one batched or joined query instead."
+        },
+        {
+          "id": "hot-partition",
+          "name": "Hot partition / hot key",
+          "premise": "In a partitioned/sharded datastore, a disproportionate share of reads or writes targets a single partition key or physical partition. Because each partition has its own throughput ceiling, that one partition saturates and throttles while the rest of the cluster sits idle — the system is far below aggregate capacity yet still errors on the hot key.",
+          "year": "A distributed-database/partitioning term from ops practice; prominent with horizontally partitioned NoSQL systems of the late 2000s–2010s (DynamoDB, Cassandra, HBase, Kafka). No single coining year.",
+          "why": "Throughput is provisioned per partition, but data maps to partitions by hashing/ranging the key. A skewed access pattern — low-cardinality key, celebrity/viral item, monotonically increasing key (timestamps, sequential IDs) — concentrates traffic onto one key/partition, so that partition's per-partition limit becomes the bottleneck (e.g. DynamoDB ~3,000 RCU / 1,000 WCU per partition).",
+          "solutions": [
+            ["Write sharding (random suffix)", "Append a random number (key.1…key.200) to spread writes; reads query all suffixes and merge."],
+            ["Write sharding (calculated suffix)", "Derive the suffix deterministically from a queryable attribute so you can spread writes and still read a specific item directly."],
+            ["High-cardinality partition key", "Avoid low-cardinality and monotonically increasing keys so load spreads evenly."],
+            ["Adaptive capacity", "Some systems (DynamoDB) automatically shift capacity toward hot partitions, smoothing transient skew."],
+            ["Cache the hot key", "Put a cache (DAX, Redis) in front to absorb reads on a celebrity key before it reaches the partition."]
+          ],
+          "papers": "No single canonical paper. Closely related foundation: DeCandia et al., \"Dynamo: Amazon's Highly Available Key-value Store\", SOSP 2007 (consistent hashing & partitioning). Primary practical guidance: AWS DynamoDB partition-key best-practices docs.",
+          "links": [
+            ["DynamoDB partition key design — AWS", "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html"],
+            ["Sharding to distribute load — AWS", "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html"],
+            ["Dynamo paper — Amazon Science", "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store"]
+          ],
+          "takeaway": "Throughput limits are per partition, so a skewed key bottlenecks one shard — spread the load with sharding or a better-distributed key."
+        },
+        {
+          "id": "spof",
+          "name": "Single point of failure (SPOF)",
+          "premise": "Any one component whose failure takes down the entire system, because no redundant alternative exists. If the box, link, process, or person it represents stops, everything depending on it stops too. Eliminating SPOFs is the foundation of designing for high availability.",
+          "year": "A foundational reliability-engineering concept with no single coining event; dates to mid-20th-century systems engineering and the survivable-network work behind packet switching (Paul Baran, Donald Davies, 1960s). Treat it as a 1960s–70s era term.",
+          "why": "A single instance of a critical resource sits on the request path with no backup — one DB primary, one load balancer, one network link, one config server, even one human with sole access. Any unreplicated dependency on the critical path is a latent SPOF.",
+          "solutions": [
+            ["Redundancy / N+1", "Run two or more interchangeable instances so one can fail without downtime."],
+            ["Failover + health checks", "Detect a dead component and route to a standby (active-passive) or surviving peers (active-active)."],
+            ["Geographic distribution", "Spread replicas across availability zones/regions so a site-level failure isn't fatal."],
+            ["Load balancing", "Front a pool of identical nodes so traffic shifts off failed members automatically."],
+            ["Quorum/replication for state", "Replicate data across nodes (majority quorum) so no single copy is load-bearing."],
+            ["Eliminate hidden SPOFs", "Audit shared dependencies (DNS, a single NAT gateway, one cert authority, one deploy key) that app-tier redundancy doesn't cover."]
+          ],
+          "papers": "No single formal paper defines the term — core reliability practice. Lineage: Baran, \"On Distributed Communications\" (RAND, 1964). Treatments in Beyer et al., Site Reliability Engineering (O'Reilly, 2016).",
+          "links": [
+            ["Single point of failure — Wikipedia", "https://en.wikipedia.org/wiki/Single_point_of_failure"],
+            ["Google SRE Book — Availability", "https://sre.google/sre-book/availability-table/"],
+            ["Baran, On Distributed Communications — RAND", "https://www.rand.org/pubs/research_memoranda/RM3420.html"]
+          ],
+          "takeaway": "If one part can take down the whole system, you don't have a system — you have a liability with a hostname."
+        },
+        {
+          "id": "retry-storm",
+          "name": "Retry storm",
+          "premise": "Many clients (or many layers of a call stack) react to a slow or failing dependency by retrying at once, multiplying load on the already-struggling service and preventing recovery. Because each layer can retry independently, load multiplies layer-by-layer (\"retry amplification\"), producing a self-sustaining overload that often outlasts the original trigger.",
+          "year": "The underlying thundering-herd effect was in 1990s systems literature; the \"retry storm\"/\"retry amplification\" framing is industry vocabulary popularized through the 2010s by cloud teams (AWS, Azure). Azure formally documents it as the \"Retry Storm antipattern\".",
+          "why": "Naive retry logic (immediate retries, fixed intervals, unbounded counts, retries at every layer) converts one failed request into a flood. A 5-deep stack with 3 retries per layer can multiply downstream load by up to 3^5 = 243×.",
+          "solutions": [
+            ["Exponential backoff", "Wait progressively longer between attempts so clients stop hammering a struggling service."],
+            ["Jitter", "Add randomness so retries don't synchronize into clustered waves."],
+            ["Capped retries / time budgets", "Stop after a few attempts or a short window — old requests are usually stale anyway."],
+            ["Retry at a single layer", "Retry at one point (e.g. the edge) instead of every layer, to prevent multiplication."],
+            ["Token-bucket retry budgets", "Limit retries to a small fraction of total requests (added to AWS SDK in 2016)."],
+            ["Circuit breakers", "Trip open after repeated failures so calls fail fast instead of retrying into the void."],
+            ["Honor Retry-After", "Respect server signals (HTTP 429/503 + Retry-After) rather than retrying blindly."]
+          ],
+          "papers": "No formal academic paper — industry practice. Canonical: Marc Brooker, \"Timeouts, retries, and backoff with jitter\", Amazon Builders' Library; and \"Exponential Backoff And Jitter\" (AWS Architecture Blog, 2015).",
+          "links": [
+            ["Timeouts, retries, and backoff with jitter — AWS", "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"],
+            ["Retry Storm antipattern — Microsoft", "https://learn.microsoft.com/en-us/azure/architecture/antipatterns/retry-storm/"],
+            ["Circuit Breaker pattern — Microsoft", "https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker"]
+          ],
+          "takeaway": "Retries are selfish — without backoff, jitter, and budgets, a thousand polite clients become a denial-of-service attack on the service they're trying to reach."
+        },
+        {
+          "id": "backpressure",
+          "name": "Backpressure",
+          "premise": "The mechanism by which an overloaded consumer signals upstream producers to slow down, so the system sheds or defers load instead of collapsing. It treats overload as a normal operating mode to be detected and absorbed. Without backpressure, producers keep pushing until queues explode, latency spikes, and the service falls over.",
+          "year": "Borrowed from fluid/hydraulic engineering; entered computing decades ago — TCP flow control (1980s) is an early instance. Modern app-level prominence grew through the 2010s via reactive-systems / streaming frameworks (Reactive Streams, ~2013–2015). An industry/engineering term, not a single academic coining.",
+          "why": "Producers and consumers process at different rates. When inflow exceeds a consumer's capacity and there's no feedback signal, unbounded queues grow, memory fills, and latency degrades until failure — so the system needs an explicit signal to push the slowdown upstream.",
+          "solutions": [
+            ["Bounded queues / buffers", "Cap in-flight work so overload becomes a fast rejection rather than an OOM crash."],
+            ["Load shedding", "Proactively reject a growing fraction of requests as you approach the hard limit (429/503), before latency collapses."],
+            ["Rate limiting / throttling", "Enforce per-principal or per-service caps (token/leaky bucket) at well-defined boundaries."],
+            ["Flow-control protocols", "Consumer-driven pull or credit/demand signaling (TCP windows, Reactive Streams request(n), HTTP/2 flow control)."],
+            ["Bulkheads", "Isolate concurrency at fan-out points so one saturated dependency doesn't sink everything."],
+            ["Propagate overload signals", "Pass downstream 429/503 upstream so the whole call chain backs off together."],
+            ["Queue-based load leveling", "Buffer bursts in a queue so consumers drain at a sustainable rate."]
+          ],
+          "papers": "No single defining paper — protocol/industry practice. Relevant: Welsh, Culler & Brewer, \"SEDA\", SOSP 2001 (overload control); the Reactive Streams spec (2015); Marc Brooker, \"Using load shedding to avoid overload\", Amazon Builders' Library.",
+          "links": [
+            ["Using load shedding to avoid overload — AWS", "https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/"],
+            ["Throttling pattern — Microsoft", "https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling"],
+            ["Reactive Streams", "https://www.reactive-streams.org/"]
+          ],
+          "takeaway": "A healthy system says \"slow down\" — backpressure turns a catastrophic collapse into a controlled, graceful \"no\"."
+        },
+        {
+          "id": "idempotency-gap",
+          "name": "Duplicate requests / idempotency gap",
+          "premise": "A client that doesn't get a response can't tell whether its request succeeded or failed, so it retries — and the operation may execute twice (a payment charged twice, an order placed twice). The \"idempotency gap\" is the window where a non-idempotent operation has no protection against being applied more than once. Because networks make at-least-once delivery the realistic default, duplicates are inevitable unless the server is designed to absorb them.",
+          "year": "\"Idempotent\" is an old mathematical term; its HTTP-method form is in the HTTP specs (RFC 2616, 1999; later RFC 7231 / RFC 9110). The practical \"idempotency key\" API pattern was popularized in the 2010s by payments/API companies (notably Stripe).",
+          "why": "Exactly-once delivery is effectively impossible over an unreliable network, so systems retry on ambiguous failures (timeouts, dropped responses). If the operation has side effects and the server treats each arrival as new, the retry causes a duplicate.",
+          "solutions": [
+            ["Idempotency keys", "Client sends a unique key per logical operation; server stores the first result and returns the same stored response for repeats (Stripe's model)."],
+            ["Deduplication store", "Track processed request IDs (with a TTL) and short-circuit repeats."],
+            ["Idempotent API design", "Prefer naturally idempotent operations (PUT/DELETE, \"set to X\" instead of \"add X\")."],
+            ["Conditional writes / OCC", "Use version numbers or compare-and-set so a stale duplicate is rejected."],
+            ["Exactly-once processing", "Combine at-least-once delivery with idempotent consumers (the common stream-processing pattern)."],
+            ["Natural unique constraints", "Enforce uniqueness in the datastore (a unique order token) so a duplicate insert fails safely."]
+          ],
+          "papers": "No single defining paper — industry practice + HTTP specs. Key: RFC 9110 \"HTTP Semantics\" (IETF, 2022); Stripe, \"Designing robust and predictable APIs with idempotency\" (Brandur Leach, 2017). Grounding: Kleppmann, Designing Data-Intensive Applications (2017).",
+          "links": [
+            ["Stripe idempotent requests docs", "https://docs.stripe.com/api/idempotent_requests"],
+            ["Idempotency — Stripe blog", "https://stripe.com/blog/idempotency"],
+            ["Making retries safe with idempotent APIs — AWS", "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-apis/"]
+          ],
+          "takeaway": "On an unreliable network you can't prevent duplicate requests — so design the server to make the second one a no-op."
+        },
+        {
+          "id": "stale-cache",
+          "name": "Stale cache / read-after-write inconsistency",
+          "premise": "When data is cached or replicated, a client can write a value and then immediately read back the old value, because the read hit a stale cache entry or a replica that hadn't received the update yet. \"Read-after-write\" (read-your-writes) consistency is the guarantee that you always see your own most recent write; the inconsistency is its violation — update your profile, refresh, see the old data.",
+          "year": "\"Read-your-writes consistency\" was defined among the session guarantees by Terry et al. in the Bayou project, \"Session Guarantees for Weakly Consistent Replicated Data\" (1994). The broader eventual-consistency framing was popularized by Amazon's Dynamo (2007) and Werner Vogels's \"Eventually Consistent\" (~2008).",
+          "why": "Reads and writes go to different places, or propagation takes time. A cache serves a value that's now outdated (no/late invalidation), or an async read replica lags the primary, so a read right after a write lands somewhere that hasn't caught up.",
+          "solutions": [
+            ["Cache invalidation / write-through", "Invalidate or update the cache entry on write so the next read can't serve stale data."],
+            ["TTL expiry", "Bound staleness by expiring cache entries after a short interval (weaker but simple)."],
+            ["Read-your-writes routing", "After a write, route that user's reads to the primary (or a replica known to have the write) for a short window."],
+            ["Versioning / monotonic reads", "Tag data with versions/timestamps and refuse to serve a version older than one the client already saw."],
+            ["Stronger consistency where it matters", "Use synchronous replication or quorum reads/writes (R + W > N) for data that can't tolerate staleness."],
+            ["Cache-aside discipline", "Populate cache on miss and explicitly delete-on-write to avoid serving orphaned values."]
+          ],
+          "papers": "Terry et al., \"Session Guarantees for Weakly Consistent Replicated Data\", PDIS 1994. DeCandia et al., \"Dynamo\", SOSP 2007. Kleppmann, Designing Data-Intensive Applications (2017), Ch. 5 (replication lag, read-your-writes, monotonic reads).",
+          "links": [
+            ["Amazon's Dynamo — All Things Distributed", "https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html"],
+            ["Eventually Consistent — Werner Vogels", "https://www.allthingsdistributed.com/2008/12/eventually_consistent.html"],
+            ["Caching challenges and strategies — AWS", "https://aws.amazon.com/builders-library/caching-challenges-and-strategies/"]
+          ],
+          "takeaway": "If your reads and writes don't go to the same place, the user will eventually see the past — invalidate aggressively or route reads to the truth."
+        }
+      ]
+    },
+    {
+      "id": "intermediate",
+      "name": "Intermediate",
+      "blurb": "Coordination, consistency, and resilience patterns — the machinery that keeps a multi-node system correct and alive.",
+      "topics": [
+        {
+          "id": "distributed-rate-limiting",
+          "name": "Distributed rate limiting",
+          "premise": "Enforcing a global cap on how often clients may perform an action (N requests/sec) across a fleet of independent servers, rather than per-instance. Because no single node sees all traffic, the cluster must coordinate a shared counter/budget so the aggregate limit is honored without each node enforcing only its local share.",
+          "year": "The metering algorithms come from 1980s–90s telecom traffic policing — the token bucket was described by Jonathan Turner (1986) and standardized by the ATM Forum (UNI 3.1, 1995). The \"distributed\" framing emerged with large-scale web/API infrastructure in the 2000s–2010s.",
+          "why": "The remaining budget must be shared across nodes, but reading/writing shared state on every request is expensive and adds latency. The tension is accuracy (a single source of truth, e.g. central Redis) vs performance/availability (local counters that drift and over-admit under partition). Clock skew makes perfectly synchronized windows impossible.",
+          "solutions": [
+            ["Token bucket / leaky bucket", "Tokens refill at a fixed rate; a request consumes one or is rejected; smooths bursts."],
+            ["Fixed / sliding window counters", "Count requests per window; sliding-window-log reduces boundary bursts."],
+            ["Centralized store with atomic ops", "Redis INCR+EXPIRE or Lua scripts make the shared counter the single source of truth."],
+            ["Local + sync (quota distribution)", "Each node enforces a slice of the global budget and periodically reconciles, trading exactness for low latency (Google SRE approach)."]
+          ],
+          "papers": "Jonathan S. Turner, \"New Directions in Communications\", IEEE Comms Magazine, 1986 (token bucket origin). ATM Forum UNI v3.1, 1995 (GCRA). Beyer et al., Site Reliability Engineering, 2016 (overload/quota distribution). No single seminal \"distributed rate limiting\" paper — it's an engineering pattern.",
+          "links": [
+            ["Token bucket — Wikipedia", "https://en.wikipedia.org/wiki/Token_bucket"],
+            ["Handling overload — Google SRE Book", "https://sre.google/sre-book/handling-overload/"],
+            ["Scaling your API with rate limiters — Stripe", "https://stripe.com/blog/rate-limiters"]
+          ],
+          "takeaway": "Distributed rate limiting is a trade-off between a perfectly accurate shared counter and the latency/availability of letting each node enforce a local slice of the budget."
+        },
+        {
+          "id": "leader-election",
+          "name": "Leader election",
+          "premise": "Having a group of distributed nodes agree on exactly one node to act as coordinator (the \"leader\") for a task such as ordering writes or driving replication. It must guarantee that at most one leader is active at a time and that a new leader is chosen when the old one fails.",
+          "year": "A classic problem since the late 1970s–80s (ring election: Chang & Roberts, 1979). In modern consensus systems it's embedded in Paxos (Lamport, \"The Part-Time Parliament\", 1998; \"Paxos Made Simple\", 2001) and made understandable in Raft (Ongaro & Ousterhout, 2014).",
+          "why": "In an asynchronous network you cannot reliably distinguish a crashed leader from a slow or partitioned one (FLP impossibility shows consensus can't be guaranteed under pure asynchrony with one fault). Partitions can also let two nodes each believe they're leader (\"split-brain\"), causing conflicting decisions.",
+          "solutions": [
+            ["Majority-quorum consensus (Raft/Paxos)", "A candidate becomes leader only with votes from a majority; majorities always overlap, so two leaders in one term is impossible."],
+            ["Monotonic terms + randomized timeouts", "Each election bumps a term number; randomized timeouts (Raft) make split votes rare and self-resolving."],
+            ["Coordination services (ZooKeeper/Chubby)", "Use ephemeral/sequential nodes or lock files so the holder is the leader; built on Zab/Paxos."],
+            ["Fencing", "Old leaders are excluded by epoch/term checks so a stale leader's writes are rejected."]
+          ],
+          "papers": "Lamport, \"The Part-Time Parliament\", ACM TOCS, 1998. Lamport, \"Paxos Made Simple\", 2001. Ongaro & Ousterhout, \"In Search of an Understandable Consensus Algorithm\" (Raft), USENIX ATC 2014. Fischer, Lynch & Paterson, FLP impossibility, JACM 1985.",
+          "links": [
+            ["Raft paper (PDF)", "https://raft.github.io/raft.pdf"],
+            ["The Raft site", "https://raft.github.io/"],
+            ["Paxos Made Simple (PDF)", "https://lamport.azurewebsites.net/pubs/paxos-simple.pdf"]
+          ],
+          "takeaway": "Leader election uses majority quorums and monotonic terms so that, even amid failures and partitions, at most one leader can ever act at a time."
+        },
+        {
+          "id": "distributed-locking",
+          "name": "Distributed locking and lease expiry",
+          "premise": "A distributed lock lets only one client at a time access a shared resource across a network. Because a lock holder can crash while holding the lock, distributed locks are usually granted as leases — time-bounded grants that auto-expire — so the system can recover without waiting forever on a dead client.",
+          "year": "Leases were formalized by Gray & Cheriton, \"Leases: An Efficient Fault-Tolerant Mechanism for Distributed File Cache Consistency\", SOSP 1989. Production lock services popularized by Google's Chubby (Burrows, OSDI 2006) and ZooKeeper; safety pitfalls sharply articulated by Martin Kleppmann in 2016.",
+          "why": "Leases trade correctness for liveness: if a client experiences a long pause (stop-the-world GC, page fault, network delay, NTP jump), its lease can expire while it still believes it holds the lock. A second client then acquires it, and now two clients act simultaneously — mutual exclusion is gone. Safety that depends on bounded timing is fragile in real async systems.",
+          "solutions": [
+            ["Leases with auto-expiry", "Bound how long a crashed holder blocks others; require renewal/heartbeats."],
+            ["Fencing tokens", "Issue a monotonically increasing token on each grant; the resource rejects any write carrying a stale (lower) token, neutralizing paused/zombie holders."],
+            ["Consensus-backed lock services", "Chubby/ZooKeeper keep lock state safe without timing assumptions (Paxos/Zab); only liveness relies on timeouts."],
+            ["Monotonic clocks", "Use monotonic rather than wall-clock time to avoid premature expiry from clock jumps."]
+          ],
+          "papers": "Gray & Cheriton, \"Leases\", SOSP 1989. Burrows, \"The Chubby Lock Service\", OSDI 2006. Kleppmann, \"How to do distributed locking\" (2016) — fencing tokens and the Redlock critique.",
+          "links": [
+            ["How to do distributed locking — Kleppmann", "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"],
+            ["The Chubby Lock Service — Google Research", "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/"],
+            ["Distributed locks with Redis", "https://redis.io/docs/latest/develop/use/patterns/distributed-locks/"]
+          ],
+          "takeaway": "A lease alone is not enough — without a fencing token, a paused client whose lease silently expired can corrupt data that a new lock holder is already modifying."
+        },
+        {
+          "id": "quorum",
+          "name": "Quorum reads vs quorum writes",
+          "premise": "In a replicated store with N replicas, a write must be acknowledged by W replicas and a read must consult R replicas. Choosing R and W tunes the trade-off between consistency, availability, and latency. The central guarantee comes from making the read and write sets overlap.",
+          "year": "Introduced by David K. Gifford, \"Weighted Voting for Replicated Data\", SOSP 1979, which generalized quorums to weighted votes. The R/W/N tuning was made famous in practice by Amazon's Dynamo (DeCandia et al., SOSP 2007) and its descendants (Cassandra, Riak).",
+          "why": "With multiple replicas you cannot contact all of them on every operation (some are slow, down, or partitioned), yet a read must still see the latest write. If read and write quorums don't overlap, a read can be served entirely by replicas that missed the most recent write — returning stale data. The overlap condition forces at least one up-to-date replica into every read.",
+          "solutions": [
+            ["R + W > N", "Guarantees read and write sets share at least one replica, so a read always sees the latest acknowledged write (strong consistency)."],
+            ["W > N/2", "Prevents two concurrent writes from both succeeding, avoiding conflicting versions."],
+            ["Tune the knobs", "W=N,R=1 favors fast reads; W=1,R=N favors fast writes; W=R=(N+1)/2 balances both."],
+            ["Sloppy quorums + hinted handoff (Dynamo)", "Relax strict membership so writes succeed on any N healthy nodes during failures, boosting availability at the cost of temporary inconsistency (reconciled via vector clocks / read repair)."]
+          ],
+          "papers": "Gifford, \"Weighted Voting for Replicated Data\", SOSP 1979. Thomas, \"A Majority Consensus Approach to Concurrency Control\", ACM TODS 1979. DeCandia et al., \"Dynamo\", SOSP 2007.",
+          "links": [
+            ["Quorum (distributed computing) — Wikipedia", "https://en.wikipedia.org/wiki/Quorum_(distributed_computing)"],
+            ["Dynamo paper (PDF)", "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"],
+            ["Cassandra consistency configuration", "https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html"]
+          ],
+          "takeaway": "Set R + W > N and your reads always overlap the latest write — quorums let you dial the exact point between consistency and availability."
+        },
+        {
+          "id": "fan-out",
+          "name": "Fan-out on write vs fan-out on read",
+          "premise": "When a feed/timeline system must deliver one writer's event (e.g. a tweet) to many followers, it must decide WHEN to do the join. \"Fan-out on write\" precomputes and pushes the event into every follower's materialized timeline at publish time; \"fan-out on read\" stores events once and assembles each reader's timeline on demand at query time. The choice trades write-amplification against read-amplification.",
+          "year": "Popularized ~2012–2013 by Twitter's timeline architecture (Raffi Krikorian, \"Timelines at Scale\", QCon SF 2012). Canonicalized by Martin Kleppmann in Designing Data-Intensive Applications (2017), which uses the Twitter example explicitly.",
+          "why": "Social graphs are skewed. A naive read-time join across a user's followees is too slow for hot timelines, while a pure write-time push is catastrophic when one writer has millions of followers (a single tweet triggers millions of inserts). Neither pure strategy is optimal across the whole follower distribution.",
+          "solutions": [
+            ["Fan-out on write (push)", "At publish, insert the event ID into each follower's precomputed timeline cache — fast reads, expensive writes."],
+            ["Fan-out on read (pull)", "Store events once; merge followees' recent events at read time — cheap writes, expensive reads."],
+            ["Hybrid (Twitter's actual approach)", "Push for ordinary users, but for high-follower \"celebrity\" accounts skip the push and merge at read time — bounds write fan-out while keeping most reads fast."],
+            ["Sharding/caching", "Materialized timelines held in an in-memory store (e.g. Redis) keyed per user to make the push model affordable."]
+          ],
+          "papers": "No formal academic paper — industry practice. Raffi Krikorian, \"Timelines at Scale\", QCon SF 2012. Martin Kleppmann, Designing Data-Intensive Applications (O'Reilly, 2017), Ch. 1.",
+          "links": [
+            ["Timelines at Scale — InfoQ", "https://www.infoq.com/presentations/Twitter-Timeline-Scalability/"],
+            ["Designing Data-Intensive Applications", "https://dataintensive.net/"]
+          ],
+          "takeaway": "Decide whether to pay at write time or read time based on your fan-out distribution — and for skewed graphs, do both."
+        },
+        {
+          "id": "out-of-order",
+          "name": "Out-of-order event processing",
+          "premise": "In distributed streaming, events arrive at the processor in a different order than they occurred, because of network delays, retries, partitioning, and clock skew. The core problem is reconciling event time (when something happened) with processing time (when the system sees it) so aggregations and windows produce correct results despite late and reordered data.",
+          "year": "A long-standing problem in stream/complex-event processing (early 2000s), but the modern framing — event vs processing time, watermarks, windowing, triggers — was crystallized by Google in The Dataflow Model (VLDB 2015), building on MillWheel (VLDB 2013) and embodied in Apache Beam / Flink.",
+          "why": "There's no single global clock and no bounded delivery latency in a distributed pipeline. Sources buffer, partitions are consumed at different rates, and retries reinject old events — so the stream is fundamentally unbounded and unordered, and you can never be fully certain \"all events up to time T have arrived\".",
+          "solutions": [
+            ["Event-time windowing", "Bucket events by their own timestamp, not arrival time, so reordering doesn't corrupt aggregates."],
+            ["Watermarks", "A moving heuristic estimate of \"event time has progressed to T\", letting the system decide when a window is probably complete."],
+            ["Triggers", "Control WHEN results are emitted relative to the watermark (early/on-time/late firings) to balance latency vs completeness."],
+            ["Allowed lateness", "Keep window state for a grace period; route stragglers to updates or a side output instead of dropping them."],
+            ["Idempotent / ordered keys", "Sequence numbers or versioning so a late or duplicate event can be reconciled deterministically."]
+          ],
+          "papers": "Akidau et al., \"The Dataflow Model\", PVLDB 8 (2015), 1792–1803. Akidau et al., \"MillWheel: Fault-Tolerant Stream Processing at Internet Scale\", PVLDB 2013.",
+          "links": [
+            ["The Dataflow Model — Google Research", "https://research.google/pubs/the-dataflow-model-a-practical-approach-to-balancing-correctness-latency-and-cost-in-massive-scale-unbounded-out-of-order-data-processing/"],
+            ["Streaming 101 — O'Reilly (Akidau)", "https://www.oreilly.com/radar/the-world-beyond-batch-streaming-101/"],
+            ["Flink — notions of time", "https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/time/"]
+          ],
+          "takeaway": "Process by event time and use watermarks plus triggers to trade completeness against latency, because arrival order is never trustworthy."
+        },
+        {
+          "id": "dlq",
+          "name": "Dead letter queues and poison messages",
+          "premise": "A poison message (a.k.a. poison pill) is a message a consumer can never successfully process — it fails repeatedly, gets redelivered, and blocks or thrashes the consumer. A dead-letter queue (DLQ) is a secondary queue where such repeatedly-failing or undeliverable messages are diverted so the main queue keeps flowing and the bad messages can be inspected and fixed.",
+          "year": "Dates to enterprise messaging middleware (IBM MQ used a \"dead-letter queue\" in the 1990s). Formalized as the \"Dead Letter Channel\" pattern by Hohpe & Woolf, Enterprise Integration Patterns (Addison-Wesley, 2003). Became mainstream cloud vocabulary via Amazon SQS (DLQ support added 2014).",
+          "why": "At-least-once delivery means a failed message is redelivered rather than dropped. If the failure is deterministic — malformed payload, a bug, a missing dependency, schema mismatch — every redelivery fails identically. Without a circuit-out, the message loops forever, consuming throughput and potentially stalling everything behind it (especially in ordered/FIFO queues).",
+          "solutions": [
+            ["Max-receive / redrive policy", "Count delivery attempts (SQS maxReceiveCount) and after N failures move the message to the DLQ instead of retrying forever."],
+            ["Dead-letter queue itself", "Quarantine bad messages for offline inspection, alarming (e.g. on DLQ depth), and later redrive once the bug is fixed."],
+            ["Retry with backoff before DLQ", "Distinguish transient failures (worth retrying) from permanent ones (send to DLQ sooner)."],
+            ["Poison-message detection in consumer", "Validate/parse defensively and explicitly nack-to-DLQ on non-retryable errors rather than letting them loop."],
+            ["Longer DLQ retention", "Retain DLQ messages longer than the source queue so they aren't deleted before you can debug them."]
+          ],
+          "papers": "No formal academic paper — industry practice. Canonical: Gregor Hohpe & Bobby Woolf, Enterprise Integration Patterns (Addison-Wesley, 2003) — \"Dead Letter Channel\" and \"Invalid Message Channel\".",
+          "links": [
+            ["Dead Letter Channel — Enterprise Integration Patterns", "https://www.enterpriseintegrationpatterns.com/patterns/messaging/DeadLetterChannel.html"],
+            ["Amazon SQS dead-letter queues — AWS", "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"]
+          ],
+          "takeaway": "Cap retries and quarantine the unprocessable, so one poison message can't poison the whole queue."
+        },
+        {
+          "id": "zero-downtime-migration",
+          "name": "Zero-downtime schema migration",
+          "premise": "Changing a database schema (or any persisted/API contract) while the application keeps serving traffic — no maintenance window, no dropped requests, no breaking in-flight clients. The hard part: old and new code, and old and new data shapes, must coexist during the rollout and rollback.",
+          "year": "Emerged with continuous delivery and always-on web services (mid-2000s onward). Documented by Ambler & Sadalage, Refactoring Databases (2006). The now-standard name Parallel Change (expand/contract) was popularized by Danilo Sato on martinfowler.com (13 May 2014).",
+          "why": "A single destructive DDL change (rename/drop column, change type, add NOT NULL) makes the database incompatible with the currently-deployed code for the window between the migration and the new deploy — and deploys aren't atomic across a fleet. Old and new app versions run simultaneously during a rolling deploy, so the schema must satisfy both at once.",
+          "solutions": [
+            ["Expand/contract (parallel change)", "Expand: add the new column/table alongside the old, supporting both. Migrate: dual-write + backfill, then shift reads. Contract: remove the old column/code in a later deploy."],
+            ["Backward-compatible-only DDL", "Add nullable columns, new tables, new indexes online; never rename/drop in the same step the code changes."],
+            ["Dual writes + backfill", "Keep old and new fields in sync during the transition; backfill in batches to avoid lock/load spikes."],
+            ["Online schema-change tools", "gh-ost or pt-online-schema-change (MySQL) alter large tables without long locks via shadow tables + triggers."],
+            ["Decouple deploy from migration", "Ship the migration and the code that uses it as separate, independently reversible releases; gate with feature flags."]
+          ],
+          "papers": "No formal academic paper — industry practice. Ambler & Sadalage, Refactoring Databases: Evolutionary Database Design (Addison-Wesley, 2006). Danilo Sato, \"ParallelChange\" (martinfowler.com, 2014).",
+          "links": [
+            ["ParallelChange (expand/contract) — Martin Fowler", "https://martinfowler.com/bliki/ParallelChange.html"],
+            ["Refactoring Databases", "https://databaserefactoring.com/"],
+            ["gh-ost — online schema migration", "https://github.com/github/gh-ost"]
+          ],
+          "takeaway": "Never make a breaking change in one step — expand to support old and new, migrate the data and readers, then contract."
+        },
+        {
+          "id": "circuit-breaker",
+          "name": "Circuit breaker and cascading failure control",
+          "premise": "A cascading failure is when one slow/failing downstream dependency causes callers to pile up blocked requests, exhaust threads/connections, and fail in turn — propagating an outage upstream until the whole system collapses. A circuit breaker is a stateful wrapper around a remote call that \"trips open\" after a failure threshold, fast-failing subsequent calls for a cooldown instead of hammering the sick dependency, then probing to recover.",
+          "year": "Popularized by Michael Nygard in Release It! (Pragmatic Bookshelf, 1st ed. 2007; 2nd ed. 2018). Widely adopted via Netflix's Hystrix (open-sourced 2012; maintenance mode 2018, superseded by resilience4j) and documented by Martin Fowler, \"CircuitBreaker\" (6 March 2014).",
+          "why": "Synchronous remote calls hold a resource (thread, connection, memory) until they return or time out. When a dependency slows, callers block on it; their finite resource pools fill with stuck requests; new requests are rejected; and callers' callers start timing out — backpressure travels upstream. The default \"retry on failure\" amplifies load on the already-struggling dependency.",
+          "solutions": [
+            ["Circuit breaker", "Track failure rate; OPEN = fail fast without calling downstream; after a timeout HALF-OPEN lets a trial request decide whether to CLOSE (recover) or re-open."],
+            ["Bulkheads", "Isolate resources per dependency (separate thread/connection pools) so one sick dependency can't drain the whole process."],
+            ["Timeouts + bounded retries", "Never block indefinitely; cap retries with exponential backoff + jitter so they don't amplify the storm."],
+            ["Load shedding / fail fast", "Reject or queue-limit excess traffic early to protect the core."],
+            ["Graceful degradation / fallbacks", "Return cached or default responses when the breaker is open instead of erroring outright."]
+          ],
+          "papers": "No formal academic paper — industry practice. Michael T. Nygard, Release It! (Pragmatic Bookshelf, 2007; 2nd ed. 2018). Martin Fowler, \"CircuitBreaker\" (2014). Related: Google SRE Book on cascading failures (2016).",
+          "links": [
+            ["CircuitBreaker — Martin Fowler", "https://martinfowler.com/bliki/CircuitBreaker.html"],
+            ["Addressing cascading failures — Google SRE Book", "https://sre.google/sre-book/addressing-cascading-failures/"],
+            ["Release It! (2nd ed.)", "https://pragprog.com/titles/mnee2/release-it-second-edition/"]
+          ],
+          "takeaway": "Fail fast and isolate, because a blocked caller waiting on a dying dependency is how one failure becomes a total outage."
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "name": "Advanced",
+      "blurb": "Architecture-scale problems — decomposition, multi-region state, streaming correctness, and multi-tenancy at the edge of distributed-systems theory.",
+      "topics": [
+        {
+          "id": "split-monolith",
+          "name": "Split a monolith safely",
+          "premise": "Breaking a single large deployable application into independently deployable services without a risky \"big bang\" rewrite. The goal is to migrate functionality incrementally while the system stays in production, so each step is reversible and low-blast-radius. The hard part is preserving correctness and data integrity while two architectures run side by side.",
+          "year": "The microservices term gained traction ~2011–2014 (Lewis & Fowler's 2014 \"Microservices\" article). The canonical safe-migration technique — the Strangler Fig (originally \"Strangler Application\") — was coined by Martin Fowler ~2004; Sam Newman's Monolith to Microservices (2019) consolidated the playbook.",
+          "why": "Monoliths accumulate tight coupling and shared databases, so a single change touches many concerns and deploys carry whole-system risk. You can't atomically \"cut over\" because behavior, data, and traffic must move together while in use — and a wholesale rewrite tends to lag the still-evolving monolith and never ships.",
+          "solutions": [
+            ["Strangler Fig pattern", "An interception/proxy layer redirects slices of traffic from the monolith to new services until the monolith can be retired."],
+            ["Branch by abstraction", "Introduce an abstraction over a capability, build the new implementation behind it, then swap."],
+            ["Decompose by bounded context (DDD)", "Carve service boundaries along business subdomains to minimize cross-service chatter."],
+            ["Database decomposition", "Split tables, then views, then separate datastores — break the shared DB last and carefully, since it's the stickiest coupling."],
+            ["Parallel run / shadow traffic", "Run old and new side by side and compare outputs before cutover."]
+          ],
+          "papers": "Martin Fowler, \"StranglerFigApplication\" (original ~2004). Lewis & Fowler, \"Microservices\", 2014. Sam Newman, Monolith to Microservices (O'Reilly, 2019); Building Microservices, 2nd ed. (2021).",
+          "links": [
+            ["StranglerFigApplication — Martin Fowler", "https://martinfowler.com/bliki/StranglerFigApplication.html"],
+            ["Microservices — Lewis & Fowler", "https://martinfowler.com/articles/microservices.html"],
+            ["Strangler pattern — microservices.io", "https://microservices.io/patterns/refactoring/strangler-application.html"]
+          ],
+          "takeaway": "Strangle the monolith one bounded context at a time, keeping every step reversible — never attempt a big-bang rewrite."
+        },
+        {
+          "id": "multi-region-failover",
+          "name": "Multi-region failover",
+          "premise": "Operating an application across multiple geographic regions so that when one region fails (outage, partition, degradation), traffic shifts to a healthy region with minimal downtime and data loss. It targets disaster recovery and high availability beyond a single region. The difficulty is detecting failure correctly and redirecting traffic AND data safely.",
+          "year": "Multi-region/DR practice predates the cloud but was formalized for cloud architectures in the 2010s. AWS's DR taxonomy — Backup & Restore, Pilot Light, Warm Standby, Multi-site Active/Active — and the RTO/RPO vocabulary became the standard framing.",
+          "why": "Regions fail as a unit (shared power, network, control planes), so single-region designs have a hard availability ceiling. Failover is hard because of state: cross-region replication risks staleness (RPO) or slow recovery (RTO), failure detection can produce false positives, DNS/routing changes propagate slowly — and \"failing back\" cleanly is often harder than failing over.",
+          "solutions": [
+            ["Backup & Restore / Pilot Light / Warm Standby / Active-Active", "Escalating DR strategies trading cost for lower RTO/RPO."],
+            ["Health-check-based traffic routing", "DNS failover (Route 53), global load balancers/anycast detect a region's health and steer clients away."],
+            ["Async cross-region replication", "Keep the standby's data current within an acceptable RPO."],
+            ["Cell-based / bulkhead architecture", "Isolate blast radius so a failure stays contained."],
+            ["Failover drills / GameDays / chaos testing", "Prove the failover actually works before a real outage."]
+          ],
+          "papers": "Primarily operational/architecture practice — no single canonical paper. Closest: AWS \"Disaster Recovery of Workloads on AWS\" whitepaper and the Well-Architected Reliability Pillar. Theory: Brewer's CAP (2000 PODC keynote; Gilbert & Lynch's 2002 proof).",
+          "links": [
+            ["Disaster recovery options in the cloud — AWS", "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"],
+            ["Reliability Pillar — AWS Well-Architected", "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"],
+            ["Disaster recovery overview — Microsoft", "https://learn.microsoft.com/en-us/azure/reliability/disaster-recovery-overview"]
+          ],
+          "takeaway": "Failover is a data problem, not just a traffic problem — pick your RTO/RPO deliberately and rehearse the switch before you need it."
+        },
+        {
+          "id": "active-active",
+          "name": "Active-active conflict resolution",
+          "premise": "When multiple regions/replicas accept writes simultaneously (\"active-active\"), the same data can be modified concurrently in different places, producing divergent versions that must be reconciled into one consistent state. Conflict resolution is the set of rules and data structures that decide how to merge or pick among concurrent updates — without losing user intent and without requiring slow global coordination.",
+          "year": "Crystallized in the late 2000s–early 2010s. Amazon's Dynamo (DeCandia et al., SOSP 2007) used vector clocks + application-level/LWW reconciliation. CRDTs were formally defined by Shapiro, Preguiça, Baquero & Zawirski in 2011 (SSS 2011 paper + INRIA RR-7506).",
+          "why": "The CAP theorem forces a choice: to stay available under partitions, replicas must accept writes independently, so concurrent conflicting writes are inevitable. With no global clock and out-of-order messages, the system can't always tell which write \"really\" happened first — so it needs a principled merge rule, not coordination.",
+          "solutions": [
+            ["Last-Write-Wins (LWW)", "Attach a timestamp and keep the latest; simple but silently discards concurrent updates."],
+            ["Vector clocks / version vectors", "Track causality to detect true concurrency (vs ordered) and surface conflicts for resolution."],
+            ["CRDTs", "Data types (counters, sets, registers) whose merge is commutative/associative/idempotent, so replicas converge automatically without coordination."],
+            ["Application-level / semantic merge", "Let business logic reconcile (e.g. Dynamo's shopping-cart union so no \"add\" is lost)."],
+            ["Operational Transformation (OT)", "Transform concurrent operations to converge (classic in collaborative editors)."]
+          ],
+          "papers": "DeCandia et al., \"Dynamo\", SOSP 2007. Shapiro, Preguiça, Baquero & Zawirski, \"Conflict-Free Replicated Data Types\", SSS 2011 (+ INRIA RR-7506). Lamport, \"Time, Clocks, and the Ordering of Events\", CACM 1978 (causality foundation).",
+          "links": [
+            ["Amazon's Dynamo — All Things Distributed", "https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html"],
+            ["Conflict-free replicated data type — Wikipedia", "https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type"],
+            ["crdt.tech", "https://crdt.tech/"]
+          ],
+          "takeaway": "If two replicas can write at once, conflicts are guaranteed — choose your merge semantics (CRDT to auto-converge, vector clocks to detect, LWW only when losing data is acceptable) before they bite you."
+        },
+        {
+          "id": "cdc-vs-dual-writes",
+          "name": "Change Data Capture (CDC) vs dual writes",
+          "premise": "When a service must both update its database and notify other systems (broker, search index, cache, warehouse), how do you keep them consistent? Dual writes = the app writes to the DB and publishes the event itself in two separate steps; CDC = deriving the event stream from the database's own committed change log. The core problem is atomicity: making \"data changed\" and \"event published\" succeed or fail together.",
+          "year": "CDC as data-integration dates to the 1990s–2000s ETL world (log-based CDC reading transaction logs). Its modern event-streaming framing was popularized by Kleppmann's \"Turning the Database Inside-Out\" (2015) and DDIA (2017). Debezium (Red Hat, ~2016) made log-based CDC mainstream.",
+          "why": "A database commit and a broker publish are two separate systems with no shared transaction (and 2PC is usually impractical). So dual writes can partially fail — the DB commits but the event never publishes (or vice versa), or they publish out of order — leaving downstream consumers permanently inconsistent. CDC sidesteps this by treating the DB's already-atomic, ordered commit log as the single source of truth for events.",
+          "solutions": [
+            ["Transactional Outbox", "Write the event into an \"outbox\" table in the SAME DB transaction as the business change; a relay publishes it, so the event ships iff the transaction commits."],
+            ["Log-based CDC", "Tail the database transaction log (Debezium reading WAL/binlog) and emit committed changes as an ordered event stream, with low DB impact."],
+            ["Transaction-log tailing of the outbox", "Combine both: outbox table + CDC relay reading the log instead of polling."],
+            ["Polling Publisher", "Periodically scan the outbox/changed rows (simpler, higher latency)."],
+            ["Idempotent consumers", "Required because CDC/outbox give at-least-once delivery (duplicates possible)."]
+          ],
+          "papers": "Martin Kleppmann, \"Turning the Database Inside-Out\" (2015); DDIA (O'Reilly, 2017). Chris Richardson, Microservices Patterns (2018) + microservices.io Transactional Outbox pattern. Debezium docs (canonical log-based CDC). No single peer-reviewed \"CDC vs dual writes\" paper.",
+          "links": [
+            ["Debezium documentation", "https://debezium.io/documentation/"],
+            ["Transactional Outbox — microservices.io", "https://microservices.io/patterns/data/transactional-outbox.html"],
+            ["Turning the Database Inside-Out — Kleppmann", "https://martin.kleppmann.com/2015/03/04/turning-the-database-inside-out.html"]
+          ],
+          "takeaway": "Don't dual-write — make the database commit the single source of truth and derive events from it via an outbox or log-based CDC, with idempotent consumers to absorb duplicates."
+        },
+        {
+          "id": "search-freshness",
+          "name": "Search index freshness vs ranking quality",
+          "premise": "Search systems must keep the inverted index up to date with new/changed documents (freshness) while returning the most relevant results (ranking quality). Aggressively re-indexing competes for the same compute/IO/serving capacity needed for ranking, and rapidly churning the index can destabilize ranking signals (e.g. link/popularity scores that need accumulated data). The freshest index is not always the best-ranked one.",
+          "year": "A long-standing IR operational concern, formalized in incremental/online indexing literature in the 1990s–2000s. Most visible industry milestone: Google's \"Caffeine\" indexing system (announced 2009, rolled out 2010) — continuous incremental indexing — and the \"Freshness\" ranking update (2011). No single naming paper.",
+          "why": "Indexing and serving are competing tasks on shared resources — \"a collision between two competing tasks\". Re-ranking quality depends on signals (anchor text, click/popularity data, document-graph features) that take time to gather, so documents indexed instantly for freshness may rank worse until those signals mature. Frequent mutation also invalidates caches and complicates segment merging.",
+          "solutions": [
+            ["Incremental / segment-based indexing", "New documents go into small new segments merged in the background (Lucene), so writes don't block reads."],
+            ["Tiered indexes (hot/cold)", "A small frequently-updated \"fresh\" tier is queried alongside a large stable \"base\" tier, isolating churn."],
+            ["Near-real-time (NRT) indexing", "Buffer recent updates in memory and make them searchable before full merge (Lucene/Elasticsearch NRT)."],
+            ["Decouple freshness from ranking signals", "Treat recency as one ranking feature among many, so quality signals can still mature."],
+            ["Document prioritization / crawl scheduling", "Re-crawl and re-index high-change-rate, high-importance pages more often."]
+          ],
+          "papers": "No single formal paper. Manning, Raghavan & Schütze, Introduction to Information Retrieval, 2008 (index construction / dynamic indexing). Brin & Page, \"The Anatomy of a Large-Scale Hypertextual Web Search Engine\", WWW7 1998. Industry milestone: Google \"Caffeine\", 2010.",
+          "links": [
+            ["Search engine indexing — Wikipedia", "https://en.wikipedia.org/wiki/Search_engine_indexing"],
+            ["Dynamic indexing — Stanford IR book", "https://nlp.stanford.edu/IR-book/html/htmledition/dynamic-indexing-1.html"],
+            ["Our new search index: Caffeine — Google", "https://blog.google/products/search/our-new-search-index-caffeine/"]
+          ],
+          "takeaway": "Freshness and ranking quality share the same plumbing and signals, so the goal is to isolate index churn (segments/tiers/NRT) and treat recency as a ranking feature, not a ranking override."
+        },
+        {
+          "id": "shard-rebalancing",
+          "name": "Rebalancing shards under skewed traffic",
+          "premise": "Distributed datastores partition data into shards across nodes. When traffic/data is skewed — a few keys, tenants, or partitions get disproportionate load (\"hot shards\") — those nodes saturate while others sit idle. Rebalancing moves shards/data to even out load, but must avoid large-scale data movement, downtime, or hot-spot thrashing.",
+          "year": "A core problem since consistent hashing (Karger et al., 1997). It became a mainstream production concern with the mid-2000s internet-scale key-value stores, notably Amazon's Dynamo (2007), which explicitly addressed load distribution and incremental rebalancing under skew.",
+          "why": "Real-world access follows power-law/Zipfian distributions, so naive hash partitioning still leaves some partitions far hotter than others (skew is in the workload, not just the hash). Plain hash(key) mod N also remaps almost all keys when N changes, making any rebalance catastrophic. Single physical nodes per hash range create lumpy ownership.",
+          "solutions": [
+            ["Consistent hashing", "Map keys and nodes onto a hash ring so adding/removing a node only remaps keys near it — minimal data movement."],
+            ["Virtual nodes (vnodes)", "Give each physical node many ring tokens, smoothing ownership and letting load move in fine-grained chunks (Dynamo, Cassandra)."],
+            ["Hot-key splitting / salting", "Detect hot keys and split or replicate them across shards (random suffix) to spread a single hot key's load."],
+            ["Dynamic / range-based repartitioning", "Split a hot range into smaller ranges and migrate them (HBase region splits, Bigtable tablet splits, DynamoDB adaptive capacity)."],
+            ["Power of two choices / load-aware placement", "Place or route requests using load info to avoid piling onto an already-hot node."]
+          ],
+          "papers": "Karger et al., \"Consistent Hashing and Random Trees\", STOC 1997. DeCandia et al., \"Dynamo\", SOSP 2007 (consistent hashing + vnodes). Chang et al., \"Bigtable\", OSDI 2006 (tablet splitting/migration).",
+          "links": [
+            ["Dynamo paper (PDF)", "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"],
+            ["Consistent hashing — Wikipedia", "https://en.wikipedia.org/wiki/Consistent_hashing"],
+            ["DynamoDB partition key design — AWS", "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html"]
+          ],
+          "takeaway": "Use consistent hashing plus virtual nodes so rebalancing moves only a sliver of data, and split/replicate hot keys because workload skew, not the hash function, is usually the real culprit."
+        },
+        {
+          "id": "noisy-neighbor",
+          "name": "Noisy neighbor problem in multi-tenant systems",
+          "premise": "In multi-tenant systems, many tenants share the same physical resources (CPU, memory, disk IO, network, connection pools). A \"noisy neighbor\" is one tenant whose excessive or abusive usage degrades performance and availability for everyone else sharing those resources — unfair contention with a blast radius that spans tenants.",
+          "year": "The contention concept is as old as time-sharing systems (1960s–70s), but the term \"noisy neighbor\" became standard vocabulary with the rise of public cloud and virtualization in the late 2000s / early 2010s, when sharing physical hosts across customers became the norm.",
+          "why": "Shared resources without strong isolation mean one tenant's load directly consumes capacity another needs. Statistical multiplexing assumes tenants won't spike simultaneously; when one misbehaves (runaway query, DDoS, retry storm) it consumes a disproportionate share, and absent quotas/isolation that contention propagates to all co-located tenants.",
+          "solutions": [
+            ["Rate limiting / quotas", "Cap each tenant's request rate or resource consumption (token bucket per tenant) so no one tenant monopolizes capacity."],
+            ["Resource isolation", "Enforce hard CPU/memory/IO limits per tenant at the OS or hypervisor level (cgroups, VMs, containers, dedicated pools)."],
+            ["Cell-based architecture", "Partition the fleet into independent \"cells\", each serving a subset of tenants, so a noisy tenant's impact is bounded to its cell."],
+            ["Shuffle sharding", "Assign each tenant a randomized combination of workers, so two tenants rarely share the full set and one bad tenant rarely takes another fully down."],
+            ["Admission control / fair scheduling", "Reject or deprioritize excess work and schedule resources fairly (weighted fair queuing) under contention."]
+          ],
+          "papers": "No single canonical paper named \"noisy neighbor\" — industry terminology. Authoritative: Colm MacCárthaigh, \"Workload Isolation Using Shuffle-Sharding\", Amazon Builders' Library. Related foundation: Demers, Keshav & Shenker, \"Analysis and Simulation of a Fair Queueing Algorithm\", SIGCOMM 1989.",
+          "links": [
+            ["Workload isolation using shuffle-sharding — AWS", "https://aws.amazon.com/builders-library/workload-isolation-using-shuffle-sharding/"],
+            ["Noisy neighbor — AWS SaaS Lens", "https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/noisy-neighbor.html"]
+          ],
+          "takeaway": "You can't eliminate sharing, so you contain its blast radius — per-tenant throttling/quotas plus isolation like cell-based architecture and shuffle sharding keep one loud tenant from taking down the rest."
+        },
+        {
+          "id": "watermarks",
+          "name": "Watermarks / late-arriving events in stream processing",
+          "premise": "Stream processors must compute time-windowed results (e.g. per-minute counts) over events that arrive out of order and late, due to network delays, clock skew, and partitioned ingestion. A watermark is a marker asserting \"event time has progressed to T; expect no more events with timestamp ≤ T\", letting the system decide when a window is complete enough to emit. Late-arriving events show up after their window's watermark has passed.",
+          "year": "The watermark/low-watermark abstraction was formalized at Google: MillWheel introduced low watermarks (Akidau et al., 2013, VLDB), and the Dataflow Model unified event-time windowing, watermarks, and lateness handling (Akidau et al., 2015, VLDB). Flink and Beam made it mainstream (~2015 onward).",
+          "why": "In event-time processing you cannot know when \"all\" data for a window has arrived, because events can be arbitrarily delayed by distributed, partitioned, unreliable transport. So there's an unavoidable trade-off between waiting longer (more completeness, higher latency) and emitting sooner (lower latency, risk of missing late data). Watermarks are a heuristic estimate of completeness, not a guarantee.",
+          "solutions": [
+            ["Watermarks", "Propagate a monotonically advancing event-time bound through the dataflow; an operator's watermark is the min across its inputs, triggering window computation when crossed."],
+            ["Allowed lateness", "Keep window state for a grace period after the watermark so late events can still update results before state is purged (Flink/Beam)."],
+            ["Triggers", "Emit speculative early results, an on-time result at the watermark, and updated results as late data arrives."],
+            ["Side outputs for droppable late data", "Route events arriving after allowed lateness to a side channel instead of silently dropping them."],
+            ["Heuristic watermarks", "Use bounded-out-of-orderness watermarks (max event time seen − N seconds) when perfect completeness info is unavailable."]
+          ],
+          "papers": "Akidau et al., \"MillWheel\", PVLDB 2013. Akidau et al., \"The Dataflow Model\", PVLDB 8 (2015). Carbone et al., \"Apache Flink: Stream and Batch Processing in a Single Engine\", IEEE Data Eng. Bulletin, 2015.",
+          "links": [
+            ["The Dataflow Model — Google Research", "https://research.google/pubs/the-dataflow-model-a-practical-approach-to-balancing-correctness-latency-and-cost-in-massive-scale-unbounded-out-of-order-data-processing/"],
+            ["MillWheel — Google Research", "https://research.google/pubs/millwheel-fault-tolerant-stream-processing-at-internet-scale/"],
+            ["Flink — notions of time & watermarks", "https://nightlies.apache.org/flink/flink-docs-master/docs/concepts/time/"]
+          ],
+          "takeaway": "Watermarks are a tunable bet on event-time completeness — they let you trade latency against correctness, and \"allowed lateness\" plus triggers give late events a second chance instead of silently dropping them."
+        },
+        {
+          "id": "exactly-once",
+          "name": "Exactly-once processing vs practical deduplication",
+          "premise": "\"Exactly-once\" means every input event affects the resulting state/output once and only once, despite failures, retries, and reprocessing. In a distributed system with unreliable networks, true end-to-end exactly-once DELIVERY is impossible, so systems provide exactly-once PROCESSING by combining at-least-once delivery with deduplication and/or transactional commits. In practice, \"exactly-once\" is achieved through idempotency and dedup, not literally delivering each message once.",
+          "year": "The impossibility of guaranteed exactly-once delivery is rooted in the Two Generals problem and FLP-era theory. The modern productized form arrived with Apache Kafka's exactly-once semantics (Kafka 0.11, 2017, Confluent) and Apache Flink's checkpoint-based exactly-once with two-phase-commit sinks (~2017–2018).",
+          "why": "Networks can lose or duplicate messages and nodes can crash mid-operation, so a sender can never be sure a message was processed and must retry — creating duplicates. You can't atomically \"deliver and acknowledge\" across an unreliable channel (Two Generals), so the only achievable guarantees are at-least-once (possible duplicates) or at-most-once (possible loss). Exactly-once processing therefore requires making duplicate processing harmless.",
+          "solutions": [
+            ["Idempotent producers/operations", "Tag messages with sequence numbers/IDs so retries are detected and ignored (Kafka enable.idempotence=true)."],
+            ["Transactions / atomic commits", "Write outputs and consumer offsets atomically so a batch is all-visible or none-visible (Kafka transactions)."],
+            ["Checkpointing + 2PC sinks", "Snapshot operator state and offsets consistently, then commit external side effects via 2PC tied to the checkpoint (Flink TwoPhaseCommitSinkFunction)."],
+            ["Dedup via idempotent writes", "Key writes by a unique event ID into an idempotent sink (upsert by primary key) so reprocessing overwrites rather than duplicates."],
+            ["Effectively-once via deterministic replay", "Restart from a consistent snapshot and deterministically recompute, so the world looks as though the failure never occurred."]
+          ],
+          "papers": "Narkhede, Wang et al. (Confluent), \"Exactly-Once Semantics Are Possible: Here's How Apache Kafka Does It\", 2017. Chandy & Lamport, \"Distributed Snapshots\", ACM TOCS 1985 (basis for Flink checkpointing). Carbone et al., \"State Management in Apache Flink\", PVLDB 2017.",
+          "links": [
+            ["Exactly-once semantics in Kafka — Confluent", "https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/"],
+            ["End-to-end exactly-once in Flink", "https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/"],
+            ["Two Generals' Problem — Wikipedia", "https://en.wikipedia.org/wiki/Two_Generals%27_Problem"]
+          ],
+          "takeaway": "True exactly-once delivery is impossible, so real systems fake it convincingly — at-least-once delivery plus idempotency, deduplication, and transactional commits make duplicate processing a no-op."
+        }
+      ]
+    }
+  ]
+}
