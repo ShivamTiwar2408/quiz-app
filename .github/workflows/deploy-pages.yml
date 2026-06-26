@@ -1,7 +1,8 @@
 name: Deploy GitHub Pages
 
 # Auto-publishes the repository to GitHub Pages on every push to main.
-# Static guides served from the repo root:
+# Static apps/guides served from the repo root:
+#   - Recall quiz:          /quiz/index.html
 #   - vLLM guide:           /vllm-kb/guide/index.html
 #   - AWS networking guide: /aws-networking-kb/guide/index.html
 

@@ -149,7 +149,7 @@
 
   <!-- MAIN -->
   <main>
-    <div class="mobile-bar"><span class="ham" id="ham">☰</span><b>Quiz</b></div>
+    <div class="mobile-bar"><span class="ham" id="ham">☰</span><b id="mobileTitle">Recall</b></div>
     <div class="mwrap">
       <!-- empty -->
       <div id="emptyView" class="empty">
@@ -174,6 +174,7 @@
 
       <!-- quiz -->
       <div id="quizView" class="card hide">
+        <div class="crumb" id="quizCrumb"></div>
         <div class="qcount"><span id="qPos">Question 1</span><span class="score" id="qScore">Score: 0</span></div>
         <div class="pbar"><i id="pbar"></i></div>
         <div class="qtext" id="qText"></div>
@@ -191,6 +192,7 @@
 
       <!-- results -->
       <div id="resultsView" class="card results hide">
+        <div class="crumb" id="resultsCrumb" style="text-align:center"></div>
         <div class="scorelbl">You scored</div>
         <div class="scorebig" id="rScore">0 / 0</div>
         <div class="pct" id="rPct"></div>
@@ -235,7 +237,7 @@ function route(){
   const m=(location.hash||'').match(/^#\/(.+)$/);
   if(!m){ // no route → empty/home state
     document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
-    applyTheme(''); current=null; showMain('emptyView'); return;
+    applyTheme(''); current=null; $('mobileTitle').textContent='Recall'; setDocTitle(); showMain('emptyView'); return;
   }
   const hit=findBySet(decodeURIComponent(m[1]));
   if(!hit){ showMain('emptyView'); return; }
@@ -271,12 +273,20 @@ function buildTree(filter=''){
     tEl.appendChild(kids);
     tree.appendChild(tEl);
   });
+  // re-apply selection state after a rebuild (e.g. clearing the search box)
+  if(current){
+    const el=document.querySelector(`.leaf[data-set="${cssEsc(current.leaf.set)}"]`);
+    if(el){ el.classList.add('active'); el.closest('.topic')?.classList.add('open'); }
+  }
 }
 
 function applyTheme(topicName){
   const bhagavatam = /bh[aā]gavatam|śr[iī]mad/i.test(topicName||'');
   document.body.classList.toggle('theme-bhagavatam', bhagavatam);
 }
+// breadcrumb "Topic › Subtopic" used in quiz/results views, mobile bar, and tab title
+function crumbHTML(){ return current ? `${current.topicName} <span style="opacity:.5">›</span> ${current.leaf.name}` : ''; }
+function setDocTitle(){ document.title = current ? `${current.leaf.name} · Recall` : 'Recall · pick a topic'; }
 function activateLeaf(topic,leaf){
   document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
   const el=document.querySelector(`.leaf[data-set="${cssEsc(leaf.set)}"]`);
@@ -291,6 +301,8 @@ function activateLeaf(topic,leaf){
   $('setupCrumb').textContent=topic.name;
   $('setupName').textContent=leaf.name;
   $('setupDesc').textContent=`${leaf.count} question${leaf.count!==1?'s':''} available. Choose how many and begin.`;
+  $('mobileTitle').textContent=leaf.name;
+  setDocTitle();
   showMain('setupView');
   closeSidebar();
 }
@@ -313,6 +325,7 @@ function renderQ(){
   locked=false; selected=new Set();
   const q=quiz[idx];
   const multi=q.correct.length>1;
+  $('quizCrumb').innerHTML=crumbHTML();
   $('qPos').textContent=`Question ${idx+1} of ${quiz.length}`;
   $('qScore').textContent=`Score: ${score}`;
   $('pbar').style.width=(idx/quiz.length*100)+'%';
@@ -354,6 +367,7 @@ function grade(){
     else if(selected.has(k)){b.classList.add('wrong');b.querySelector('.mark').textContent='✗';}
   });
   $('qScore').textContent=`Score: ${score}`;
+  $('pbar').style.width=((idx+1)/quiz.length*100)+'%';  // advance to reflect this answered question
   const ex=$('explain');
   ex.innerHTML=`<b>${isRight?'Correct!':'Not quite.'}</b> ${q.explanation||''}`;
   ex.classList.add('show');
@@ -366,6 +380,7 @@ function next(){ idx++; if(idx>=quiz.length) showResults(); else renderQ(); }
 
 function showResults(){
   showMain('resultsView');
+  $('resultsCrumb').innerHTML=crumbHTML();
   const total=quiz.length, pct=Math.round(score/total*100);
   $('rScore').textContent=`${score} / ${total}`; $('rPct').textContent=`${pct}%`;
   let v='Keep practicing — review the explanations below. 📘';
@@ -395,7 +410,10 @@ $('checkBtn').addEventListener('click',()=>{ if(selected.size) grade(); });
 $('nextBtn').addEventListener('click',next);
 $('quitBtn').addEventListener('click',()=>{ if(results.length) showResults(); else showMain('setupView'); });
 $('retryBtn').addEventListener('click',start);
-$('anotherBtn').addEventListener('click',()=>showMain(current?'setupView':'emptyView'));
+$('anotherBtn').addEventListener('click',()=>{
+  showMain(current?'setupView':'emptyView');
+  if(window.matchMedia('(max-width:760px)').matches){ $('sidebar').classList.add('open'); $('scrim').classList.add('show'); }
+});
 init();
 </script>
 </body>
