@@ -57,12 +57,18 @@
   main{overflow-y:auto;min-height:0;position:relative}
   .mwrap{max-width:760px;margin:0 auto;padding:22px 28px 80px}
   /* persistent header bar holding the breadcrumb */
-  .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:0 28px;height:52px;background:rgba(20,26,43,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:background .4s ease,border-color .4s ease}
+  .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:0 28px;height:52px;overflow:hidden;background:rgba(20,26,43,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:background .4s ease,border-color .4s ease}
   body.theme-bhagavatam .topbar{background:rgba(255,249,239,.82)}
   .topbar .ham{font-size:20px;cursor:pointer;display:none}
-  .topbar .topcrumb{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .topbar .topcrumb .sep{opacity:.45;margin:0 5px}
-  .topbar .topcrumb .leaf-name{color:var(--ink)}
+  .topbar .topcrumb{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600;display:flex;align-items:center;min-width:0;flex:1}
+  .topbar .topcrumb .sep{opacity:.45;margin:0 5px;flex:none}
+  .topbar .topcrumb .ct-topic{flex:none;white-space:nowrap}        /* topic label kept whole */
+  .topbar .topcrumb .ct-leaf{color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}  /* chapter wins the space */
+  .topbar .topcrumb .ct-short{display:none}
+  @media(max-width:760px){
+    .topbar .topcrumb .ct-full{display:none}   /* phones: use the short topic label */
+    .topbar .topcrumb .ct-short{display:inline}
+  }
 
   .empty{text-align:center;color:var(--muted);padding:80px 20px}
   .empty .big{font-size:42px;margin-bottom:12px}
@@ -288,11 +294,29 @@ function applyTheme(topicName){
   const bhagavatam = /bh[aā]gavatam|śr[iī]mad/i.test(topicName||'');
   document.body.classList.toggle('theme-bhagavatam', bhagavatam);
 }
+// short topic label for narrow screens, e.g.
+//   "Śrīmad Bhāgavatam (Canto 3)" -> "SB Canto 3"
+function shortTopic(name){
+  if(/bh[aā]gavatam|śr[iī]mad/i.test(name)){
+    const m=name.match(/canto\s*(\d+)/i);
+    return m ? `SB Canto ${m[1]}` : 'SB';
+  }
+  // generic: acronym from significant words (cap at ~14 chars), else the name itself
+  if(name.length<=16) return name;
+  const acr=name.split(/\s+/).filter(w=>!/^(of|the|for|and|to|in)$/i.test(w)).map(w=>w[0]).join('').toUpperCase();
+  return acr.length>=2 ? acr : name;
+}
 // breadcrumb in the persistent header bar + tab title
 function updateHeader(){
-  $('topCrumb').innerHTML = current
-    ? `${current.topicName}<span class="sep">›</span><span class="leaf-name">${current.leaf.name}</span>`
-    : 'Recall';
+  if(current){
+    const topicFull=current.topicName, topicShort=shortTopic(current.topicName);
+    $('topCrumb').innerHTML =
+      `<span class="ct-topic"><span class="ct-full">${topicFull}</span><span class="ct-short">${topicShort}</span></span>`+
+      `<span class="sep">›</span>`+
+      `<span class="ct-leaf">${current.leaf.name}</span>`;
+  } else {
+    $('topCrumb').textContent='Recall';
+  }
   document.title = current ? `${current.leaf.name} · Recall` : 'Recall · pick a topic';
 }
 function activateLeaf(topic,leaf){
