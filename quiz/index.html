@@ -55,8 +55,14 @@
 
   /* ---------- main ---------- */
   main{overflow-y:auto;min-height:0;position:relative}
-  .mwrap{max-width:760px;margin:0 auto;padding:30px 28px 80px}
-  .mobile-bar{display:none}
+  .mwrap{max-width:760px;margin:0 auto;padding:22px 28px 80px}
+  /* persistent header bar holding the breadcrumb */
+  .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:0 28px;height:52px;background:rgba(20,26,43,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:background .4s ease,border-color .4s ease}
+  body.theme-bhagavatam .topbar{background:rgba(255,249,239,.82)}
+  .topbar .ham{font-size:20px;cursor:pointer;display:none}
+  .topbar .topcrumb{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .topcrumb .sep{opacity:.45;margin:0 5px}
+  .topbar .topcrumb .leaf-name{color:var(--ink)}
 
   .empty{text-align:center;color:var(--muted);padding:80px 20px}
   .empty .big{font-size:42px;margin-bottom:12px}
@@ -126,8 +132,8 @@
     .app{grid-template-columns:1fr}
     aside{position:fixed;inset:0 40% 0 0;z-index:30;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.5);right:auto;width:78%}
     aside.open{transform:none}
-    .mobile-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:10}
-    .mobile-bar .ham{font-size:20px;cursor:pointer}
+    .topbar{padding:0 16px}
+    .topbar .ham{display:inline}
     .mwrap{padding:18px 16px 70px}
     .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25;display:none}
     .scrim.show{display:block}
@@ -149,7 +155,7 @@
 
   <!-- MAIN -->
   <main>
-    <div class="mobile-bar"><span class="ham" id="ham">☰</span><b id="mobileTitle">Recall</b></div>
+    <div class="topbar"><span class="ham" id="ham">☰</span><div class="topcrumb" id="topCrumb">Recall</div></div>
     <div class="mwrap">
       <!-- empty -->
       <div id="emptyView" class="empty">
@@ -174,7 +180,6 @@
 
       <!-- quiz -->
       <div id="quizView" class="card hide">
-        <div class="crumb" id="quizCrumb"></div>
         <div class="qcount"><span id="qPos">Question 1</span><span class="score" id="qScore">Score: 0</span></div>
         <div class="pbar"><i id="pbar"></i></div>
         <div class="qtext" id="qText"></div>
@@ -192,7 +197,6 @@
 
       <!-- results -->
       <div id="resultsView" class="card results hide">
-        <div class="crumb" id="resultsCrumb" style="text-align:center"></div>
         <div class="scorelbl">You scored</div>
         <div class="scorebig" id="rScore">0 / 0</div>
         <div class="pct" id="rPct"></div>
@@ -237,7 +241,7 @@ function route(){
   const m=(location.hash||'').match(/^#\/(.+)$/);
   if(!m){ // no route → empty/home state
     document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
-    applyTheme(''); current=null; $('mobileTitle').textContent='Recall'; setDocTitle(); showMain('emptyView'); return;
+    applyTheme(''); current=null; updateHeader(); showMain('emptyView'); return;
   }
   const hit=findBySet(decodeURIComponent(m[1]));
   if(!hit){ showMain('emptyView'); return; }
@@ -284,9 +288,13 @@ function applyTheme(topicName){
   const bhagavatam = /bh[aā]gavatam|śr[iī]mad/i.test(topicName||'');
   document.body.classList.toggle('theme-bhagavatam', bhagavatam);
 }
-// breadcrumb "Topic › Subtopic" used in quiz/results views, mobile bar, and tab title
-function crumbHTML(){ return current ? `${current.topicName} <span style="opacity:.5">›</span> ${current.leaf.name}` : ''; }
-function setDocTitle(){ document.title = current ? `${current.leaf.name} · Recall` : 'Recall · pick a topic'; }
+// breadcrumb in the persistent header bar + tab title
+function updateHeader(){
+  $('topCrumb').innerHTML = current
+    ? `${current.topicName}<span class="sep">›</span><span class="leaf-name">${current.leaf.name}</span>`
+    : 'Recall';
+  document.title = current ? `${current.leaf.name} · Recall` : 'Recall · pick a topic';
+}
 function activateLeaf(topic,leaf){
   document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
   const el=document.querySelector(`.leaf[data-set="${cssEsc(leaf.set)}"]`);
@@ -301,8 +309,7 @@ function activateLeaf(topic,leaf){
   $('setupCrumb').textContent=topic.name;
   $('setupName').textContent=leaf.name;
   $('setupDesc').textContent=`${leaf.count} question${leaf.count!==1?'s':''} available. Choose how many and begin.`;
-  $('mobileTitle').textContent=leaf.name;
-  setDocTitle();
+  updateHeader();
   showMain('setupView');
   closeSidebar();
 }
@@ -325,7 +332,6 @@ function renderQ(){
   locked=false; selected=new Set();
   const q=quiz[idx];
   const multi=q.correct.length>1;
-  $('quizCrumb').innerHTML=crumbHTML();
   $('qPos').textContent=`Question ${idx+1} of ${quiz.length}`;
   $('qScore').textContent=`Score: ${score}`;
   $('pbar').style.width=(idx/quiz.length*100)+'%';
@@ -380,7 +386,6 @@ function next(){ idx++; if(idx>=quiz.length) showResults(); else renderQ(); }
 
 function showResults(){
   showMain('resultsView');
-  $('resultsCrumb').innerHTML=crumbHTML();
   const total=quiz.length, pct=Math.round(score/total*100);
   $('rScore').textContent=`${score} / ${total}`; $('rPct').textContent=`${pct}%`;
   let v='Keep practicing — review the explanations below. 📘';
