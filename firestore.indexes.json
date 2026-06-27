@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "attempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "questionId", "order": "ASCENDING" },
+        { "fieldPath": "attemptedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,87 +1,53 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AuthUser } from '../types';
-import { signUp, signIn, signOut, confirmSignUp, getStoredAuth } from '../auth';
-import { AUTH_SCREENS } from '../constants';
-
-type AuthScreen = typeof AUTH_SCREENS[keyof typeof AUTH_SCREENS];
+import { signInWithGoogle, signOut, getStoredAuth, onAuthChange } from '../auth';
 
 export interface UseAuthReturn {
   user: AuthUser | null;
-  authScreen: AuthScreen;
   authLoading: boolean;
   authError: string;
-  pendingEmail: string;
-  setAuthScreen: (screen: AuthScreen) => void;
-  handleSignUp: (email: string, password: string) => Promise<void>;
-  handleSignIn: (email: string, password: string) => Promise<void>;
-  handleConfirm: (code: string) => Promise<void>;
+  handleGoogleSignIn: () => Promise<void>;
   handleSignOut: () => void;
   clearError: () => void;
 }
 
 export function useAuth(): UseAuthReturn {
-  const [authScreen, setAuthScreen] = useState<AuthScreen>(AUTH_SCREENS.LOGIN);
-  const [user, setUser] = useState<AuthUser | null>(null);
+  // Optimistic first paint from the last-known user, then reconcile with Firebase.
+  const [user, setUser] = useState<AuthUser | null>(() => getStoredAuth().user);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
 
   useEffect(() => {
-    const { user: storedUser } = getStoredAuth();
-    if (storedUser) setUser(storedUser);
-    setAuthLoading(false);
+    const unsubscribe = onAuthChange((u) => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
-  const handleSignUp = useCallback(async (email: string, password: string) => {
+  const handleGoogleSignIn = useCallback(async () => {
     setAuthError('');
+    setAuthLoading(true);
     try {
-      await signUp(email, password);
-      setPendingEmail(email);
-      setAuthScreen(AUTH_SCREENS.CONFIRM);
+      const u = await signInWithGoogle();
+      setUser(u);
     } catch (err: unknown) {
-      setAuthError(err instanceof Error ? err.message : 'Sign up failed');
-    }
-  }, []);
-
-  const handleConfirm = useCallback(async (code: string) => {
-    setAuthError('');
-    try {
-      await confirmSignUp(pendingEmail, code);
-      setAuthScreen(AUTH_SCREENS.LOGIN);
-      setAuthError('Email confirmed! Please sign in.');
-    } catch (err: unknown) {
-      setAuthError(err instanceof Error ? err.message : 'Confirmation failed');
-    }
-  }, [pendingEmail]);
-
-  const handleSignIn = useCallback(async (email: string, password: string) => {
-    setAuthError('');
-    try {
-      const { user: authUser } = await signIn(email, password);
-      setUser(authUser);
-    } catch (err: unknown) {
-      setAuthError(err instanceof Error ? err.message : 'Sign in failed');
+      // Ignore the benign "user closed the popup" case.
+      const msg = err instanceof Error ? err.message : 'Sign in failed';
+      if (!/popup-closed-by-user|cancelled-popup-request/.test(msg)) {
+        setAuthError(msg);
+      }
+    } finally {
+      setAuthLoading(false);
     }
   }, []);
 
   const handleSignOut = useCallback(() => {
-    signOut();
+    void signOut();
     setUser(null);
   }, []);
 
   const clearError = useCallback(() => setAuthError(''), []);
 
-  return {
-    user,
-    authScreen,
-    authLoading,
-    authError,
-    pendingEmail,
-    setAuthScreen,
-    handleSignUp,
-    handleSignIn,
-    handleConfirm,
-    handleSignOut,
-    clearError,
-  };
+  return { user, authLoading, authError, handleGoogleSignIn, handleSignOut, clearError };
 }

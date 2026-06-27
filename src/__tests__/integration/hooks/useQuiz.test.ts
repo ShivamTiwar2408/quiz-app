@@ -128,7 +128,7 @@ describe('useQuiz Hook Integration Tests', () => {
 
     it('should handle empty quiz response', async () => {
       mockApi.generateQuiz.mockResolvedValue({
-        sessionId: null,
+        sessionId: '',
         questions: [],
         quizType: 'adaptive',
         estimatedTimeMinutes: 0,
@@ -164,18 +164,6 @@ describe('useQuiz Hook Integration Tests', () => {
       expect(success).toBe(false);
     });
 
-    it('should start notes quiz', async () => {
-      mockApi.fetchNoteQuestions.mockResolvedValue([mockQuestions[0]]);
-
-      const { result } = renderHook(() => useQuiz());
-      
-      await act(async () => {
-        await result.current.startQuiz('notes');
-      });
-      
-      expect(mockApi.fetchNoteQuestions).toHaveBeenCalledWith(10);
-      expect(result.current.questions).toHaveLength(1);
-    });
   });
 
   describe('Answer Selection', () => {

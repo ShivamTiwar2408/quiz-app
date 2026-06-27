@@ -1,114 +1,42 @@
-import React from 'react';
-import { AUTH_SCREENS } from '../constants';
-
-type AuthScreenType = typeof AUTH_SCREENS[keyof typeof AUTH_SCREENS];
+// Sign-in screen — Google Sign-In via Firebase Auth.
+// Progress, mistakes, and spaced-repetition schedules sync to the signed-in
+// account so they follow the user across devices.
 
 interface AuthScreenProps {
-  authScreen: AuthScreenType;
   authError: string;
-  pendingEmail: string;
-  onSignUp: (email: string, password: string) => Promise<void>;
-  onSignIn: (email: string, password: string) => Promise<void>;
-  onConfirm: (code: string) => Promise<void>;
-  onScreenChange: (screen: AuthScreenType) => void;
-  onClearError: () => void;
+  authLoading: boolean;
+  onGoogleSignIn: () => Promise<void>;
 }
 
-export function AuthScreen({
-  authScreen,
-  authError,
-  pendingEmail,
-  onSignUp,
-  onSignIn,
-  onConfirm,
-  onScreenChange,
-  onClearError,
-}: AuthScreenProps) {
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-    await onSignIn(email, password);
-  };
-
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-    await onSignUp(email, password);
-  };
-
-  const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const code = (form.elements.namedItem('code') as HTMLInputElement).value;
-    await onConfirm(code);
-  };
-
-  const switchScreen = (screen: AuthScreenType) => {
-    onClearError();
-    onScreenChange(screen);
-  };
-
+export function AuthScreen({ authError, authLoading, onGoogleSignIn }: AuthScreenProps) {
   return (
     <div className="app auth-screen">
       <div className="auth-container">
         <div className="auth-logo">🧠 Recallr</div>
-        
-        {authScreen === AUTH_SCREENS.LOGIN && (
-          <form className="auth-form" onSubmit={handleSignIn}>
-            <h2>Sign In</h2>
-            {authError && <div className="auth-error">{authError}</div>}
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required minLength={8} />
-            <button type="submit" className="auth-btn primary">Sign In</button>
-            <p className="auth-switch">
-              Don't have an account?{' '}
-              <button type="button" onClick={() => switchScreen(AUTH_SCREENS.SIGNUP)}>
-                Sign Up
-              </button>
-            </p>
-          </form>
-        )}
-
-        {authScreen === AUTH_SCREENS.SIGNUP && (
-          <form className="auth-form" onSubmit={handleSignUp}>
-            <h2>Create Account</h2>
-            {authError && <div className="auth-error">{authError}</div>}
-            <input type="email" name="email" placeholder="Email" required />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password (min 8 chars, upper, lower, digit)"
-              required
-              minLength={8}
-            />
-            <button type="submit" className="auth-btn primary">Sign Up</button>
-            <p className="auth-switch">
-              Already have an account?{' '}
-              <button type="button" onClick={() => switchScreen(AUTH_SCREENS.LOGIN)}>
-                Sign In
-              </button>
-            </p>
-          </form>
-        )}
-
-        {authScreen === AUTH_SCREENS.CONFIRM && (
-          <form className="auth-form" onSubmit={handleConfirm}>
-            <h2>Confirm Email</h2>
-            <p className="auth-info">We sent a verification code to {pendingEmail}</p>
-            {authError && <div className="auth-error">{authError}</div>}
-            <input type="text" name="code" placeholder="Verification Code" required />
-            <button type="submit" className="auth-btn primary">Confirm</button>
-            <p className="auth-switch">
-              <button type="button" onClick={() => switchScreen(AUTH_SCREENS.LOGIN)}>
-                Back to Sign In
-              </button>
-            </p>
-          </form>
-        )}
+        <h2>Sign in to track your progress</h2>
+        <p className="auth-info">
+          Your quiz history, mistakes, and spaced-repetition schedule are saved
+          to your account and synced across devices.
+        </p>
+        {authError && <div className="auth-error">{authError}</div>}
+        <button
+          type="button"
+          className="auth-btn google"
+          onClick={onGoogleSignIn}
+          disabled={authLoading}
+          aria-label="Continue with Google"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+            <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
+            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+          </svg>
+          {authLoading ? 'Signing in…' : 'Continue with Google'}
+        </button>
+        <p className="auth-fineprint">
+          We only store your quiz progress. No spam, ever.
+        </p>
       </div>
     </div>
   );

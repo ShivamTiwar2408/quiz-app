@@ -1,28 +1,32 @@
-import { 
+// API facade — the single data boundary for the UI.
+//
+// Previously this called an AWS API Gateway + Lambda backend. It now runs
+// fully client-side against Firestore (user data) + a bundled question bank,
+// with the SM-2 spaced-repetition and quiz-generation logic in src/lib.
+//
+// Every exported name and signature is preserved so screens/hooks are
+// unchanged. Functions that depended on server-only features (LLM note-question
+// generation, admin custom/hidden question management) degrade gracefully.
+import {
   Question, UserProgress, UserStats, TopicsMap, Note,
-  GenerateQuizRequest, GenerateQuizResponse, 
+  GenerateQuizRequest, GenerateQuizResponse,
   SubmitAnswerRequest, SubmitAnswerResponse,
-  QuizType
+  QuizType,
 } from './types';
-import { getIdToken, refreshTokens } from './auth';
+import { v4 as uuidv4 } from 'uuid';
+import { getCurrentUserId } from './auth';
+import { loadTopics } from './data/questionBank';
+import { notesRepo, attemptRepo, sessionRepo } from './data/repositories';
+import {
+  getAggregatedProgress,
+  generateQuizForUser,
+  submitAnswerForUser,
+  toLegacyProgress,
+  toLegacyStats,
+} from './data/progressService';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
-
-async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  let token = getIdToken();
-  if (!token) throw new Error('Not authenticated');
-
-  const headers = { ...options.headers, Authorization: token };
-  let response = await fetch(url, { ...options, headers });
-
-  if (response.status === 401) {
-    const newTokens = await refreshTokens();
-    if (newTokens) {
-      headers.Authorization = newTokens.idToken;
-      response = await fetch(url, { ...options, headers });
-    }
-  }
-  return response;
+function requireUid(): string | null {
+  return getCurrentUserId();
 }
 
 // ============================================
@@ -30,12 +34,8 @@ async function authFetch(url: string, options: RequestInit = {}): Promise<Respon
 // ============================================
 
 export async function fetchTopics(): Promise<TopicsMap> {
-  if (!API_BASE_URL) return {};
   try {
-    const response = await authFetch(`${API_BASE_URL}/topics`);
-    if (!response.ok) throw new Error('Failed to fetch topics');
-    const data = await response.json();
-    return data.topics;
+    return await loadTopics();
   } catch (error) {
     console.error('Error fetching topics:', error);
     return {};
@@ -47,15 +47,10 @@ export async function fetchTopics(): Promise<TopicsMap> {
 // ============================================
 
 export async function generateQuiz(request: GenerateQuizRequest): Promise<GenerateQuizResponse | null> {
-  if (!API_BASE_URL) return null;
+  const uid = requireUid();
+  if (!uid) return null;
   try {
-    const response = await authFetch(`${API_BASE_URL}/quiz/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
-    });
-    if (!response.ok) throw new Error('Failed to generate quiz');
-    return await response.json();
+    return await generateQuizForUser(uid, request);
   } catch (error) {
     console.error('Error generating quiz:', error);
     return null;
@@ -63,15 +58,10 @@ export async function generateQuiz(request: GenerateQuizRequest): Promise<Genera
 }
 
 export async function submitAnswer(request: SubmitAnswerRequest): Promise<SubmitAnswerResponse | null> {
-  if (!API_BASE_URL) return null;
+  const uid = requireUid();
+  if (!uid) return null;
   try {
-    const response = await authFetch(`${API_BASE_URL}/quiz/submit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
-    });
-    if (!response.ok) throw new Error('Failed to submit answer');
-    return await response.json();
+    return await submitAnswerForUser(uid, request);
   } catch (error) {
     console.error('Error submitting answer:', error);
     return null;
@@ -96,16 +86,15 @@ export async function getProgress(): Promise<ProgressResponse> {
   const defaultStats: UserStats = {
     totalAnswered: 0, totalCorrect: 0, totalWrong: 0, totalKnown: 0, totalRemind: 0, topicStats: {},
   };
-  if (!API_BASE_URL) return { progress: {}, stats: defaultStats };
+  const uid = requireUid();
+  if (!uid) return { progress: {}, stats: defaultStats };
 
   try {
-    const response = await authFetch(`${API_BASE_URL}/progress`);
-    if (!response.ok) throw new Error('Failed to fetch progress');
-    const data = await response.json();
-    return { 
-      progress: data.progress || {}, 
-      stats: data.stats || defaultStats,
-      dueForReview: data.dueForReview,
+    const { progress, stats, dueForReview } = await getAggregatedProgress(uid);
+    return {
+      progress: toLegacyProgress(progress) as Record<string, UserProgress>,
+      stats: toLegacyStats(stats) as UserStats,
+      dueForReview,
     };
   } catch (error) {
     console.error('Error fetching progress:', error);
@@ -114,15 +103,8 @@ export async function getProgress(): Promise<ProgressResponse> {
 }
 
 export async function getStats(): Promise<UserStats | null> {
-  if (!API_BASE_URL) return null;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/stats`);
-    if (!response.ok) throw new Error('Failed to fetch stats');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching stats:', error);
-    return null;
-  }
+  const { stats } = await getProgress();
+  return stats;
 }
 
 // ============================================
@@ -136,7 +118,6 @@ export interface FetchQuestionsParams {
   mode?: string;
 }
 
-// Maps legacy modes to new quiz types
 function mapLegacyModeToQuizType(mode: string): QuizType {
   switch (mode) {
     case 'smart': return 'adaptive';
@@ -149,16 +130,7 @@ function mapLegacyModeToQuizType(mode: string): QuizType {
 
 export async function fetchQuestions(params: FetchQuestionsParams = {}): Promise<Question[]> {
   const { count = 10, topic, subtopic, mode = 'smart' } = params;
-  
-  // Use new SM-2 API
-  const quizType = mapLegacyModeToQuizType(mode);
-  const result = await generateQuiz({
-    quizType,
-    count,
-    topic,
-    subtopic,
-  });
-  
+  const result = await generateQuiz({ quizType: mapLegacyModeToQuizType(mode), count, topic, subtopic });
   return result?.questions || [];
 }
 
@@ -170,15 +142,13 @@ export interface SaveProgressParams {
   answeredCorrectly: boolean;
 }
 
-// Legacy save progress - now handled by submitAnswer
+// Progress is saved via submitAnswer; kept as a no-op for backward compatibility.
 export async function saveProgress(params: SaveProgressParams): Promise<void> {
-  // This is now a no-op as progress is saved via submitAnswer
-  // Kept for backward compatibility
   console.log('Legacy saveProgress called, use submitAnswer instead', params);
 }
 
 // ============================================
-// NOTES API
+// NOTES API (Firestore)
 // ============================================
 
 export interface FetchNotesParams {
@@ -187,20 +157,13 @@ export interface FetchNotesParams {
 }
 
 export async function fetchNotes(params: FetchNotesParams = {}): Promise<Note[]> {
-  if (!API_BASE_URL) return [];
+  const uid = requireUid();
+  if (!uid) return [];
   try {
-    const queryParams = new URLSearchParams();
-    if (params.pinned !== undefined) queryParams.set('pinned', String(params.pinned));
-    if (params.quizMe !== undefined) queryParams.set('quizMe', String(params.quizMe));
-    
-    const url = queryParams.toString() 
-      ? `${API_BASE_URL}/notes?${queryParams}` 
-      : `${API_BASE_URL}/notes`;
-    
-    const response = await authFetch(url);
-    if (!response.ok) throw new Error('Failed to fetch notes');
-    const data = await response.json();
-    return data.notes || [];
+    let notes = await notesRepo.getAll(uid);
+    if (params.pinned !== undefined) notes = notes.filter((n) => n.pinned === params.pinned);
+    if (params.quizMe !== undefined) notes = notes.filter((n) => n.quizMe === params.quizMe);
+    return notes;
   } catch (error) {
     console.error('Error fetching notes:', error);
     return [];
@@ -217,16 +180,24 @@ export interface SaveNoteParams {
 }
 
 export async function saveNote(params: SaveNoteParams): Promise<Note | null> {
-  if (!API_BASE_URL) return null;
+  const uid = requireUid();
+  if (!uid) return null;
   try {
-    const response = await authFetch(`${API_BASE_URL}/notes`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) throw new Error('Failed to save note');
-    const data = await response.json();
-    return data.note;
+    const now = new Date().toISOString();
+    const existing = params.noteId ? (await notesRepo.getAll(uid)).find((n) => n.noteId === params.noteId) : undefined;
+    const note: Note = {
+      noteId: params.noteId || uuidv4(),
+      userId: uid,
+      title: params.title,
+      content: params.content,
+      color: params.color ?? existing?.color ?? '#fff8b8',
+      pinned: params.pinned ?? existing?.pinned ?? false,
+      quizMe: params.quizMe ?? existing?.quizMe ?? false,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+    await notesRepo.save(uid, note);
+    return note;
   } catch (error) {
     console.error('Error saving note:', error);
     return null;
@@ -234,19 +205,19 @@ export async function saveNote(params: SaveNoteParams): Promise<Note | null> {
 }
 
 export async function deleteNote(noteId: string): Promise<boolean> {
-  if (!API_BASE_URL) return false;
+  const uid = requireUid();
+  if (!uid) return false;
   try {
-    const response = await authFetch(`${API_BASE_URL}/notes/${noteId}`, {
-      method: 'DELETE',
-    });
-    return response.ok;
+    await notesRepo.delete(uid, noteId);
+    return true;
   } catch (error) {
     console.error('Error deleting note:', error);
     return false;
   }
 }
 
-// Note Questions API - Questions generated from user notes
+// Note Questions API — these were generated server-side via an LLM Lambda.
+// Without that backend they return empty / no-op, but the shape is preserved.
 export interface NoteQuestion {
   questionId: string;
   id: string;
@@ -263,19 +234,8 @@ export interface NoteQuestion {
   isNoteQuestion: true;
 }
 
-export async function fetchNoteQuestions(count: number = 100, forQuiz: boolean = false): Promise<NoteQuestion[]> {
-  if (!API_BASE_URL) return [];
-  try {
-    const params = new URLSearchParams({ count: String(count) });
-    if (forQuiz) params.set('forQuiz', 'true');
-    const response = await authFetch(`${API_BASE_URL}/note-questions?${params}`);
-    if (!response.ok) throw new Error('Failed to fetch note questions');
-    const data = await response.json();
-    return data.questions || [];
-  } catch (error) {
-    console.error('Error fetching note questions:', error);
-    return [];
-  }
+export async function fetchNoteQuestions(_count: number = 100, _forQuiz: boolean = false): Promise<NoteQuestion[]> {
+  return [];
 }
 
 export interface UpdateNoteQuestionParams {
@@ -286,38 +246,16 @@ export interface UpdateNoteQuestionParams {
   difficulty?: 'easy' | 'medium' | 'hard';
 }
 
-export async function updateNoteQuestion(questionId: string, params: UpdateNoteQuestionParams): Promise<NoteQuestion | null> {
-  if (!API_BASE_URL) return null;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/note-questions/${encodeURIComponent(questionId)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) throw new Error('Failed to update note question');
-    const data = await response.json();
-    return data.question;
-  } catch (error) {
-    console.error('Error updating note question:', error);
-    return null;
-  }
+export async function updateNoteQuestion(_questionId: string, _params: UpdateNoteQuestionParams): Promise<NoteQuestion | null> {
+  return null;
 }
 
-export async function deleteNoteQuestion(questionId: string): Promise<boolean> {
-  if (!API_BASE_URL) return false;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/note-questions/${encodeURIComponent(questionId)}`, {
-      method: 'DELETE',
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Error deleting note question:', error);
-    return false;
-  }
+export async function deleteNoteQuestion(_questionId: string): Promise<boolean> {
+  return false;
 }
 
 // ============================================
-// ANALYTICS API
+// ANALYTICS API (derived from Firestore progress + sessions)
 // ============================================
 
 export interface AnalyticsData {
@@ -353,12 +291,7 @@ export interface AnalyticsData {
     avgConfidence: number;
     lastStudied: string | null;
   }>;
-  dailyActivity: Array<{
-    date: string;
-    attempts: number;
-    correct: number;
-    timeSpentMs: number;
-  }>;
+  dailyActivity: Array<{ date: string; attempts: number; correct: number; timeSpentMs: number }>;
   recentSessions: Array<{
     sessionId: string;
     quizType: string;
@@ -370,11 +303,61 @@ export interface AnalyticsData {
 }
 
 export async function fetchAnalytics(): Promise<AnalyticsData | null> {
-  if (!API_BASE_URL) return null;
+  const uid = requireUid();
+  if (!uid) return null;
   try {
-    const response = await authFetch(`${API_BASE_URL}/analytics`);
-    if (!response.ok) throw new Error('Failed to fetch analytics');
-    return await response.json();
+    const { progress, stats } = await getAggregatedProgress(uid);
+    const items = Object.values(progress);
+    const sessions = await sessionRepo.recent(uid, 10);
+
+    const topicAnalytics = Object.values(stats.topicStats).map((t) => ({
+      topic: t.topic,
+      totalQuestions: t.attemptedQuestions,
+      attempted: t.attemptedQuestions,
+      mastered: t.masteredCount,
+      struggling: t.strugglingCount,
+      accuracy: t.accuracy,
+      avgConfidence: t.averageConfidence,
+      lastStudied: t.lastStudiedAt || null,
+    }));
+
+    let longestStreak = 0;
+    for (const p of items) longestStreak = Math.max(longestStreak, p.longestStreak);
+
+    return {
+      overview: {
+        totalQuestions: items.length,
+        totalAttempts: stats.totalCorrectAnswers + stats.totalWrongAnswers,
+        totalCorrect: stats.totalCorrectAnswers,
+        overallAccuracy: stats.overallAccuracy,
+        totalStudyTimeMs: 0,
+        avgConfidence: stats.averageConfidence,
+        currentStreak: stats.currentDailyStreak,
+        longestStreak,
+      },
+      statusCounts: {
+        learning: stats.learningCount,
+        reviewing: stats.reviewingCount,
+        mastered: stats.masteredCount,
+        struggling: stats.strugglingCount,
+        new: 0,
+      },
+      dueForReview: {
+        overdue: stats.overdueCount,
+        dueToday: stats.dueToday,
+        dueThisWeek: stats.dueThisWeek,
+      },
+      topicAnalytics,
+      dailyActivity: [],
+      recentSessions: sessions.map((s) => ({
+        sessionId: s.sessionId,
+        quizType: s.quizType,
+        topic: s.topic,
+        questionsAnswered: s.questionsAnswered,
+        correctAnswers: s.correctAnswers,
+        startedAt: s.startedAt,
+      })),
+    };
   } catch (error) {
     console.error('Error fetching analytics:', error);
     return null;
@@ -382,7 +365,7 @@ export async function fetchAnalytics(): Promise<AnalyticsData | null> {
 }
 
 // ============================================
-// ATTEMPTS & SESSIONS API
+// ATTEMPTS & SESSIONS API (Firestore)
 // ============================================
 
 export interface AttemptRecord {
@@ -401,14 +384,11 @@ export interface AttemptRecord {
 }
 
 export async function fetchAttempts(limit: number = 50, questionId?: string): Promise<AttemptRecord[]> {
-  if (!API_BASE_URL) return [];
+  const uid = requireUid();
+  if (!uid) return [];
   try {
-    let url = `${API_BASE_URL}/attempts?limit=${limit}`;
-    if (questionId) url += `&questionId=${encodeURIComponent(questionId)}`;
-    const response = await authFetch(url);
-    if (!response.ok) throw new Error('Failed to fetch attempts');
-    const data = await response.json();
-    return data.attempts || [];
+    const attempts = await attemptRepo.recent(uid, limit, questionId);
+    return attempts as unknown as AttemptRecord[];
   } catch (error) {
     console.error('Error fetching attempts:', error);
     return [];
@@ -430,12 +410,14 @@ export interface SessionRecord {
 }
 
 export async function fetchSessions(limit: number = 20): Promise<SessionRecord[]> {
-  if (!API_BASE_URL) return [];
+  const uid = requireUid();
+  if (!uid) return [];
   try {
-    const response = await authFetch(`${API_BASE_URL}/sessions?limit=${limit}`);
-    if (!response.ok) throw new Error('Failed to fetch sessions');
-    const data = await response.json();
-    return data.sessions || [];
+    const sessions = await sessionRepo.recent(uid, limit);
+    return sessions.map((s) => ({
+      ...s,
+      accuracy: s.questionsAnswered > 0 ? Math.round((s.correctAnswers / s.questionsAnswered) * 100) / 100 : 0,
+    }));
   } catch (error) {
     console.error('Error fetching sessions:', error);
     return [];
@@ -443,7 +425,7 @@ export async function fetchSessions(limit: number = 20): Promise<SessionRecord[]
 }
 
 // ============================================
-// CUSTOM QUESTIONS API
+// CUSTOM QUESTIONS API (admin feature — required a server; now no-op)
 // ============================================
 
 export interface CustomQuestion {
@@ -460,19 +442,8 @@ export interface CustomQuestion {
   updatedAt: string;
 }
 
-export async function fetchCustomQuestions(topic?: string): Promise<CustomQuestion[]> {
-  if (!API_BASE_URL) return [];
-  try {
-    let url = `${API_BASE_URL}/questions`;
-    if (topic) url += `?topic=${encodeURIComponent(topic)}`;
-    const response = await authFetch(url);
-    if (!response.ok) throw new Error('Failed to fetch custom questions');
-    const data = await response.json();
-    return data.questions || [];
-  } catch (error) {
-    console.error('Error fetching custom questions:', error);
-    return [];
-  }
+export async function fetchCustomQuestions(_topic?: string): Promise<CustomQuestion[]> {
+  return [];
 }
 
 export interface CreateQuestionParams {
@@ -485,58 +456,20 @@ export interface CreateQuestionParams {
   difficulty?: 'easy' | 'medium' | 'hard';
 }
 
-export async function createQuestion(params: CreateQuestionParams): Promise<CustomQuestion | null> {
-  if (!API_BASE_URL) return null;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/questions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create question');
-    }
-    const data = await response.json();
-    return data.question;
-  } catch (error) {
-    console.error('Error creating question:', error);
-    throw error;
-  }
+export async function createQuestion(_params: CreateQuestionParams): Promise<CustomQuestion | null> {
+  return null;
 }
 
-export async function updateQuestion(questionId: string, params: Partial<CreateQuestionParams>): Promise<CustomQuestion | null> {
-  if (!API_BASE_URL) return null;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/questions/${questionId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) throw new Error('Failed to update question');
-    const data = await response.json();
-    return data.question;
-  } catch (error) {
-    console.error('Error updating question:', error);
-    return null;
-  }
+export async function updateQuestion(_questionId: string, _params: Partial<CreateQuestionParams>): Promise<CustomQuestion | null> {
+  return null;
 }
 
-export async function deleteQuestion(questionId: string): Promise<boolean> {
-  if (!API_BASE_URL) return false;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/questions/${questionId}`, {
-      method: 'DELETE',
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Error deleting question:', error);
-    return false;
-  }
+export async function deleteQuestion(_questionId: string): Promise<boolean> {
+  return false;
 }
 
 // ============================================
-// HIDDEN QUESTIONS API
+// HIDDEN QUESTIONS API (per-user; now no-op without a server index)
 // ============================================
 
 export interface HiddenQuestion {
@@ -548,42 +481,13 @@ export interface HiddenQuestion {
 }
 
 export async function fetchHiddenQuestions(): Promise<HiddenQuestion[]> {
-  if (!API_BASE_URL) return [];
-  try {
-    const response = await authFetch(`${API_BASE_URL}/hidden-questions`);
-    if (!response.ok) throw new Error('Failed to fetch hidden questions');
-    const data = await response.json();
-    return data.hiddenQuestions || [];
-  } catch (error) {
-    console.error('Error fetching hidden questions:', error);
-    return [];
-  }
+  return [];
 }
 
-export async function hideQuestion(questionId: string, topic?: string, subtopic?: string, reason?: string): Promise<boolean> {
-  if (!API_BASE_URL) return false;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/hidden-questions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ questionId, topic, subtopic, reason }),
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Error hiding question:', error);
-    return false;
-  }
+export async function hideQuestion(_questionId: string, _topic?: string, _subtopic?: string, _reason?: string): Promise<boolean> {
+  return false;
 }
 
-export async function unhideQuestion(questionId: string): Promise<boolean> {
-  if (!API_BASE_URL) return false;
-  try {
-    const response = await authFetch(`${API_BASE_URL}/hidden-questions/${encodeURIComponent(questionId)}`, {
-      method: 'DELETE',
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Error unhiding question:', error);
-    return false;
-  }
+export async function unhideQuestion(_questionId: string): Promise<boolean> {
+  return false;
 }

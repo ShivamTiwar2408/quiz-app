@@ -88,14 +88,9 @@ function App() {
     return (
       <ErrorBoundary>
         <AuthScreen
-          authScreen={auth.authScreen}
           authError={auth.authError}
-          pendingEmail={auth.pendingEmail}
-          onSignUp={auth.handleSignUp}
-          onSignIn={auth.handleSignIn}
-          onConfirm={auth.handleConfirm}
-          onScreenChange={auth.setAuthScreen}
-          onClearError={auth.clearError}
+          authLoading={auth.authLoading}
+          onGoogleSignIn={auth.handleGoogleSignIn}
         />
       </ErrorBoundary>
     );
