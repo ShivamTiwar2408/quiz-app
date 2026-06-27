@@ -1,32 +1,21 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { QuizMode } from './types';
 import { useAuth, useQuiz, useUserData, useNotes } from './hooks';
-import { AuthScreen, NotesScreen, AnalyticsScreen, QuestionManager, ErrorBoundary } from './components';
+import { AuthScreen, NotesScreen, AnalyticsScreen, ErrorBoundary } from './components';
 import { HomeScreen, QuizScreen, ResultsScreen } from './screens';
 import { SCREENS } from './constants';
-import { fetchNoteQuestions } from './api';
 import './App.css';
 
-type Screen = typeof SCREENS[keyof typeof SCREENS] | 'analytics' | 'questions';
+type Screen = typeof SCREENS[keyof typeof SCREENS] | 'analytics';
 
 function App() {
   const auth = useAuth();
   const userData = useUserData(auth.user);
   const quiz = useQuiz();
   const notesHook = useNotes(auth.user);
-  
+
   const [screen, setScreen] = useState<Screen>(SCREENS.HOME);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [noteQuestionsCount, setNoteQuestionsCount] = useState(0);
-
-  // Fetch note questions count when user is authenticated
-  useEffect(() => {
-    if (auth.user) {
-      fetchNoteQuestions().then(questions => {
-        setNoteQuestionsCount(questions.length);
-      });
-    }
-  }, [auth.user]);
 
   const handleSignOut = useCallback(() => {
     auth.handleSignOut();
@@ -67,12 +56,6 @@ function App() {
     setScreen(SCREENS.NOTES);
   }, []);
   const handleOpenAnalytics = useCallback(() => setScreen('analytics'), []);
-  const handleOpenQuestions = useCallback(() => setScreen('questions'), []);
-  const handleOpenNoteQuestions = useCallback(() => {
-    setMenuOpen(false);
-    setScreen('questions');
-    // The QuestionManager will show the notes tab by default when there are note questions
-  }, []);
   const handleGoHome = useCallback(() => setScreen(SCREENS.HOME), []);
 
   // Memoized loading state
@@ -128,15 +111,6 @@ function App() {
     );
   }
 
-  // Questions manager screen
-  if (screen === 'questions') {
-    return (
-      <ErrorBoundary>
-        <QuestionManager onBack={handleGoHome} />
-      </ErrorBoundary>
-    );
-  }
-
   // Home screen
   if (screen === SCREENS.HOME) {
     return (
@@ -148,7 +122,6 @@ function App() {
           wrongCount={userData.wrongCount}
           remindCount={userData.remindCount}
           notes={notesHook.notes}
-          noteQuestionsCount={noteQuestionsCount}
           loading={isLoading}
           menuOpen={menuOpen}
           onMenuOpen={handleMenuOpen}
@@ -157,8 +130,6 @@ function App() {
           onStartQuiz={handleStartQuiz}
           onOpenNotes={handleOpenNotes}
           onOpenAnalytics={handleOpenAnalytics}
-          onOpenQuestions={handleOpenQuestions}
-          onOpenNoteQuestions={handleOpenNoteQuestions}
         />
       </ErrorBoundary>
     );

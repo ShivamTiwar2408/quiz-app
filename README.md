@@ -30,9 +30,6 @@ src/
     progressService.ts       orchestrates repos + lib (SM-2, aggregation)
 ```
 
-The legacy AWS CDK backend (`infrastructure/`) is retained for reference but is
-no longer used; the pure logic in `src/lib/` was ported from it verbatim.
-
 ## Local Development
 
 ```bash

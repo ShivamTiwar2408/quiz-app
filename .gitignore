@@ -6,7 +6,6 @@ node_modules/
 # Build outputs
 build/
 dist/
-cdk.out/
 
 # Firebase
 .firebase/
@@ -39,7 +38,7 @@ yarn-error.log*
 # Testing
 coverage/
 
-# CDK
+# Generated source maps / declaration files
 *.js.map
 *.d.ts
 !jest.config.js

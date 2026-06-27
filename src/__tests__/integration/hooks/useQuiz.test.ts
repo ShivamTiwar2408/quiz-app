@@ -9,7 +9,6 @@ import { useQuiz } from '../../../hooks/useQuiz';
 jest.mock('../../../api', () => ({
   generateQuiz: jest.fn(),
   submitAnswer: jest.fn(),
-  fetchNoteQuestions: jest.fn(),
 }));
 
 import * as apiModule from '../../../api';

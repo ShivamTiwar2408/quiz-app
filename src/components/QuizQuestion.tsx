@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Question, UserProgress } from '../types';
-import { hideQuestion } from '../api';
 
 interface QuizQuestionProps {
   question: Question;
@@ -13,7 +12,6 @@ interface QuizQuestionProps {
   onAnswerSelect: (letter: string) => void;
   onProgressMark: (status: 'remind' | 'known') => void;
   onConfidenceSubmit?: (rating: number) => void;
-  onQuestionHidden?: (questionId: string) => void;
   onQuestionFeedback?: (questionId: string, feedback: string) => void;
 }
 
@@ -76,21 +74,17 @@ export function QuizQuestion({
   onAnswerSelect,
   onProgressMark,
   onConfidenceSubmit,
-  onQuestionHidden,
   onQuestionFeedback,
 }: QuizQuestionProps) {
   const isMultiSelect = question.correct_answers.length > 1;
   const [selectedConfidence, setSelectedConfidence] = useState<number | null>(null);
   const [hasSubmittedConfidence, setHasSubmittedConfidence] = useState(false);
-  const [isHiding, setIsHiding] = useState(false);
-  const [showHideConfirm, setShowHideConfirm] = useState(false);
   const [feedbackKey, setFeedbackKey] = useState(0);
 
   // Reset all state when question changes
   useEffect(() => {
     setSelectedConfidence(null);
     setHasSubmittedConfidence(false);
-    setShowHideConfirm(false);
     setFeedbackKey(prev => prev + 1);
   }, [question.id]);
 
@@ -103,22 +97,6 @@ export function QuizQuestion({
     } else {
       const status = rating >= 4 ? 'known' : 'remind';
       onProgressMark(status);
-    }
-  };
-
-  const handleHideQuestion = async () => {
-    setIsHiding(true);
-    const success = await hideQuestion(
-      question.id,
-      question.topic,
-      question.subtopic,
-      'User marked as not useful'
-    );
-    setIsHiding(false);
-    setShowHideConfirm(false);
-    
-    if (success && onQuestionHidden) {
-      onQuestionHidden(question.id);
     }
   };
 
@@ -143,36 +121,8 @@ export function QuizQuestion({
               {question.difficulty}
             </span>
           )}
-          <button 
-            className="hide-question-btn"
-            onClick={() => setShowHideConfirm(true)}
-            title="Hide this question from future quizzes"
-          >
-            🚫
-          </button>
         </div>
-        
-        {showHideConfirm && (
-          <div className="hide-confirm-banner">
-            <span>Hide this question from future quizzes?</span>
-            <div className="hide-confirm-actions">
-              <button 
-                className="hide-confirm-yes" 
-                onClick={handleHideQuestion}
-                disabled={isHiding}
-              >
-                {isHiding ? 'Hiding...' : 'Yes, hide it'}
-              </button>
-              <button 
-                className="hide-confirm-no" 
-                onClick={() => setShowHideConfirm(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-        
+
         <div className="question-header">
           <span className="question-number">{questionNumber}</span>
           <span className="question-type">

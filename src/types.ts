@@ -83,7 +83,7 @@ export type QuizType =
   | 'exam_prep'
   | 'random';
 
-export type QuizMode = QuizType | 'smart' | 'wrong' | 'remind' | 'notes';
+export type QuizMode = QuizType | 'smart' | 'wrong' | 'remind';
 
 export interface QuizState {
   currentQuestionIndex: number;

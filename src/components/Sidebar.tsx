@@ -8,12 +8,10 @@ interface SidebarProps {
   wrongCount: number;
   remindCount: number;
   notesCount: number;
-  noteQuestionsCount?: number;
   onClose: () => void;
   onSignOut: () => void;
   onStartQuiz: (mode: QuizMode, topic?: string, subtopic?: string) => void;
   onOpenNotes: () => void;
-  onOpenNoteQuestions?: () => void;
 }
 
 // Organize topics into logical categories for better navigation
@@ -58,6 +56,16 @@ const TOPIC_CATEGORIES: { name: string; icon: string; topics: string[] }[] = [
     icon: '🎯',
     topics: ['System Design Scenarios'],
   },
+  {
+    name: 'Electronics',
+    icon: '🔌',
+    topics: ['Electronics'],
+  },
+  {
+    name: 'Scripture',
+    icon: '📿',
+    topics: ['Śrīmad Bhāgavatam (Canto 3)'],
+  },
 ];
 
 export function Sidebar({
@@ -67,12 +75,10 @@ export function Sidebar({
   wrongCount,
   remindCount,
   notesCount,
-  noteQuestionsCount = 0,
   onClose,
   onSignOut,
   onStartQuiz,
   onOpenNotes,
-  onOpenNoteQuestions,
 }: SidebarProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['Fundamentals']));
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
@@ -128,17 +134,10 @@ export function Sidebar({
           <div className="sidebar-section-title">📝 Notes</div>
           <div className="quick-actions">
             <button className="sidebar-action notes" onClick={onOpenNotes}>
-              <span className="action-icon">📝</span> 
+              <span className="action-icon">📝</span>
               <span className="action-text">My Notes</span>
               {notesCount > 0 && <span className="action-badge">{notesCount}</span>}
             </button>
-            {noteQuestionsCount > 0 && (
-              <button className="sidebar-action note-questions" onClick={() => handleQuizStart('notes')}>
-                <span className="action-icon">📓</span>
-                <span className="action-text">Quiz from Notes</span>
-                <span className="action-badge">{noteQuestionsCount}</span>
-              </button>
-            )}
           </div>
         </div>
 

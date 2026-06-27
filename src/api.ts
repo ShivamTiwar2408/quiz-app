@@ -4,14 +4,12 @@
 // fully client-side against Firestore (user data) + a bundled question bank,
 // with the SM-2 spaced-repetition and quiz-generation logic in src/lib.
 //
-// Every exported name and signature is preserved so screens/hooks are
-// unchanged. Functions that depended on server-only features (LLM note-question
-// generation, admin custom/hidden question management) degrade gracefully.
+// The exported names/signatures used by the UI are stable, so screens/hooks
+// are unaffected by the move off AWS.
 import {
-  Question, UserProgress, UserStats, TopicsMap, Note,
+  UserProgress, UserStats, TopicsMap, Note,
   GenerateQuizRequest, GenerateQuizResponse,
   SubmitAnswerRequest, SubmitAnswerResponse,
-  QuizType,
 } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { getCurrentUserId } from './auth';
@@ -102,51 +100,6 @@ export async function getProgress(): Promise<ProgressResponse> {
   }
 }
 
-export async function getStats(): Promise<UserStats | null> {
-  const { stats } = await getProgress();
-  return stats;
-}
-
-// ============================================
-// LEGACY QUIZ API (for backward compatibility)
-// ============================================
-
-export interface FetchQuestionsParams {
-  count?: number;
-  topic?: string;
-  subtopic?: string;
-  mode?: string;
-}
-
-function mapLegacyModeToQuizType(mode: string): QuizType {
-  switch (mode) {
-    case 'smart': return 'adaptive';
-    case 'wrong': return 'weak_area';
-    case 'remind': return 'spaced_review';
-    case 'random': return 'random';
-    default: return 'adaptive';
-  }
-}
-
-export async function fetchQuestions(params: FetchQuestionsParams = {}): Promise<Question[]> {
-  const { count = 10, topic, subtopic, mode = 'smart' } = params;
-  const result = await generateQuiz({ quizType: mapLegacyModeToQuizType(mode), count, topic, subtopic });
-  return result?.questions || [];
-}
-
-export interface SaveProgressParams {
-  questionId: string;
-  topic: string;
-  subtopic: string;
-  status: 'known' | 'remind' | 'wrong';
-  answeredCorrectly: boolean;
-}
-
-// Progress is saved via submitAnswer; kept as a no-op for backward compatibility.
-export async function saveProgress(params: SaveProgressParams): Promise<void> {
-  console.log('Legacy saveProgress called, use submitAnswer instead', params);
-}
-
 // ============================================
 // NOTES API (Firestore)
 // ============================================
@@ -214,44 +167,6 @@ export async function deleteNote(noteId: string): Promise<boolean> {
     console.error('Error deleting note:', error);
     return false;
   }
-}
-
-// Note Questions API — these were generated server-side via an LLM Lambda.
-// Without that backend they return empty / no-op, but the shape is preserved.
-export interface NoteQuestion {
-  questionId: string;
-  id: string;
-  topic: string;
-  subtopic: string;
-  question: string;
-  options: Record<string, string>;
-  correct_answers: string[];
-  explanation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  noteId: string;
-  noteTitle: string;
-  generatedAt: string;
-  isNoteQuestion: true;
-}
-
-export async function fetchNoteQuestions(_count: number = 100, _forQuiz: boolean = false): Promise<NoteQuestion[]> {
-  return [];
-}
-
-export interface UpdateNoteQuestionParams {
-  question?: string;
-  options?: Record<string, string>;
-  correct_answers?: string[];
-  explanation?: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
-}
-
-export async function updateNoteQuestion(_questionId: string, _params: UpdateNoteQuestionParams): Promise<NoteQuestion | null> {
-  return null;
-}
-
-export async function deleteNoteQuestion(_questionId: string): Promise<boolean> {
-  return false;
 }
 
 // ============================================
@@ -422,72 +337,4 @@ export async function fetchSessions(limit: number = 20): Promise<SessionRecord[]
     console.error('Error fetching sessions:', error);
     return [];
   }
-}
-
-// ============================================
-// CUSTOM QUESTIONS API (admin feature — required a server; now no-op)
-// ============================================
-
-export interface CustomQuestion {
-  questionId: string;
-  topic: string;
-  subtopic: string;
-  question: string;
-  options: Record<string, string>;
-  correct_answers: string[];
-  explanation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  isCustom: true;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export async function fetchCustomQuestions(_topic?: string): Promise<CustomQuestion[]> {
-  return [];
-}
-
-export interface CreateQuestionParams {
-  topic: string;
-  subtopic: string;
-  question: string;
-  options: Record<string, string>;
-  correct_answers: string[];
-  explanation: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
-}
-
-export async function createQuestion(_params: CreateQuestionParams): Promise<CustomQuestion | null> {
-  return null;
-}
-
-export async function updateQuestion(_questionId: string, _params: Partial<CreateQuestionParams>): Promise<CustomQuestion | null> {
-  return null;
-}
-
-export async function deleteQuestion(_questionId: string): Promise<boolean> {
-  return false;
-}
-
-// ============================================
-// HIDDEN QUESTIONS API (per-user; now no-op without a server index)
-// ============================================
-
-export interface HiddenQuestion {
-  questionId: string;
-  topic: string;
-  subtopic: string;
-  hiddenAt: string;
-  hideReason?: string;
-}
-
-export async function fetchHiddenQuestions(): Promise<HiddenQuestion[]> {
-  return [];
-}
-
-export async function hideQuestion(_questionId: string, _topic?: string, _subtopic?: string, _reason?: string): Promise<boolean> {
-  return false;
-}
-
-export async function unhideQuestion(_questionId: string): Promise<boolean> {
-  return false;
 }

@@ -1,65 +1,27 @@
-# Recallr - System Design Interview Prep App
+# Recallr — Documentation
 
-A spaced repetition quiz application for mastering system design concepts, built with React and AWS serverless infrastructure.
-
-## Live Application
-
-- **URL**: https://d2sa2ctd5invsq.cloudfront.net
-- **API**: https://fwge4gqlr7.execute-api.us-east-1.amazonaws.com/prod/
+A spaced-repetition quiz platform built with React + TypeScript, backed by
+**Firebase** (Cloud Firestore + Google Sign-In). Fully serverless and
+client-side; the spaced-repetition (SM-2) and quiz-generation logic run in the
+browser.
 
 ## Documentation Index
 
 | Document | Description |
 |----------|-------------|
-| [High-Level Design (HLD)](./HIGH-LEVEL-DESIGN.md) | Comprehensive system design with diagrams |
-| [Architecture Overview](./ARCHITECTURE.md) | High-level system architecture and component interactions |
-| [SM-2 Algorithm](./SM2-ALGORITHM.md) | Spaced repetition algorithm implementation details |
-| [Data Model](./DATA-MODEL.md) | DynamoDB tables, schemas, and indexes |
-| [API Reference](./API-REFERENCE.md) | REST API endpoints and request/response formats |
-| [Frontend Guide](./FRONTEND.md) | React components, hooks, and state management |
-| [Deployment Guide](./DEPLOYMENT.md) | CDK infrastructure and deployment procedures |
+| [Firebase Setup & Deployment](./FIREBASE-SETUP.md) | Project setup, Firestore data model, local dev, and deployment (CLI + CI) |
+| [SM-2 Algorithm](./SM2-ALGORITHM.md) | The spaced-repetition algorithm and scheduling details |
 
-## Quick Start
+See the [root README](../README.md) for an architecture overview and quick start.
 
-### Prerequisites
-- Node.js 18+
-- AWS CLI configured with profile `ShivamTiwari2408`
-- AWS CDK CLI
+## Question bank
 
-### Local Development
-```bash
-npm install
-npm start
-```
+All quiz content is consolidated into a single bundle at
+`public/questions-data.json` by `scripts/build-questions.js` (run automatically
+via the `prebuild` / `prestart` npm hooks). Sources:
 
-### Deploy Infrastructure
-```bash
-cd infrastructure
-npm install
-npx cdk deploy --profile ShivamTiwari2408
-```
+- `questions/<Topic>/<Subtopic>.json` — system-design + electronics banks.
+- `quiz/data/sets/bhagavatam-*.json` — Śrīmad Bhāgavatam (Canto 3).
 
-### Deploy Frontend
-```bash
-npm run build
-aws s3 sync build/ s3://quizappstack-websitebucket75c24d94-deol4ncerkge/ --delete --profile ShivamTiwari2408
-aws cloudfront create-invalidation --distribution-id ERF50ZOUSOA4M --paths "/*" --profile ShivamTiwari2408
-```
-
-## Key Features
-
-- **SM-2 Spaced Repetition**: Intelligent scheduling based on performance and confidence
-- **5 Quiz Modes**: Adaptive, Spaced Review, Topic Focused, Weak Area, Exam Prep
-- **Confidence Feedback**: 0-5 rating system for calibrated learning
-- **Analytics Dashboard**: Track progress, streaks, and topic mastery
-- **Custom Questions**: Create and manage your own questions
-- **Notes System**: Pin notes and generate quizzes from them
-- **PWA Support**: Offline-capable with service worker caching
-
-## Tech Stack
-
-- **Frontend**: React 18, TypeScript, CSS
-- **Backend**: AWS Lambda (Node.js 20), API Gateway, Cognito
-- **Database**: DynamoDB (5 tables, 5 GSIs)
-- **Hosting**: S3 + CloudFront
-- **IaC**: AWS CDK v2
+The React app derives its topic tree dynamically from the bundle, so adding a
+new source file surfaces in the app on the next build — no code changes needed.

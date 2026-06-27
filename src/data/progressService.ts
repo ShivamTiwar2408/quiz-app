@@ -1,7 +1,7 @@
 // Progress service — orchestrates the Firestore repositories and the pure
-// SM-2 / quiz-generation logic in src/lib. This is the client-side equivalent
-// of the former getProgress / submitAnswer / generateQuiz Lambdas, ported
-// verbatim from infrastructure/lambda so behavior is unchanged.
+// SM-2 / quiz-generation logic in src/lib. Runs entirely client-side: it
+// aggregates progress, generates quizzes, and applies the SM-2 update on each
+// answer, persisting everything to Firestore.
 import { v4 as uuidv4 } from 'uuid';
 import {
   UserQuestionProgress,

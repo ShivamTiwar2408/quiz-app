@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { Question, QuizState, UserProgress, QuizMode, QuizType, GenerateQuizResponse } from '../types';
-import { generateQuiz, submitAnswer, fetchNoteQuestions } from '../api';
+import { generateQuiz, submitAnswer } from '../api';
 import { QUESTIONS_PER_QUIZ } from '../constants';
 
 export interface QuizFilter {
@@ -73,35 +73,22 @@ export function useQuiz(): UseQuizReturn {
   const startQuiz = useCallback(async (mode: QuizMode, topic?: string, subtopic?: string): Promise<boolean> => {
     setLoading(true);
     try {
-      let qs: Question[];
-      let newSessionId: string | null = null;
-      let metadata: GenerateQuizResponse['metadata'] | null = null;
-      
-      if (mode === 'notes') {
-        // Fetch questions generated from user notes
-        qs = await fetchNoteQuestions(QUESTIONS_PER_QUIZ, true);
-      } else {
-        // Use new SM-2 quiz generation
-        const quizType = mapModeToQuizType(mode);
-        const result = await generateQuiz({
-          quizType,
-          count: QUESTIONS_PER_QUIZ,
-          topic,
-          subtopic,
-        });
-        
-        if (!result || result.questions.length === 0) {
-          return false;
-        }
-        
-        qs = result.questions;
-        newSessionId = result.sessionId;
-        metadata = result.metadata;
-      }
-      
-      if (qs.length === 0) {
+      // SM-2 quiz generation
+      const quizType = mapModeToQuizType(mode);
+      const result = await generateQuiz({
+        quizType,
+        count: QUESTIONS_PER_QUIZ,
+        topic,
+        subtopic,
+      });
+
+      if (!result || result.questions.length === 0) {
         return false;
       }
+
+      const qs: Question[] = result.questions;
+      const newSessionId: string | null = result.sessionId;
+      const metadata: GenerateQuizResponse['metadata'] | null = result.metadata;
       
       setQuestions(qs);
       setSessionId(newSessionId);

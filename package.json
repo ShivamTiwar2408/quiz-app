@@ -11,7 +11,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "build:questions": "node scripts/build-questions.js",
+    "prebuild": "npm run build:questions",
     "build": "react-scripts build",
+    "prestart": "npm run build:questions",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage --no-cache",

@@ -146,8 +146,8 @@ Index Admin** roles to deploy hosting and rules/indexes respectively.
   targets topics/questions the user is `struggling` with — i.e. their past
   mistakes resurface automatically at SM-2-scheduled intervals.
 
-## Migrating off AWS
-
-The legacy AWS backend (`infrastructure/`) is retained for reference but is no
-longer used by the app. Once Firestore is verified in production it can be
-torn down with `cdk destroy` from `infrastructure/`.
+> **Note:** The app previously ran on an AWS CDK backend (API Gateway + Lambda +
+> DynamoDB + Cognito). That stack has been removed from the repo. If a live AWS
+> deployment still exists from before the migration, tear it down separately
+> (`cdk destroy`) using a checkout of an earlier commit, since it no longer
+> incurs use here.
