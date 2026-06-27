@@ -1,0 +1,504 @@
+{
+  "questions": [
+    {
+      "question": "Why is silicon useful for electronics?",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the best conductor"
+        },
+        {
+          "key": "b",
+          "text": "It is the best insulator"
+        },
+        {
+          "key": "c",
+          "text": "Its conductivity can be controlled"
+        },
+        {
+          "key": "d",
+          "text": "It naturally stores energy"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The defining property of a semiconductor is that its ability to conduct electricity can be manipulated. By doping silicon and applying electric fields, engineers can make it conduct or block current, which is the foundation of transistors."
+    },
+    {
+      "question": "What is doping in semiconductor manufacturing?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Removing electrons from silicon"
+        },
+        {
+          "key": "b",
+          "text": "Adding impurities to change electrical behavior"
+        },
+        {
+          "key": "c",
+          "text": "Cooling silicon to low temperatures"
+        },
+        {
+          "key": "d",
+          "text": "Adding copper wires to silicon"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Pure silicon is not very useful for building transistors. Small amounts of elements such as boron or phosphorus are intentionally added to create P-type and N-type regions."
+    },
+    {
+      "question": "What is the primary charge carrier in N-type silicon?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Holes"
+        },
+        {
+          "key": "b",
+          "text": "Electrons"
+        },
+        {
+          "key": "c",
+          "text": "Photons"
+        },
+        {
+          "key": "d",
+          "text": "Protons"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "N-type silicon is doped with elements such as phosphorus that contribute extra electrons. These free electrons become the primary charge carriers."
+    },
+    {
+      "question": "What major electronic component becomes possible when P-type and N-type silicon are joined?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Battery"
+        },
+        {
+          "key": "b",
+          "text": "Diode"
+        },
+        {
+          "key": "c",
+          "text": "Capacitor"
+        },
+        {
+          "key": "d",
+          "text": "Register"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Joining P-type and N-type silicon forms a PN junction. The resulting diode allows current to flow more easily in one direction than the other."
+    },
+    {
+      "question": "What is the fundamental idea behind a MOSFET transistor?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Mechanical switching"
+        },
+        {
+          "key": "b",
+          "text": "Electricity controlling electricity"
+        },
+        {
+          "key": "c",
+          "text": "Magnetic switching"
+        },
+        {
+          "key": "d",
+          "text": "Optical switching"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "A voltage applied to the gate changes the conductivity of a channel inside the transistor. This allows a small electrical signal to control a much larger one."
+    },
+    {
+      "question": "Why did binary become the dominant representation in computing?",
+      "options": [
+        {
+          "key": "a",
+          "text": "It looks simpler"
+        },
+        {
+          "key": "b",
+          "text": "It requires less silicon"
+        },
+        {
+          "key": "c",
+          "text": "It is highly resistant to noise"
+        },
+        {
+          "key": "d",
+          "text": "It was invented first"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Digital systems use thresholds. Small fluctuations in voltage do not change the meaning of a bit, making binary systems robust and reliable."
+    },
+    {
+      "question": "Why is the NAND gate considered special?",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the fastest gate"
+        },
+        {
+          "key": "b",
+          "text": "It stores charge"
+        },
+        {
+          "key": "c",
+          "text": "It can be used to build all other logic gates"
+        },
+        {
+          "key": "d",
+          "text": "It uses only one transistor"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "NAND is a universal gate. Any digital circuit can be constructed using only NAND gates, making it one of the most important building blocks in digital logic."
+    },
+    {
+      "question": "What is the primary purpose of a flip-flop?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Amplify signals"
+        },
+        {
+          "key": "b",
+          "text": "Store one bit"
+        },
+        {
+          "key": "c",
+          "text": "Generate clock signals"
+        },
+        {
+          "key": "d",
+          "text": "Reduce power consumption"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "A flip-flop is the fundamental memory element in digital electronics. It can maintain a stable 0 or 1 until updated."
+    },
+    {
+      "question": "What is a register?",
+      "options": [
+        {
+          "key": "a",
+          "text": "A transistor"
+        },
+        {
+          "key": "b",
+          "text": "A NAND gate"
+        },
+        {
+          "key": "c",
+          "text": "A collection of flip-flops"
+        },
+        {
+          "key": "d",
+          "text": "A capacitor"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Each flip-flop stores one bit. Multiple flip-flops grouped together form a register capable of storing larger binary values."
+    },
+    {
+      "question": "Why is DRAM denser than memory built entirely from flip-flops?",
+      "options": [
+        {
+          "key": "a",
+          "text": "It uses fewer components per bit"
+        },
+        {
+          "key": "b",
+          "text": "It runs slower"
+        },
+        {
+          "key": "c",
+          "text": "It uses copper"
+        },
+        {
+          "key": "d",
+          "text": "It uses optics"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A DRAM cell typically uses one transistor and one capacitor, whereas flip-flop-based memory requires multiple transistors per bit."
+    },
+    {
+      "question": "What does a DRAM capacitor actually store?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Electrical charge representing a bit"
+        },
+        {
+          "key": "b",
+          "text": "Instructions"
+        },
+        {
+          "key": "c",
+          "text": "Clock pulses"
+        },
+        {
+          "key": "d",
+          "text": "Heat energy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A charged capacitor may represent a 1, while a discharged capacitor may represent a 0. This is the physical basis of DRAM storage."
+    },
+    {
+      "question": "Why must DRAM be refreshed periodically?",
+      "options": [
+        {
+          "key": "a",
+          "text": "It overheats"
+        },
+        {
+          "key": "b",
+          "text": "Charge leaks away"
+        },
+        {
+          "key": "c",
+          "text": "The CPU requires it"
+        },
+        {
+          "key": "d",
+          "text": "Software requires it"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Capacitors are imperfect and slowly lose stored charge. Refresh cycles periodically restore the correct values."
+    },
+    {
+      "question": "What is the primary purpose of lithography?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Writing software"
+        },
+        {
+          "key": "b",
+          "text": "Printing microscopic structures onto silicon wafers"
+        },
+        {
+          "key": "c",
+          "text": "Testing chips"
+        },
+        {
+          "key": "d",
+          "text": "Packaging chips"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Lithography uses light and masks to create transistor structures and wiring patterns on a wafer layer by layer."
+    },
+    {
+      "question": "What do companies like NVIDIA and AMD primarily design?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sand"
+        },
+        {
+          "key": "b",
+          "text": "Transistor physics from scratch"
+        },
+        {
+          "key": "c",
+          "text": "Architectures built from transistor libraries"
+        },
+        {
+          "key": "d",
+          "text": "Copper interconnects only"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Modern chip companies rarely invent the transistor itself. Instead, they organize billions of available transistors into CPUs, GPUs, caches, memory systems, and accelerators."
+    },
+    {
+      "question": "Why is modern chip design difficult even though transistor principles are widely known?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Transistors are secret"
+        },
+        {
+          "key": "b",
+          "text": "Scale, timing, power, and verification challenges"
+        },
+        {
+          "key": "c",
+          "text": "No engineers exist"
+        },
+        {
+          "key": "d",
+          "text": "Silicon is rare"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The challenge is managing tens of billions of transistors, signal timing, heat, power delivery, and proving correctness before manufacturing."
+    },
+    {
+      "question": "What is CUDA fundamentally?",
+      "options": [
+        {
+          "key": "a",
+          "text": "A GPU"
+        },
+        {
+          "key": "b",
+          "text": "An operating system"
+        },
+        {
+          "key": "c",
+          "text": "A GPU computing platform and ecosystem"
+        },
+        {
+          "key": "d",
+          "text": "A CPU architecture"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "CUDA includes programming models, compilers, libraries, drivers, debugging tools, and runtimes that allow developers to use NVIDIA GPUs effectively."
+    },
+    {
+      "question": "Which statement best describes PyTorch?",
+      "options": [
+        {
+          "key": "a",
+          "text": "A wrapper around CUDA only"
+        },
+        {
+          "key": "b",
+          "text": "An ML framework that can use CUDA"
+        },
+        {
+          "key": "c",
+          "text": "A GPU driver"
+        },
+        {
+          "key": "d",
+          "text": "A compiler"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "PyTorch provides tensors, autograd, optimizers, distributed training, and many other features. CUDA is only one possible backend."
+    },
+    {
+      "question": "What usually sits directly beneath PyTorch when running on NVIDIA GPUs?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Windows"
+        },
+        {
+          "key": "b",
+          "text": "CUDA runtime and libraries"
+        },
+        {
+          "key": "c",
+          "text": "Browser APIs"
+        },
+        {
+          "key": "d",
+          "text": "CPU cache"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "PyTorch delegates GPU work to CUDA libraries such as cuBLAS and cuDNN through the CUDA runtime."
+    },
+    {
+      "question": "What is cuBLAS primarily used for?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Graphics rendering"
+        },
+        {
+          "key": "b",
+          "text": "Linear algebra and matrix operations"
+        },
+        {
+          "key": "c",
+          "text": "Networking"
+        },
+        {
+          "key": "d",
+          "text": "Storage management"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "cuBLAS is NVIDIA's highly optimized GPU implementation of BLAS, which powers matrix multiplications and many AI workloads."
+    },
+    {
+      "question": "What is NVIDIA's strongest competitive moat today?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Only silicon"
+        },
+        {
+          "key": "b",
+          "text": "Only patents"
+        },
+        {
+          "key": "c",
+          "text": "Hardware plus CUDA ecosystem and developer adoption"
+        },
+        {
+          "key": "d",
+          "text": "Only manufacturing"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "NVIDIA's moat extends far beyond hardware. CUDA, libraries, frameworks, tooling, documentation, and millions of developers create a powerful network effect."
+    }
+  ]
+}

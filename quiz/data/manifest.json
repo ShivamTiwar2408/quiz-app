@@ -1,971 +1,981 @@
 {
- "tree": [
-  {
-   "name": "API Fundamentals",
-   "children": [
+  "tree": [
     {
-     "name": "APIGateway",
-     "set": "api-fundamentals-apigateway-json",
-     "count": 12
+      "name": "API Fundamentals",
+      "children": [
+        {
+          "name": "APIGateway",
+          "set": "api-fundamentals-apigateway-json",
+          "count": 12
+        },
+        {
+          "name": "APISecurity",
+          "set": "api-fundamentals-apisecurity-json",
+          "count": 12
+        },
+        {
+          "name": "Graph QL",
+          "set": "api-fundamentals-graphql-json",
+          "count": 12
+        },
+        {
+          "name": "Idempotency",
+          "set": "api-fundamentals-idempotency-json",
+          "count": 12
+        },
+        {
+          "name": "JWT",
+          "set": "api-fundamentals-jwt-json",
+          "count": 12
+        },
+        {
+          "name": "OAuth",
+          "set": "api-fundamentals-oauth-json",
+          "count": 12
+        },
+        {
+          "name": "RESTAPIDesign",
+          "set": "api-fundamentals-restapidesign-json",
+          "count": 12
+        },
+        {
+          "name": "Rate Limiting",
+          "set": "api-fundamentals-ratelimiting-json",
+          "count": 12
+        },
+        {
+          "name": "SSO",
+          "set": "api-fundamentals-sso-json",
+          "count": 12
+        },
+        {
+          "name": "g RPC",
+          "set": "api-fundamentals-grpc-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "APISecurity",
-     "set": "api-fundamentals-apisecurity-json",
-     "count": 12
+      "name": "Architectural Patterns",
+      "children": [
+        {
+          "name": "CQRS",
+          "set": "architectural-patterns-cqrs-json",
+          "count": 12
+        },
+        {
+          "name": "Client Server",
+          "set": "architectural-patterns-clientserver-json",
+          "count": 12
+        },
+        {
+          "name": "Event Driven",
+          "set": "architectural-patterns-eventdriven-json",
+          "count": 12
+        },
+        {
+          "name": "Event Sourcing",
+          "set": "architectural-patterns-eventsourcing-json",
+          "count": 12
+        },
+        {
+          "name": "Microservices",
+          "set": "architectural-patterns-microservices-json",
+          "count": 12
+        },
+        {
+          "name": "Monolithic",
+          "set": "architectural-patterns-monolithic-json",
+          "count": 12
+        },
+        {
+          "name": "P2 P",
+          "set": "architectural-patterns-p2p-json",
+          "count": 12
+        },
+        {
+          "name": "Serverless",
+          "set": "architectural-patterns-serverless-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "Graph QL",
-     "set": "api-fundamentals-graphql-json",
-     "count": 12
+      "name": "Big Data Processing",
+      "children": [
+        {
+          "name": "Batch Vs Stream",
+          "set": "big-data-processing-batchvsstream-json",
+          "count": 12
+        },
+        {
+          "name": "Data Lakehouse",
+          "set": "big-data-processing-datalakehouse-json",
+          "count": 12
+        },
+        {
+          "name": "Data Lakes",
+          "set": "big-data-processing-datalakes-json",
+          "count": 12
+        },
+        {
+          "name": "Data Warehousing",
+          "set": "big-data-processing-datawarehousing-json",
+          "count": 12
+        },
+        {
+          "name": "ETLPipelines",
+          "set": "big-data-processing-etlpipelines-json",
+          "count": 12
+        },
+        {
+          "name": "Kappa Architecture",
+          "set": "big-data-processing-kappaarchitecture-json",
+          "count": 12
+        },
+        {
+          "name": "Lambda Architecture",
+          "set": "big-data-processing-lambdaarchitecture-json",
+          "count": 12
+        },
+        {
+          "name": "Map Reduce",
+          "set": "big-data-processing-mapreduce-json",
+          "count": 12
+        },
+        {
+          "name": "Streaming Engines",
+          "set": "big-data-processing-streamingengines-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "Idempotency",
-     "set": "api-fundamentals-idempotency-json",
-     "count": 12
+      "name": "Caching",
+      "children": [
+        {
+          "name": "CDN",
+          "set": "caching-cdn-json",
+          "count": 12
+        },
+        {
+          "name": "Cache Eviction Policies",
+          "set": "caching-cacheevictionpolicies-json",
+          "count": 12
+        },
+        {
+          "name": "Cache Invalidation",
+          "set": "caching-cacheinvalidation-json",
+          "count": 12
+        },
+        {
+          "name": "Cache Stampede",
+          "set": "caching-cachestampede-json",
+          "count": 12
+        },
+        {
+          "name": "Caching Fundamentals",
+          "set": "caching-cachingfundamentals-json",
+          "count": 12
+        },
+        {
+          "name": "Caching Patterns",
+          "set": "caching-cachingpatterns-json",
+          "count": 12
+        },
+        {
+          "name": "Distributed Caching",
+          "set": "caching-distributedcaching-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "JWT",
-     "set": "api-fundamentals-jwt-json",
-     "count": 12
+      "name": "Communication Patterns",
+      "children": [
+        {
+          "name": "CDC",
+          "set": "communication-patterns-cdc-json",
+          "count": 12
+        },
+        {
+          "name": "Dead Letter Queues",
+          "set": "communication-patterns-deadletterqueues-json",
+          "count": 12
+        },
+        {
+          "name": "Delivery Semantics",
+          "set": "communication-patterns-deliverysemantics-json",
+          "count": 12
+        },
+        {
+          "name": "Long Polling",
+          "set": "communication-patterns-longpolling-json",
+          "count": 12
+        },
+        {
+          "name": "Pub Sub",
+          "set": "communication-patterns-pubsub-json",
+          "count": 12
+        },
+        {
+          "name": "SSE",
+          "set": "communication-patterns-sse-json",
+          "count": 12
+        },
+        {
+          "name": "Sync Vs Async",
+          "set": "communication-patterns-syncvsasync-json",
+          "count": 12
+        },
+        {
+          "name": "Web RTC",
+          "set": "communication-patterns-webrtc-json",
+          "count": 12
+        },
+        {
+          "name": "Web Sockets",
+          "set": "communication-patterns-websockets-json",
+          "count": 12
+        },
+        {
+          "name": "Webhooks",
+          "set": "communication-patterns-webhooks-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "OAuth",
-     "set": "api-fundamentals-oauth-json",
-     "count": 12
+      "name": "Core Concepts",
+      "children": [
+        {
+          "name": "Availability",
+          "set": "core-concepts-availability-json",
+          "count": 12
+        },
+        {
+          "name": "CAPTheorem",
+          "set": "core-concepts-captheorem-json",
+          "count": 12
+        },
+        {
+          "name": "Consistency Models",
+          "set": "core-concepts-consistencymodels-json",
+          "count": 12
+        },
+        {
+          "name": "Consistent Hashing",
+          "set": "core-concepts-consistenthashing-json",
+          "count": 12
+        },
+        {
+          "name": "Latency Throughput Bandwidth",
+          "set": "core-concepts-latencythroughputbandwidth-json",
+          "count": 12
+        },
+        {
+          "name": "Reliability",
+          "set": "core-concepts-reliability-json",
+          "count": 12
+        },
+        {
+          "name": "SPOF",
+          "set": "core-concepts-spof-json",
+          "count": 12
+        },
+        {
+          "name": "Scalability",
+          "set": "core-concepts-scalability-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "RESTAPIDesign",
-     "set": "api-fundamentals-restapidesign-json",
-     "count": 12
+      "name": "Data Structures for Scale",
+      "children": [
+        {
+          "name": "Bloom Filters",
+          "set": "data-structures-for-scale-bloomfilters-json",
+          "count": 12
+        },
+        {
+          "name": "Consistent Hashing Advanced",
+          "set": "data-structures-for-scale-consistenthashingadvanced-json",
+          "count": 12
+        },
+        {
+          "name": "Count Min Sketch",
+          "set": "data-structures-for-scale-countminsketch-json",
+          "count": 12
+        },
+        {
+          "name": "Geohash",
+          "set": "data-structures-for-scale-geohash-json",
+          "count": 12
+        },
+        {
+          "name": "Hyper Log Log",
+          "set": "data-structures-for-scale-hyperloglog-json",
+          "count": 12
+        },
+        {
+          "name": "Merkle Trees",
+          "set": "data-structures-for-scale-merkletrees-json",
+          "count": 12
+        },
+        {
+          "name": "Quad Trees",
+          "set": "data-structures-for-scale-quadtrees-json",
+          "count": 12
+        },
+        {
+          "name": "RTrees",
+          "set": "data-structures-for-scale-rtrees-json",
+          "count": 12
+        },
+        {
+          "name": "Skip Lists",
+          "set": "data-structures-for-scale-skiplists-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "Rate Limiting",
-     "set": "api-fundamentals-ratelimiting-json",
-     "count": 12
+      "name": "Database Scaling",
+      "children": [
+        {
+          "name": "Connection Pooling",
+          "set": "database-scaling-connectionpooling-json",
+          "count": 12
+        },
+        {
+          "name": "Denormalization",
+          "set": "database-scaling-denormalization-json",
+          "count": 12
+        },
+        {
+          "name": "Indexing",
+          "set": "database-scaling-indexing-json",
+          "count": 12
+        },
+        {
+          "name": "Materialized Views",
+          "set": "database-scaling-materializedviews-json",
+          "count": 12
+        },
+        {
+          "name": "Query Optimization",
+          "set": "database-scaling-queryoptimization-json",
+          "count": 12
+        },
+        {
+          "name": "Read Replicas",
+          "set": "database-scaling-readreplicas-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "SSO",
-     "set": "api-fundamentals-sso-json",
-     "count": 12
+      "name": "Databases",
+      "children": [
+        {
+          "name": "ACIDTransactions",
+          "set": "databases-acidtransactions-json",
+          "count": 12
+        },
+        {
+          "name": "Database Internals",
+          "set": "databases-databaseinternals-json",
+          "count": 12
+        },
+        {
+          "name": "Document Databases",
+          "set": "databases-documentdatabases-json",
+          "count": 12
+        },
+        {
+          "name": "Full Text Search",
+          "set": "databases-fulltextsearch-json",
+          "count": 12
+        },
+        {
+          "name": "Graph Databases",
+          "set": "databases-graphdatabases-json",
+          "count": 12
+        },
+        {
+          "name": "Key Value Stores",
+          "set": "databases-keyvaluestores-json",
+          "count": 12
+        },
+        {
+          "name": "Relational Databases",
+          "set": "databases-relationaldatabases-json",
+          "count": 12
+        },
+        {
+          "name": "SQLvs No SQL",
+          "set": "databases-sqlvsnosql-json",
+          "count": 12
+        },
+        {
+          "name": "Sharding",
+          "set": "databases-sharding-json",
+          "count": 12
+        },
+        {
+          "name": "Time Series Databases",
+          "set": "databases-timeseriesdatabases-json",
+          "count": 12
+        },
+        {
+          "name": "Vector Databases",
+          "set": "databases-vectordatabases-json",
+          "count": 12
+        },
+        {
+          "name": "Wide Column Databases",
+          "set": "databases-widecolumndatabases-json",
+          "count": 12
+        }
+      ]
     },
     {
-     "name": "g RPC",
-     "set": "api-fundamentals-grpc-json",
-     "count": 12
+      "name": "Distributed Systems",
+      "children": [
+        {
+          "name": "Clock Synchronization",
+          "set": "distributed-systems-clocksynchronization-json",
+          "count": 12
+        },
+        {
+          "name": "Consensus Algorithms",
+          "set": "distributed-systems-consensusalgorithms-json",
+          "count": 12
+        },
+        {
+          "name": "Gossip Protocol",
+          "set": "distributed-systems-gossipprotocol-json",
+          "count": 12
+        },
+        {
+          "name": "Heartbeats",
+          "set": "distributed-systems-heartbeats-json",
+          "count": 12
+        },
+        {
+          "name": "Lamport Timestamps",
+          "set": "distributed-systems-lamporttimestamps-json",
+          "count": 12
+        },
+        {
+          "name": "Leader Election",
+          "set": "distributed-systems-leaderelection-json",
+          "count": 12
+        },
+        {
+          "name": "Logical Clocks",
+          "set": "distributed-systems-logicalclocks-json",
+          "count": 12
+        },
+        {
+          "name": "Message Queues",
+          "set": "distributed-systems-messagequeues-json",
+          "count": 12
+        },
+        {
+          "name": "Network Partitions",
+          "set": "distributed-systems-networkpartitions-json",
+          "count": 12
+        },
+        {
+          "name": "Paxos Algorithm",
+          "set": "distributed-systems-paxosalgorithm-json",
+          "count": 12
+        },
+        {
+          "name": "Raft Algorithm",
+          "set": "distributed-systems-raftalgorithm-json",
+          "count": 12
+        },
+        {
+          "name": "Split Brain",
+          "set": "distributed-systems-splitbrain-json",
+          "count": 12
+        },
+        {
+          "name": "Vector Clocks",
+          "set": "distributed-systems-vectorclocks-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Distributed Transactions",
+      "children": [
+        {
+          "name": "Outbox Pattern",
+          "set": "distributed-transactions-outboxpattern-json",
+          "count": 12
+        },
+        {
+          "name": "Saga Pattern",
+          "set": "distributed-transactions-sagapattern-json",
+          "count": 12
+        },
+        {
+          "name": "Three Phase Commit",
+          "set": "distributed-transactions-threephasecommit-json",
+          "count": 12
+        },
+        {
+          "name": "Two Phase Commit",
+          "set": "distributed-transactions-twophasecommit-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Load Balancing",
+      "children": [
+        {
+          "name": "Anycast Routing",
+          "set": "load-balancing-anycastrouting-json",
+          "count": 12
+        },
+        {
+          "name": "DNSLoad Balancing",
+          "set": "load-balancing-dnsloadbalancing-json",
+          "count": 12
+        },
+        {
+          "name": "Load Balancer Basics",
+          "set": "load-balancing-loadbalancerbasics-json",
+          "count": 12
+        },
+        {
+          "name": "Load Balancing Algorithms",
+          "set": "load-balancing-loadbalancingalgorithms-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Microservices Patterns",
+      "children": [
+        {
+          "name": "APIGateway Pattern",
+          "set": "microservices-patterns-apigatewaypattern-json",
+          "count": 12
+        },
+        {
+          "name": "BFF",
+          "set": "microservices-patterns-bff-json",
+          "count": 12
+        },
+        {
+          "name": "Bulkhead Pattern",
+          "set": "microservices-patterns-bulkheadpattern-json",
+          "count": 12
+        },
+        {
+          "name": "Circuit Breaker",
+          "set": "microservices-patterns-circuitbreaker-json",
+          "count": 12
+        },
+        {
+          "name": "Service Discovery",
+          "set": "microservices-patterns-servicediscovery-json",
+          "count": 12
+        },
+        {
+          "name": "Service Mesh",
+          "set": "microservices-patterns-servicemesh-json",
+          "count": 12
+        },
+        {
+          "name": "Sidecar Pattern",
+          "set": "microservices-patterns-sidecarpattern-json",
+          "count": 12
+        },
+        {
+          "name": "Strangler Fig",
+          "set": "microservices-patterns-stranglerfig-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Networking",
+      "children": [
+        {
+          "name": "Checksums",
+          "set": "networking-checksums-json",
+          "count": 12
+        },
+        {
+          "name": "DNS",
+          "set": "networking-dns-json",
+          "count": 12
+        },
+        {
+          "name": "HTTPvs HTTPS",
+          "set": "networking-httpvshttps-json",
+          "count": 12
+        },
+        {
+          "name": "IPAddressing",
+          "set": "networking-ipaddressing-json",
+          "count": 12
+        },
+        {
+          "name": "OSIModel",
+          "set": "networking-osimodel-json",
+          "count": 12
+        },
+        {
+          "name": "Proxy Reverse Proxy",
+          "set": "networking-proxyreverseproxy-json",
+          "count": 12
+        },
+        {
+          "name": "TCPvs UDP",
+          "set": "networking-tcpvsudp-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Observability",
+      "children": [
+        {
+          "name": "Alerts Monitoring",
+          "set": "observability-alertsmonitoring-json",
+          "count": 12
+        },
+        {
+          "name": "Correlation IDs",
+          "set": "observability-correlationids-json",
+          "count": 12
+        },
+        {
+          "name": "Dashboards Runbooks",
+          "set": "observability-dashboardsrunbooks-json",
+          "count": 12
+        },
+        {
+          "name": "Distributed Tracing",
+          "set": "observability-distributedtracing-json",
+          "count": 12
+        },
+        {
+          "name": "Log Aggregation",
+          "set": "observability-logaggregation-json",
+          "count": 12
+        },
+        {
+          "name": "Logging Best Practices",
+          "set": "observability-loggingbestpractices-json",
+          "count": 12
+        },
+        {
+          "name": "Metrics Instrumentation",
+          "set": "observability-metricsinstrumentation-json",
+          "count": 12
+        },
+        {
+          "name": "Three Pillars",
+          "set": "observability-threepillars-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Security",
+      "children": [
+        {
+          "name": "Authentication Authorization",
+          "set": "security-authenticationauthorization-json",
+          "count": 12
+        },
+        {
+          "name": "RBAC",
+          "set": "security-rbac-json",
+          "count": 12
+        },
+        {
+          "name": "SAML",
+          "set": "security-saml-json",
+          "count": 12
+        },
+        {
+          "name": "SSLTLS",
+          "set": "security-ssltls-json",
+          "count": 12
+        },
+        {
+          "name": "SSRF",
+          "set": "security-ssrf-json",
+          "count": 10
+        },
+        {
+          "name": "Secrets Management",
+          "set": "security-secretsmanagement-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Śrīmad Bhāgavatam (Canto 3)",
+      "children": [
+        {
+          "name": "Ch 1: Questions by Vidura",
+          "set": "bhagavatam-canto3-ch1",
+          "count": 27
+        },
+        {
+          "name": "Ch 2: Remembrance of Lord Krsna",
+          "set": "bhagavatam-canto3-ch2",
+          "count": 25
+        },
+        {
+          "name": "Ch 3: The Lord's Pastimes Out of Vrndavana",
+          "set": "bhagavatam-canto3-ch3",
+          "count": 26
+        },
+        {
+          "name": "Ch 4: Vidura Approaches Maitreya",
+          "set": "bhagavatam-canto3-ch4",
+          "count": 26
+        },
+        {
+          "name": "Ch 5: Vidura's Talks with Maitreya",
+          "set": "bhagavatam-canto3-ch5",
+          "count": 27
+        },
+        {
+          "name": "Ch 6: Creation of the Universal Form",
+          "set": "bhagavatam-canto3-ch6",
+          "count": 20
+        },
+        {
+          "name": "Ch 7: Further Inquiries by Vidura",
+          "set": "bhagavatam-canto3-ch7",
+          "count": 25
+        },
+        {
+          "name": "Ch 8: Manifestation of Brahma from Garbhodakasayi Visnu",
+          "set": "bhagavatam-canto3-ch8",
+          "count": 27
+        },
+        {
+          "name": "Ch 9: Brahma's Prayers for Creative Energy",
+          "set": "bhagavatam-canto3-ch9",
+          "count": 26
+        },
+        {
+          "name": "Ch 10: Divisions of the Creation",
+          "set": "bhagavatam-canto3-ch10",
+          "count": 28
+        },
+        {
+          "name": "Ch 11: Calculation of Time, from the Atom",
+          "set": "bhagavatam-canto3-ch11",
+          "count": 28
+        },
+        {
+          "name": "Ch 12: Creation of the Kumaras and Others",
+          "set": "bhagavatam-canto3-ch12",
+          "count": 28
+        },
+        {
+          "name": "Ch 13: The Appearance of Lord Varaha",
+          "set": "bhagavatam-canto3-ch13",
+          "count": 25
+        },
+        {
+          "name": "Ch 14: Pregnancy of Diti in the Evening",
+          "set": "bhagavatam-canto3-ch14",
+          "count": 27
+        },
+        {
+          "name": "Ch 15: Description of the Kingdom of God",
+          "set": "bhagavatam-canto3-ch15",
+          "count": 26
+        },
+        {
+          "name": "Ch 16: The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
+          "set": "bhagavatam-canto3-ch16",
+          "count": 27
+        },
+        {
+          "name": "Ch 17: Victory of Hiranyaksa in All Directions",
+          "set": "bhagavatam-canto3-ch17",
+          "count": 24
+        },
+        {
+          "name": "Ch 18: The Battle Between Lord Boar and the Demon Hiranyaksa",
+          "set": "bhagavatam-canto3-ch18",
+          "count": 22
+        },
+        {
+          "name": "Ch 19: The Killing of the Demon Hiranyaksa",
+          "set": "bhagavatam-canto3-ch19",
+          "count": 26
+        },
+        {
+          "name": "Ch 20: Conversation Between Maitreya and Vidura",
+          "set": "bhagavatam-canto3-ch20",
+          "count": 28
+        },
+        {
+          "name": "Ch 21: Conversation Between Manu and Kardama",
+          "set": "bhagavatam-canto3-ch21",
+          "count": 20
+        },
+        {
+          "name": "Ch 22: The Marriage of Kardama Muni and Devahuti",
+          "set": "bhagavatam-canto3-ch22",
+          "count": 24
+        },
+        {
+          "name": "Ch 23: Devahuti's Lamentation",
+          "set": "bhagavatam-canto3-ch23",
+          "count": 20
+        },
+        {
+          "name": "Ch 24: The Renunciation of Kardama Muni",
+          "set": "bhagavatam-canto3-ch24",
+          "count": 21
+        },
+        {
+          "name": "Ch 25: The Glories of Devotional Service",
+          "set": "bhagavatam-canto3-ch25",
+          "count": 23
+        },
+        {
+          "name": "Ch 26: Fundamental Principles of Material Nature",
+          "set": "bhagavatam-canto3-ch26",
+          "count": 45
+        },
+        {
+          "name": "Ch 27: Understanding Material Nature",
+          "set": "bhagavatam-canto3-ch27",
+          "count": 26
+        },
+        {
+          "name": "Ch 28: Kapila's Instructions on the Execution of Devotional Service",
+          "set": "bhagavatam-canto3-ch28",
+          "count": 40
+        },
+        {
+          "name": "Ch 29: Explanation of Devotional Service by Lord Kapila",
+          "set": "bhagavatam-canto3-ch29",
+          "count": 40
+        },
+        {
+          "name": "Ch 30: Description by Lord Kapila of Adverse Fruitive Activities",
+          "set": "bhagavatam-canto3-ch30",
+          "count": 26
+        },
+        {
+          "name": "Ch 31: Lord Kapila's Instructions on the Movements of the Living Entities",
+          "set": "bhagavatam-canto3-ch31",
+          "count": 33
+        },
+        {
+          "name": "Ch 32: Entanglement in Fruitive Activities",
+          "set": "bhagavatam-canto3-ch32",
+          "count": 27
+        },
+        {
+          "name": "Ch 33: Activities of Kapila",
+          "set": "bhagavatam-canto3-ch33",
+          "count": 28
+        }
+      ]
+    },
+    {
+      "name": "Storage Systems",
+      "children": [
+        {
+          "name": "Block File Object Storage",
+          "set": "storage-systems-blockfileobjectstorage-json",
+          "count": 12
+        },
+        {
+          "name": "Distributed File Systems",
+          "set": "storage-systems-distributedfilesystems-json",
+          "count": 12
+        },
+        {
+          "name": "Erasure Coding",
+          "set": "storage-systems-erasurecoding-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "System Design Scenarios",
+      "children": [
+        {
+          "name": "Applied Scenarios",
+          "set": "system-design-scenarios-appliedscenarios-json",
+          "count": 10
+        },
+        {
+          "name": "Java System Design",
+          "set": "system-design-scenarios-javasystemdesign-json",
+          "count": 15
+        }
+      ]
+    },
+    {
+      "name": "Trade-Offs",
+      "children": [
+        {
+          "name": "Concurrency Vs Parallelism",
+          "set": "trade-offs-concurrencyvsparallelism-json",
+          "count": 12
+        },
+        {
+          "name": "Long Polling Vs Web Sockets",
+          "set": "trade-offs-longpollingvswebsockets-json",
+          "count": 12
+        },
+        {
+          "name": "Push Vs Pull",
+          "set": "trade-offs-pushvspull-json",
+          "count": 12
+        },
+        {
+          "name": "Stateful Vs Stateless",
+          "set": "trade-offs-statefulvsstateless-json",
+          "count": 12
+        },
+        {
+          "name": "Strong Vs Eventual Consistency",
+          "set": "trade-offs-strongvseventualconsistency-json",
+          "count": 12
+        },
+        {
+          "name": "Vertical Vs Horizontal",
+          "set": "trade-offs-verticalvshorizontal-json",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Electronics",
+      "children": [
+        {
+          "name": "Fundamentals",
+          "set": "electronics-fundamentals",
+          "count": 20
+        }
+      ]
     }
-   ]
-  },
-  {
-   "name": "Architectural Patterns",
-   "children": [
-    {
-     "name": "CQRS",
-     "set": "architectural-patterns-cqrs-json",
-     "count": 12
-    },
-    {
-     "name": "Client Server",
-     "set": "architectural-patterns-clientserver-json",
-     "count": 12
-    },
-    {
-     "name": "Event Driven",
-     "set": "architectural-patterns-eventdriven-json",
-     "count": 12
-    },
-    {
-     "name": "Event Sourcing",
-     "set": "architectural-patterns-eventsourcing-json",
-     "count": 12
-    },
-    {
-     "name": "Microservices",
-     "set": "architectural-patterns-microservices-json",
-     "count": 12
-    },
-    {
-     "name": "Monolithic",
-     "set": "architectural-patterns-monolithic-json",
-     "count": 12
-    },
-    {
-     "name": "P2 P",
-     "set": "architectural-patterns-p2p-json",
-     "count": 12
-    },
-    {
-     "name": "Serverless",
-     "set": "architectural-patterns-serverless-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Big Data Processing",
-   "children": [
-    {
-     "name": "Batch Vs Stream",
-     "set": "big-data-processing-batchvsstream-json",
-     "count": 12
-    },
-    {
-     "name": "Data Lakehouse",
-     "set": "big-data-processing-datalakehouse-json",
-     "count": 12
-    },
-    {
-     "name": "Data Lakes",
-     "set": "big-data-processing-datalakes-json",
-     "count": 12
-    },
-    {
-     "name": "Data Warehousing",
-     "set": "big-data-processing-datawarehousing-json",
-     "count": 12
-    },
-    {
-     "name": "ETLPipelines",
-     "set": "big-data-processing-etlpipelines-json",
-     "count": 12
-    },
-    {
-     "name": "Kappa Architecture",
-     "set": "big-data-processing-kappaarchitecture-json",
-     "count": 12
-    },
-    {
-     "name": "Lambda Architecture",
-     "set": "big-data-processing-lambdaarchitecture-json",
-     "count": 12
-    },
-    {
-     "name": "Map Reduce",
-     "set": "big-data-processing-mapreduce-json",
-     "count": 12
-    },
-    {
-     "name": "Streaming Engines",
-     "set": "big-data-processing-streamingengines-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Caching",
-   "children": [
-    {
-     "name": "CDN",
-     "set": "caching-cdn-json",
-     "count": 12
-    },
-    {
-     "name": "Cache Eviction Policies",
-     "set": "caching-cacheevictionpolicies-json",
-     "count": 12
-    },
-    {
-     "name": "Cache Invalidation",
-     "set": "caching-cacheinvalidation-json",
-     "count": 12
-    },
-    {
-     "name": "Cache Stampede",
-     "set": "caching-cachestampede-json",
-     "count": 12
-    },
-    {
-     "name": "Caching Fundamentals",
-     "set": "caching-cachingfundamentals-json",
-     "count": 12
-    },
-    {
-     "name": "Caching Patterns",
-     "set": "caching-cachingpatterns-json",
-     "count": 12
-    },
-    {
-     "name": "Distributed Caching",
-     "set": "caching-distributedcaching-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Communication Patterns",
-   "children": [
-    {
-     "name": "CDC",
-     "set": "communication-patterns-cdc-json",
-     "count": 12
-    },
-    {
-     "name": "Dead Letter Queues",
-     "set": "communication-patterns-deadletterqueues-json",
-     "count": 12
-    },
-    {
-     "name": "Delivery Semantics",
-     "set": "communication-patterns-deliverysemantics-json",
-     "count": 12
-    },
-    {
-     "name": "Long Polling",
-     "set": "communication-patterns-longpolling-json",
-     "count": 12
-    },
-    {
-     "name": "Pub Sub",
-     "set": "communication-patterns-pubsub-json",
-     "count": 12
-    },
-    {
-     "name": "SSE",
-     "set": "communication-patterns-sse-json",
-     "count": 12
-    },
-    {
-     "name": "Sync Vs Async",
-     "set": "communication-patterns-syncvsasync-json",
-     "count": 12
-    },
-    {
-     "name": "Web RTC",
-     "set": "communication-patterns-webrtc-json",
-     "count": 12
-    },
-    {
-     "name": "Web Sockets",
-     "set": "communication-patterns-websockets-json",
-     "count": 12
-    },
-    {
-     "name": "Webhooks",
-     "set": "communication-patterns-webhooks-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Core Concepts",
-   "children": [
-    {
-     "name": "Availability",
-     "set": "core-concepts-availability-json",
-     "count": 12
-    },
-    {
-     "name": "CAPTheorem",
-     "set": "core-concepts-captheorem-json",
-     "count": 12
-    },
-    {
-     "name": "Consistency Models",
-     "set": "core-concepts-consistencymodels-json",
-     "count": 12
-    },
-    {
-     "name": "Consistent Hashing",
-     "set": "core-concepts-consistenthashing-json",
-     "count": 12
-    },
-    {
-     "name": "Latency Throughput Bandwidth",
-     "set": "core-concepts-latencythroughputbandwidth-json",
-     "count": 12
-    },
-    {
-     "name": "Reliability",
-     "set": "core-concepts-reliability-json",
-     "count": 12
-    },
-    {
-     "name": "SPOF",
-     "set": "core-concepts-spof-json",
-     "count": 12
-    },
-    {
-     "name": "Scalability",
-     "set": "core-concepts-scalability-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Data Structures for Scale",
-   "children": [
-    {
-     "name": "Bloom Filters",
-     "set": "data-structures-for-scale-bloomfilters-json",
-     "count": 12
-    },
-    {
-     "name": "Consistent Hashing Advanced",
-     "set": "data-structures-for-scale-consistenthashingadvanced-json",
-     "count": 12
-    },
-    {
-     "name": "Count Min Sketch",
-     "set": "data-structures-for-scale-countminsketch-json",
-     "count": 12
-    },
-    {
-     "name": "Geohash",
-     "set": "data-structures-for-scale-geohash-json",
-     "count": 12
-    },
-    {
-     "name": "Hyper Log Log",
-     "set": "data-structures-for-scale-hyperloglog-json",
-     "count": 12
-    },
-    {
-     "name": "Merkle Trees",
-     "set": "data-structures-for-scale-merkletrees-json",
-     "count": 12
-    },
-    {
-     "name": "Quad Trees",
-     "set": "data-structures-for-scale-quadtrees-json",
-     "count": 12
-    },
-    {
-     "name": "RTrees",
-     "set": "data-structures-for-scale-rtrees-json",
-     "count": 12
-    },
-    {
-     "name": "Skip Lists",
-     "set": "data-structures-for-scale-skiplists-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Database Scaling",
-   "children": [
-    {
-     "name": "Connection Pooling",
-     "set": "database-scaling-connectionpooling-json",
-     "count": 12
-    },
-    {
-     "name": "Denormalization",
-     "set": "database-scaling-denormalization-json",
-     "count": 12
-    },
-    {
-     "name": "Indexing",
-     "set": "database-scaling-indexing-json",
-     "count": 12
-    },
-    {
-     "name": "Materialized Views",
-     "set": "database-scaling-materializedviews-json",
-     "count": 12
-    },
-    {
-     "name": "Query Optimization",
-     "set": "database-scaling-queryoptimization-json",
-     "count": 12
-    },
-    {
-     "name": "Read Replicas",
-     "set": "database-scaling-readreplicas-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Databases",
-   "children": [
-    {
-     "name": "ACIDTransactions",
-     "set": "databases-acidtransactions-json",
-     "count": 12
-    },
-    {
-     "name": "Database Internals",
-     "set": "databases-databaseinternals-json",
-     "count": 12
-    },
-    {
-     "name": "Document Databases",
-     "set": "databases-documentdatabases-json",
-     "count": 12
-    },
-    {
-     "name": "Full Text Search",
-     "set": "databases-fulltextsearch-json",
-     "count": 12
-    },
-    {
-     "name": "Graph Databases",
-     "set": "databases-graphdatabases-json",
-     "count": 12
-    },
-    {
-     "name": "Key Value Stores",
-     "set": "databases-keyvaluestores-json",
-     "count": 12
-    },
-    {
-     "name": "Relational Databases",
-     "set": "databases-relationaldatabases-json",
-     "count": 12
-    },
-    {
-     "name": "SQLvs No SQL",
-     "set": "databases-sqlvsnosql-json",
-     "count": 12
-    },
-    {
-     "name": "Sharding",
-     "set": "databases-sharding-json",
-     "count": 12
-    },
-    {
-     "name": "Time Series Databases",
-     "set": "databases-timeseriesdatabases-json",
-     "count": 12
-    },
-    {
-     "name": "Vector Databases",
-     "set": "databases-vectordatabases-json",
-     "count": 12
-    },
-    {
-     "name": "Wide Column Databases",
-     "set": "databases-widecolumndatabases-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Distributed Systems",
-   "children": [
-    {
-     "name": "Clock Synchronization",
-     "set": "distributed-systems-clocksynchronization-json",
-     "count": 12
-    },
-    {
-     "name": "Consensus Algorithms",
-     "set": "distributed-systems-consensusalgorithms-json",
-     "count": 12
-    },
-    {
-     "name": "Gossip Protocol",
-     "set": "distributed-systems-gossipprotocol-json",
-     "count": 12
-    },
-    {
-     "name": "Heartbeats",
-     "set": "distributed-systems-heartbeats-json",
-     "count": 12
-    },
-    {
-     "name": "Lamport Timestamps",
-     "set": "distributed-systems-lamporttimestamps-json",
-     "count": 12
-    },
-    {
-     "name": "Leader Election",
-     "set": "distributed-systems-leaderelection-json",
-     "count": 12
-    },
-    {
-     "name": "Logical Clocks",
-     "set": "distributed-systems-logicalclocks-json",
-     "count": 12
-    },
-    {
-     "name": "Message Queues",
-     "set": "distributed-systems-messagequeues-json",
-     "count": 12
-    },
-    {
-     "name": "Network Partitions",
-     "set": "distributed-systems-networkpartitions-json",
-     "count": 12
-    },
-    {
-     "name": "Paxos Algorithm",
-     "set": "distributed-systems-paxosalgorithm-json",
-     "count": 12
-    },
-    {
-     "name": "Raft Algorithm",
-     "set": "distributed-systems-raftalgorithm-json",
-     "count": 12
-    },
-    {
-     "name": "Split Brain",
-     "set": "distributed-systems-splitbrain-json",
-     "count": 12
-    },
-    {
-     "name": "Vector Clocks",
-     "set": "distributed-systems-vectorclocks-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Distributed Transactions",
-   "children": [
-    {
-     "name": "Outbox Pattern",
-     "set": "distributed-transactions-outboxpattern-json",
-     "count": 12
-    },
-    {
-     "name": "Saga Pattern",
-     "set": "distributed-transactions-sagapattern-json",
-     "count": 12
-    },
-    {
-     "name": "Three Phase Commit",
-     "set": "distributed-transactions-threephasecommit-json",
-     "count": 12
-    },
-    {
-     "name": "Two Phase Commit",
-     "set": "distributed-transactions-twophasecommit-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Load Balancing",
-   "children": [
-    {
-     "name": "Anycast Routing",
-     "set": "load-balancing-anycastrouting-json",
-     "count": 12
-    },
-    {
-     "name": "DNSLoad Balancing",
-     "set": "load-balancing-dnsloadbalancing-json",
-     "count": 12
-    },
-    {
-     "name": "Load Balancer Basics",
-     "set": "load-balancing-loadbalancerbasics-json",
-     "count": 12
-    },
-    {
-     "name": "Load Balancing Algorithms",
-     "set": "load-balancing-loadbalancingalgorithms-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Microservices Patterns",
-   "children": [
-    {
-     "name": "APIGateway Pattern",
-     "set": "microservices-patterns-apigatewaypattern-json",
-     "count": 12
-    },
-    {
-     "name": "BFF",
-     "set": "microservices-patterns-bff-json",
-     "count": 12
-    },
-    {
-     "name": "Bulkhead Pattern",
-     "set": "microservices-patterns-bulkheadpattern-json",
-     "count": 12
-    },
-    {
-     "name": "Circuit Breaker",
-     "set": "microservices-patterns-circuitbreaker-json",
-     "count": 12
-    },
-    {
-     "name": "Service Discovery",
-     "set": "microservices-patterns-servicediscovery-json",
-     "count": 12
-    },
-    {
-     "name": "Service Mesh",
-     "set": "microservices-patterns-servicemesh-json",
-     "count": 12
-    },
-    {
-     "name": "Sidecar Pattern",
-     "set": "microservices-patterns-sidecarpattern-json",
-     "count": 12
-    },
-    {
-     "name": "Strangler Fig",
-     "set": "microservices-patterns-stranglerfig-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Networking",
-   "children": [
-    {
-     "name": "Checksums",
-     "set": "networking-checksums-json",
-     "count": 12
-    },
-    {
-     "name": "DNS",
-     "set": "networking-dns-json",
-     "count": 12
-    },
-    {
-     "name": "HTTPvs HTTPS",
-     "set": "networking-httpvshttps-json",
-     "count": 12
-    },
-    {
-     "name": "IPAddressing",
-     "set": "networking-ipaddressing-json",
-     "count": 12
-    },
-    {
-     "name": "OSIModel",
-     "set": "networking-osimodel-json",
-     "count": 12
-    },
-    {
-     "name": "Proxy Reverse Proxy",
-     "set": "networking-proxyreverseproxy-json",
-     "count": 12
-    },
-    {
-     "name": "TCPvs UDP",
-     "set": "networking-tcpvsudp-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Observability",
-   "children": [
-    {
-     "name": "Alerts Monitoring",
-     "set": "observability-alertsmonitoring-json",
-     "count": 12
-    },
-    {
-     "name": "Correlation IDs",
-     "set": "observability-correlationids-json",
-     "count": 12
-    },
-    {
-     "name": "Dashboards Runbooks",
-     "set": "observability-dashboardsrunbooks-json",
-     "count": 12
-    },
-    {
-     "name": "Distributed Tracing",
-     "set": "observability-distributedtracing-json",
-     "count": 12
-    },
-    {
-     "name": "Log Aggregation",
-     "set": "observability-logaggregation-json",
-     "count": 12
-    },
-    {
-     "name": "Logging Best Practices",
-     "set": "observability-loggingbestpractices-json",
-     "count": 12
-    },
-    {
-     "name": "Metrics Instrumentation",
-     "set": "observability-metricsinstrumentation-json",
-     "count": 12
-    },
-    {
-     "name": "Three Pillars",
-     "set": "observability-threepillars-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Security",
-   "children": [
-    {
-     "name": "Authentication Authorization",
-     "set": "security-authenticationauthorization-json",
-     "count": 12
-    },
-    {
-     "name": "RBAC",
-     "set": "security-rbac-json",
-     "count": 12
-    },
-    {
-     "name": "SAML",
-     "set": "security-saml-json",
-     "count": 12
-    },
-    {
-     "name": "SSLTLS",
-     "set": "security-ssltls-json",
-     "count": 12
-    },
-    {
-     "name": "SSRF",
-     "set": "security-ssrf-json",
-     "count": 10
-    },
-    {
-     "name": "Secrets Management",
-     "set": "security-secretsmanagement-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "Śrīmad Bhāgavatam (Canto 3)",
-   "children": [
-    {
-     "name": "Ch 1: Questions by Vidura",
-     "set": "bhagavatam-canto3-ch1",
-     "count": 27
-    },
-    {
-     "name": "Ch 2: Remembrance of Lord Krsna",
-     "set": "bhagavatam-canto3-ch2",
-     "count": 25
-    },
-    {
-     "name": "Ch 3: The Lord's Pastimes Out of Vrndavana",
-     "set": "bhagavatam-canto3-ch3",
-     "count": 26
-    },
-    {
-     "name": "Ch 4: Vidura Approaches Maitreya",
-     "set": "bhagavatam-canto3-ch4",
-     "count": 26
-    },
-    {
-     "name": "Ch 5: Vidura's Talks with Maitreya",
-     "set": "bhagavatam-canto3-ch5",
-     "count": 27
-    },
-    {
-     "name": "Ch 6: Creation of the Universal Form",
-     "set": "bhagavatam-canto3-ch6",
-     "count": 20
-    },
-    {
-     "name": "Ch 7: Further Inquiries by Vidura",
-     "set": "bhagavatam-canto3-ch7",
-     "count": 25
-    },
-    {
-     "name": "Ch 8: Manifestation of Brahma from Garbhodakasayi Visnu",
-     "set": "bhagavatam-canto3-ch8",
-     "count": 27
-    },
-    {
-     "name": "Ch 9: Brahma's Prayers for Creative Energy",
-     "set": "bhagavatam-canto3-ch9",
-     "count": 26
-    },
-    {
-     "name": "Ch 10: Divisions of the Creation",
-     "set": "bhagavatam-canto3-ch10",
-     "count": 28
-    },
-    {
-     "name": "Ch 11: Calculation of Time, from the Atom",
-     "set": "bhagavatam-canto3-ch11",
-     "count": 28
-    },
-    {
-     "name": "Ch 12: Creation of the Kumaras and Others",
-     "set": "bhagavatam-canto3-ch12",
-     "count": 28
-    },
-    {
-     "name": "Ch 13: The Appearance of Lord Varaha",
-     "set": "bhagavatam-canto3-ch13",
-     "count": 25
-    },
-    {
-     "name": "Ch 14: Pregnancy of Diti in the Evening",
-     "set": "bhagavatam-canto3-ch14",
-     "count": 27
-    },
-    {
-     "name": "Ch 15: Description of the Kingdom of God",
-     "set": "bhagavatam-canto3-ch15",
-     "count": 26
-    },
-    {
-     "name": "Ch 16: The Two Doorkeepers of Vaikuntha, Jaya and Vijaya, Cursed by the Sages",
-     "set": "bhagavatam-canto3-ch16",
-     "count": 27
-    },
-    {
-     "name": "Ch 17: Victory of Hiranyaksa in All Directions",
-     "set": "bhagavatam-canto3-ch17",
-     "count": 24
-    },
-    {
-     "name": "Ch 18: The Battle Between Lord Boar and the Demon Hiranyaksa",
-     "set": "bhagavatam-canto3-ch18",
-     "count": 22
-    },
-    {
-     "name": "Ch 19: The Killing of the Demon Hiranyaksa",
-     "set": "bhagavatam-canto3-ch19",
-     "count": 26
-    },
-    {
-     "name": "Ch 20: Conversation Between Maitreya and Vidura",
-     "set": "bhagavatam-canto3-ch20",
-     "count": 28
-    },
-    {
-     "name": "Ch 21: Conversation Between Manu and Kardama",
-     "set": "bhagavatam-canto3-ch21",
-     "count": 20
-    },
-    {
-     "name": "Ch 22: The Marriage of Kardama Muni and Devahuti",
-     "set": "bhagavatam-canto3-ch22",
-     "count": 24
-    },
-    {
-     "name": "Ch 23: Devahuti's Lamentation",
-     "set": "bhagavatam-canto3-ch23",
-     "count": 20
-    },
-    {
-     "name": "Ch 24: The Renunciation of Kardama Muni",
-     "set": "bhagavatam-canto3-ch24",
-     "count": 21
-    },
-    {
-     "name": "Ch 25: The Glories of Devotional Service",
-     "set": "bhagavatam-canto3-ch25",
-     "count": 23
-    },
-    {
-     "name": "Ch 26: Fundamental Principles of Material Nature",
-     "set": "bhagavatam-canto3-ch26",
-     "count": 45
-    },
-    {
-     "name": "Ch 27: Understanding Material Nature",
-     "set": "bhagavatam-canto3-ch27",
-     "count": 26
-    },
-    {
-     "name": "Ch 28: Kapila's Instructions on the Execution of Devotional Service",
-     "set": "bhagavatam-canto3-ch28",
-     "count": 40
-    },
-    {
-     "name": "Ch 29: Explanation of Devotional Service by Lord Kapila",
-     "set": "bhagavatam-canto3-ch29",
-     "count": 40
-    },
-    {
-     "name": "Ch 30: Description by Lord Kapila of Adverse Fruitive Activities",
-     "set": "bhagavatam-canto3-ch30",
-     "count": 26
-    },
-    {
-     "name": "Ch 31: Lord Kapila's Instructions on the Movements of the Living Entities",
-     "set": "bhagavatam-canto3-ch31",
-     "count": 33
-    },
-    {
-     "name": "Ch 32: Entanglement in Fruitive Activities",
-     "set": "bhagavatam-canto3-ch32",
-     "count": 27
-    },
-    {
-     "name": "Ch 33: Activities of Kapila",
-     "set": "bhagavatam-canto3-ch33",
-     "count": 28
-    }
-   ]
-  },
-  {
-   "name": "Storage Systems",
-   "children": [
-    {
-     "name": "Block File Object Storage",
-     "set": "storage-systems-blockfileobjectstorage-json",
-     "count": 12
-    },
-    {
-     "name": "Distributed File Systems",
-     "set": "storage-systems-distributedfilesystems-json",
-     "count": 12
-    },
-    {
-     "name": "Erasure Coding",
-     "set": "storage-systems-erasurecoding-json",
-     "count": 12
-    }
-   ]
-  },
-  {
-   "name": "System Design Scenarios",
-   "children": [
-    {
-     "name": "Applied Scenarios",
-     "set": "system-design-scenarios-appliedscenarios-json",
-     "count": 10
-    },
-    {
-     "name": "Java System Design",
-     "set": "system-design-scenarios-javasystemdesign-json",
-     "count": 15
-    }
-   ]
-  },
-  {
-   "name": "Trade-Offs",
-   "children": [
-    {
-     "name": "Concurrency Vs Parallelism",
-     "set": "trade-offs-concurrencyvsparallelism-json",
-     "count": 12
-    },
-    {
-     "name": "Long Polling Vs Web Sockets",
-     "set": "trade-offs-longpollingvswebsockets-json",
-     "count": 12
-    },
-    {
-     "name": "Push Vs Pull",
-     "set": "trade-offs-pushvspull-json",
-     "count": 12
-    },
-    {
-     "name": "Stateful Vs Stateless",
-     "set": "trade-offs-statefulvsstateless-json",
-     "count": 12
-    },
-    {
-     "name": "Strong Vs Eventual Consistency",
-     "set": "trade-offs-strongvseventualconsistency-json",
-     "count": 12
-    },
-    {
-     "name": "Vertical Vs Horizontal",
-     "set": "trade-offs-verticalvshorizontal-json",
-     "count": 12
-    }
-   ]
-  }
- ],
- "total_questions": 2570,
- "total_sets": 173
+  ],
+  "total_questions": 2570,
+  "total_sets": 173
 }
