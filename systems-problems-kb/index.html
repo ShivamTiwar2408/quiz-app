@@ -99,6 +99,40 @@
   .pager a:hover{color:var(--ink);border-color:var(--accent)}
   .pager a .d{font-size:11px;color:var(--faint);display:block}
 
+  /* deep dive */
+  .deepdive p{color:var(--muted);font-size:15.5px;margin-bottom:12px}
+  .deepdive p:last-child{margin-bottom:0}
+  /* diagram */
+  .diagram{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:10px;overflow-x:auto}
+  .diagram svg{display:block;width:100%;height:auto;max-width:760px;margin:0 auto}
+  /* case studies */
+  .case{border:1px solid var(--line);border-left:3px solid var(--a);border-radius:0 10px 10px 0;background:var(--panel);padding:13px 16px;margin-bottom:10px}
+  .case:last-child{margin-bottom:0}
+  .case .ct{color:var(--ink);font-weight:700;font-size:14.5px;margin-bottom:5px}
+  .case p{color:var(--muted);font-size:14px;line-height:1.55}
+  /* quiz */
+  .quizblock{margin-top:30px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg2));padding:20px 20px 22px}
+  .quizhead{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--ink);margin-bottom:16px}
+  .quizhead .ic{font-size:18px}
+  .quizhead .score{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(91,157,255,.12);border:1px solid var(--line);padding:3px 12px;border-radius:20px}
+  .mcq{border-top:1px solid var(--line);padding:16px 0}
+  .mcq:first-of-type{border-top:none;padding-top:0}
+  .qnum{font-family:var(--mono);font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:7px}
+  .qnum .of{color:var(--faint)}
+  .qtext{font-size:15.5px;color:var(--ink);font-weight:600;margin-bottom:12px;line-height:1.5}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:11px 13px;font-size:14.5px;font-family:inherit;cursor:pointer;transition:.13s;line-height:1.45}
+  .opt:hover:not(:disabled){border-color:var(--accent);color:var(--ink)}
+  .opt:disabled{cursor:default}
+  .opt .optk{flex:none;width:22px;height:22px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted)}
+  .opt.correct{border-color:var(--i);background:rgba(70,201,139,.12);color:var(--ink)}
+  .opt.correct .optk{background:var(--i);color:#08111f;border-color:var(--i)}
+  .opt.wrong{border-color:var(--f,#f0635c);background:rgba(240,99,92,.12);color:var(--ink)}
+  .opt.wrong .optk{background:#f0635c;color:#08111f;border-color:#f0635c}
+  .expl{display:none;margin-top:11px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);padding:12px 14px;font-size:14px;color:var(--muted);line-height:1.55}
+  .expl.show{display:block}
+  .expl .ek{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:4px}
+
   .scrim{display:none}
   .hide{display:none!important}
   @media(max-width:760px){
@@ -212,21 +246,78 @@ function renderArticle(item){
   const i=flat.findIndex(x=>x.topic.id===t.id);
   const prev=flat[i-1], next=flat[i+1];
   const sol=t.solutions.map(([h,d])=>`<li><b>${esc(h)}</b>${esc(d)}</li>`).join('');
+  const deepDiveHtml = t.deepDive ? `<div class="sec deepdive"><div class="lbl"><span class="ic">🔬</span>Deep dive</div>${paras(t.deepDive)}</div>` : '';
+  const diagramHtml = t.diagram ? `<div class="sec"><div class="lbl"><span class="ic">📊</span>How it works — diagram</div><div class="diagram">${t.diagram}</div></div>` : '';
+  const caseHtml = (t.caseStudies&&t.caseStudies.length) ?
+    `<div class="sec"><div class="lbl"><span class="ic">🔥</span>Real-world outages &amp; case studies</div>`+
+    t.caseStudies.map(c=>`<div class="case"><div class="ct">${esc(c.title)}</div><p>${esc(c.body)}</p></div>`).join('')+`</div>` : '';
+  const mcqHtml = (t.mcqs&&t.mcqs.length) ? renderMcqs(t.mcqs, t.id) : '';
   a.innerHTML=`
     <div class="crumbtag ${cls}">${item.tierName}</div>
     <h1>${esc(t.name)}</h1>
     <div class="sec premise"><div class="lbl"><span class="ic">🧭</span>What it is</div><p>${esc(t.premise)}</p></div>
     <div class="sec"><div class="lbl"><span class="ic">📅</span>When it was named</div><div class="yearbox">${esc(t.year)}</div></div>
     <div class="sec"><div class="lbl"><span class="ic">⚙️</span>Why it happens</div><p>${esc(t.why)}</p></div>
+    ${deepDiveHtml}
+    ${diagramHtml}
     <div class="sec"><div class="lbl"><span class="ic">🛠️</span>How it's solved</div><ul class="sol">${sol}</ul></div>
+    ${caseHtml}
     <div class="sec"><div class="lbl"><span class="ic">📚</span>Papers &amp; canonical references</div><div class="papers">${esc(t.papers)}</div></div>
     <div class="sec"><div class="lbl"><span class="ic">🔗</span>Useful links</div><div class="links">${linkRows(t.links)}</div></div>
     <div class="takeaway"><div class="k">Key takeaway</div><p>${esc(t.takeaway)}</p></div>
+    ${mcqHtml}
     <div class="pager">
       ${prev?`<a href="#/${prev.topic.id}"><span class="d">← Previous</span>${esc(prev.topic.name)}</a>`:'<span></span>'}
       ${next?`<a href="#/${next.topic.id}" style="text-align:right;margin-left:auto"><span class="d">Next →</span>${esc(next.topic.name)}</a>`:''}
     </div>`;
+  wireMcqs();
   document.querySelector('main').scrollTo({top:0,behavior:'smooth'});
+}
+
+// split a multi-paragraph string (\n\n separated) into <p> blocks
+function paras(s){ return String(s).split(/\n\n+/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join(''); }
+
+function renderMcqs(mcqs, topicId){
+  const items = mcqs.map((m,qi)=>{
+    const opts = m.options.map((o,oi)=>`
+      <button class="opt" data-q="${qi}" data-o="${oi}">
+        <span class="optk">${String.fromCharCode(65+oi)}</span><span class="optt">${esc(o)}</span>
+      </button>`).join('');
+    return `<div class="mcq" data-q="${qi}" data-ans="${m.answer}">
+      <div class="qnum">Question ${qi+1} <span class="of">of ${mcqs.length}</span></div>
+      <div class="qtext">${esc(m.q)}</div>
+      <div class="opts">${opts}</div>
+      <div class="expl"><span class="ek">Explanation</span>${esc(m.explanation)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="quizblock" id="quiz-${topicId}">
+    <div class="quizhead"><span class="ic">🧠</span> Test your knowledge
+      <span class="score" id="score">0 / ${mcqs.length}</span></div>
+    ${items}</div>`;
+}
+
+let _quizScored=null;
+function wireMcqs(){
+  const block=document.querySelector('.quizblock'); if(!block) return;
+  const total=block.querySelectorAll('.mcq').length;
+  _quizScored=new Set();
+  block.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const mcq=btn.closest('.mcq');
+      if(mcq.classList.contains('answered')) return;
+      const ans=+mcq.dataset.ans, chosen=+btn.dataset.o, qi=mcq.dataset.q;
+      mcq.classList.add('answered');
+      mcq.querySelectorAll('.opt').forEach(b=>{
+        const oi=+b.dataset.o;
+        if(oi===ans) b.classList.add('correct');
+        if(oi===chosen&&chosen!==ans) b.classList.add('wrong');
+        b.disabled=true;
+      });
+      mcq.querySelector('.expl').classList.add('show');
+      if(chosen===ans) _quizScored.add(qi);
+      const s=document.getElementById('score'); if(s) s.textContent=`${_quizScored.size} / ${total}`;
+    });
+  });
 }
 
 function closeSidebar(){$('sidebar').classList.remove('open');$('scrim').classList.remove('show');}
