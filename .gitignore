@@ -8,6 +8,12 @@ build/
 dist/
 cdk.out/
 
+# Firebase
+.firebase/
+.firebase/*.cache
+firebase-debug.log
+firestore-debug.log
+
 # Environment files
 .env
 .env.local
