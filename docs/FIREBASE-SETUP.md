@@ -41,6 +41,22 @@ Why this is clean & scalable:
 - **Offline-first.** Firestore persistent cache means progress is written
   locally and synced when online; works on flaky networks.
 
+## Fastest path: one-command bootstrap
+
+`scripts/firebase-bootstrap.sh` automates every CLI-scriptable step — install
+the CLI, log in, create the project, create Firestore, register a Web app and
+write `.env.local`, deploy rules/indexes, build, and deploy Hosting:
+
+```bash
+./scripts/firebase-bootstrap.sh            # uses a default project id
+./scripts/firebase-bootstrap.sh my-recallr # or pass your own (must be globally unique)
+```
+
+It is idempotent (safe to re-run) and pauses once at the **only** step the CLI
+cannot do: enabling Google Sign-In in the console (it prints the exact link).
+
+Prefer to do it by hand? Follow the steps below.
+
 ## One-time Firebase project setup
 
 1. Create a project at https://console.firebase.google.com.
@@ -86,6 +102,31 @@ npm run deploy
 ```
 
 The app will be live at `https://<project>.web.app`.
+
+## Auto-deploy on push (GitHub Actions)
+
+`.github/workflows/deploy-firebase.yml` builds, typechecks, tests, and deploys
+the app (Hosting + Firestore rules/indexes) on every push to `main` that touches
+the app. Set these up once:
+
+1. Generate a deploy service account — easiest via:
+   ```bash
+   firebase init hosting:github
+   ```
+   This creates a service account and stores its key as the
+   `FIREBASE_SERVICE_ACCOUNT_*` repo secret automatically. Rename/copy it to
+   **`FIREBASE_SERVICE_ACCOUNT`** (the name this workflow expects), or set that
+   secret manually with the service-account JSON.
+2. Add the remaining repository secrets (Settings → Secrets and variables →
+   Actions):
+   - `FIREBASE_PROJECT_ID`
+   - `REACT_APP_FIREBASE_API_KEY`, `..._AUTH_DOMAIN`, `..._PROJECT_ID`,
+     `..._STORAGE_BUCKET`, `..._MESSAGING_SENDER_ID`, `..._APP_ID`
+3. Push to `main` (or run the workflow manually via **Actions →
+   Deploy Recallr to Firebase Hosting → Run workflow**).
+
+The service account needs the **Firebase Hosting Admin** and **Cloud Datastore
+Index Admin** roles to deploy hosting and rules/indexes respectively.
 
 ## Data model (Firestore)
 
