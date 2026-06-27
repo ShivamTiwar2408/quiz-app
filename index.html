@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recall — learn, explore & quiz yourself</title>
+<meta name="description" content="A hub of interactive study material: a 2,500+ question quiz across system design & Śrīmad Bhāgavatam, a distributed-systems field guide, and visual deep-dives on vLLM and AWS networking.">
+<style>
+  :root{
+    --bg:#0e1117; --bg2:#141b27; --panel:#192232; --panel2:#202c40;
+    --ink:#e9eef6; --muted:#a7b4ca; --faint:#6d7c95;
+    --line:#283448; --accent:#5b9dff; --accent2:#8f7bff;
+    --radius:16px;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body{background:
+    radial-gradient(900px 500px at 80% -10%,rgba(143,123,255,.14),transparent 60%),
+    radial-gradient(800px 500px at 10% 0%,rgba(91,157,255,.12),transparent 55%),
+    var(--bg);
+    background-attachment:fixed}
+  .wrap{max-width:1080px;margin:0 auto;padding:clamp(40px,7vw,84px) 22px 90px}
+
+  /* hero */
+  .hero{margin-bottom:clamp(34px,5vw,54px)}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);background:var(--panel);padding:5px 13px;border-radius:30px;margin-bottom:20px}
+  .badge .d{width:7px;height:7px;border-radius:50%;background:#46c98b;box-shadow:0 0 0 3px rgba(70,201,139,.2)}
+  h1{font-size:clamp(34px,6vw,58px);font-weight:850;letter-spacing:-1.2px;line-height:1.04;margin-bottom:16px}
+  h1 .g{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:clamp(16px,2.1vw,19px);color:#c5d2e4;max-width:660px}
+  .stats{display:flex;flex-wrap:wrap;gap:26px;margin-top:26px}
+  .stat .n{font-size:26px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+  /* tiles */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:8px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .tile{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel),var(--bg2));padding:24px 24px 22px;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s}
+  .tile::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+  .tile:hover{transform:translateY(-4px);border-color:var(--c);box-shadow:0 16px 40px -18px var(--c)}
+  .tile .top{display:flex;align-items:center;gap:14px;margin-bottom:13px}
+  .tile .ico{flex:none;width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--panel2);border:1px solid var(--line)}
+  .tile h2{font-size:19px;font-weight:780;letter-spacing:-.3px;line-height:1.2}
+  .tile .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--c);font-weight:700;margin-top:3px}
+  .tile p{font-size:14px;color:var(--muted);line-height:1.55;flex:1}
+  .tile .foot{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .chip{font-size:11.5px;font-family:var(--mono);color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:3px 10px;border-radius:20px}
+  .tile .go{margin-left:auto;font-size:13.5px;font-weight:700;color:var(--c);display:inline-flex;align-items:center;gap:6px;transition:gap .16s}
+  .tile:hover .go{gap:11px}
+
+  .t-recall{--c:#8f7bff} .t-sys{--c:#5b9dff} .t-vllm{--c:#46c98b} .t-aws{--c:#e0a93f}
+
+  footer{margin-top:46px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="badge"><span class="d"></span> A study hub · all material in one place</div>
+    <h1>Learn it. Picture it.<br><span class="g">Then quiz yourself.</span></h1>
+    <p class="lead">A small collection of interactive guides and quizzes — built to make hard engineering topics (and a little scripture) genuinely stick. Pick a tile to dive in.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">2,500+</div><div class="l">quiz questions</div></div>
+      <div class="stat"><div class="n">27</div><div class="l">systems problems</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">interactive guides</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">free &amp; offline-ready</div></div>
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <a class="tile t-recall" href="quiz/index.html">
+      <div class="top">
+        <div class="ico">🧠</div>
+        <div><div class="kind">Quiz · spaced recall</div><h2>Recall</h2></div>
+      </div>
+      <p>A topic-tree quiz spanning 20 categories — API design, databases, distributed systems, caching, observability and more — plus the full Śrīmad Bhāgavatam (Canto 3). Pick a topic, answer, and see the explanation behind every answer.</p>
+      <div class="foot">
+        <span class="chip">19 tech categories</span>
+        <span class="chip">Śrīmad Bhāgavatam</span>
+        <span class="go">Start quizzing →</span>
+      </div>
+    </a>
+
+    <a class="tile t-sys" href="systems-problems-kb/index.html">
+      <div class="top">
+        <div class="ico">🧩</div>
+        <div><div class="kind">Field guide · with quizzes</div><h2>Distributed Systems Problems</h2></div>
+      </div>
+      <p>27 classic problems across beginner → advanced tiers. Each entry has the what/how/why, the year it was named, deep dives, hand-drawn diagrams, real-world outage case studies, and a quiz at the end of every chapter.</p>
+      <div class="foot">
+        <span class="chip">135 MCQs</span>
+        <span class="chip">42 case studies</span>
+        <span class="go">Read &amp; test →</span>
+      </div>
+    </a>
+
+    <a class="tile t-vllm" href="vllm-kb/guide/index.html">
+      <div class="top">
+        <div class="ico">⚡</div>
+        <div><div class="kind">Visual guide</div><h2>Understanding vLLM</h2></div>
+      </div>
+      <p>From zero to a mature mental model of how large language models actually serve inference — vocabulary, attention (K/Q/V), the KV cache, FlashAttention &amp; GPU memory, continuous batching and PagedAttention — explained with animated, intuitive visuals.</p>
+      <div class="foot">
+        <span class="chip">LLM internals</span>
+        <span class="chip">animated</span>
+        <span class="go">Explore →</span>
+      </div>
+    </a>
+
+    <a class="tile t-aws" href="aws-networking-kb/guide/index.html">
+      <div class="top">
+        <div class="ico">🌐</div>
+        <div><div class="kind">Reference guide</div><h2>AWS Networking</h2></div>
+      </div>
+      <p>Amazon VPC from the ground up — subnets, CIDR, public/private IPs, route tables, internet &amp; NAT gateways, security groups vs. network ACLs, ENIs, and VPC endpoints. Every building block explained with a diagram, sourced from official AWS docs.</p>
+      <div class="foot">
+        <span class="chip">VPC &amp; subnets</span>
+        <span class="chip">diagrammed</span>
+        <span class="go">Explore →</span>
+      </div>
+    </a>
+
+  </main>
+
+  <footer>
+    <span>Built with Claude Code.</span>
+    <a href="https://github.com/ShivamTiwar2408/quiz-app" target="_blank" rel="noopener">Source on GitHub ↗</a>
+    <span style="margin-left:auto">Static · hosted on GitHub Pages</span>
+  </footer>
+</div>
+</body>
+</html>
