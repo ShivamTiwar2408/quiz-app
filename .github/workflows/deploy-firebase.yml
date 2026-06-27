@@ -81,9 +81,11 @@ jobs:
       # that explicitly with the CLI authenticated by the same service account.
       - name: Deploy Firestore rules & indexes
         env:
+          # Pass the secret via env (not inline) so JSON contents can't break the shell.
+          SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
         run: |
-          printf '%s' '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$GOOGLE_APPLICATION_CREDENTIALS"
+          printf '%s' "$SA_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
           npx firebase-tools deploy \
             --only firestore:rules,firestore:indexes \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
