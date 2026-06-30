@@ -1026,6 +1026,152 @@
               "explanation": "The brief partition caused cross-region primary promotion and write divergence; when primaries were restored, replicas were hours behind, so reads served stale, inconsistent data. GitHub chose to degrade availability to protect data integrity rather than serve or lose writes incorrectly."
             }
           ]
+        },
+        {
+          "id": "kafka-log",
+          "name": "Kafka and the durable, replayable log",
+          "premise": "Apache Kafka is a distributed event-streaming platform built around one core idea: an append-only, durable, replayable commit log. Producers append events, consumers read them at their own pace, and — unlike a traditional message queue — reading an event does NOT delete it. The data stays for a configured retention window, so many independent consumers can read the same stream, and any consumer can rewind and replay history. Understanding Kafka means understanding twelve building blocks and how three of them (partitions, offsets, replication) give it parallelism, replayability, and durability.",
+          "year": "Created at LinkedIn around 2010–2011 by Jay Kreps, Neha Narkhede and Jun Rao to handle the company's activity-stream and operational-metrics firehose; open-sourced in 2011 and graduated as a top-level Apache project in 2012. Named after the writer Franz Kafka because it is 'a system optimized for writing.' The log-centric design was later articulated in Jay Kreps' 2013 essay 'The Log.'",
+          "why": "Point-to-point queues couple producers to consumers and destroy the message once it's read, so you can't add a second independent consumer or reprocess history. Kafka decouples them: the log is the source of truth, and each consumer group tracks its own position (offset) into it. A topic is split into partitions — each an independent ordered log — so throughput scales horizontally and many consumers can process in parallel. Ordering is guaranteed only within a partition, not across the topic, which is the trade-off you accept for that parallelism. Because events persist for the retention period and are replicated across brokers, the system survives broker failure and lets new consumers (or recovering ones) replay from any offset.",
+          "solutions": [
+            [
+              "Producer",
+              "The entry point: a client that publishes (appends) events to a topic. It chooses the partition (by key hash or round-robin), which decides ordering and parallelism downstream."
+            ],
+            [
+              "Topic",
+              "A named, logical stream that groups related events (e.g. \"orders\", \"clicks\"). It is the unit producers write to and consumers subscribe to."
+            ],
+            [
+              "Partition",
+              "The secret to Kafka's throughput: a topic is split into N partitions, each an independent append-only log. Parallelism and ordering are per-partition — order is guaranteed within a partition, never across them."
+            ],
+            [
+              "Offset",
+              "A monotonically increasing id of an event’s position within a partition. Consumers commit offsets to remember what they’ve read; rewinding the offset replays history. Offsets are why Kafka is replayable."
+            ],
+            [
+              "Consumer",
+              "A client that reads events from partitions and acts on them, advancing its offset as it goes — at its own pace, independent of the producer."
+            ],
+            [
+              "Consumer group",
+              "A set of consumers that share a topic’s partitions to scale reads horizontally. Each partition is assigned to exactly one consumer in the group, so group size above the partition count leaves consumers idle. Different groups each get the full stream independently."
+            ],
+            [
+              "Broker",
+              "A single Kafka server that stores partition data and serves produce/fetch requests. Partitions (and their replicas) are spread across brokers."
+            ],
+            [
+              "Cluster",
+              "Multiple brokers cooperating, coordinated today by KRaft (formerly ZooKeeper). The cluster provides scale and removes the single point of failure."
+            ],
+            [
+              "Replication",
+              "Each partition has a leader replica plus follower replicas on other brokers (replication factor). Writes go to the leader and are copied to in-sync replicas (ISR), so data survives a broker failure — this is Kafka’s durability."
+            ],
+            [
+              "Retention",
+              "How long events live, by time (e.g. 7 days) or size — or indefinitely via log compaction (keep the latest value per key). Retention is what makes replay possible: Kafka isn’t a drainable queue, it’s a log."
+            ],
+            [
+              "Schema Registry",
+              "A service that stores and versions event schemas (Avro/Protobuf/JSON) and enforces compatibility, so a producer can’t ship a change that breaks every downstream consumer."
+            ],
+            [
+              "Kafka Connect",
+              "A framework of reusable source/sink connectors that stream data between Kafka and external systems (databases, S3, search) without writing custom integration code — the backbone of CDC pipelines."
+            ]
+          ],
+          "papers": "Kreps, Narkhede, Rao, “Kafka: a Distributed Messaging System for Log Processing” (NetDB 2011). Jay Kreps, “The Log: What every software engineer should know about real-time data’s unifying abstraction” (LinkedIn Engineering, 2013). Wang et al., “Building a Replicated Logging System with Apache Kafka” (PVLDB 2015). KIP-500 (KRaft: replacing ZooKeeper) and the Apache Kafka documentation.",
+          "links": [
+            [
+              "Apache Kafka — official documentation",
+              "https://kafka.apache.org/documentation/"
+            ],
+            [
+              "Kafka: a Distributed Messaging System for Log Processing (paper, PDF)",
+              "https://notes.stephenholiday.com/Kafka.pdf"
+            ],
+            [
+              "Jay Kreps — The Log (LinkedIn Engineering)",
+              "https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying"
+            ],
+            [
+              "Confluent — Kafka design & internals",
+              "https://developer.confluent.io/courses/architecture/get-started/"
+            ]
+          ],
+          "takeaway": "Kafka is a durable, replayable log, not a queue you drain. Partitions buy parallelism (at the cost of cross-partition ordering), offsets buy replayability, and replication buys durability. Master those three and consumer-group partition ownership, and the rest of Kafka falls into place.",
+          "deepDive": "The mental model that unlocks Kafka is: stop thinking 'queue,' start thinking 'log.' A queue holds messages until someone consumes them, then deletes them — so there is exactly one logical reader and no history. Kafka instead appends every event to an immutable, ordered log that lives on disk for a retention window. Consumers don't 'take' messages; they read at a cursor (offset) they control. This single change is what enables fan-out to many independent consumers, reprocessing after a bug fix, and bootstrapping a brand-new consumer from the beginning of history.\n\nPartitions are how Kafka scales. A topic is divided into partitions, each an independent ordered log hosted on a broker. The producer picks a partition — usually by hashing a key (e.g. user-id), which guarantees all events for that key land in the same partition and therefore stay ordered relative to each other. The price: there is no total order across the whole topic, only per-partition order. If you need strict global ordering you must use a single partition (and forfeit parallelism), which is why choosing a good partition key is one of the most consequential design decisions.\n\nConsumer groups are the read-side scaling mechanism, and their assignment rule trips people up constantly: within one group, each partition is consumed by exactly one consumer. So a topic with 6 partitions can be processed by at most 6 active consumers in a group; a 7th sits idle. Add or remove a consumer and the group rebalances — partitions are reassigned, which briefly pauses consumption and can cause duplicate processing around the handover (hence the importance of idempotent consumers and careful offset-commit timing). Meanwhile a *different* consumer group reading the same topic gets its own complete copy of the stream with its own offsets — that's how one event stream feeds, say, a real-time dashboard, a fraud detector, and a data-warehouse loader simultaneously.\n\nDurability comes from replication. Each partition has a leader and a configurable number of follower replicas on other brokers (replication factor, commonly 3). Producers write to the leader; followers that are caught up form the in-sync replica set (ISR). With acks=all the producer waits until the write is on all in-sync replicas, so a broker can die without data loss. If the leader fails, an ISR follower is promoted. The durability/latency trade-off is explicit in the producer's acks setting (0 / 1 / all) and min.insync.replicas.\n\nRetention and compaction decide how long history lives. Time/size retention is the common case; log compaction keeps only the latest value per key forever, which is perfect for changelog/CDC streams where you want the current state of every key but not every historical update. Around the core, the Schema Registry prevents a producer from shipping an incompatible event shape that would break consumers, and Kafka Connect provides off-the-shelf source/sink connectors so you stream data in and out of databases, object stores, and search engines without bespoke glue code.\n\nThe common production pitfalls follow directly from the model: choosing too few partitions caps your maximum parallelism (and adding partitions later breaks key-based ordering); choosing too many inflates rebalancing time and per-partition overhead; committing offsets before the work is durably done risks data loss on crash, while committing after risks duplicates (so consumers must be idempotent); and forgetting that retention is finite means a slow or down consumer can fall off the end of the log and miss data permanently.",
+          "diagram": "<svg viewBox=\"0 0 760 430\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"-apple-system,Segoe UI,Roboto,sans-serif\"><defs><marker id=\"ka\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#a7b4ca\"/></marker><marker id=\"kg\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L8,3 L0,6 Z\" fill=\"#46c98b\"/></marker></defs><rect width=\"760\" height=\"430\" fill=\"#182233\"/><text x=\"20\" y=\"28\" fill=\"#e9eef6\" font-size=\"15\" font-weight=\"bold\">Kafka topic = partitioned, append-only, replayable log</text><rect x=\"20\" y=\"50\" width=\"110\" height=\"46\" rx=\"6\" fill=\"#202c40\" stroke=\"#5b9dff\"/><text x=\"75\" y=\"70\" fill=\"#e9eef6\" font-size=\"12\" text-anchor=\"middle\">Producer</text><text x=\"75\" y=\"86\" fill=\"#a7b4ca\" font-size=\"10\" text-anchor=\"middle\">key -&gt; partition</text><text x=\"150\" y=\"118\" fill=\"#a7b4ca\" font-size=\"12\" font-weight=\"bold\">Topic \"orders\" (3 partitions)</text><rect x=\"150\" y=\"128\" width=\"430\" height=\"34\" rx=\"4\" fill=\"#141b27\" stroke=\"#5b9dff\"/><text x=\"160\" y=\"150\" fill=\"#a7b4ca\" font-size=\"10\">P0</text><rect x=\"186\" y=\"134\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"210\" y=\"134\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"234\" y=\"134\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"258\" y=\"134\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#46c98b\"/><text x=\"540\" y=\"150\" fill=\"#46c98b\" font-size=\"10\" text-anchor=\"end\">offset -&gt;</text><rect x=\"150\" y=\"170\" width=\"430\" height=\"34\" rx=\"4\" fill=\"#141b27\" stroke=\"#5b9dff\"/><text x=\"160\" y=\"192\" fill=\"#a7b4ca\" font-size=\"10\">P1</text><rect x=\"186\" y=\"176\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"210\" y=\"176\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"234\" y=\"176\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#46c98b\"/><rect x=\"150\" y=\"212\" width=\"430\" height=\"34\" rx=\"4\" fill=\"#141b27\" stroke=\"#5b9dff\"/><text x=\"160\" y=\"234\" fill=\"#a7b4ca\" font-size=\"10\">P2</text><rect x=\"186\" y=\"218\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"210\" y=\"218\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"234\" y=\"218\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"258\" y=\"218\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#5b9dff\"/><rect x=\"282\" y=\"218\" width=\"22\" height=\"22\" fill=\"#202c40\" stroke=\"#46c98b\"/><line x1=\"130\" y1=\"73\" x2=\"148\" y2=\"140\" stroke=\"#a7b4ca\" stroke-width=\"1.4\" marker-end=\"url(#ka)\"/><line x1=\"130\" y1=\"73\" x2=\"148\" y2=\"186\" stroke=\"#a7b4ca\" stroke-width=\"1.4\" marker-end=\"url(#ka)\"/><line x1=\"130\" y1=\"73\" x2=\"148\" y2=\"228\" stroke=\"#a7b4ca\" stroke-width=\"1.4\" marker-end=\"url(#ka)\"/><text x=\"600\" y=\"120\" fill=\"#46c98b\" font-size=\"11\" font-weight=\"bold\">Consumer group A</text><rect x=\"600\" y=\"128\" width=\"140\" height=\"34\" rx=\"5\" fill=\"#202c40\" stroke=\"#46c98b\"/><text x=\"670\" y=\"149\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">consumer 1 (P0,P1)</text><rect x=\"600\" y=\"170\" width=\"140\" height=\"34\" rx=\"5\" fill=\"#202c40\" stroke=\"#46c98b\"/><text x=\"670\" y=\"191\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">consumer 2 (P2)</text><line x1=\"580\" y1=\"145\" x2=\"598\" y2=\"145\" stroke=\"#46c98b\" stroke-width=\"1.4\" marker-end=\"url(#kg)\"/><line x1=\"580\" y1=\"187\" x2=\"598\" y2=\"187\" stroke=\"#46c98b\" stroke-width=\"1.4\" marker-end=\"url(#kg)\"/><text x=\"600\" y=\"232\" fill=\"#e0a93f\" font-size=\"11\" font-weight=\"bold\">Consumer group B</text><rect x=\"600\" y=\"240\" width=\"140\" height=\"30\" rx=\"5\" fill=\"#202c40\" stroke=\"#e0a93f\"/><text x=\"670\" y=\"259\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">own offsets, full stream</text><line x1=\"540\" y1=\"229\" x2=\"598\" y2=\"250\" stroke=\"#e0a93f\" stroke-width=\"1.4\" stroke-dasharray=\"4 3\" marker-end=\"url(#ka)\"/><text x=\"20\" y=\"300\" fill=\"#5b9dff\" font-size=\"12\" font-weight=\"bold\">Replication (factor 3): partition survives a broker failure</text><rect x=\"20\" y=\"312\" width=\"150\" height=\"40\" rx=\"5\" fill=\"#202c40\" stroke=\"#46c98b\"/><text x=\"95\" y=\"330\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">Broker 1</text><text x=\"95\" y=\"344\" fill=\"#46c98b\" font-size=\"10\" text-anchor=\"middle\">P0 leader</text><rect x=\"185\" y=\"312\" width=\"150\" height=\"40\" rx=\"5\" fill=\"#202c40\" stroke=\"#5b9dff\"/><text x=\"260\" y=\"330\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">Broker 2</text><text x=\"260\" y=\"344\" fill=\"#a7b4ca\" font-size=\"10\" text-anchor=\"middle\">P0 follower (ISR)</text><rect x=\"350\" y=\"312\" width=\"150\" height=\"40\" rx=\"5\" fill=\"#202c40\" stroke=\"#5b9dff\"/><text x=\"425\" y=\"330\" fill=\"#e9eef6\" font-size=\"10\" text-anchor=\"middle\">Broker 3</text><text x=\"425\" y=\"344\" fill=\"#a7b4ca\" font-size=\"10\" text-anchor=\"middle\">P0 follower (ISR)</text><line x1=\"170\" y1=\"332\" x2=\"183\" y2=\"332\" stroke=\"#a7b4ca\" stroke-width=\"1.4\" marker-end=\"url(#ka)\"/><line x1=\"335\" y1=\"332\" x2=\"348\" y2=\"332\" stroke=\"#a7b4ca\" stroke-width=\"1.4\" marker-end=\"url(#ka)\"/><text x=\"20\" y=\"382\" fill=\"#a7b4ca\" font-size=\"11\">Order is guaranteed WITHIN a partition, not across them. Each partition -&gt; exactly one consumer per group.</text><text x=\"20\" y=\"402\" fill=\"#a7b4ca\" font-size=\"11\">Reads don't delete: data persists for the retention window, so consumers can replay from any offset.</text><text x=\"20\" y=\"420\" fill=\"#e0a93f\" font-size=\"11\">acks=all + min.insync.replicas trades latency for durability.</text></svg>",
+          "caseStudies": [
+            {
+              "title": "LinkedIn — Kafka’s birthplace, now trillions of messages a day",
+              "body": "Kafka was built at LinkedIn around 2010–2011 to unify the company’s activity-stream and operational-metrics pipelines, which point-to-point systems could not keep up with. After open-sourcing it in 2011, LinkedIn scaled Kafka to extraordinary volumes — its engineering team has publicly reported processing on the order of 7 trillion messages per day across thousands of brokers, and described running Kafka as the central nervous system for data across the company. It remains one of the largest documented Kafka deployments and the canonical proof that the log abstraction scales."
+            },
+            {
+              "title": "Cloudflare — using Kafka as a buffer and the rebalancing lesson",
+              "body": "Cloudflare runs Kafka at very large scale (publicly described as handling on the order of a trillion-plus messages) to decouple producers from consumers across its data pipeline, using it as a durable buffer so downstream services can fall behind and catch up without losing events. Cloudflare’s engineering write-ups also document the practical hazards the LinkedIn post’s comments hint at: consumer-group rebalancing pauses, the importance of right-sizing partition counts, and building idempotent/at-least-once consumers because exactly-once delivery across the network is not free. It is a concrete example of why offsets and partition ownership are the real day-2 operational challenges."
+            }
+          ],
+          "mcqs": [
+            {
+              "q": "In Kafka, what happens to an event after a consumer reads it?",
+              "options": [
+                "It is immediately deleted from the partition",
+                "It remains in the log until the retention policy expires, so other consumers can still read or replay it",
+                "It is moved to a dead-letter topic",
+                "It is deleted only once every consumer group has read it"
+              ],
+              "answer": 1,
+              "explanation": "Kafka is a durable log, not a queue. Reading does not remove the event; it persists for the configured retention window (or indefinitely with compaction), which is exactly what enables multiple independent consumers and replay from any offset."
+            },
+            {
+              "q": "A topic has 4 partitions. A single consumer group has 6 consumers subscribed. What happens?",
+              "options": [
+                "Each event is delivered to all 6 consumers",
+                "The 4 partitions are split into 6 smaller pieces",
+                "4 consumers each own one partition and 2 consumers sit idle",
+                "Kafka rejects the 5th and 6th consumers"
+              ],
+              "answer": 2,
+              "explanation": "Within a consumer group each partition is assigned to exactly one consumer. With 4 partitions only 4 consumers can be active; extra consumers in the same group have no partition to read and stay idle. Parallelism is capped by the partition count."
+            },
+            {
+              "q": "What ordering guarantee does Kafka provide?",
+              "options": [
+                "Total ordering across the entire topic",
+                "Ordering only within a single partition, not across partitions",
+                "No ordering guarantees at all",
+                "Ordering across partitions but only within a consumer group"
+              ],
+              "answer": 1,
+              "explanation": "Each partition is an independent ordered log, so order is guaranteed per partition only. Achieving a global total order requires a single partition (sacrificing parallelism), which is why the partition key choice matters so much."
+            },
+            {
+              "q": "What is the role of the offset in a Kafka partition?",
+              "options": [
+                "It is the number of replicas of the partition",
+                "It is a consumer’s position/cursor in the partition; committing or rewinding it controls what is read and enables replay",
+                "It is the partition’s leader broker id",
+                "It is the schema version of the events"
+              ],
+              "answer": 1,
+              "explanation": "An offset is the monotonically increasing position of an event within a partition. Consumers commit offsets to track progress; rewinding the offset replays history. Offsets are why Kafka is replayable."
+            },
+            {
+              "q": "With replication factor 3 and a producer configured with acks=all, what is the primary benefit?",
+              "options": [
+                "Events are processed exactly once with zero duplicates",
+                "A write is acknowledged only after it is on all in-sync replicas, so the data survives a broker failure (durability)",
+                "Consumers automatically read in global total order",
+                "Retention is extended indefinitely"
+              ],
+              "answer": 1,
+              "explanation": "Replication keeps leader + follower copies on different brokers. acks=all makes the producer wait until the write reaches all in-sync replicas, so losing a broker doesn’t lose data. It trades higher latency for durability and does not by itself give exactly-once or global ordering."
+            }
+          ]
         }
       ]
     },
