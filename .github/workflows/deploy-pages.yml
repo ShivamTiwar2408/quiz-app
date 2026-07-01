@@ -5,6 +5,7 @@ name: Deploy GitHub Pages
 #   - Landing page (hub):    /index.html
 #   - Recall quiz:           /quiz/index.html
 #   - Systems problems guide:/systems-problems-kb/index.html
+#   - Frontend systems guide: /frontend-systems-kb/index.html
 #   - vLLM guide:            /vllm-kb/guide/index.html
 #   - AWS networking guide:  /aws-networking-kb/guide/index.html
 
