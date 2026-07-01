@@ -1614,8 +1614,8 @@
               "https://web.dev/articles/rendering-on-the-web"
             ],
             [
-              "web.dev: Islands Architecture",
-              "https://web.dev/articles/islands-architecture"
+              "Islands Architecture (Jason Miller, coined the term)",
+              "https://jasonformat.com/islands-architecture/"
             ],
             [
               "Astro: Islands architecture docs",
