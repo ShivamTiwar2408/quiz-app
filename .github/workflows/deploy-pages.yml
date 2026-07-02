@@ -4,6 +4,7 @@ name: Deploy GitHub Pages
 # Static apps/guides served from the repo root:
 #   - Landing page (hub):    /index.html
 #   - Recall quiz:           /quiz/index.html
+#   - System design digest:  /system-design-digest/index.html
 #   - Systems problems guide:/systems-problems-kb/index.html
 #   - Frontend systems guide: /frontend-systems-kb/index.html
 #   - vLLM guide:            /vllm-kb/guide/index.html
