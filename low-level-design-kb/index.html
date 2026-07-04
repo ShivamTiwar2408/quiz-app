@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Low-Level Design — an interview field guide</title>
+<meta name="description" content="The canonical LLD/OOD interview problems asked across FAANG & big tech (2021–2026) — approach, class design, design patterns, concurrency, extensibility, evaluation rubrics, and a quiz per chapter.">
+<style>
+  :root{
+    --bg:#0e1117; --bg2:#141b27; --panel:#192232; --panel2:#202c40;
+    --ink:#e9eef6; --muted:#a7b4ca; --faint:#6d7c95;
+    --line:#283448; --accent:#5b9dff; --accent2:#8f7bff;
+    --f:#5b9dff; --c:#46c98b; --g:#e0a93f; --y:#e06aa8;    /* tier accents: foundations/classic/games/systems */
+    --radius:14px;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
+  .app{display:grid;grid-template-columns:330px 1fr;height:100vh}
+
+  /* sidebar */
+  aside{background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  aside .head{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+  aside .head .t{font-weight:800;font-size:16px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  aside .head .s{font-size:11.5px;color:var(--faint);margin-top:3px}
+  aside .head .home{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--muted);text-decoration:none}
+  aside .head .home:hover{color:var(--ink)}
+  .search{margin:10px 16px 4px}
+  .search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 11px;font-size:13.5px}
+  .search input::placeholder{color:var(--faint)}
+  .tree{flex:1;overflow-y:auto;padding:8px 10px 26px;scrollbar-width:thin}
+  .tree::-webkit-scrollbar{width:7px}.tree::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  .tier>.row{display:flex;align-items:center;gap:8px;padding:9px 9px;border-radius:8px;cursor:pointer;font-weight:750;font-size:13.5px;user-select:none}
+  .tier>.row:hover{background:var(--panel)}
+  .tier>.row .caret{transition:.18s;color:var(--faint);font-size:11px;width:11px}
+  .tier.open>.row .caret{transform:rotate(90deg)}
+  .tier>.row .pill{font-size:10px;font-family:var(--mono);padding:1px 7px;border-radius:20px;margin-left:auto;color:#08111f}
+  .tier[data-t=foundations]>.row .pill{background:var(--f)} .tier[data-t=foundations]>.row .dotc{color:var(--f)}
+  .tier[data-t=classic]>.row .pill{background:var(--c)} .tier[data-t=classic]>.row .dotc{color:var(--c)}
+  .tier[data-t=games]>.row .pill{background:var(--g)} .tier[data-t=games]>.row .dotc{color:var(--g)}
+  .tier[data-t=systems]>.row .pill{background:var(--y)} .tier[data-t=systems]>.row .dotc{color:var(--y)}
+  .kids{display:none;margin:2px 0 8px 7px;border-left:1px solid var(--line);padding-left:8px}
+  .tier.open>.kids{display:block}
+  .leaf{display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:.12s;line-height:1.35}
+  .leaf:hover{background:var(--panel);color:var(--ink)}
+  .leaf.active{background:linear-gradient(90deg,rgba(91,157,255,.16),transparent);color:var(--ink)}
+  .leaf .dot{flex:none;margin-top:6px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5}
+  .leaf.active .dot{opacity:1}
+
+  /* main */
+  main{overflow-y:auto;min-height:0}
+  .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:0 30px;height:52px;overflow:hidden;background:rgba(20,27,39,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topbar .ham{font-size:20px;cursor:pointer;display:none}
+  .topbar .tc{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .tc .sep{opacity:.45;margin:0 6px}
+  .topbar .tc .now{color:var(--ink)}
+  .wrap{max-width:830px;margin:0 auto;padding:30px 30px 90px}
+
+  /* intro */
+  .intro h1{font-size:clamp(26px,4vw,38px);font-weight:850;letter-spacing:-.6px;line-height:1.1;margin-bottom:12px}
+  .intro p.lead{font-size:16.5px;color:#c5d2e4;max-width:700px;margin-bottom:24px}
+  .tiercards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:10px 0 26px}
+  @media(max-width:700px){.tiercards{grid-template-columns:1fr}}
+  .tcard{border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;background:var(--panel);cursor:pointer;transition:.15s}
+  .tcard:hover{transform:translateY(-2px)}
+  .tcard h3{font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .tcard .tag{font-size:10.5px;font-family:var(--mono);padding:1px 8px;border-radius:20px;color:#08111f;text-transform:uppercase;letter-spacing:.5px}
+  .tcard p{font-size:13.5px;color:var(--muted)}
+  .tcard.foundations{border-top:3px solid var(--f)} .tcard.foundations .tag{background:var(--f)}
+  .tcard.classic{border-top:3px solid var(--c)} .tcard.classic .tag{background:var(--c)}
+  .tcard.games{border-top:3px solid var(--g)} .tcard.games .tag{background:var(--g)}
+  .tcard.systems{border-top:3px solid var(--y)} .tcard.systems .tag{background:var(--y)}
+  .allgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+  .allgrid a{display:block;text-decoration:none;color:var(--muted);font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);transition:.12s}
+  .allgrid a:hover{color:var(--ink);border-color:var(--accent)}
+  .allgrid a .n{font-family:var(--mono);font-size:10px;margin-right:6px}
+  .gh{font-size:12.5px;color:var(--faint);text-transform:uppercase;letter-spacing:1.4px;margin:24px 0 10px;font-weight:700}
+
+  /* article */
+  .crumbtag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:30px;color:#08111f;font-weight:700;margin-bottom:14px}
+  .crumbtag.foundations{background:var(--f)} .crumbtag.classic{background:var(--c)} .crumbtag.games{background:var(--g)} .crumbtag.systems{background:var(--y)}
+  article h1{font-size:clamp(24px,3.4vw,32px);font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:18px}
+  .sec{margin:18px 0}
+  .sec .lbl{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:750;color:var(--ink);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+  .sec .lbl .ic{font-size:15px}
+  .sec p{color:var(--muted);font-size:15.5px}
+  .sec.premise p{color:#cdd9ea;font-size:16.5px}
+  .yearbox{display:flex;gap:10px;align-items:flex-start;border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;border-radius:0 10px 10px 0;font-size:14.5px;color:var(--muted)}
+  .yearbox b{color:var(--ink)}
+  ul.sol{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  ul.sol li{border:1px solid var(--line);border-radius:10px;padding:11px 14px;background:var(--panel);font-size:14.5px;color:var(--muted)}
+  ul.sol li b{color:var(--ink);display:block;margin-bottom:2px;font-size:14.5px}
+  .papers{font-size:13.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .links{display:flex;flex-direction:column;gap:6px}
+  .links a{color:var(--accent);text-decoration:none;font-size:14.5px;display:inline-flex;align-items:center;gap:8px}
+  .links a:hover{text-decoration:underline}
+  .links a .ar{color:var(--faint)}
+  .takeaway{margin-top:20px;border-radius:12px;padding:16px 18px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line)}
+  .takeaway .k{font-size:11.5px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);font-weight:700;margin-bottom:5px}
+  .takeaway p{font-size:16px;color:var(--ink);font-style:italic}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin-top:30px;border-top:1px solid var(--line);padding-top:18px}
+  .pager a{text-decoration:none;color:var(--muted);font-size:13.5px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);max-width:48%;transition:.12s}
+  .pager a:hover{color:var(--ink);border-color:var(--accent)}
+  .pager a .d{font-size:11px;color:var(--faint);display:block}
+
+  /* deep dive */
+  .deepdive p{color:var(--muted);font-size:15.5px;margin-bottom:12px}
+  .deepdive p:last-child{margin-bottom:0}
+  /* diagram */
+  .diagram{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:10px;overflow-x:auto}
+  .diagram svg{display:block;width:100%;height:auto;max-width:760px;margin:0 auto}
+  /* quiz */
+  .quizblock{margin-top:30px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg2));padding:20px 20px 22px}
+  .quizhead{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--ink);margin-bottom:16px}
+  .quizhead .ic{font-size:18px}
+  .quizhead .score{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(91,157,255,.12);border:1px solid var(--line);padding:3px 12px;border-radius:20px}
+  .mcq{border-top:1px solid var(--line);padding:16px 0}
+  .mcq:first-of-type{border-top:none;padding-top:0}
+  .qnum{font-family:var(--mono);font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:7px}
+  .qnum .of{color:var(--faint)}
+  .qtext{font-size:15.5px;color:var(--ink);font-weight:600;margin-bottom:12px;line-height:1.5}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:11px 13px;font-size:14.5px;font-family:inherit;cursor:pointer;transition:.13s;line-height:1.45}
+  .opt:hover:not(:disabled){border-color:var(--accent);color:var(--ink)}
+  .opt:disabled{cursor:default}
+  .opt .optk{flex:none;width:22px;height:22px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted)}
+  .opt.correct{border-color:var(--c);background:rgba(70,201,139,.12);color:var(--ink)}
+  .opt.correct .optk{background:var(--c);color:#08111f;border-color:var(--c)}
+  .opt.wrong{border-color:#f0635c;background:rgba(240,99,92,.12);color:var(--ink)}
+  .opt.wrong .optk{background:#f0635c;color:#08111f;border-color:#f0635c}
+  .expl{display:none;margin-top:11px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);padding:12px 14px;font-size:14px;color:var(--muted);line-height:1.55}
+  .expl.show{display:block}
+  .expl .ek{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:4px}
+
+  .scrim{display:none}
+  .hide{display:none!important}
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr}
+    aside{position:fixed;inset:0 auto 0 0;width:80%;z-index:30;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.5)}
+    aside.open{transform:none}
+    .topbar{padding:0 16px}.topbar .ham{display:inline}
+    .wrap{padding:20px 16px 80px}
+    .tiercards{grid-template-columns:1fr}
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
+    .scrim.show{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside id="sidebar">
+    <div class="head">
+      <div class="t">🏛️ Low-Level Design</div>
+      <div class="s" id="meta">loading…</div>
+      <a class="home" href="../index.html">← Back to study hub</a>
+    </div>
+    <div class="search"><input id="search" placeholder="Filter problems…" autocomplete="off"></div>
+    <div class="tree" id="tree"></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main>
+    <div class="topbar"><span class="ham" id="ham">☰</span><div class="tc" id="topCrumb">Field guide</div></div>
+    <div class="wrap">
+      <div id="introView" class="intro"></div>
+      <article id="articleView" class="hide"></article>
+    </div>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let DATA=null, flat=[];
+const TIER_CLS={foundations:'foundations',classic:'classic',games:'games',systems:'systems'};
+
+async function init(){
+  try{ DATA=await (await fetch('data.json')).json(); }
+  catch(e){ $('meta').textContent='failed to load'; return; }
+  let n=0;
+  DATA.tiers.forEach(t=>t.topics.forEach(top=>{
+    flat.push({tierId:t.id,tierName:t.name,cls:TIER_CLS[t.id],topic:top}); n++;
+  }));
+  $('meta').textContent=`${DATA.tiers.length} sections · ${n} topics`;
+  buildTree(); renderIntro();
+  addEventListener('hashchange',route); route();
+}
+
+function buildTree(filter=''){
+  const f=filter.trim().toLowerCase(), tree=$('tree'); tree.innerHTML='';
+  DATA.tiers.forEach(t=>{
+    const kids=t.topics.filter(top=>!f||top.name.toLowerCase().includes(f)||t.name.toLowerCase().includes(f));
+    if(f&&!kids.length) return;
+    const tEl=document.createElement('div'); tEl.className='tier'+(f?' open':''); tEl.dataset.t=t.id;
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<span class="caret dotc">▶</span><span>${t.name}</span><span class="pill">${t.topics.length}</span>`;
+    row.addEventListener('click',()=>{const w=tEl.classList.contains('open');document.querySelectorAll('.tier.open').forEach(x=>x.classList.remove('open'));if(!w)tEl.classList.add('open');});
+    tEl.appendChild(row);
+    const kc=document.createElement('div'); kc.className='kids';
+    kids.forEach(top=>{
+      const l=document.createElement('div'); l.className='leaf dotc'; l.dataset.id=top.id;
+      l.innerHTML=`<span class="dot"></span><span>${top.name}</span>`;
+      l.addEventListener('click',()=>{location.hash='#/'+top.id;});
+      kc.appendChild(l);
+    });
+    tEl.appendChild(kc); tree.appendChild(tEl);
+  });
+  if(activeId){const el=document.querySelector(`.leaf[data-id="${activeId}"]`);if(el){el.classList.add('active');el.closest('.tier')?.classList.add('open');}}
+}
+
+let activeId=null;
+function route(){
+  const m=(location.hash||'').match(/^#\/(.+)$/);
+  if(!m){ activeId=null; document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active')); $('topCrumb').textContent='Field guide'; document.title='Low-Level Design — an interview field guide'; $('articleView').classList.add('hide'); $('introView').classList.remove('hide'); document.querySelector('main').scrollTo({top:0}); return; }
+  const id=decodeURIComponent(m[1]);
+  const item=flat.find(x=>x.topic.id===id);
+  if(!item){ location.hash=''; return; }
+  activeId=id;
+  if(!document.querySelector(`.leaf[data-id="${id}"]`)){ $('search').value=''; buildTree(); }
+  document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active'));
+  const el=document.querySelector(`.leaf[data-id="${id}"]`);
+  if(el){ el.classList.add('active'); document.querySelectorAll('.tier.open').forEach(t=>t.classList.remove('open')); el.closest('.tier')?.classList.add('open'); el.scrollIntoView({block:'nearest'}); }
+  renderArticle(item);
+  closeSidebar();
+}
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function linkRows(links){ return links.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(t)} <span class="ar">↗</span></a>`).join(''); }
+
+function renderIntro(){
+  const v=$('introView');
+  let cards=DATA.tiers.map(t=>`<div class="tcard ${TIER_CLS[t.id]}" onclick="document.querySelector('.tier[data-t=${t.id}]>.row').click();document.querySelector('.tier[data-t=${t.id}]').scrollIntoView({block:'start'})">
+      <h3><span class="tag">${esc(t.name)}</span></h3><p>${esc(t.blurb)}</p></div>`).join('');
+  let all=DATA.tiers.map(t=>`<div class="gh">${esc(t.name)}</div><div class="allgrid">`+
+      t.topics.map((top,i)=>`<a href="#/${top.id}"><span class="n" style="color:var(--${({foundations:'f',classic:'c',games:'g',systems:'y'})[t.id]})">${String(i+1).padStart(2,'0')}</span>${esc(top.name)}</a>`).join('')+`</div>`).join('');
+  v.innerHTML=`<h1>${esc(DATA.title)}</h1><p class="lead">${esc(DATA.subtitle)}</p>
+    <div class="tiercards">${cards}</div>${all}
+    <p style="color:var(--faint);font-size:12.5px;margin-top:28px">Each entry covers what the problem is, how often it's asked, why interviewers use it, the class design &amp; patterns that fit, a deep dive, a diagram, verified sources, and a quiz. Pick a topic from the tree to start.</p>`;
+}
+
+function renderArticle(item){
+  $('introView').classList.add('hide');
+  const a=$('articleView'); a.classList.remove('hide');
+  const t=item.topic, cls=item.cls;
+  $('topCrumb').innerHTML=`${esc(item.tierName)}<span class="sep">›</span><span class="now">${esc(t.name)}</span>`;
+  document.title=`${t.name} · Low-Level Design`;
+  const i=flat.findIndex(x=>x.topic.id===t.id);
+  const prev=flat[i-1], next=flat[i+1];
+  const sol=t.solutions.map(([h,d])=>`<li><b>${esc(h)}</b>${esc(d)}</li>`).join('');
+  const deepDiveHtml = t.deepDive ? `<div class="sec deepdive"><div class="lbl"><span class="ic">🔬</span>Deep dive</div>${paras(t.deepDive)}</div>` : '';
+  const diagramHtml = t.diagram ? `<div class="sec"><div class="lbl"><span class="ic">📊</span>Design sketch</div><div class="diagram">${t.diagram}</div></div>` : '';
+  const freqHtml = t.frequency ? `<div class="sec"><div class="lbl"><span class="ic">📈</span>How often it's asked</div><div class="yearbox">${esc(t.frequency)}</div></div>` : '';
+  const mcqHtml = (t.mcqs&&t.mcqs.length) ? renderMcqs(t.mcqs, t.id) : '';
+  a.innerHTML=`
+    <div class="crumbtag ${cls}">${esc(item.tierName)}</div>
+    <h1>${esc(t.name)}</h1>
+    <div class="sec premise"><div class="lbl"><span class="ic">🧭</span>What it is</div><p>${esc(t.premise)}</p></div>
+    ${freqHtml}
+    <div class="sec"><div class="lbl"><span class="ic">🎯</span>Why interviewers use it</div><p>${esc(t.why)}</p></div>
+    ${deepDiveHtml}
+    ${diagramHtml}
+    <div class="sec"><div class="lbl"><span class="ic">🛠️</span>How to approach it — design &amp; patterns</div><ul class="sol">${sol}</ul></div>
+    <div class="sec"><div class="lbl"><span class="ic">📚</span>Sources</div><div class="papers">${esc(t.papers||'')}</div></div>
+    <div class="sec"><div class="lbl"><span class="ic">🔗</span>Useful links</div><div class="links">${linkRows(t.links||[])}</div></div>
+    <div class="takeaway"><div class="k">Key takeaway</div><p>${esc(t.takeaway)}</p></div>
+    ${mcqHtml}
+    <div class="pager">
+      ${prev?`<a href="#/${prev.topic.id}"><span class="d">← Previous</span>${esc(prev.topic.name)}</a>`:'<span></span>'}
+      ${next?`<a href="#/${next.topic.id}" style="text-align:right;margin-left:auto"><span class="d">Next →</span>${esc(next.topic.name)}</a>`:''}
+    </div>`;
+  wireMcqs();
+  document.querySelector('main').scrollTo({top:0,behavior:'smooth'});
+}
+
+function paras(s){ return String(s).split(/\n\n+/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join(''); }
+
+function renderMcqs(mcqs, topicId){
+  const items = mcqs.map((m,qi)=>{
+    const opts = m.options.map((o,oi)=>`
+      <button class="opt" data-q="${qi}" data-o="${oi}">
+        <span class="optk">${String.fromCharCode(65+oi)}</span><span class="optt">${esc(o)}</span>
+      </button>`).join('');
+    return `<div class="mcq" data-q="${qi}" data-ans="${m.answer}">
+      <div class="qnum">Question ${qi+1} <span class="of">of ${mcqs.length}</span></div>
+      <div class="qtext">${esc(m.q)}</div>
+      <div class="opts">${opts}</div>
+      <div class="expl"><span class="ek">Explanation</span>${esc(m.explanation)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="quizblock" id="quiz-${topicId}">
+    <div class="quizhead"><span class="ic">🧠</span> Test your knowledge
+      <span class="score" id="score">0 / ${mcqs.length}</span></div>
+    ${items}</div>`;
+}
+
+let _quizScored=null;
+function wireMcqs(){
+  const block=document.querySelector('.quizblock'); if(!block) return;
+  const total=block.querySelectorAll('.mcq').length;
+  _quizScored=new Set();
+  block.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const mcq=btn.closest('.mcq');
+      if(mcq.classList.contains('answered')) return;
+      const ans=+mcq.dataset.ans, chosen=+btn.dataset.o, qi=mcq.dataset.q;
+      mcq.classList.add('answered');
+      mcq.querySelectorAll('.opt').forEach(b=>{
+        const oi=+b.dataset.o;
+        if(oi===ans) b.classList.add('correct');
+        if(oi===chosen&&chosen!==ans) b.classList.add('wrong');
+        b.disabled=true;
+      });
+      mcq.querySelector('.expl').classList.add('show');
+      if(chosen===ans) _quizScored.add(qi);
+      const s=document.getElementById('score'); if(s) s.textContent=`${_quizScored.size} / ${total}`;
+    });
+  });
+}
+
+function closeSidebar(){$('sidebar').classList.remove('open');$('scrim').classList.remove('show');}
+$('ham').addEventListener('click',()=>{$('sidebar').classList.add('open');$('scrim').classList.add('show');});
+$('scrim').addEventListener('click',closeSidebar);
+$('search').addEventListener('input',e=>buildTree(e.target.value));
+init();
+</script>
+</body>
+</html>

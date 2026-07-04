@@ -1,0 +1,3679 @@
+{
+  "questions": [
+    {
+      "question": "At the very top of the Śrīmad-Bhāgavatam family tree, who is shown as the Supreme Personality of Godhead?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kṛṣṇa"
+        },
+        {
+          "key": "b",
+          "text": "Lord Brahmā"
+        },
+        {
+          "key": "c",
+          "text": "Viṣṇu"
+        },
+        {
+          "key": "d",
+          "text": "Marīci"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart is headed by KṚṢṆA, the Supreme Personality of Godhead, from whom everything else descends."
+    },
+    {
+      "question": "From whom was Lord Brahmā born?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kṛṣṇa directly"
+        },
+        {
+          "key": "b",
+          "text": "Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa"
+        },
+        {
+          "key": "c",
+          "text": "Marīci"
+        },
+        {
+          "key": "d",
+          "text": "Svāyambhuva Manu"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart notes Lord Brahmā was 'born from Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa.'"
+    },
+    {
+      "question": "Marīci, Atri, and Svāyambhuva Manu are all shown descending directly from whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kṛṣṇa"
+        },
+        {
+          "key": "b",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "c",
+          "text": "Lord Brahmā"
+        },
+        {
+          "key": "d",
+          "text": "Vaivasvata Manu"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Lord Brahmā is the origin of the three great branches: Marīci, Atri, and Svāyambhuva Manu."
+    },
+    {
+      "question": "Which of these is shown as a son (mind-born son / prajāpati) of Lord Brahmā?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Prahlāda"
+        },
+        {
+          "key": "b",
+          "text": "Dhruva"
+        },
+        {
+          "key": "c",
+          "text": "Pṛthu"
+        },
+        {
+          "key": "d",
+          "text": "Nārada Muni"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Alongside Marīci and Atri, Brahmā's sons in the chart include Nārada Muni, the Four Kumāras, Lord Śiva, Kratu, Bhṛgu, Atreya, Pulaha, Vasiṣṭha, Aṅgirā, and Pulastya."
+    },
+    {
+      "question": "Who is shown as the son of Marīci?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "b",
+          "text": "Atri"
+        },
+        {
+          "key": "c",
+          "text": "Vivasvān"
+        },
+        {
+          "key": "d",
+          "text": "Dakṣa"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Marīci's son is Kaśyapa, who married Diti, Aditi, and other wives."
+    },
+    {
+      "question": "Diti and Aditi were both wives of which sage?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Marīci"
+        },
+        {
+          "key": "b",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "c",
+          "text": "Atri"
+        },
+        {
+          "key": "d",
+          "text": "Kardama"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Kaśyapa married Diti, Aditi, and other wives."
+    },
+    {
+      "question": "The 49 Maruts, Hiraṇyakaśipu, and Hiraṇyākṣa were the sons of which mother?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Aditi"
+        },
+        {
+          "key": "b",
+          "text": "Kayādhu"
+        },
+        {
+          "key": "c",
+          "text": "Diti"
+        },
+        {
+          "key": "d",
+          "text": "Śatarūpā"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Diti, wife of Kaśyapa, bore the 49 Maruts, Hiraṇyakaśipu, and Hiraṇyākṣa."
+    },
+    {
+      "question": "Vivasvān and many demigods were the sons of which wife of Kaśyapa?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Diti"
+        },
+        {
+          "key": "b",
+          "text": "Vindhyāvalī"
+        },
+        {
+          "key": "c",
+          "text": "Kayādhu"
+        },
+        {
+          "key": "d",
+          "text": "Aditi"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Aditi, wife of Kaśyapa, bore Vivasvān and many demigods."
+    },
+    {
+      "question": "Who was the wife of Hiraṇyakaśipu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kayādhu"
+        },
+        {
+          "key": "b",
+          "text": "Vindhyāvalī"
+        },
+        {
+          "key": "c",
+          "text": "Diti"
+        },
+        {
+          "key": "d",
+          "text": "Menakā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Hiraṇyakaśipu's wife as Kayādhu."
+    },
+    {
+      "question": "Who was the son of Hiraṇyakaśipu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Virocana"
+        },
+        {
+          "key": "b",
+          "text": "Prahlāda"
+        },
+        {
+          "key": "c",
+          "text": "Bali"
+        },
+        {
+          "key": "d",
+          "text": "Bāṇa"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Prahlāda, the great devotee, was the son of Hiraṇyakaśipu."
+    },
+    {
+      "question": "Prahlāda → ? → Bali. Who is the missing link (Prahlāda's son and Bali's father)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bāṇa"
+        },
+        {
+          "key": "b",
+          "text": "Hiraṇyākṣa"
+        },
+        {
+          "key": "c",
+          "text": "Virocana"
+        },
+        {
+          "key": "d",
+          "text": "Nṛga"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The line runs Prahlāda → Virocana → Bali."
+    },
+    {
+      "question": "Bali Mahārāja was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Prahlāda"
+        },
+        {
+          "key": "b",
+          "text": "Hiraṇyakaśipu"
+        },
+        {
+          "key": "c",
+          "text": "Bāṇa"
+        },
+        {
+          "key": "d",
+          "text": "Virocana"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Bali (wife: Vindhyāvalī) was the son of Virocana."
+    },
+    {
+      "question": "Who was the wife of Bali Mahārāja?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vindhyāvalī"
+        },
+        {
+          "key": "b",
+          "text": "Kayādhu"
+        },
+        {
+          "key": "c",
+          "text": "Merudevī"
+        },
+        {
+          "key": "d",
+          "text": "Arci"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Bali's wife as Vindhyāvalī."
+    },
+    {
+      "question": "Bāṇa and 99 others were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Virocana"
+        },
+        {
+          "key": "b",
+          "text": "Bali"
+        },
+        {
+          "key": "c",
+          "text": "Prahlāda"
+        },
+        {
+          "key": "d",
+          "text": "Hiraṇyakaśipu"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Bali and Vindhyāvalī had Bāṇa and 99 other sons."
+    },
+    {
+      "question": "Who was the son of Vivasvān and the current Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Svāyambhuva Manu"
+        },
+        {
+          "key": "b",
+          "text": "Cākṣuṣa Manu"
+        },
+        {
+          "key": "c",
+          "text": "Vaivasvata Manu"
+        },
+        {
+          "key": "d",
+          "text": "Ikṣvāku"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Vivasvān's son is Vaivasvata Manu, the current Manu (a.k.a. Śrāddhadeva; wife: Śraddhā)."
+    },
+    {
+      "question": "Vaivasvata Manu, the current Manu, is also known as what?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sudyumna"
+        },
+        {
+          "key": "b",
+          "text": "Cākṣuṣa"
+        },
+        {
+          "key": "c",
+          "text": "Priyavrata"
+        },
+        {
+          "key": "d",
+          "text": "Śrāddhadeva"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart notes Vaivasvata Manu is the current Manu, a.k.a. Śrāddhadeva (wife: Śraddhā)."
+    },
+    {
+      "question": "Which of these was a child of Vaivasvata Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ikṣvāku"
+        },
+        {
+          "key": "b",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "c",
+          "text": "Dhruva"
+        },
+        {
+          "key": "d",
+          "text": "Priyavrata"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Vaivasvata Manu's children include Ilā, Nṛga, Ikṣvāku, Śaryāti, Nabhaga, and 6 other sons."
+    },
+    {
+      "question": "Ilā, a child of Vaivasvata Manu, was transformed into whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nṛga"
+        },
+        {
+          "key": "b",
+          "text": "Sudyumna"
+        },
+        {
+          "key": "c",
+          "text": "Nimi"
+        },
+        {
+          "key": "d",
+          "text": "Nābhāga"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart notes 'Ilā (transformed into Sudyumna).'"
+    },
+    {
+      "question": "By the churning of whose body was Janaka born, according to the chart?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ikṣvāku"
+        },
+        {
+          "key": "b",
+          "text": "Śīradhvaja"
+        },
+        {
+          "key": "c",
+          "text": "Nimi"
+        },
+        {
+          "key": "d",
+          "text": "Daśaratha"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart notes 'Nimi (by churning, Janaka was born).'"
+    },
+    {
+      "question": "Who was the father of Sītā Devī?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nimi"
+        },
+        {
+          "key": "b",
+          "text": "Janaka (not Sītā's father)"
+        },
+        {
+          "key": "c",
+          "text": "Daśaratha"
+        },
+        {
+          "key": "d",
+          "text": "Śīradhvaja"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Sītā Devī's father was Śīradhvaja, identified in the chart as 'Janaka, Sītā's father.'"
+    },
+    {
+      "question": "Sītā Devī was the wife of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Lord Rāma"
+        },
+        {
+          "key": "b",
+          "text": "Lakṣmaṇa"
+        },
+        {
+          "key": "c",
+          "text": "Lord Balarāma"
+        },
+        {
+          "key": "d",
+          "text": "Kuśa"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Sītā Devī (daughter of Śīradhvaja) was the wife of Lord Rāma."
+    },
+    {
+      "question": "Hariścandra, in the Ikṣvāku line, had which son?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sāgara"
+        },
+        {
+          "key": "b",
+          "text": "Rohita"
+        },
+        {
+          "key": "c",
+          "text": "Aṁśumān"
+        },
+        {
+          "key": "d",
+          "text": "Dilīpa"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The line runs Hariścandra → Rohita → ... → Sāgara."
+    },
+    {
+      "question": "Which king in the Ikṣvāku line was the father of Aṁśumān?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Rohita"
+        },
+        {
+          "key": "b",
+          "text": "Dilīpa"
+        },
+        {
+          "key": "c",
+          "text": "Sāgara"
+        },
+        {
+          "key": "d",
+          "text": "Bhagīratha"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The line runs Sāgara → Aṁśumān → Dilīpa → Bhagīratha."
+    },
+    {
+      "question": "Who was the son of Aṁśumān?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bhagīratha"
+        },
+        {
+          "key": "b",
+          "text": "Sāgara"
+        },
+        {
+          "key": "c",
+          "text": "Khaṭvāṅga"
+        },
+        {
+          "key": "d",
+          "text": "Dilīpa"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Aṁśumān → Dilīpa → Bhagīratha."
+    },
+    {
+      "question": "Bhagīratha, famous for bringing the Gaṅgā, was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dilīpa"
+        },
+        {
+          "key": "b",
+          "text": "Aṁśumān"
+        },
+        {
+          "key": "c",
+          "text": "Sāgara"
+        },
+        {
+          "key": "d",
+          "text": "Khaṭvāṅga"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart shows Dilīpa → Bhagīratha."
+    },
+    {
+      "question": "Who was the father of Lord Rāmacandra?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Khaṭvāṅga"
+        },
+        {
+          "key": "b",
+          "text": "Daśaratha"
+        },
+        {
+          "key": "c",
+          "text": "Bhagīratha"
+        },
+        {
+          "key": "d",
+          "text": "Aja"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "In the chart, Khaṭvāṅga → (some descendants) → Daśaratha, the father of Lord Rāmacandra."
+    },
+    {
+      "question": "Lakṣmaṇa and Lord Rāmacandra were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bhagīratha"
+        },
+        {
+          "key": "b",
+          "text": "Khaṭvāṅga"
+        },
+        {
+          "key": "c",
+          "text": "Daśaratha"
+        },
+        {
+          "key": "d",
+          "text": "Śīradhvaja"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Daśaratha's sons include Lakṣmaṇa, Lord Rāmacandra, and other sons."
+    },
+    {
+      "question": "Lava and Kuśa were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Lakṣmaṇa"
+        },
+        {
+          "key": "b",
+          "text": "Daśaratha"
+        },
+        {
+          "key": "c",
+          "text": "Bharata"
+        },
+        {
+          "key": "d",
+          "text": "Lord Rāmacandra"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Lord Rāmacandra (wife: Sītā) had the sons Lava and Kuśa."
+    },
+    {
+      "question": "Sukanyā, who married Cyavana Muni, was the daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śaryāti"
+        },
+        {
+          "key": "b",
+          "text": "Nabhaga"
+        },
+        {
+          "key": "c",
+          "text": "Ānarta"
+        },
+        {
+          "key": "d",
+          "text": "Nṛga"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Śaryāti's children include Sukanyā (who married Cyavana Muni) and 2 other sons."
+    },
+    {
+      "question": "Sukanyā married which sage?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kardama Muni"
+        },
+        {
+          "key": "b",
+          "text": "Cyavana Muni"
+        },
+        {
+          "key": "c",
+          "text": "Atri"
+        },
+        {
+          "key": "d",
+          "text": "Marīci"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart notes Sukanyā 'married Cyavana Muni.'"
+    },
+    {
+      "question": "The devotee-king Ambarīṣa Mahārāja was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nabhaga"
+        },
+        {
+          "key": "b",
+          "text": "Ānarta"
+        },
+        {
+          "key": "c",
+          "text": "Nābhāga"
+        },
+        {
+          "key": "d",
+          "text": "Śaryāti"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The line runs Nabhaga → Nābhāga → Ambarīṣa Mahārāja."
+    },
+    {
+      "question": "Nābhāga was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ambarīṣa"
+        },
+        {
+          "key": "b",
+          "text": "Śaryāti"
+        },
+        {
+          "key": "c",
+          "text": "Ānarta"
+        },
+        {
+          "key": "d",
+          "text": "Nabhaga"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Nabhaga → Nābhāga → Ambarīṣa Mahārāja."
+    },
+    {
+      "question": "Kakudmi's daughter, who married Lord Balarāma, was named what?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Revatī"
+        },
+        {
+          "key": "b",
+          "text": "Sītā"
+        },
+        {
+          "key": "c",
+          "text": "Subhadrā"
+        },
+        {
+          "key": "d",
+          "text": "Devakī"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart notes Revatī 'married Lord Balarāma.'"
+    },
+    {
+      "question": "Revatī, who married Lord Balarāma, was the daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Revata"
+        },
+        {
+          "key": "b",
+          "text": "Kakudmi"
+        },
+        {
+          "key": "c",
+          "text": "Ānarta"
+        },
+        {
+          "key": "d",
+          "text": "Śaryāti"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Ānarta → Revata → Kakudmi → Revatī (married Lord Balarāma)."
+    },
+    {
+      "question": "In the Ānarta line, who was the father of Kakudmi?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ānarta"
+        },
+        {
+          "key": "b",
+          "text": "Kakudmi"
+        },
+        {
+          "key": "c",
+          "text": "Revata"
+        },
+        {
+          "key": "d",
+          "text": "Nabhaga"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The line runs Ānarta → Revata → Kakudmi."
+    },
+    {
+      "question": "Who was the son of Atri (in the main descending line)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Budha"
+        },
+        {
+          "key": "b",
+          "text": "Purūrava"
+        },
+        {
+          "key": "c",
+          "text": "Nahuṣa"
+        },
+        {
+          "key": "d",
+          "text": "Soma"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Atri → Soma → Budha (not Lord Buddha) → Purūrava."
+    },
+    {
+      "question": "Budha, the son of Soma, is explicitly distinguished in the chart from whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Lord Buddha"
+        },
+        {
+          "key": "b",
+          "text": "Lord Brahmā"
+        },
+        {
+          "key": "c",
+          "text": "Lord Kṛṣṇa"
+        },
+        {
+          "key": "d",
+          "text": "Jaḍa Bharata"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart labels him 'Budha (not Lord Buddha).'"
+    },
+    {
+      "question": "Purūrava was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Soma"
+        },
+        {
+          "key": "b",
+          "text": "Budha"
+        },
+        {
+          "key": "c",
+          "text": "Atri"
+        },
+        {
+          "key": "d",
+          "text": "Āyu"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Soma → Budha → Purūrava (wife: Urvaśī)."
+    },
+    {
+      "question": "Who was the wife of Purūrava?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Menakā"
+        },
+        {
+          "key": "b",
+          "text": "Śraddhā"
+        },
+        {
+          "key": "c",
+          "text": "Urvaśī"
+        },
+        {
+          "key": "d",
+          "text": "Śatarūpā"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Purūrava's wife as Urvaśī."
+    },
+    {
+      "question": "Vijaya and Āyu were among the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Budha"
+        },
+        {
+          "key": "b",
+          "text": "Soma"
+        },
+        {
+          "key": "c",
+          "text": "Nahuṣa"
+        },
+        {
+          "key": "d",
+          "text": "Purūrava"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Purūrava (wife: Urvaśī) had Vijaya, 4 other sons, and Āyu."
+    },
+    {
+      "question": "Satyavatī and Viśvāmitra were the children of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Gadhi"
+        },
+        {
+          "key": "b",
+          "text": "Vijaya"
+        },
+        {
+          "key": "c",
+          "text": "Āyu"
+        },
+        {
+          "key": "d",
+          "text": "Jamadagni"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "In the Vijaya branch, Gadhi's children are Satyavatī and Viśvāmitra (wife: Menakā)."
+    },
+    {
+      "question": "According to the chart, who was the wife of Viśvāmitra?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Urvaśī"
+        },
+        {
+          "key": "b",
+          "text": "Menakā"
+        },
+        {
+          "key": "c",
+          "text": "Śakuntalā"
+        },
+        {
+          "key": "d",
+          "text": "Kayādhu"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart lists Viśvāmitra's wife as Menakā."
+    },
+    {
+      "question": "Śakuntalā was the daughter of Viśvāmitra and which apsarā?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Urvaśī"
+        },
+        {
+          "key": "b",
+          "text": "Pūrvacitti"
+        },
+        {
+          "key": "c",
+          "text": "Menakā"
+        },
+        {
+          "key": "d",
+          "text": "Arci"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Śakuntalā was the daughter of Viśvāmitra (wife: Menakā); her husband was Duṣmanta."
+    },
+    {
+      "question": "Śakuntalā's husband was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bharata"
+        },
+        {
+          "key": "b",
+          "text": "Yayāti"
+        },
+        {
+          "key": "c",
+          "text": "Jamadagni"
+        },
+        {
+          "key": "d",
+          "text": "Duṣmanta"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart notes Śakuntalā's husband was Duṣmanta (see Puru's descendants)."
+    },
+    {
+      "question": "Jamadagni was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Satyavatī"
+        },
+        {
+          "key": "b",
+          "text": "Viśvāmitra"
+        },
+        {
+          "key": "c",
+          "text": "Gadhi"
+        },
+        {
+          "key": "d",
+          "text": "Menakā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Satyavatī → Jamadagni → Lord Paraśurāma."
+    },
+    {
+      "question": "Lord Paraśurāma was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Satyavatī"
+        },
+        {
+          "key": "b",
+          "text": "Jamadagni"
+        },
+        {
+          "key": "c",
+          "text": "Gadhi"
+        },
+        {
+          "key": "d",
+          "text": "Viśvāmitra"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Jamadagni's son was Lord Paraśurāma."
+    },
+    {
+      "question": "Kṣatravṛddha and Nahuṣa were among the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Purūrava"
+        },
+        {
+          "key": "b",
+          "text": "Yayāti"
+        },
+        {
+          "key": "c",
+          "text": "Āyu"
+        },
+        {
+          "key": "d",
+          "text": "Nahuṣa"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Āyu's sons include Kṣatravṛddha, Nahuṣa, and 3 other sons."
+    },
+    {
+      "question": "Yayāti was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Āyu"
+        },
+        {
+          "key": "b",
+          "text": "Kṣatravṛddha"
+        },
+        {
+          "key": "c",
+          "text": "Yadu"
+        },
+        {
+          "key": "d",
+          "text": "Nahuṣa"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Nahuṣa → Yayāti (and 5 other sons)."
+    },
+    {
+      "question": "Yadu and Puru, founders of two great dynasties, were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Yayāti"
+        },
+        {
+          "key": "b",
+          "text": "Nahuṣa"
+        },
+        {
+          "key": "c",
+          "text": "Āyu"
+        },
+        {
+          "key": "d",
+          "text": "Sātvata"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Yayāti's sons include Yadu, Puru, and 3 other sons."
+    },
+    {
+      "question": "Devayānī, who married Yayāti, was the daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Priyavrata"
+        },
+        {
+          "key": "b",
+          "text": "Śukrācārya"
+        },
+        {
+          "key": "c",
+          "text": "Nahuṣa"
+        },
+        {
+          "key": "d",
+          "text": "Kardama"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Priyavrata's one daughter married Śukrācārya; their daughter Devayānī married Yayāti."
+    },
+    {
+      "question": "Vṛṣṇi and Andhaka were among the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Yadu"
+        },
+        {
+          "key": "b",
+          "text": "Krostā"
+        },
+        {
+          "key": "c",
+          "text": "Sātvata"
+        },
+        {
+          "key": "d",
+          "text": "Śūrasena"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Sātvata's sons include Vṛṣṇi, Andhaka, and 5 other sons."
+    },
+    {
+      "question": "Śūrasena descended from which son of Sātvata?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Andhaka"
+        },
+        {
+          "key": "b",
+          "text": "Āhuka"
+        },
+        {
+          "key": "c",
+          "text": "Ugrasena"
+        },
+        {
+          "key": "d",
+          "text": "Vṛṣṇi"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Vṛṣṇi → (many descendants) → Śūrasena."
+    },
+    {
+      "question": "Vasudeva and Kunti were the children of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śūrasena"
+        },
+        {
+          "key": "b",
+          "text": "Vṛṣṇi"
+        },
+        {
+          "key": "c",
+          "text": "Sātvata"
+        },
+        {
+          "key": "d",
+          "text": "Devaka"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Śūrasena's children include Vasudeva, Kunti, and 4 other daughters."
+    },
+    {
+      "question": "Who was the father of Lord Kṛṣṇa and Lord Balarāma?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śūrasena"
+        },
+        {
+          "key": "b",
+          "text": "Vasudeva"
+        },
+        {
+          "key": "c",
+          "text": "Nanda"
+        },
+        {
+          "key": "d",
+          "text": "Ugrasena"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Vasudeva's children include Lord Kṛṣṇa, Lord Balarāma, Subhadrā, and 9 other sons."
+    },
+    {
+      "question": "Subhadrā, in the chart, was a daughter (sister of Kṛṣṇa) of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śūrasena"
+        },
+        {
+          "key": "b",
+          "text": "Devaka"
+        },
+        {
+          "key": "c",
+          "text": "Vasudeva"
+        },
+        {
+          "key": "d",
+          "text": "Ugrasena"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Subhadrā is listed among Vasudeva's children, alongside Kṛṣṇa and Balarāma."
+    },
+    {
+      "question": "Kunti and Vasudeva were siblings; what does this make Kunti to Lord Kṛṣṇa?",
+      "options": [
+        {
+          "key": "a",
+          "text": "His mother"
+        },
+        {
+          "key": "b",
+          "text": "His cousin"
+        },
+        {
+          "key": "c",
+          "text": "His grandmother"
+        },
+        {
+          "key": "d",
+          "text": "His aunt (father's sister)"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Kunti was Vasudeva's sister (both children of Śūrasena), so she was Kṛṣṇa's paternal aunt."
+    },
+    {
+      "question": "Who was the husband of Kunti?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Pāṇḍu"
+        },
+        {
+          "key": "b",
+          "text": "Dhṛtarāṣṭra"
+        },
+        {
+          "key": "c",
+          "text": "Vasudeva"
+        },
+        {
+          "key": "d",
+          "text": "Vidura"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Kunti's husband as Pāṇḍu."
+    },
+    {
+      "question": "Karṇa and the Pāṇḍavas were born to which mother?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Devakī"
+        },
+        {
+          "key": "b",
+          "text": "Kunti"
+        },
+        {
+          "key": "c",
+          "text": "Subhadrā"
+        },
+        {
+          "key": "d",
+          "text": "Mādrī"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Kunti (husband: Pāṇḍu) is shown with Karṇa and the Pāṇḍavas."
+    },
+    {
+      "question": "Āhuka descended from which son of Sātvata?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vṛṣṇi"
+        },
+        {
+          "key": "b",
+          "text": "Śūrasena"
+        },
+        {
+          "key": "c",
+          "text": "Andhaka"
+        },
+        {
+          "key": "d",
+          "text": "Devaka"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Andhaka → (many descendants) → Āhuka."
+    },
+    {
+      "question": "Āhuka's two sons were whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vasudeva and Kunti"
+        },
+        {
+          "key": "b",
+          "text": "Kaṁsa and Devakī"
+        },
+        {
+          "key": "c",
+          "text": "Vṛṣṇi and Andhaka"
+        },
+        {
+          "key": "d",
+          "text": "Ugrasena and Devaka"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Āhuka's sons are Ugrasena and Devaka."
+    },
+    {
+      "question": "Kaṁsa was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ugrasena"
+        },
+        {
+          "key": "b",
+          "text": "Devaka"
+        },
+        {
+          "key": "c",
+          "text": "Āhuka"
+        },
+        {
+          "key": "d",
+          "text": "Vasudeva"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ugrasena's children include Kaṁsa, 5 daughters, and 8 other sons."
+    },
+    {
+      "question": "Devakī, the mother of Kṛṣṇa, was the daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ugrasena"
+        },
+        {
+          "key": "b",
+          "text": "Devaka"
+        },
+        {
+          "key": "c",
+          "text": "Āhuka"
+        },
+        {
+          "key": "d",
+          "text": "Śūrasena"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Devaka's children include Devakī, 6 other daughters, and 4 sons."
+    },
+    {
+      "question": "Since Kaṁsa (son of Ugrasena) and Devakī (daughter of Devaka) share a grandfather, who was he?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sātvata"
+        },
+        {
+          "key": "b",
+          "text": "Vṛṣṇi"
+        },
+        {
+          "key": "c",
+          "text": "Āhuka"
+        },
+        {
+          "key": "d",
+          "text": "Śūrasena"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Ugrasena and Devaka were both sons of Āhuka, so Kaṁsa and Devakī were his grandchildren."
+    },
+    {
+      "question": "The emperor Bharata (after whom Bhārata is named), son of Duṣmanta, is distinguished in the chart from whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bharata, son of Ṛṣabhadeva"
+        },
+        {
+          "key": "b",
+          "text": "Bharadvāja"
+        },
+        {
+          "key": "c",
+          "text": "Bharata, brother of Rāma"
+        },
+        {
+          "key": "d",
+          "text": "Jaḍa Bharata"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart labels him 'Bharata (not Jaḍa Bharata)' in the Puru line."
+    },
+    {
+      "question": "Duṣmanta and Śakuntalā's son was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bharata"
+        },
+        {
+          "key": "b",
+          "text": "Bharadvāja"
+        },
+        {
+          "key": "c",
+          "text": "Manyu"
+        },
+        {
+          "key": "d",
+          "text": "Nara"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "In the Puru line, Duṣmanta → Bharata (not Jaḍa Bharata)."
+    },
+    {
+      "question": "Rkṣa and Nila were among the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kuru"
+        },
+        {
+          "key": "b",
+          "text": "Ajamīḍha"
+        },
+        {
+          "key": "c",
+          "text": "Jāhnu"
+        },
+        {
+          "key": "d",
+          "text": "Bharata"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Ajamīḍha's sons include Rkṣa, Nila, and other sons."
+    },
+    {
+      "question": "Kuru, of the Kuru dynasty, was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nila"
+        },
+        {
+          "key": "b",
+          "text": "Ajamīḍha"
+        },
+        {
+          "key": "c",
+          "text": "Rkṣa"
+        },
+        {
+          "key": "d",
+          "text": "Jāhnu"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Ajamīḍha → Rkṣa → Kuru → Jāhnu."
+    },
+    {
+      "question": "Who was the son of Kuru?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Rkṣa"
+        },
+        {
+          "key": "b",
+          "text": "Śantanu"
+        },
+        {
+          "key": "c",
+          "text": "Nila"
+        },
+        {
+          "key": "d",
+          "text": "Jāhnu"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Rkṣa → Kuru → Jāhnu → (many descendants)."
+    },
+    {
+      "question": "Drupada, father of Draupadī, descended from which son of Ajamīḍha?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nila"
+        },
+        {
+          "key": "b",
+          "text": "Rkṣa"
+        },
+        {
+          "key": "c",
+          "text": "Kuru"
+        },
+        {
+          "key": "d",
+          "text": "Jāhnu"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Nila → (many descendants) → Drupada."
+    },
+    {
+      "question": "Dhṛṣṭadyumna and Draupadī were the children of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Nila"
+        },
+        {
+          "key": "b",
+          "text": "Drupada"
+        },
+        {
+          "key": "c",
+          "text": "Kuru"
+        },
+        {
+          "key": "d",
+          "text": "Śantanu"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Drupada's children include Dhṛṣṭadyumna, Draupadī, and other sons."
+    },
+    {
+      "question": "Vicitravīrya, Bhīṣma, and Citrāṅgada were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vicitravīrya"
+        },
+        {
+          "key": "b",
+          "text": "Pāṇḍu"
+        },
+        {
+          "key": "c",
+          "text": "Śantanu"
+        },
+        {
+          "key": "d",
+          "text": "Kuru"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart shows Śantanu's sons as Vicitravīrya, Bhīṣma, and Citrāṅgada."
+    },
+    {
+      "question": "Bhīṣma was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vicitravīrya"
+        },
+        {
+          "key": "b",
+          "text": "Citrāṅgada"
+        },
+        {
+          "key": "c",
+          "text": "Pāṇḍu"
+        },
+        {
+          "key": "d",
+          "text": "Śantanu"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Bhīṣma is shown as a son of Śantanu."
+    },
+    {
+      "question": "Pāṇḍu, Dhṛtarāṣṭra, and Vidura were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vicitravīrya"
+        },
+        {
+          "key": "b",
+          "text": "Śantanu"
+        },
+        {
+          "key": "c",
+          "text": "Bhīṣma"
+        },
+        {
+          "key": "d",
+          "text": "Citrāṅgada"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart shows Vicitravīrya → Pāṇḍu, Dhṛtarāṣṭra, Vidura."
+    },
+    {
+      "question": "Duryodhana, 99 other sons, and 1 daughter were the children of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Pāṇḍu"
+        },
+        {
+          "key": "b",
+          "text": "Dhṛtarāṣṭra"
+        },
+        {
+          "key": "c",
+          "text": "Vidura"
+        },
+        {
+          "key": "d",
+          "text": "Vicitravīrya"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Dhṛtarāṣṭra had Duryodhana, 99 other sons, and 1 daughter — 100 sons in all."
+    },
+    {
+      "question": "The five Pāṇḍavas were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dhṛtarāṣṭra"
+        },
+        {
+          "key": "b",
+          "text": "Vidura"
+        },
+        {
+          "key": "c",
+          "text": "Pāṇḍu"
+        },
+        {
+          "key": "d",
+          "text": "Vicitravīrya"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The Pāṇḍavas (Yudhiṣṭhira, Bhīma, Arjuna, Nakula, Sahadeva) are shown under Pāṇḍu (via Kunti)."
+    },
+    {
+      "question": "Which of these is one of the five Pāṇḍavas?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Duryodhana"
+        },
+        {
+          "key": "b",
+          "text": "Abhimanyu"
+        },
+        {
+          "key": "c",
+          "text": "Karṇa"
+        },
+        {
+          "key": "d",
+          "text": "Nakula"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The five Pāṇḍavas are Yudhiṣṭhira, Bhīma, Arjuna, Nakula, and Sahadeva."
+    },
+    {
+      "question": "Abhimanyu was the son of which Pāṇḍava?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Arjuna"
+        },
+        {
+          "key": "b",
+          "text": "Bhīma"
+        },
+        {
+          "key": "c",
+          "text": "Yudhiṣṭhira"
+        },
+        {
+          "key": "d",
+          "text": "Nakula"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Arjuna's children are Abhimanyu and 3 other sons."
+    },
+    {
+      "question": "Parīkṣit was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Arjuna"
+        },
+        {
+          "key": "b",
+          "text": "Abhimanyu"
+        },
+        {
+          "key": "c",
+          "text": "Janamejaya"
+        },
+        {
+          "key": "d",
+          "text": "Bhīma"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Arjuna → Abhimanyu → Parīkṣit → Janamejaya."
+    },
+    {
+      "question": "Janamejaya was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Abhimanyu"
+        },
+        {
+          "key": "b",
+          "text": "Arjuna"
+        },
+        {
+          "key": "c",
+          "text": "Parīkṣit"
+        },
+        {
+          "key": "d",
+          "text": "Yudhiṣṭhira"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Parīkṣit's children include Janamejaya and 3 other sons."
+    },
+    {
+      "question": "Following the line Arjuna → Abhimanyu → Parīkṣit → ?, who comes next?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Karṇa"
+        },
+        {
+          "key": "b",
+          "text": "Nakula"
+        },
+        {
+          "key": "c",
+          "text": "Kuru"
+        },
+        {
+          "key": "d",
+          "text": "Janamejaya"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The line ends with Janamejaya, son of Parīkṣit."
+    },
+    {
+      "question": "Who was the wife of Svāyambhuva Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śatarūpā"
+        },
+        {
+          "key": "b",
+          "text": "Śraddhā"
+        },
+        {
+          "key": "c",
+          "text": "Devahūti"
+        },
+        {
+          "key": "d",
+          "text": "Prasūti"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Svāyambhuva Manu's wife as Śatarūpā."
+    },
+    {
+      "question": "Which of these was a son of Svāyambhuva Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dhruva"
+        },
+        {
+          "key": "b",
+          "text": "Priyavrata"
+        },
+        {
+          "key": "c",
+          "text": "Ṛṣabhadeva"
+        },
+        {
+          "key": "d",
+          "text": "Uttama"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Svāyambhuva Manu's sons were Priyavrata and Uttānapāda; his daughters were Ākūti, Devahūti, and Prasūti."
+    },
+    {
+      "question": "Which of these was a daughter of Svāyambhuva Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Suniti"
+        },
+        {
+          "key": "b",
+          "text": "Satī"
+        },
+        {
+          "key": "c",
+          "text": "Devahūti"
+        },
+        {
+          "key": "d",
+          "text": "Sunīthā"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Svāyambhuva Manu's daughters were Ākūti, Devahūti, and Prasūti."
+    },
+    {
+      "question": "How many sons did Priyavrata have (besides 1 daughter)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "9 sons"
+        },
+        {
+          "key": "b",
+          "text": "10 sons"
+        },
+        {
+          "key": "c",
+          "text": "100 sons"
+        },
+        {
+          "key": "d",
+          "text": "13 sons"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Priyavrata had 1 daughter (who married Śukrācārya) and 13 sons."
+    },
+    {
+      "question": "Of Priyavrata's 13 sons, 3 became sannyāsīs, 3 became Manus, and 7 became what?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Rulers of the 7 islands"
+        },
+        {
+          "key": "b",
+          "text": "Yogendras"
+        },
+        {
+          "key": "c",
+          "text": "Apsarās"
+        },
+        {
+          "key": "d",
+          "text": "Demigods"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart notes 3 became sannyāsīs, 3 became Manus, and 7 became rulers of 7 islands."
+    },
+    {
+      "question": "Āgnīdhra, one of the seven island-rulers, had which wife?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Merudevī"
+        },
+        {
+          "key": "b",
+          "text": "Pūrvacitti"
+        },
+        {
+          "key": "c",
+          "text": "Jayantī"
+        },
+        {
+          "key": "d",
+          "text": "Pañcajanī"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart lists Āgnīdhra's wife as Pūrvacitti."
+    },
+    {
+      "question": "Āgnīdhra had 9 sons who married the 9 daughters of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "b",
+          "text": "Kardama"
+        },
+        {
+          "key": "c",
+          "text": "Meru"
+        },
+        {
+          "key": "d",
+          "text": "Death"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Āgnīdhra's 9 sons married the 9 daughters of Meru."
+    },
+    {
+      "question": "The oldest of Āgnīdhra's 9 sons was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ṛṣabhadeva"
+        },
+        {
+          "key": "b",
+          "text": "Bharata"
+        },
+        {
+          "key": "c",
+          "text": "Gaya"
+        },
+        {
+          "key": "d",
+          "text": "King Nābhi"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The oldest of the 9 sons is King Nābhi (wife: Merudevī)."
+    },
+    {
+      "question": "King Nābhi's wife was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Merudevī"
+        },
+        {
+          "key": "b",
+          "text": "Jayantī"
+        },
+        {
+          "key": "c",
+          "text": "Pañcajanī"
+        },
+        {
+          "key": "d",
+          "text": "Pūrvacitti"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists King Nābhi's wife as Merudevī."
+    },
+    {
+      "question": "Lord Ṛṣabhadeva was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Āgnīdhra"
+        },
+        {
+          "key": "b",
+          "text": "King Nābhi"
+        },
+        {
+          "key": "c",
+          "text": "Priyavrata"
+        },
+        {
+          "key": "d",
+          "text": "Bharata"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "King Nābhi (wife: Merudevī) → Lord Ṛṣabhadeva (wife: Jayantī)."
+    },
+    {
+      "question": "Lord Ṛṣabhadeva's wife was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Merudevī"
+        },
+        {
+          "key": "b",
+          "text": "Pañcajanī"
+        },
+        {
+          "key": "c",
+          "text": "Jayantī"
+        },
+        {
+          "key": "d",
+          "text": "Pūrvacitti"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Lord Ṛṣabhadeva's wife as Jayantī."
+    },
+    {
+      "question": "Bharata, who in his next life became Jaḍa Bharata, was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "King Nābhi"
+        },
+        {
+          "key": "b",
+          "text": "Duṣmanta"
+        },
+        {
+          "key": "c",
+          "text": "Āgnīdhra"
+        },
+        {
+          "key": "d",
+          "text": "Lord Ṛṣabhadeva"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Lord Ṛṣabhadeva (wife: Jayantī) → Bharata (wife: Pañcajanī) [in next life Jaḍa Bharata]."
+    },
+    {
+      "question": "This Bharata (son of Ṛṣabhadeva) had which wife?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Pañcajanī"
+        },
+        {
+          "key": "b",
+          "text": "Jayantī"
+        },
+        {
+          "key": "c",
+          "text": "Merudevī"
+        },
+        {
+          "key": "d",
+          "text": "Śakuntalā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Bharata's wife as Pañcajanī."
+    },
+    {
+      "question": "Along with Bharata, Lord Ṛṣabhadeva's sons included the '9 Yogendras' and how many other sons?",
+      "options": [
+        {
+          "key": "a",
+          "text": "99 other sons"
+        },
+        {
+          "key": "b",
+          "text": "90 other sons"
+        },
+        {
+          "key": "c",
+          "text": "13 other sons"
+        },
+        {
+          "key": "d",
+          "text": "10 sons"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Ṛṣabhadeva's sons: Bharata, the 9 Yogendras, and 90 other sons."
+    },
+    {
+      "question": "Mahārāja Gaya descended from which Bharata's line?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Bharata, son of Duṣmanta"
+        },
+        {
+          "key": "b",
+          "text": "Bharata, brother of Rāma"
+        },
+        {
+          "key": "c",
+          "text": "Bharata, son of Ṛṣabhadeva"
+        },
+        {
+          "key": "d",
+          "text": "Bharadvāja"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Bharata (son of Ṛṣabhadeva) → many descendants → Mahārāja Gaya."
+    },
+    {
+      "question": "Uttānapāda's two wives were whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śatarūpā and Śraddhā"
+        },
+        {
+          "key": "b",
+          "text": "Diti and Aditi"
+        },
+        {
+          "key": "c",
+          "text": "Arci and Sunīthā"
+        },
+        {
+          "key": "d",
+          "text": "Suruci and Suniti"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Uttānapāda married Suruci and Suniti."
+    },
+    {
+      "question": "Uttama was the son of which wife of Uttānapāda?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Suruci"
+        },
+        {
+          "key": "b",
+          "text": "Suniti"
+        },
+        {
+          "key": "c",
+          "text": "Śatarūpā"
+        },
+        {
+          "key": "d",
+          "text": "Svarvīthi"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Suruci's son was Uttama; Suniti's son was Dhruva."
+    },
+    {
+      "question": "The great devotee Dhruva was the son of which mother?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Suruci"
+        },
+        {
+          "key": "b",
+          "text": "Suniti"
+        },
+        {
+          "key": "c",
+          "text": "Śatarūpā"
+        },
+        {
+          "key": "d",
+          "text": "Merudevī"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Suniti's son was Dhruva Mahārāja."
+    },
+    {
+      "question": "Uttama and Dhruva were half-brothers, both sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Priyavrata"
+        },
+        {
+          "key": "b",
+          "text": "Svāyambhuva Manu"
+        },
+        {
+          "key": "c",
+          "text": "Uttānapāda"
+        },
+        {
+          "key": "d",
+          "text": "Vatsara"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Uttama (via Suruci) and Dhruva (via Suniti) were both sons of Uttānapāda."
+    },
+    {
+      "question": "Dhruva Mahārāja's sons were Vatsara and whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Puṣpārṇa"
+        },
+        {
+          "key": "b",
+          "text": "Vyuṣṭa"
+        },
+        {
+          "key": "c",
+          "text": "Uttama"
+        },
+        {
+          "key": "d",
+          "text": "Utkala"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Dhruva's sons were Vatsara (wife: Svarvīthi) and Utkala."
+    },
+    {
+      "question": "Vatsara's wife was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Svarvīthi"
+        },
+        {
+          "key": "b",
+          "text": "Arci"
+        },
+        {
+          "key": "c",
+          "text": "Sunīthā"
+        },
+        {
+          "key": "d",
+          "text": "Māriṣā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Vatsara's wife as Svarvīthi."
+    },
+    {
+      "question": "Following Dhruva → Vatsara → ? → Vyuṣṭa, who is the missing link?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Utkala"
+        },
+        {
+          "key": "b",
+          "text": "Puṣpārṇa"
+        },
+        {
+          "key": "c",
+          "text": "Sarvatejā"
+        },
+        {
+          "key": "d",
+          "text": "Cākṣuṣa"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The line runs Vatsara → Puṣpārṇa → Vyuṣṭa → Sarvatejā."
+    },
+    {
+      "question": "Who was the son of Vyuṣṭa?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Puṣpārṇa"
+        },
+        {
+          "key": "b",
+          "text": "Cākṣuṣa Manu"
+        },
+        {
+          "key": "c",
+          "text": "Sarvatejā"
+        },
+        {
+          "key": "d",
+          "text": "Ulmuka"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Vyuṣṭa → Sarvatejā → Cākṣuṣa Manu."
+    },
+    {
+      "question": "Cākṣuṣa Manu, in the Dhruva line, is identified as which Manu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "The current Manu"
+        },
+        {
+          "key": "b",
+          "text": "The first Manu"
+        },
+        {
+          "key": "c",
+          "text": "The seventh Manu"
+        },
+        {
+          "key": "d",
+          "text": "The Sixth Manu"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart labels Cākṣuṣa Manu as the Sixth Manu."
+    },
+    {
+      "question": "Cākṣuṣa Manu was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sarvatejā"
+        },
+        {
+          "key": "b",
+          "text": "Vyuṣṭa"
+        },
+        {
+          "key": "c",
+          "text": "Ulmuka"
+        },
+        {
+          "key": "d",
+          "text": "Aṅga"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Sarvatejā → Cākṣuṣa Manu → Ulmuka."
+    },
+    {
+      "question": "Ulmuka, son of Cākṣuṣa Manu, had which son?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vena"
+        },
+        {
+          "key": "b",
+          "text": "Aṅga"
+        },
+        {
+          "key": "c",
+          "text": "Pṛthu"
+        },
+        {
+          "key": "d",
+          "text": "Vijitāśva"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Cākṣuṣa Manu → Ulmuka → Aṅga → Vena."
+    },
+    {
+      "question": "Aṅga's wife, the daughter of Death, was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Arci"
+        },
+        {
+          "key": "b",
+          "text": "Svarvīthi"
+        },
+        {
+          "key": "c",
+          "text": "Sunīthā"
+        },
+        {
+          "key": "d",
+          "text": "Māriṣā"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Aṅga's wife as Sunīthā, daughter of Death."
+    },
+    {
+      "question": "The infamous King Vena was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ulmuka"
+        },
+        {
+          "key": "b",
+          "text": "Pṛthu"
+        },
+        {
+          "key": "c",
+          "text": "Cākṣuṣa Manu"
+        },
+        {
+          "key": "d",
+          "text": "Aṅga"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Aṅga (wife: Sunīthā) → Vena."
+    },
+    {
+      "question": "From the churning of King Vena's thighs came which sinful race?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Niṣāda"
+        },
+        {
+          "key": "b",
+          "text": "Pṛthu"
+        },
+        {
+          "key": "c",
+          "text": "Haryaśvas"
+        },
+        {
+          "key": "d",
+          "text": "Savalaśvas"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "From churning Vena's thighs came Niṣāda (the sinful race)."
+    },
+    {
+      "question": "Mahārāja Pṛthu was produced from the churning of which part of King Vena?",
+      "options": [
+        {
+          "key": "a",
+          "text": "His thighs"
+        },
+        {
+          "key": "b",
+          "text": "His right hand"
+        },
+        {
+          "key": "c",
+          "text": "His head"
+        },
+        {
+          "key": "d",
+          "text": "His feet"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "From churning Vena's right hand came Pṛthu (wife: Arci)."
+    },
+    {
+      "question": "Who was the wife of Mahārāja Pṛthu?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sunīthā"
+        },
+        {
+          "key": "b",
+          "text": "Māriṣā"
+        },
+        {
+          "key": "c",
+          "text": "Arci"
+        },
+        {
+          "key": "d",
+          "text": "Svarvīthi"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Pṛthu's wife as Arci."
+    },
+    {
+      "question": "Vijitāśva, son of Pṛthu, was also known by which name?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Barhiṣat"
+        },
+        {
+          "key": "b",
+          "text": "Prācīnabarhi"
+        },
+        {
+          "key": "c",
+          "text": "Havirdhāna"
+        },
+        {
+          "key": "d",
+          "text": "Antardhāna"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart lists Vijitāśva 'a.k.a. Antardhāna.'"
+    },
+    {
+      "question": "Vijitāśva (Antardhāna) was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Pṛthu"
+        },
+        {
+          "key": "b",
+          "text": "Vena"
+        },
+        {
+          "key": "c",
+          "text": "Havirdhāna"
+        },
+        {
+          "key": "d",
+          "text": "Aṅga"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Pṛthu → Vijitāśva (a.k.a. Antardhāna) → Havirdhāna."
+    },
+    {
+      "question": "Who was the son of Vijitāśva (Antardhāna)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Barhiṣat"
+        },
+        {
+          "key": "b",
+          "text": "Havirdhāna"
+        },
+        {
+          "key": "c",
+          "text": "Pracetās"
+        },
+        {
+          "key": "d",
+          "text": "Dakṣa"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Vijitāśva → Havirdhāna → Barhiṣat."
+    },
+    {
+      "question": "Barhiṣat, son of Havirdhāna, was also known by all of these names EXCEPT which?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Prajāpati"
+        },
+        {
+          "key": "b",
+          "text": "Prācīnabarhi"
+        },
+        {
+          "key": "c",
+          "text": "Antardhāna"
+        },
+        {
+          "key": "d",
+          "text": "Barhiṣmān"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Barhiṣat is a.k.a. Prajāpati, Prācīnabarhi, and Barhiṣmān. 'Antardhāna' was the other name of Vijitāśva."
+    },
+    {
+      "question": "The ten Pracetās were the sons of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Havirdhāna"
+        },
+        {
+          "key": "b",
+          "text": "Vijitāśva"
+        },
+        {
+          "key": "c",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "d",
+          "text": "Barhiṣat"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Barhiṣat → the Pracetās (10 sons; wife: Māriṣā)."
+    },
+    {
+      "question": "The Pracetās' wife was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Māriṣā"
+        },
+        {
+          "key": "b",
+          "text": "Asiknī"
+        },
+        {
+          "key": "c",
+          "text": "Arci"
+        },
+        {
+          "key": "d",
+          "text": "Sunīthā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists the Pracetās' wife as Māriṣā."
+    },
+    {
+      "question": "Dakṣa (in the Dhruva/Pṛthu line) was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Barhiṣat"
+        },
+        {
+          "key": "b",
+          "text": "The Pracetās"
+        },
+        {
+          "key": "c",
+          "text": "Havirdhāna"
+        },
+        {
+          "key": "d",
+          "text": "Vena"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The Pracetās → Dakṣa (wife: Asiknī)."
+    },
+    {
+      "question": "This Dakṣa's wife was whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Māriṣā"
+        },
+        {
+          "key": "b",
+          "text": "Prasūti"
+        },
+        {
+          "key": "c",
+          "text": "Asiknī"
+        },
+        {
+          "key": "d",
+          "text": "Arci"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Dakṣa's wife as Asiknī."
+    },
+    {
+      "question": "Dakṣa's 60 daughters are noted as having done what?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Become Manus"
+        },
+        {
+          "key": "b",
+          "text": "Ruled the 7 islands"
+        },
+        {
+          "key": "c",
+          "text": "Become Apsarās"
+        },
+        {
+          "key": "d",
+          "text": "Created many species"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart notes Dakṣa's 60 daughters 'created many species.'"
+    },
+    {
+      "question": "Dakṣa's 10,000 Haryaśvas and 10,000 Savalaśvas both became what?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Sannyāsīs"
+        },
+        {
+          "key": "b",
+          "text": "Rulers of islands"
+        },
+        {
+          "key": "c",
+          "text": "Demigods"
+        },
+        {
+          "key": "d",
+          "text": "Manus"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Both the Haryaśvas and Savalaśvas are noted as sannyāsīs."
+    },
+    {
+      "question": "This Dakṣa is noted as being Prasūti's husband in which context?",
+      "options": [
+        {
+          "key": "a",
+          "text": "In this life"
+        },
+        {
+          "key": "b",
+          "text": "In his next life"
+        },
+        {
+          "key": "c",
+          "text": "In a previous life"
+        },
+        {
+          "key": "d",
+          "text": "As her father"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "The chart notes Dakṣa was 'Prasūti's husband in his next life.'"
+    },
+    {
+      "question": "Who was the husband of Ākūti (daughter of Svāyambhuva Manu)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "b",
+          "text": "Kardama"
+        },
+        {
+          "key": "c",
+          "text": "Ruci"
+        },
+        {
+          "key": "d",
+          "text": "Dharma"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart lists Ākūti's husband as Ruci."
+    },
+    {
+      "question": "Yajña, an incarnation of Kṛṣṇa, was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Prasūti"
+        },
+        {
+          "key": "b",
+          "text": "Devahūti"
+        },
+        {
+          "key": "c",
+          "text": "Aditi"
+        },
+        {
+          "key": "d",
+          "text": "Ākūti"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Ākūti (husband: Ruci) had Yajña, an incarnation of Kṛṣṇa, and Dakṣiṇa."
+    },
+    {
+      "question": "Who was the husband of Prasūti (daughter of Svāyambhuva Manu)?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "b",
+          "text": "Ruci"
+        },
+        {
+          "key": "c",
+          "text": "Kardama"
+        },
+        {
+          "key": "d",
+          "text": "Dharma"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Prasūti's husband as Dakṣa."
+    },
+    {
+      "question": "Satī, the wife of Lord Śiva, was the daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kardama and Devahūti"
+        },
+        {
+          "key": "b",
+          "text": "Dakṣa and Prasūti"
+        },
+        {
+          "key": "c",
+          "text": "Ruci and Ākūti"
+        },
+        {
+          "key": "d",
+          "text": "Kaśyapa and Diti"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Satī (wife of Lord Śiva) is shown as a daughter of Dakṣa and Prasūti."
+    },
+    {
+      "question": "Satī married which deity?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Lord Viṣṇu"
+        },
+        {
+          "key": "b",
+          "text": "Dharma"
+        },
+        {
+          "key": "c",
+          "text": "Lord Śiva"
+        },
+        {
+          "key": "d",
+          "text": "Kaśyapa"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Satī is labeled 'wife of Lord Śiva.'"
+    },
+    {
+      "question": "Aditi and Diti, who married Kaśyapa, are shown as daughters of which couple?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Marīci and Kalā"
+        },
+        {
+          "key": "b",
+          "text": "Kardama and Devahūti"
+        },
+        {
+          "key": "c",
+          "text": "Svāyambhuva Manu and Śatarūpā"
+        },
+        {
+          "key": "d",
+          "text": "Dakṣa and Prasūti"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Aditi (husband: Kaśyapa) and Diti (husband: Kaśyapa) are daughters of Dakṣa and Prasūti — the reason their descendants 'continue on the left, under Marīci.'"
+    },
+    {
+      "question": "Mūrti, a daughter of Dakṣa and Prasūti, married whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Dharma"
+        },
+        {
+          "key": "b",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "c",
+          "text": "Ruci"
+        },
+        {
+          "key": "d",
+          "text": "Kardama"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart lists Mūrti's husband as Dharma."
+    },
+    {
+      "question": "Nara-Nārāyaṇa, the combined form of Kṛṣṇa and Arjuna, was the son of Mūrti and whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "b",
+          "text": "Dharma"
+        },
+        {
+          "key": "c",
+          "text": "Ruci"
+        },
+        {
+          "key": "d",
+          "text": "Atri"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Mūrti (husband: Dharma) → Nara-Nārāyaṇa (form of Kṛṣṇa and Arjuna)."
+    },
+    {
+      "question": "Nara-Nārāyaṇa is noted in the chart as having created Apsarās like whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Menakā"
+        },
+        {
+          "key": "b",
+          "text": "Pūrvacitti"
+        },
+        {
+          "key": "c",
+          "text": "Urvaśī"
+        },
+        {
+          "key": "d",
+          "text": "Arci"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart notes Nara-Nārāyaṇa 'created Apsarās like Urvaśī.'"
+    },
+    {
+      "question": "Who was the husband of Devahūti?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Ruci"
+        },
+        {
+          "key": "b",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "c",
+          "text": "Dharma"
+        },
+        {
+          "key": "d",
+          "text": "Kardama"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart lists Devahūti's husband as Kardama (Muni)."
+    },
+    {
+      "question": "Lord Kapila, the incarnation who taught Sāṅkhya to His mother, was the son of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kardama and Devahūti"
+        },
+        {
+          "key": "b",
+          "text": "Ruci and Ākūti"
+        },
+        {
+          "key": "c",
+          "text": "Dakṣa and Prasūti"
+        },
+        {
+          "key": "d",
+          "text": "Kaśyapa and Aditi"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Lord Kapila is shown as the son of Kardama and Devahūti."
+    },
+    {
+      "question": "Kalā, who married Marīci, was a daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Prasūti (and Dakṣa)"
+        },
+        {
+          "key": "b",
+          "text": "Devahūti (and Kardama)"
+        },
+        {
+          "key": "c",
+          "text": "Ākūti (and Ruci)"
+        },
+        {
+          "key": "d",
+          "text": "Śatarūpā"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Kalā (husband: Marīci) is a daughter of Devahūti and Kardama."
+    },
+    {
+      "question": "Kalā and Marīci's sons were Kaśyapa and whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Vivasvān"
+        },
+        {
+          "key": "b",
+          "text": "Dakṣa"
+        },
+        {
+          "key": "c",
+          "text": "Pūrṇimā"
+        },
+        {
+          "key": "d",
+          "text": "Soma"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Kalā (husband: Marīci) had Kaśyapa and Pūrṇimā."
+    },
+    {
+      "question": "According to the chart, who were the parents of Kaśyapa?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Brahmā and Śatarūpā"
+        },
+        {
+          "key": "b",
+          "text": "Dakṣa and Prasūti"
+        },
+        {
+          "key": "c",
+          "text": "Atri and Anasūyā"
+        },
+        {
+          "key": "d",
+          "text": "Marīci and Kalā"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Kaśyapa is Marīci's son via Kalā (a daughter of Devahūti) — closing a loop in the tree."
+    },
+    {
+      "question": "Anasūyā, who married Atri, was a daughter of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Devahūti (and Kardama)"
+        },
+        {
+          "key": "b",
+          "text": "Prasūti (and Dakṣa)"
+        },
+        {
+          "key": "c",
+          "text": "Ākūti (and Ruci)"
+        },
+        {
+          "key": "d",
+          "text": "Menakā"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Anasūyā (husband: Atri) is a daughter of Devahūti and Kardama."
+    },
+    {
+      "question": "Soma, Dattātreya, and Durvāsā were the sons of Atri and which wife?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kalā"
+        },
+        {
+          "key": "b",
+          "text": "Anasūyā"
+        },
+        {
+          "key": "c",
+          "text": "Prasūti"
+        },
+        {
+          "key": "d",
+          "text": "Śatarūpā"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Anasūyā (husband: Atri) → Soma, Dattātreya, Durvāsā."
+    },
+    {
+      "question": "Soma (son of Atri and Anasūyā) was a partial incarnation of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Viṣṇu"
+        },
+        {
+          "key": "b",
+          "text": "Śiva"
+        },
+        {
+          "key": "c",
+          "text": "Brahmā"
+        },
+        {
+          "key": "d",
+          "text": "Kṛṣṇa"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The chart notes Soma was a 'partial incarnation of Brahmā.'"
+    },
+    {
+      "question": "Dattātreya was a partial incarnation of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Brahmā"
+        },
+        {
+          "key": "b",
+          "text": "Śiva"
+        },
+        {
+          "key": "c",
+          "text": "Indra"
+        },
+        {
+          "key": "d",
+          "text": "Viṣṇu"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "The chart notes Dattātreya was a 'partial incarnation of Viṣṇu.'"
+    },
+    {
+      "question": "Durvāsā, famous for his temper, was a partial incarnation of whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Śiva"
+        },
+        {
+          "key": "b",
+          "text": "Viṣṇu"
+        },
+        {
+          "key": "c",
+          "text": "Brahmā"
+        },
+        {
+          "key": "d",
+          "text": "Kṛṣṇa"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The chart notes Durvāsā was a 'partial incarnation of Śiva.'"
+    },
+    {
+      "question": "Dattātreya and Durvāsā were both sons of which sage?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Marīci"
+        },
+        {
+          "key": "b",
+          "text": "Atri"
+        },
+        {
+          "key": "c",
+          "text": "Kardama"
+        },
+        {
+          "key": "d",
+          "text": "Kaśyapa"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Atri (via Anasūyā) had Soma, Dattātreya, and Durvāsā."
+    },
+    {
+      "question": "The three great original branches of the family tree stem from Brahmā's sons Marīci, Atri, and whom?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Kaśyapa"
+        },
+        {
+          "key": "b",
+          "text": "Vivasvān"
+        },
+        {
+          "key": "c",
+          "text": "Svāyambhuva Manu"
+        },
+        {
+          "key": "d",
+          "text": "Priyavrata"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "The tree's three main branches are Marīci (→ Kaśyapa), Atri (→ Soma), and Svāyambhuva Manu."
+    },
+    {
+      "question": "Lord Kṛṣṇa and Lord Balarāma appear in the chart within which dynasty?",
+      "options": [
+        {
+          "key": "a",
+          "text": "The Puru (Kuru) dynasty"
+        },
+        {
+          "key": "b",
+          "text": "The Ikṣvāku dynasty"
+        },
+        {
+          "key": "c",
+          "text": "The Priyavrata line"
+        },
+        {
+          "key": "d",
+          "text": "The Yadu dynasty"
+        }
+      ],
+      "correct": [
+        "d"
+      ],
+      "explanation": "Kṛṣṇa and Balarāma descend from Yadu → Sātvata → Vṛṣṇi → Śūrasena → Vasudeva."
+    },
+    {
+      "question": "The Pāṇḍavas and Kauravas (Mahābhārata) belong to which dynasty?",
+      "options": [
+        {
+          "key": "a",
+          "text": "The Puru (Kuru) dynasty"
+        },
+        {
+          "key": "b",
+          "text": "The Yadu dynasty"
+        },
+        {
+          "key": "c",
+          "text": "The Ikṣvāku dynasty"
+        },
+        {
+          "key": "d",
+          "text": "The Ānarta line"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Puru → Bharata → ... → Kuru → Śantanu → the Pāṇḍavas and Dhṛtarāṣṭra's sons."
+    },
+    {
+      "question": "Lord Rāmacandra belongs to which dynasty?",
+      "options": [
+        {
+          "key": "a",
+          "text": "The Yadu dynasty"
+        },
+        {
+          "key": "b",
+          "text": "The Ikṣvāku dynasty"
+        },
+        {
+          "key": "c",
+          "text": "The Puru dynasty"
+        },
+        {
+          "key": "d",
+          "text": "The Priyavrata line"
+        }
+      ],
+      "correct": [
+        "b"
+      ],
+      "explanation": "Rāma descends from Vaivasvata Manu → Ikṣvāku → ... → Daśaratha → Lord Rāmacandra."
+    },
+    {
+      "question": "Which chain of incarnations were the three sons of Atri and Anasūyā?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Yajña, Kapila, Ṛṣabhadeva"
+        },
+        {
+          "key": "b",
+          "text": "Nara, Nārāyaṇa, Hari"
+        },
+        {
+          "key": "c",
+          "text": "Soma, Dattātreya, Durvāsā"
+        },
+        {
+          "key": "d",
+          "text": "Kṛṣṇa, Balarāma, Subhadrā"
+        }
+      ],
+      "correct": [
+        "c"
+      ],
+      "explanation": "Atri and Anasūyā's sons — Soma, Dattātreya, and Durvāsā — were partial incarnations of Brahmā, Viṣṇu, and Śiva respectively."
+    }
+  ]
+}
