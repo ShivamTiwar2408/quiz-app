@@ -896,6 +896,16 @@
       ]
     },
     {
+      "name": "Śrīmad Bhāgavatam (Canto 4)",
+      "children": [
+        {
+          "name": "Ch 4: Satī Quits Her Body",
+          "set": "bhagavatam-canto4-ch4",
+          "count": 32
+        }
+      ]
+    },
+    {
       "name": "Storage Systems",
       "children": [
         {
@@ -976,6 +986,6 @@
       ]
     }
   ],
-  "total_questions": 2570,
-  "total_sets": 173
+  "total_questions": 2602,
+  "total_sets": 174
 }
