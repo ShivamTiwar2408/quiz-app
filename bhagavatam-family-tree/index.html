@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Śrīmad-Bhāgavatam Family Tree — interactive hierarchy</title>
+<meta name="description" content="The Śrīmad-Bhāgavatam genealogy, redrawn as a clean top-down hierarchy from Kṛṣṇa — pan, zoom, search, and collapse branches. Marīci, Atri and Svāyambhuva Manu lines, the Yadu & Kuru dynasties, the Ikṣvāku (Rāma) line, and the Dhruva→Pṛthu→Dakṣa line.">
+<style>
+  :root{
+    --bg:#0e1117; --bg2:#141b27; --panel:#192232; --panel2:#202c40;
+    --ink:#e9eef6; --muted:#a7b4ca; --faint:#6d7c95; --line:#283448;
+    --root:#e0a93f; --marici:#5b9dff; --atri:#46c98b; --manu:#e06aa8;
+    --gold:#f0c14b;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;
+    background:radial-gradient(900px 500px at 85% -10%,rgba(224,106,168,.10),transparent 60%),
+      radial-gradient(800px 500px at 8% 0%,rgba(91,157,255,.10),transparent 55%),var(--bg)}
+
+  header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:14px;
+    padding:10px 18px;background:rgba(20,27,39,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  header .brand{font-weight:800;font-size:15px;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+  header .brand .g{background:linear-gradient(90deg,var(--gold),var(--manu));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header .home{font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:5px 10px;border-radius:8px}
+  header .home:hover{color:var(--ink);border-color:var(--gold)}
+  .search{position:relative;margin-left:auto}
+  .search input{width:230px;max-width:44vw;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:8px 11px 8px 30px;font-size:13px}
+  .search input::placeholder{color:var(--faint)}
+  .search .ic{position:absolute;left:9px;top:8px;color:var(--faint);font-size:13px}
+  .search .hits{position:absolute;right:9px;top:8px;font-family:var(--mono);font-size:11px;color:var(--gold)}
+  .ctrls{display:flex;gap:6px}
+  .ctrls button{width:34px;height:34px;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    border-radius:9px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+  .ctrls button:hover{border-color:var(--gold);color:var(--gold)}
+  .ctrls button.wide{width:auto;padding:0 12px;font-size:12px;font-weight:600}
+
+  #stage{position:fixed;inset:56px 0 0 0;overflow:hidden;cursor:grab}
+  #stage.grabbing{cursor:grabbing}
+  #svg{display:block}
+
+  /* node cards (rendered via foreignObject) */
+  .node{border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,var(--panel),var(--bg2));
+    padding:7px 10px;font-family:var(--sans);position:relative;transition:box-shadow .15s,border-color .15s,opacity .15s;overflow:hidden}
+  .node .nm{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.25}
+  .node .sub{font-size:10px;color:var(--muted);line-height:1.3;margin-top:2px}
+  .node .xref{font-size:9.5px;color:var(--faint);font-style:italic;line-height:1.25;margin-top:3px;
+    border-top:1px dashed var(--line);padding-top:3px}
+  .node.b-root{border-left:3px solid var(--root)}
+  .node.b-marici{border-left:3px solid var(--marici)}
+  .node.b-atri{border-left:3px solid var(--atri)}
+  .node.b-manu{border-left:3px solid var(--manu)}
+  .node.b-root .nm{color:#ffe6ad}
+  .node.divine{border-color:var(--gold);box-shadow:0 0 0 1px rgba(240,193,75,.25),0 6px 22px -10px rgba(240,193,75,.5)}
+  .node.divine .nm{color:var(--gold)}
+  .node.godhead{background:linear-gradient(180deg,#2a2312,#141b27);border-color:var(--gold)}
+  .node.godhead .nm{font-size:15px;color:var(--gold)}
+  .node .badge{position:absolute;top:5px;right:7px;font-size:10px}
+  .node.dim{opacity:.22}
+  .node.match{border-color:var(--gold);box-shadow:0 0 0 2px rgba(240,193,75,.5)}
+  .node .toggle{position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;
+    background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-size:12px;line-height:16px;text-align:center;cursor:pointer;z-index:3}
+  .node .toggle:hover{color:var(--gold);border-color:var(--gold)}
+  .edge{fill:none;stroke:var(--line);stroke-width:1.4}
+  .edge.b-marici{stroke:rgba(91,157,255,.5)} .edge.b-atri{stroke:rgba(70,201,139,.5)}
+  .edge.b-manu{stroke:rgba(224,106,168,.5)} .edge.b-root{stroke:rgba(224,169,63,.55)}
+  .edge.dim{stroke:rgba(40,52,72,.4)}
+
+  .legend{position:fixed;left:14px;bottom:14px;z-index:15;background:rgba(20,27,39,.92);border:1px solid var(--line);
+    border-radius:12px;padding:11px 13px;font-size:11.5px;color:var(--muted);backdrop-filter:blur(8px);max-width:min(46vw,320px)}
+  .legend b{color:var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px}
+  .legend .row{display:flex;align-items:center;gap:7px;margin:3px 0}
+  .legend .sw{width:12px;height:12px;border-radius:3px;flex:none}
+  .legend .hint{margin-top:7px;color:var(--faint);font-size:10.5px;line-height:1.4}
+  .legend .close{position:absolute;top:7px;right:9px;cursor:pointer;color:var(--faint)}
+  .legend.hidden{display:none}
+  @media(max-width:640px){.legend{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🌳 <span>Śrīmad-Bhāgavatam</span> Family Tree</div>
+  <a class="home" href="../index.html">← Study hub</a>
+  <div class="search">
+    <span class="ic">🔎</span>
+    <input id="q" placeholder="Search a name (e.g. Arjuna, Dhruva)…" autocomplete="off">
+    <span class="hits" id="hits"></span>
+  </div>
+  <div class="ctrls">
+    <button id="zin" title="Zoom in">+</button>
+    <button id="zout" title="Zoom out">−</button>
+    <button id="fit" class="wide" title="Fit to screen">Fit</button>
+    <button id="expand" class="wide" title="Expand all">Expand all</button>
+  </div>
+</header>
+
+<div id="stage">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<div class="legend" id="legend">
+  <span class="close" id="legClose">✕</span>
+  <b>Branches from Lord Brahmā</b>
+  <div class="row"><span class="sw" style="background:var(--root)"></span> Kṛṣṇa · Brahmā (root)</div>
+  <div class="row"><span class="sw" style="background:var(--marici)"></span> Marīci → Kaśyapa (demigods, Ikṣvāku/Rāma)</div>
+  <div class="row"><span class="sw" style="background:var(--atri)"></span> Atri → Soma (Yadu &amp; Kuru dynasties)</div>
+  <div class="row"><span class="sw" style="background:var(--manu)"></span> Svāyambhuva Manu (Dhruva, Pṛthu, Dakṣa)</div>
+  <div class="row"><span style="color:var(--gold)">✦</span> Divine form / incarnation</div>
+  <div class="hint">Drag to pan · scroll to zoom · click a node's ⊖/⊕ to collapse a branch · dashed note = cross-reference to another branch.</div>
+</div>
+
+<script>
+/* ---------- The tree (transcribed from the chart, redrawn as a strict hierarchy) ---------- */
+function n(name, opts, children){ const o = opts||{}; o.name=name; if(children) o.c=children; return o; }
+
+const TREE =
+n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
+  n('Lord Brahmā',{sub:'born from Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa',b:'root',tag:'div'},[
+    n('Other sons of Brahmā',{sub:'Nārada Muni · Four Kumāras · Lord Śiva · Kratu · Bhṛgu · Atreya · Pulaha · Vasiṣṭha · Aṅgirā · Pulastya · others',b:'root'}),
+
+    /* ================= MARĪCI branch ================= */
+    n('Marīci',{b:'marici'},[
+      n('Kaśyapa',{sub:'married Diti, Aditi & other wives',xref:'also born of Marīci & Kalā (a daughter of Devahūti) — see Manu branch',b:'marici'},[
+        n('Diti',{sub:'wife of Kaśyapa',b:'marici'},[
+          n('49 Maruts',{b:'marici'}),
+          n('Hiraṇyākṣa',{b:'marici'}),
+          n('Hiraṇyakaśipu',{sub:'wife: Kayādhu',b:'marici'},[
+            n('Prahlāda',{b:'marici'},[
+              n('Virocana',{b:'marici'},[
+                n('Bali',{sub:'wife: Vindhyāvalī',b:'marici'},[
+                  n('Bāṇa',{b:'marici'}),
+                  n('99 other sons',{b:'marici'})
+                ])
+              ])
+            ])
+          ])
+        ]),
+        n('Aditi',{sub:'wife of Kaśyapa',xref:'daughter of Dakṣa & Prasūti — see Manu branch',b:'marici'},[
+          n('Many demigods',{b:'marici'}),
+          n('Vivasvān',{b:'marici'},[
+            n('Vaivasvata Manu',{sub:'the current Manu · a.k.a. Śrāddhadeva & Sudyumna · wife: Śraddhā',b:'marici'},[
+              n('Ilā',{sub:'transformed into Sudyumna',b:'marici'}),
+              n('6 other sons',{b:'marici'}),
+              n('Nimi',{sub:'by churning, Janaka was born',b:'marici'},[
+                n('Janaka',{sub:'not Sītā’s father',b:'marici'},[
+                  n('Many descendants',{b:'marici'},[
+                    n('Śīradhvaja',{sub:'Janaka, Sītā’s father',b:'marici'},[
+                      n('Sītā Devī',{sub:'wife of Lord Rāma',b:'marici'})
+                    ])
+                  ])
+                ])
+              ]),
+              n('Nṛga',{b:'marici'}),
+              n('Ikṣvāku',{b:'marici'},[
+                n('Many other descendants',{b:'marici'},[
+                  n('Hariścandra',{b:'marici'},[
+                    n('Rohita',{b:'marici'},[
+                      n('Some descendants',{b:'marici'},[
+                        n('Sāgara',{b:'marici'},[
+                          n('Aṁśumān',{b:'marici'},[
+                            n('Dilīpa',{b:'marici'},[
+                              n('Bhagīratha',{sub:'brought the Gaṅgā',b:'marici'},[
+                                n('Some descendants',{b:'marici'},[
+                                  n('Khaṭvāṅga',{b:'marici'},[
+                                    n('Some descendants',{b:'marici'},[
+                                      n('Daśaratha',{b:'marici'},[
+                                        n('Lakṣmaṇa',{b:'marici'}),
+                                        n('Lord Rāmacandra',{sub:'wife: Sītā',b:'marici',tag:'inc'},[
+                                          n('Lava',{b:'marici'}),
+                                          n('Kuśa',{b:'marici'})
+                                        ]),
+                                        n('Other sons',{b:'marici'})
+                                      ])
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ])
+                      ])
+                    ])
+                  ])
+                ])
+              ]),
+              n('Śaryāti',{b:'marici'},[
+                n('Sukanyā',{sub:'married Cyavana Muni',b:'marici'}),
+                n('2 other sons',{b:'marici'}),
+                n('Ānarta',{b:'marici'},[
+                  n('Revata',{b:'marici'},[
+                    n('Kakudmi',{b:'marici'},[
+                      n('Revatī',{sub:'married Lord Balarāma',b:'marici'}),
+                      n('99 other sons',{b:'marici'})
+                    ])
+                  ])
+                ])
+              ]),
+              n('Nabhaga',{b:'marici'},[
+                n('Nābhāga',{b:'marici'},[
+                  n('Ambarīṣa Mahārāja',{sub:'great devotee-king',b:'marici'})
+                ])
+              ])
+            ])
+          ])
+        ])
+      ])
+    ]),
+
+    /* ================= ATRI branch ================= */
+    n('Atri',{b:'atri'},[
+      n('Soma',{sub:'partial incarnation of Brahmā',xref:'born of Atri’s wife Anasūyā — see Manu branch',b:'atri',tag:'inc'},[
+        n('Budha',{sub:'not Lord Buddha',b:'atri'},[
+          n('Purūrava',{sub:'wife: Urvaśī',b:'atri'},[
+            n('4 other sons',{b:'atri'}),
+            n('Vijaya',{b:'atri'},[
+              n('Some descendants',{b:'atri'},[
+                n('Gadhi',{b:'atri'},[
+                  n('Satyavatī',{b:'atri'},[
+                    n('Jamadagni',{b:'atri'},[
+                      n('Lord Paraśurāma',{b:'atri',tag:'inc'})
+                    ])
+                  ]),
+                  n('Viśvāmitra',{sub:'wife: Menakā',b:'atri'},[
+                    n('Śakuntalā',{sub:'husband: Duṣmanta — see Puru line',b:'atri'})
+                  ])
+                ])
+              ])
+            ]),
+            n('Āyu',{b:'atri'},[
+              n('Kṣatravṛddha',{b:'atri'},[
+                n('Many descendants',{sub:'incl. Śaunaka Ṛṣi',b:'atri'})
+              ]),
+              n('3 other sons',{b:'atri'}),
+              n('Nahuṣa',{b:'atri'},[
+                n('5 other sons',{b:'atri'}),
+                n('Yayāti',{b:'atri'},[
+                  n('3 other sons',{b:'atri'}),
+
+                  /* ---- Yadu dynasty → Kṛṣṇa ---- */
+                  n('Yadu',{b:'atri'},[
+                    n('3 other sons',{b:'atri'}),
+                    n('Krostā',{b:'atri'},[
+                      n('Many descendants',{b:'atri'},[
+                        n('Sātvata',{b:'atri'},[
+                          n('5 other sons',{b:'atri'}),
+                          n('Vṛṣṇi',{b:'atri'},[
+                            n('Many descendants',{b:'atri'},[
+                              n('Śūrasena',{b:'atri'},[
+                                n('9 other sons',{b:'atri'}),
+                                n('4 other daughters',{b:'atri'}),
+                                n('Kunti',{sub:'husband: Pāṇḍu',b:'atri'},[
+                                  n('Karṇa',{b:'atri'}),
+                                  n('The Pāṇḍavas',{sub:'see Pāṇḍu — Puru line',b:'atri'})
+                                ]),
+                                n('Vasudeva',{b:'atri'},[
+                                  n('9 other sons',{b:'atri'}),
+                                  n('Subhadrā',{b:'atri'}),
+                                  n('Lord Balarāma',{b:'atri',tag:'div'}),
+                                  n('Lord Kṛṣṇa',{sub:'the Supreme Lord — see top of tree',b:'atri',tag:'god'})
+                                ])
+                              ])
+                            ])
+                          ]),
+                          n('Andhaka',{b:'atri'},[
+                            n('Many descendants',{b:'atri'},[
+                              n('Āhuka',{b:'atri'},[
+                                n('Ugrasena',{b:'atri'},[
+                                  n('Kaṁsa',{b:'atri'}),
+                                  n('5 daughters',{b:'atri'}),
+                                  n('8 other sons',{b:'atri'})
+                                ]),
+                                n('Devaka',{b:'atri'},[
+                                  n('Devakī',{sub:'mother of Lord Kṛṣṇa',b:'atri'}),
+                                  n('6 other daughters',{b:'atri'}),
+                                  n('4 sons',{b:'atri'})
+                                ])
+                              ])
+                            ])
+                          ])
+                        ])
+                      ])
+                    ])
+                  ]),
+
+                  /* ---- Puru dynasty → Pāṇḍavas / Kauravas ---- */
+                  n('Puru',{b:'atri'},[
+                    n('Many descendants',{b:'atri'},[
+                      n('Duṣmanta',{sub:'married Śakuntalā',b:'atri'},[
+                        n('Bharata',{sub:'not Jaḍa Bharata',b:'atri'},[
+                          n('Bharadvāja',{b:'atri'},[
+                            n('Manyu',{b:'atri'},[
+                              n('Nara',{b:'atri'},[
+                                n('Saṅkṛti',{b:'atri'},[
+                                  n('Rantideva',{b:'atri'}),
+                                  n('Guru',{b:'atri'}),
+                                  n('Ajamīḍha',{b:'atri'},[
+                                    n('Other sons',{b:'atri'}),
+                                    n('Nila',{b:'atri'},[
+                                      n('Many descendants',{b:'atri'},[
+                                        n('Drupada',{b:'atri'},[
+                                          n('Dhṛṣṭadyumna',{b:'atri'}),
+                                          n('Draupadī',{sub:'wife of the Pāṇḍavas',b:'atri'}),
+                                          n('Other sons',{b:'atri'})
+                                        ])
+                                      ])
+                                    ]),
+                                    n('Rkṣa',{b:'atri'},[
+                                      n('Kuru',{b:'atri'},[
+                                        n('Jāhnu',{b:'atri'},[
+                                          n('Many descendants',{b:'atri'},[
+                                            n('Śantanu',{b:'atri'},[
+                                              n('Bhīṣma',{b:'atri'}),
+                                              n('Citrāṅgada',{b:'atri'}),
+                                              n('Vicitravīrya',{b:'atri'},[
+                                                n('Vidura',{b:'atri'}),
+                                                n('Dhṛtarāṣṭra',{b:'atri'},[
+                                                  n('Duryodhana',{b:'atri'}),
+                                                  n('99 other sons',{b:'atri'}),
+                                                  n('1 daughter',{b:'atri'})
+                                                ]),
+                                                n('Pāṇḍu',{sub:'the five Pāṇḍavas (via Kunti & Mādrī)',b:'atri'},[
+                                                  n('Yudhiṣṭhira',{sub:'2 sons',b:'atri'}),
+                                                  n('Bhīma',{sub:'3 sons',b:'atri'}),
+                                                  n('Arjuna',{b:'atri'},[
+                                                    n('3 other sons',{b:'atri'}),
+                                                    n('Abhimanyu',{b:'atri'},[
+                                                      n('Parīkṣit',{b:'atri'},[
+                                                        n('Janamejaya',{b:'atri'}),
+                                                        n('3 other sons',{b:'atri'})
+                                                      ])
+                                                    ])
+                                                  ]),
+                                                  n('Nakula',{sub:'2 sons',b:'atri'}),
+                                                  n('Sahadeva',{sub:'2 sons',b:'atri'})
+                                                ])
+                                              ])
+                                            ])
+                                          ])
+                                        ])
+                                      ])
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ])
+                      ])
+                    ])
+                  ])
+                ])
+              ])
+            ])
+          ])
+        ])
+      ])
+    ]),
+
+    /* ================= SVĀYAMBHUVA MANU branch ================= */
+    n('Svāyambhuva Manu',{sub:'wife: Śatarūpā',b:'manu'},[
+      n('Priyavrata',{b:'manu'},[
+        n('1 daughter',{sub:'married Śukrācārya',b:'manu'},[
+          n('Devayānī',{sub:'married Yayāti · descendants continue in the Atri branch',b:'manu'})
+        ]),
+        n('13 sons',{sub:'3 became sannyāsīs · 3 became Manus · 7 became rulers of the 7 islands',b:'manu'},[
+          n('Āgnīdhra',{sub:'one of the 7 island-rulers · wife: Pūrvacitti',b:'manu'},[
+            n('9 sons',{sub:'married the 9 daughters of Meru',b:'manu'},[
+              n('King Nābhi',{sub:'oldest of the 9 · wife: Merudevī',b:'manu'},[
+                n('Lord Ṛṣabhadeva',{sub:'wife: Jayantī',b:'manu',tag:'inc'},[
+                  n('9 Yogendras',{b:'manu'}),
+                  n('90 other sons',{b:'manu'}),
+                  n('Bharata',{sub:'wife: Pañcajanī · in his next life, Jaḍa Bharata',b:'manu'},[
+                    n('Many descendants',{b:'manu'},[
+                      n('Mahārāja Gaya',{b:'manu'})
+                    ])
+                  ])
+                ])
+              ])
+            ])
+          ])
+        ])
+      ]),
+      n('Uttānapāda',{sub:'wives: Suruci & Suniti',b:'manu'},[
+        n('Uttama',{sub:'son of Suruci',b:'manu'}),
+        n('Dhruva',{sub:'son of Suniti · the great devotee',b:'manu'},[
+          n('Utkala',{b:'manu'}),
+          n('Vatsara',{sub:'wife: Svarvīthi',b:'manu'},[
+            n('5 other sons',{b:'manu'}),
+            n('Puṣpārṇa',{b:'manu'},[
+              n('5 other sons',{b:'manu'}),
+              n('Vyuṣṭa',{b:'manu'},[
+                n('Sarvatejā',{b:'manu'},[
+                  n('Cākṣuṣa Manu',{sub:'the Sixth Manu',b:'manu'},[
+                    n('11 other sons',{b:'manu'}),
+                    n('Ulmuka',{b:'manu'},[
+                      n('5 other sons',{b:'manu'}),
+                      n('Aṅga',{sub:'wife: Sunīthā, daughter of Death',b:'manu'},[
+                        n('Vena',{b:'manu'},[
+                          n('Niṣāda',{sub:'from churning Vena’s thighs · the sinful race',b:'manu'}),
+                          n('Pṛthu',{sub:'from churning Vena’s right hand · wife: Arci',b:'manu',tag:'inc'},[
+                            n('4 other sons',{b:'manu'}),
+                            n('Vijitāśva',{sub:'a.k.a. Antardhāna',b:'manu'},[
+                              n('3 other sons',{b:'manu'}),
+                              n('Havirdhāna',{b:'manu'},[
+                                n('5 other sons',{b:'manu'}),
+                                n('Barhiṣat',{sub:'a.k.a. Prajāpati, Prācīnabarhi, Barhiṣmān',b:'manu'},[
+                                  n('Pracetās',{sub:'10 sons · wife: Māriṣā',b:'manu'},[
+                                    n('Dakṣa',{sub:'wife: Asiknī · Prasūti’s husband in his next life',b:'manu'},[
+                                      n('60 daughters',{sub:'created many species',b:'manu'}),
+                                      n('10,000 Haryaśvas',{sub:'sannyāsīs',b:'manu'}),
+                                      n('10,000 Savalaśvas',{sub:'sannyāsīs',b:'manu'})
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ])
+                      ])
+                    ])
+                  ])
+                ])
+              ])
+            ])
+          ])
+        ])
+      ]),
+      n('Ākūti',{sub:'husband: Ruci',b:'manu'},[
+        n('Dakṣiṇa',{b:'manu'}),
+        n('Yajña',{sub:'incarnation of Kṛṣṇa',b:'manu',tag:'inc'})
+      ]),
+      n('Prasūti',{sub:'husband: Dakṣa',b:'manu'},[
+        n('Satī',{sub:'wife of Lord Śiva',b:'manu'}),
+        n('12 other daughters',{b:'manu'}),
+        n('Aditi',{sub:'husband: Kaśyapa',xref:'descendants continue under Marīci',b:'manu'}),
+        n('Diti',{sub:'husband: Kaśyapa',xref:'descendants continue under Marīci',b:'manu'}),
+        n('Mūrti',{sub:'husband: Dharma',b:'manu'},[
+          n('Nara-Nārāyaṇa',{sub:'form of Kṛṣṇa & Arjuna · created Apsarās like Urvaśī',b:'manu',tag:'inc'})
+        ])
+      ]),
+      n('Devahūti',{sub:'husband: Kardama',b:'manu'},[
+        n('7 other daughters',{b:'manu'}),
+        n('Lord Kapila',{sub:'taught Sāṅkhya to His mother',b:'manu',tag:'inc'}),
+        n('Kalā',{sub:'husband: Marīci',xref:'sons Kaśyapa & Pūrṇimā — see Marīci branch',b:'manu'}),
+        n('Anasūyā',{sub:'husband: Atri',b:'manu'},[
+          n('Soma',{sub:'partial incarnation of Brahmā',xref:'continues as the Atri branch',b:'manu',tag:'inc'}),
+          n('Dattātreya',{sub:'partial incarnation of Viṣṇu',b:'manu',tag:'inc'}),
+          n('Durvāsā',{sub:'partial incarnation of Śiva',b:'manu',tag:'inc'})
+        ])
+      ])
+    ])
+  ])
+]);
+
+/* ---------------- layout + render engine ---------------- */
+const NS='http://www.w3.org/2000/svg';
+const NODEW=186, COLGAP=62, ROWGAP=14, PAD=40;
+const svg=document.getElementById('svg'), stage=document.getElementById('stage');
+let gEdges, gNodes, measurer;
+
+/* assign ids, parent, depth, inherit branch */
+let _id=0;
+(function walk(node,parent,depth){
+  node._id=_id++; node._parent=parent; node._depth=depth; node._collapsed=false;
+  if(!node.b && parent) node.b=parent.b;
+  (node.c||[]).forEach(ch=>walk(ch,node,depth+1));
+})(TREE,null,0);
+
+function nodeHTML(node){
+  const cls=['node','b-'+(node.b||'root')];
+  if(node.tag==='god') cls.push('divine','godhead');
+  else if(node.tag==='inc'||node.tag==='div') cls.push('divine');
+  const badge = node.tag ? `<span class="badge">${node.tag==='god'?'★':'✦'}</span>` : '';
+  const hasKids=(node.c&&node.c.length);
+  const toggle = hasKids ? `<span class="toggle" data-tid="${node._id}">${node._collapsed?'⊕':'⊖'}</span>` : '';
+  const sub = node.sub ? `<div class="sub">${esc(node.sub)}</div>` : '';
+  const xref = node.xref ? `<div class="xref">↩ ${esc(node.xref)}</div>` : '';
+  return `${toggle}${badge}<div class="nm">${esc(node.name)}</div>${sub}${xref}`;
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+/* measure heights using a hidden DOM layer */
+function measure(nodes){
+  if(!measurer){ measurer=document.createElement('div');
+    measurer.style.cssText=`position:absolute;left:-9999px;top:0;width:${NODEW}px;visibility:hidden`;
+    document.body.appendChild(measurer); }
+  measurer.innerHTML='';
+  const map={};
+  nodes.forEach(nd=>{ const d=document.createElement('div'); d.className='node b-'+(nd.b||'root'); d.style.width=NODEW+'px';
+    d.innerHTML=nodeHTML(nd); measurer.appendChild(d); map[nd._id]=d; });
+  nodes.forEach(nd=>{ nd._h=Math.max(34,map[nd._id].offsetHeight); });
+}
+
+/* collect visible nodes (respect collapse) */
+function visibleList(){
+  const out=[];
+  (function rec(nd){ out.push(nd); if(nd.c && !nd._collapsed) nd.c.forEach(rec); })(TREE);
+  return out;
+}
+
+let curY;
+function layoutY(nd){
+  if(!nd.c || !nd.c.length || nd._collapsed){
+    nd._y=curY + nd._h/2; curY += nd._h + ROWGAP; return;
+  }
+  nd.c.forEach(layoutY);
+  const first=nd.c[0], last=nd.c[nd.c.length-1];
+  nd._y=(first._y + last._y)/2;
+}
+
+let bbox={w:0,h:0};
+function layout(){
+  const vis=visibleList();
+  measure(vis);
+  // x by depth
+  vis.forEach(nd=> nd._x = PAD + nd._depth*(NODEW+COLGAP));
+  curY=PAD;
+  layoutY(TREE);
+  let maxX=0,maxY=0;
+  vis.forEach(nd=>{ maxX=Math.max(maxX,nd._x+NODEW); maxY=Math.max(maxY,nd._y+nd._h/2); });
+  bbox={w:maxX+PAD, h:maxY+PAD};
+  return vis;
+}
+
+function render(){
+  const vis=layout();
+  svg.setAttribute('width',bbox.w); svg.setAttribute('height',bbox.h);
+  svg.innerHTML='';
+  gEdges=document.createElementNS(NS,'g'); gNodes=document.createElementNS(NS,'g');
+  svg.appendChild(gEdges); svg.appendChild(gNodes);
+  // edges
+  vis.forEach(nd=>{
+    if(nd._parent){
+      const p=nd._parent;
+      const x1=p._x+NODEW, y1=p._y, x2=nd._x, y2=nd._y, mx=x1+(x2-x1)/2;
+      const path=document.createElementNS(NS,'path');
+      path.setAttribute('d',`M ${x1} ${y1} H ${mx} V ${y2} H ${x2}`);
+      path.setAttribute('class','edge b-'+(nd.b||'root'));
+      path.dataset.eid=nd._id;
+      gEdges.appendChild(path);
+    }
+  });
+  // nodes
+  vis.forEach(nd=>{
+    const fo=document.createElementNS(NS,'foreignObject');
+    fo.setAttribute('x',nd._x); fo.setAttribute('y',nd._y - nd._h/2);
+    fo.setAttribute('width',NODEW); fo.setAttribute('height',nd._h+2);
+    const div=document.createElement('div');
+    div.className=['node','b-'+(nd.b||'root'),
+      (nd.tag==='god'?'divine godhead':(nd.tag==='inc'||nd.tag==='div'?'divine':''))].join(' ').trim();
+    div.dataset.nid=nd._id;
+    div.innerHTML=nodeHTML(nd);
+    fo.appendChild(div); gNodes.appendChild(fo);
+  });
+  // wire toggles
+  gNodes.querySelectorAll('.toggle').forEach(t=>{
+    t.addEventListener('click',e=>{ e.stopPropagation();
+      const id=+t.dataset.tid; const nd=findById(id); if(nd){ nd._collapsed=!nd._collapsed; render(); applySearch(); }});
+  });
+  applySearch();
+}
+
+function findById(id){ let f=null; (function rec(nd){ if(nd._id===id){f=nd;return;} (nd.c||[]).forEach(rec);})(TREE); return f; }
+
+/* ---------------- pan & zoom ---------------- */
+let tx=0,ty=0,k=1;
+function apply(){ svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`; svg.style.transformOrigin='0 0'; }
+function fit(){
+  const vw=stage.clientWidth, vh=stage.clientHeight;
+  k=Math.min(vw/bbox.w, vh/bbox.h, 1)*0.96; if(!isFinite(k)||k<=0)k=0.5;
+  tx=(vw-bbox.w*k)/2; ty=Math.max(12,(vh-bbox.h*k)/2); apply();
+}
+stage.addEventListener('wheel',e=>{ e.preventDefault();
+  const r=stage.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  const f=e.deltaY<0?1.12:1/1.12, nk=Math.min(2.4,Math.max(0.12,k*f));
+  tx=mx-(mx-tx)*(nk/k); ty=my-(my-ty)*(nk/k); k=nk; apply();
+},{passive:false});
+let drag=null;
+stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.toggle'))return; drag={x:e.clientX,y:e.clientY,tx,ty}; stage.classList.add('grabbing'); stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove',e=>{ if(!drag)return; tx=drag.tx+(e.clientX-drag.x); ty=drag.ty+(e.clientY-drag.y); apply(); });
+stage.addEventListener('pointerup',()=>{ drag=null; stage.classList.remove('grabbing'); });
+document.getElementById('zin').onclick=()=>{k=Math.min(2.4,k*1.2);apply();};
+document.getElementById('zout').onclick=()=>{k=Math.max(0.12,k/1.2);apply();};
+document.getElementById('fit').onclick=fit;
+document.getElementById('expand').onclick=()=>{ (function rec(nd){nd._collapsed=false;(nd.c||[]).forEach(rec);})(TREE); render(); fit(); };
+document.getElementById('legClose').onclick=()=>document.getElementById('legend').classList.add('hidden');
+
+/* ---------------- search ---------------- */
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const qEl=document.getElementById('q'), hitsEl=document.getElementById('hits');
+let query='';
+qEl.addEventListener('input',()=>{ query=qEl.value.trim();
+  if(query){ // auto-expand ancestors of matches so they're visible
+    const q=norm(query);
+    (function rec(nd){ let self=norm(nd.name+' '+(nd.sub||'')).includes(q); let kid=false;
+      (nd.c||[]).forEach(ch=>{ if(rec(ch)) kid=true; });
+      if(kid) nd._collapsed=false; return self||kid; })(TREE);
+    render();
+  }
+  applySearch();
+});
+function applySearch(){
+  const q=query?norm(query):'';
+  let hits=0;
+  document.querySelectorAll('.node').forEach(el=>{
+    const nd=findById(+el.dataset.nid); if(!nd)return;
+    el.classList.remove('match','dim');
+    if(!q) return;
+    if(norm(nd.name+' '+(nd.sub||'')).includes(q)){ el.classList.add('match'); hits++; }
+    else el.classList.add('dim');
+  });
+  if(q) document.querySelectorAll('.edge').forEach(e=>e.classList.add('dim'));
+  else document.querySelectorAll('.edge').forEach(e=>e.classList.remove('dim'));
+  hitsEl.textContent = q ? (hits+' hit'+(hits===1?'':'s')) : '';
+}
+
+/* ---------------- init ---------------- */
+render(); fit();
+addEventListener('resize',()=>{ /* keep current transform */ });
+</script>
+</body>
+</html>
