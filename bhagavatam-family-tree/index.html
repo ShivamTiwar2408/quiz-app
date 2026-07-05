@@ -97,7 +97,8 @@
     <button id="zin" title="Zoom in">+</button>
     <button id="zout" title="Zoom out">−</button>
     <button id="fit" class="wide" title="Fit to screen">Fit</button>
-    <button id="expand" class="wide" title="Expand all">Expand all</button>
+    <button id="collapse" class="wide" title="Collapse to overview">Overview</button>
+    <button id="expand" class="wide" title="Expand every branch">Expand all</button>
   </div>
 </header>
 
@@ -113,7 +114,7 @@
   <div class="row"><span class="sw" style="background:var(--atri)"></span> Atri → Soma (Yadu &amp; Kuru dynasties)</div>
   <div class="row"><span class="sw" style="background:var(--manu)"></span> Svāyambhuva Manu (Dhruva, Pṛthu, Dakṣa)</div>
   <div class="row"><span style="color:var(--gold)">✦</span> Divine form / incarnation</div>
-  <div class="hint">Drag to pan · scroll to zoom · click a node's ⊖/⊕ to collapse a branch · dashed note = cross-reference to another branch.</div>
+  <div class="hint">Opens as an overview — deep branches are folded. Click a node's <b style="color:var(--root)">⊕</b> to expand it (⊖ to fold again), or use <b>Expand all</b>. Drag to pan · scroll to zoom · dashed note = cross-reference to another branch.</div>
 </div>
 
 <script>
@@ -465,10 +466,15 @@ const NODEW=178, COLGAP=22, ROWGAP=26, PAD=40;
 const svg=document.getElementById('svg'), stage=document.getElementById('stage');
 let gEdges, gNodes, measurer;
 
-/* assign ids, parent, depth, inherit branch */
+/* assign ids, parent, depth, inherit branch.
+   Collapse everything below COLLAPSE_DEPTH by default so the opening
+   view is a compact overview that fits on screen; users expand (⊕) the
+   branch they want. This is what keeps the huge tree legible at once. */
+const COLLAPSE_DEPTH=3;
 let _id=0;
 (function walk(node,parent,depth){
-  node._id=_id++; node._parent=parent; node._depth=depth; node._collapsed=false;
+  node._id=_id++; node._parent=parent; node._depth=depth;
+  node._collapsed = depth>=COLLAPSE_DEPTH && !!(node.c&&node.c.length);
   if(!node.b && parent) node.b=parent.b;
   (node.c||[]).forEach(ch=>walk(ch,node,depth+1));
 })(TREE,null,0);
@@ -603,7 +609,13 @@ document.getElementById('zin').onclick=()=>{k=Math.min(2.4,k*1.2);apply();};
 document.getElementById('zout').onclick=()=>{k=Math.max(0.12,k/1.2);apply();};
 document.getElementById('fit').onclick=fit;
 document.getElementById('expand').onclick=()=>{ (function rec(nd){nd._collapsed=false;(nd.c||[]).forEach(rec);})(TREE); render(); fit(); };
+document.getElementById('collapse').onclick=()=>{ collapseToOverview(); render(); fit(); };
 document.getElementById('legClose').onclick=()=>document.getElementById('legend').classList.add('hidden');
+
+function collapseToOverview(){
+  (function rec(nd){ nd._collapsed = nd._depth>=COLLAPSE_DEPTH && !!(nd.c&&nd.c.length);
+    (nd.c||[]).forEach(rec); })(TREE);
+}
 
 /* ---------------- search ---------------- */
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -634,7 +646,7 @@ function applySearch(){
 }
 
 /* ---------------- init ---------------- */
-render(); readableView();
+render(); fit();   // opens as a compact, collapsed overview that fits on screen
 </script>
 </body>
 </html>
