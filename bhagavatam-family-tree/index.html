@@ -44,33 +44,49 @@
   #svg{display:block}
 
   /* node cards (rendered via foreignObject) */
-  .node{border:1px solid var(--line);border-radius:10px;background:var(--panel);
-    padding:7px 10px 8px;font-family:var(--sans);position:relative;transition:box-shadow .15s,border-color .15s,opacity .15s;
-    overflow:hidden;box-shadow:0 2px 6px rgba(20,40,80,.07)}
-  .node .nm{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.25}
-  .node .sub{font-size:10px;color:var(--muted);line-height:1.3;margin-top:2px}
+  .node{border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    padding:8px 12px 9px;font-family:var(--sans);position:relative;
+    transition:box-shadow .18s,border-color .18s,opacity .18s,transform .18s;
+    overflow:hidden;box-shadow:0 1px 2px rgba(20,40,80,.05),0 4px 14px -6px rgba(20,40,80,.18)}
+  .node:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(20,40,80,.08),0 10px 24px -8px rgba(20,40,80,.28)}
+  .node .nm{font-size:12.5px;font-weight:750;color:var(--ink);line-height:1.25;letter-spacing:-.1px}
+  .node .sub{font-size:10px;color:var(--muted);line-height:1.32;margin-top:2px}
   .node .xref{font-size:9.5px;color:var(--faint);font-style:italic;line-height:1.25;margin-top:3px;
     border-top:1px dashed var(--line);padding-top:3px}
-  .node.b-root{border-top:3px solid var(--root)}
-  .node.b-marici{border-top:3px solid var(--marici)}
-  .node.b-atri{border-top:3px solid var(--atri)}
-  .node.b-manu{border-top:3px solid var(--manu)}
+  /* branch accent: a soft left rail + a faint tinted wash */
+  .node.b-root{border-left:3px solid var(--root);background:linear-gradient(90deg,rgba(200,129,27,.06),var(--panel) 60%)}
+  .node.b-marici{border-left:3px solid var(--marici);background:linear-gradient(90deg,rgba(47,107,214,.06),var(--panel) 60%)}
+  .node.b-atri{border-left:3px solid var(--atri);background:linear-gradient(90deg,rgba(31,157,99,.06),var(--panel) 60%)}
+  .node.b-manu{border-left:3px solid var(--manu);background:linear-gradient(90deg,rgba(194,63,134,.06),var(--panel) 60%)}
   .node.b-marici .nm{color:#1f4e9e} .node.b-atri .nm{color:#14713f} .node.b-manu .nm{color:#93265f}
-  .node.divine{border-color:var(--gold);background:var(--goldbg);box-shadow:0 0 0 1px rgba(184,134,11,.25),0 6px 18px -8px rgba(184,134,11,.55)}
+  .node.divine{border-color:var(--gold);border-left-color:var(--gold);
+    background:linear-gradient(120deg,#fff8e6,#fffdf7);
+    box-shadow:0 0 0 1px rgba(184,134,11,.22),0 6px 20px -8px rgba(184,134,11,.5)}
   .node.divine .nm{color:#8a6508}
-  .node.godhead{background:linear-gradient(180deg,#fff2cf,#ffe6a6);border-color:var(--gold)}
-  .node.godhead .nm{font-size:15px;color:#7a5a06}
-  .node .badge{position:absolute;top:5px;right:7px;font-size:10px;color:var(--gold)}
-  .node.dim{opacity:.28}
-  .node.match{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,134,11,.55)}
-  .node .toggle{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;
-    background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12px;line-height:16px;text-align:center;cursor:pointer;z-index:3;
-    box-shadow:0 1px 4px rgba(20,40,80,.15)}
-  .node .toggle:hover{color:var(--root);border-color:var(--root)}
-  .edge{fill:none;stroke:#b8c3d8;stroke-width:1.6}
-  .edge.b-marici{stroke:rgba(47,107,214,.55)} .edge.b-atri{stroke:rgba(31,157,99,.55)}
-  .edge.b-manu{stroke:rgba(194,63,134,.55)} .edge.b-root{stroke:rgba(200,129,27,.6)}
-  .edge.dim{stroke:rgba(180,195,216,.35)}
+  .node.godhead{background:linear-gradient(135deg,#fff0c4,#ffe39c);border-color:var(--gold);border-left-color:var(--gold)}
+  .node.godhead .nm{font-size:15px;color:#6f5205}
+  .node .badge{position:absolute;top:6px;right:8px;font-size:11px;color:var(--gold);filter:drop-shadow(0 1px 1px rgba(184,134,11,.3))}
+  .node.dim{opacity:.26}
+  .node.match{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,134,11,.6),0 8px 22px -8px rgba(184,134,11,.55)}
+
+  /* edges — smooth d3-style curves */
+  .edge{fill:none;stroke:#aab7cf;stroke-width:1.6;stroke-linecap:round}
+  .edge.b-marici{stroke:rgba(47,107,214,.5)} .edge.b-atri{stroke:rgba(31,157,99,.5)}
+  .edge.b-manu{stroke:rgba(194,63,134,.5)} .edge.b-root{stroke:rgba(200,129,27,.55)}
+  .edge.dim{stroke:rgba(180,195,216,.3)}
+
+  /* expand/collapse toggle — an SVG chip in the gap, never clipped */
+  .tog{cursor:pointer}
+  .tog circle{fill:var(--panel);stroke:var(--line);stroke-width:1.4;transition:.15s;
+    filter:drop-shadow(0 1px 3px rgba(20,40,80,.2))}
+  .tog .sign{fill:var(--muted);font-family:var(--sans);font-weight:800;font-size:15px;text-anchor:middle;dominant-baseline:central;transition:.15s;pointer-events:none}
+  .tog .cnt{fill:#fff;font-family:var(--mono);font-weight:700;font-size:9px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+  .tog.collapsed circle{fill:var(--root);stroke:var(--root)}
+  .tog.collapsed .sign{fill:#fff}
+  .tog:hover circle{stroke:var(--root);fill:#fff8ee}
+  .tog:hover .sign{fill:var(--root)}
+  .tog.collapsed:hover circle{fill:#a86e13}
+  .tog.collapsed:hover .sign{fill:#fff}
 
   .legend{position:fixed;left:14px;bottom:14px;z-index:15;background:rgba(255,255,255,.95);border:1px solid var(--line);
     border-radius:12px;padding:11px 13px;font-size:11.5px;color:var(--muted);backdrop-filter:blur(8px);max-width:min(46vw,330px);
@@ -462,7 +478,7 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
 
 /* ---------------- layout + render engine (TOP → BOTTOM) ---------------- */
 const NS='http://www.w3.org/2000/svg';
-const NODEW=178, COLGAP=22, ROWGAP=26, PAD=40;
+const NODEW=178, COLGAP=22, ROWGAP=42, PAD=40;
 const svg=document.getElementById('svg'), stage=document.getElementById('stage');
 let gEdges, gNodes, measurer;
 
@@ -479,13 +495,14 @@ let _id=0;
   (node.c||[]).forEach(ch=>walk(ch,node,depth+1));
 })(TREE,null,0);
 
+function descendantCount(node){
+  let n=0; (node.c||[]).forEach(c=>{ n+=1+descendantCount(c); }); return n;
+}
 function nodeHTML(node){
-  const hasKids=(node.c&&node.c.length);
   const badge = node.tag ? `<span class="badge">${node.tag==='god'?'★':'✦'}</span>` : '';
-  const toggle = hasKids ? `<span class="toggle" data-tid="${node._id}">${node._collapsed?'⊕':'⊖'}</span>` : '';
   const sub = node.sub ? `<div class="sub">${esc(node.sub)}</div>` : '';
   const xref = node.xref ? `<div class="xref">↩ ${esc(node.xref)}</div>` : '';
-  return `${toggle}${badge}<div class="nm">${esc(node.name)}</div>${sub}${xref}`;
+  return `${badge}<div class="nm">${esc(node.name)}</div>${sub}${xref}`;
 }
 function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 
@@ -544,15 +561,17 @@ function render(){
   const vis=layout();
   svg.setAttribute('width',bbox.w); svg.setAttribute('height',bbox.h);
   svg.innerHTML='';
-  gEdges=document.createElementNS(NS,'g'); gNodes=document.createElementNS(NS,'g');
-  svg.appendChild(gEdges); svg.appendChild(gNodes);
-  // edges: parent bottom-centre → child top-centre, elbow at mid-Y
+  gEdges=document.createElementNS(NS,'g');
+  const gTog=document.createElementNS(NS,'g');
+  gNodes=document.createElementNS(NS,'g');
+  svg.appendChild(gEdges); svg.appendChild(gTog); svg.appendChild(gNodes);
+  // edges: smooth vertical cubic bézier from parent-bottom to child-top (d3 linkVertical style)
   vis.forEach(nd=>{
     if(nd._parent){
       const p=nd._parent;
-      const x1=p._x, y1=p._y+p._h/2, x2=nd._x, y2=nd._y-nd._h/2, my=y1+(y2-y1)/2;
+      const x1=p._x, y1=p._y+p._h/2, x2=nd._x, y2=nd._y-nd._h/2, my=(y1+y2)/2;
       const path=document.createElementNS(NS,'path');
-      path.setAttribute('d',`M ${x1} ${y1} V ${my} H ${x2} V ${y2}`);
+      path.setAttribute('d',`M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`);
       path.setAttribute('class','edge b-'+(nd.b||'root'));
       gEdges.appendChild(path);
     }
@@ -569,13 +588,33 @@ function render(){
     div.innerHTML=nodeHTML(nd);
     fo.appendChild(div); gNodes.appendChild(fo);
   });
-  // wire toggles
-  gNodes.querySelectorAll('.toggle').forEach(t=>{
-    t.addEventListener('click',e=>{ e.stopPropagation();
-      const id=+t.dataset.tid; const nd=findById(id); if(nd){ nd._collapsed=!nd._collapsed; render(); applySearch(); }});
+  // toggles — SVG chips sitting in the gap just below each expandable node (never clipped)
+  vis.forEach(nd=>{
+    if(!(nd.c && nd.c.length)) return;
+    const cy=nd._y + nd._h/2 + 11, cx=nd._x, r=11;
+    const g=document.createElementNS(NS,'g');
+    g.setAttribute('class','tog'+(nd._collapsed?' collapsed':''));
+    g.setAttribute('transform',`translate(${cx} ${cy})`);
+    const c=document.createElementNS(NS,'circle'); c.setAttribute('r',r);
+    const sign=document.createElementNS(NS,'text'); sign.setAttribute('class','sign');
+    sign.setAttribute('y','1'); sign.textContent = nd._collapsed?'+':'–';
+    g.appendChild(c); g.appendChild(sign);
+    if(nd._collapsed){                       // show hidden-descendant count on a small pill
+      const cnt=descendantCount(nd);
+      const badge=document.createElementNS(NS,'g'); badge.setAttribute('transform',`translate(${r+2} -${r-2})`);
+      const pill=document.createElementNS(NS,'rect');
+      const w=String(cnt).length*6+8;
+      pill.setAttribute('x',0); pill.setAttribute('y',-7); pill.setAttribute('width',w); pill.setAttribute('height',14);
+      pill.setAttribute('rx',7); pill.setAttribute('fill',branchColor(nd.b)); pill.setAttribute('opacity','.9');
+      const ct=document.createElementNS(NS,'text'); ct.setAttribute('class','cnt'); ct.setAttribute('x',w/2); ct.setAttribute('y',1); ct.textContent=cnt;
+      badge.appendChild(pill); badge.appendChild(ct); g.appendChild(badge);
+    }
+    g.addEventListener('click',e=>{ e.stopPropagation(); nd._collapsed=!nd._collapsed; render(); });
+    gTog.appendChild(g);
   });
   applySearch();
 }
+function branchColor(b){ return ({root:'#c8811b',marici:'#2f6bd6',atri:'#1f9d63',manu:'#c23f86'})[b]||'#8390a8'; }
 
 function findById(id){ let f=null; (function rec(nd){ if(nd._id===id){f=nd;return;} (nd.c||[]).forEach(rec);})(TREE); return f; }
 
@@ -602,7 +641,7 @@ stage.addEventListener('wheel',e=>{ e.preventDefault();
   tx=mx-(mx-tx)*(nk/k); ty=my-(my-ty)*(nk/k); k=nk; apply();
 },{passive:false});
 let drag=null;
-stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.toggle'))return; drag={x:e.clientX,y:e.clientY,tx,ty}; stage.classList.add('grabbing'); stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.tog'))return; drag={x:e.clientX,y:e.clientY,tx,ty}; stage.classList.add('grabbing'); stage.setPointerCapture(e.pointerId); });
 stage.addEventListener('pointermove',e=>{ if(!drag)return; tx=drag.tx+(e.clientX-drag.x); ty=drag.ty+(e.clientY-drag.y); apply(); });
 stage.addEventListener('pointerup',()=>{ drag=null; stage.classList.remove('grabbing'); });
 document.getElementById('zin').onclick=()=>{k=Math.min(2.4,k*1.2);apply();};
