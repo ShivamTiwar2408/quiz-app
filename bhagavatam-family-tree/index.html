@@ -461,7 +461,7 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
 
 /* ---------------- layout + render engine (TOP → BOTTOM) ---------------- */
 const NS='http://www.w3.org/2000/svg';
-const NODEW=178, COLGAP=26, ROWGAP=46, PAD=48;
+const NODEW=178, COLGAP=22, ROWGAP=26, PAD=40;
 const svg=document.getElementById('svg'), stage=document.getElementById('stage');
 let gEdges, gNodes, measurer;
 
@@ -513,21 +513,21 @@ function layoutX(nd){
   nd._x=(first._x + last._x)/2;
 }
 
+/* vertical position: each node sits directly below its OWN parent
+   (parent-bottom + gap), so deep single-child chains pack tightly and
+   edges stay short — no global depth rows, no empty bands. */
+function layoutY(nd){
+  const top = nd._parent ? (nd._parent._y + nd._parent._h/2 + ROWGAP) : PAD;
+  nd._y = top + nd._h/2;
+  if(nd.c && !nd._collapsed) nd.c.forEach(layoutY);
+}
+
 let bbox={w:0,h:0};
 function layout(){
   const vis=visibleList();
   measure(vis);
-  // vertical position: each depth is a row; row height = tallest node at that depth
-  let maxDepth=0; vis.forEach(nd=> maxDepth=Math.max(maxDepth,nd._depth));
-  const rowH=new Array(maxDepth+1).fill(34);
-  vis.forEach(nd=> rowH[nd._depth]=Math.max(rowH[nd._depth],nd._h));
-  const rowTop=new Array(maxDepth+1).fill(0);
-  rowTop[0]=PAD;
-  for(let d=1; d<=maxDepth; d++) rowTop[d]=rowTop[d-1]+rowH[d-1]+ROWGAP;
-  vis.forEach(nd=>{ nd._rowTop=rowTop[nd._depth]; nd._y=rowTop[nd._depth]+nd._h/2; });
-  // horizontal
-  curX=PAD;
-  layoutX(TREE);
+  layoutY(TREE);          // vertical: relative to each parent
+  curX=PAD; layoutX(TREE); // horizontal: leaf allocation, parents centred
   let maxX=0,maxY=0;
   vis.forEach(nd=>{ maxX=Math.max(maxX,nd._x+NODEW/2); maxY=Math.max(maxY,nd._y+nd._h/2); });
   bbox={w:maxX+PAD, h:maxY+PAD};
