@@ -170,7 +170,7 @@ function n(name, opts, children){ const o = opts||{}; o.name=name; if(children) 
 const TREE =
 n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
   n('Lord Brahmā',{sub:'born from Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa',b:'root',tag:'div'},[
-    n('Other sons of Brahmā',{sub:'mind-born sons (Prajāpatis & great sages) — Marīci & Atri are shown as their own branches below',b:'root'},[
+    n('Other sons of Brahmā',{sub:'mind-born sons (Prajāpatis & great sages) — Marīci & Atri are shown as their own branches below',b:'root',collapse:true},[
       n('Nārada Muni',{sub:'the great devotee-sage',b:'root'}),
       n('Four Kumāras',{sub:'Sanaka, Sanandana, Sanātana, Sanat-kumāra',b:'root'}),
       n('Lord Śiva',{sub:'a.k.a. Rudra',b:'root'}),
@@ -423,7 +423,7 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
     ]),
 
     /* ================= SVĀYAMBHUVA MANU branch ================= */
-    n('Svāyambhuva Manu',{sub:'wife: Śatarūpā',b:'manu'},[
+    n('Svāyambhuva Manu',{sub:'wife: Śatarūpā',b:'manu',collapse:true},[
       n('Priyavrata',{b:'manu'},[
         n('1 daughter',{sub:'married Śukrācārya',b:'manu'},[
           n('Devayānī',{sub:'married Yayāti · descendants continue in the Atri branch',b:'manu'})
@@ -629,7 +629,7 @@ const COLLAPSE_DEPTH=3;
 let _id=0;
 (function walk(node,parent,depth){
   node._id=_id++; node._parent=parent; node._depth=depth;
-  node._collapsed = depth>=COLLAPSE_DEPTH && !!(node.c&&node.c.length);
+  node._collapsed = (depth>=COLLAPSE_DEPTH || node.collapse===true) && !!(node.c&&node.c.length);
   if(!node.b && parent) node.b=parent.b;
   (node.c||[]).forEach(ch=>walk(ch,node,depth+1));
 })(TREE,null,0);
@@ -794,7 +794,7 @@ addEventListener('keydown',e=>{ if(e.target===qEl)return;
   else if(e.key==='0'||e.key.toLowerCase()==='f'){fit();} });
 
 function collapseToOverview(){
-  (function rec(nd){ nd._collapsed = nd._depth>=COLLAPSE_DEPTH && !!(nd.c&&nd.c.length);
+  (function rec(nd){ nd._collapsed = (nd._depth>=COLLAPSE_DEPTH || nd.collapse===true) && !!(nd.c&&nd.c.length);
     (nd.c||[]).forEach(rec); })(TREE);
 }
 
