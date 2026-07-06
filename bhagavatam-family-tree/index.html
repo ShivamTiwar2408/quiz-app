@@ -92,6 +92,7 @@
   .edge.b-marici{stroke:rgba(47,107,214,.5)} .edge.b-atri{stroke:rgba(31,157,99,.5)}
   .edge.b-manu{stroke:rgba(194,63,134,.5)} .edge.b-root{stroke:rgba(200,129,27,.55)}
   .edge.dim{stroke:rgba(180,195,216,.3)}
+  .edge.marriage{stroke:#c23f86;stroke-width:2;stroke-dasharray:2 4;opacity:.75}
 
   /* expand/collapse toggle — an SVG chip in the gap, never clipped */
   .tog{cursor:pointer}
@@ -160,7 +161,8 @@
   <div class="row"><span class="sw" style="background:var(--atri)"></span> Atri → Soma (Yadu &amp; Kuru dynasties)</div>
   <div class="row"><span class="sw" style="background:var(--manu)"></span> Svāyambhuva Manu (Dhruva, Pṛthu, Dakṣa)</div>
   <div class="row"><span style="color:var(--gold)">✦</span> Divine form / incarnation</div>
-  <div class="hint">Opens as an overview — deep branches are folded. Click a gold <b style="color:var(--root)">＋</b> below a node to expand it (its badge shows how many are hidden); <b>–</b> folds it back. Drag to pan · scroll to zoom · dashed note = cross-reference to another branch.</div>
+  <div class="row"><span class="sw" style="background:var(--manu);border-radius:0;height:2px"></span> spouse — dashed pink link goes to the right</div>
+  <div class="hint">Opens as an overview — deep branches are folded. Click a gold <b style="color:var(--root)">＋</b> to expand a node (its badge shows how many are hidden); <b>–</b> folds it back. Spouses branch to the right (marriage); children go down. Drag to pan · scroll to zoom.</div>
 </div>
 
 <script>
@@ -497,10 +499,10 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
       ]),
       n('Prasūti',{sub:'husband: Dakṣa · daughters (16 in SB Canto 4)',b:'manu'},[
         n('Satī',{sub:'daughter of Prasūti',b:'manu'},[
-          n('Lord Śiva',{sub:'husband of Satī · no child',b:'manu'})
+          n('Lord Śiva',{spouse:true,sub:'husband of Satī · no child',b:'manu'})
         ]),
         n('13 daughters',{sub:'Śraddhā, Maitrī, Dayā, Śānti, Tuṣṭi, Puṣṭi, Kriyā, Unnati, Buddhi, Medhā, Titikṣā, Hrī, Mūrti',b:'manu'},[
-          n('Dharma',{sub:'husband of all 13 · 13 sons (one per wife)',b:'manu'},[
+          n('Dharma',{spouse:true,sub:'husband of all 13 · 13 sons (one per wife)',b:'manu'},[
             n('Śubha',{sub:'mother: Śraddhā',b:'manu'}),
             n('Prasāda',{sub:'mother: Maitrī',b:'manu'}),
             n('Abhaya',{sub:'mother: Dayā',b:'manu'}),
@@ -517,29 +519,29 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
           ])
         ]),
         n('Svāhā',{sub:'daughter of Prasūti',b:'manu'},[
-          n('Agni',{sub:'husband of Svāhā · 3 sons → 49 fire-gods',b:'manu'},[
+          n('Agni',{spouse:true,sub:'husband of Svāhā · 3 sons → 49 fire-gods',b:'manu'},[
             n('Pāvaka',{b:'manu'}),
             n('Pavamāna',{b:'manu'}),
             n('Śuci',{b:'manu'})
           ])
         ]),
         n('Svadhā',{sub:'daughter of Prasūti',b:'manu'},[
-          n('The Pitās',{sub:'husbands of Svadhā · Agniṣvāttas, Barhiṣadas, Saumyas, Ājyapas',b:'manu'},[
+          n('The Pitās',{spouse:true,sub:'husbands of Svadhā · Agniṣvāttas, Barhiṣadas, Saumyas, Ājyapas',b:'manu'},[
             n('Vayunā',{sub:'expert in knowledge & realization',b:'manu'}),
             n('Dhāriṇī',{sub:'expert in knowledge & realization',b:'manu'})
           ])
         ]),
         n('Aditi',{sub:'daughter of Prasūti',b:'manu'},[
-          n('Kaśyapa',{sub:'husband of Aditi',xref:'descendants continue under Marīci',b:'manu'})
+          n('Kaśyapa',{spouse:true,sub:'husband of Aditi',xref:'descendants continue under Marīci',b:'manu'})
         ]),
         n('Diti',{sub:'daughter of Prasūti',b:'manu'},[
-          n('Kaśyapa',{sub:'husband of Diti',xref:'descendants continue under Marīci',b:'manu'})
+          n('Kaśyapa',{spouse:true,sub:'husband of Diti',xref:'descendants continue under Marīci',b:'manu'})
         ])
       ]),
       n('Devahūti',{sub:'husband: Kardama · a son (Kapila) & 9 daughters',b:'manu'},[
         n('Lord Kapila',{sub:'taught Sāṅkhya to His mother',b:'manu',tag:'inc'}),
         n('Kalā',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Marīci',{sub:'husband of Kalā',b:'manu'},[
+          n('Marīci',{spouse:true,sub:'husband of Kalā',b:'manu'},[
             n('Kaśyapa',{sub:'son of Kalā & Marīci',xref:'see Marīci branch',b:'manu'}),
             n('Pūrṇimā',{sub:'son of Kalā & Marīci',b:'manu'},[
               n('Viraja',{b:'manu'}),
@@ -549,21 +551,21 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
           ])
         ]),
         n('Anasūyā',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Atri',{sub:'husband of Anasūyā',b:'manu'},[
+          n('Atri',{spouse:true,sub:'husband of Anasūyā',b:'manu'},[
             n('Soma',{sub:'partial incarnation of Brahmā',xref:'continues as the Atri branch',b:'manu',tag:'inc'}),
             n('Dattātreya',{sub:'partial incarnation of Viṣṇu',b:'manu',tag:'inc'}),
             n('Durvāsā',{sub:'partial incarnation of Śiva',b:'manu',tag:'inc'})
           ])
         ]),
         n('Śraddhā',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Aṅgirā',{sub:'husband of Śraddhā',b:'manu'},[
+          n('Aṅgirā',{spouse:true,sub:'husband of Śraddhā',b:'manu'},[
             n('Sinīvālī, Kuhū, Rākā, Anumati',{sub:'4 daughters',b:'manu'}),
             n('Utathya',{b:'manu'}),
             n('Bṛhaspati',{sub:'guru of the demigods',b:'manu'})
           ])
         ]),
         n('Havirbhū',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Pulastya',{sub:'husband of Havirbhū',b:'manu'},[
+          n('Pulastya',{spouse:true,sub:'husband of Havirbhū',b:'manu'},[
             n('Agastya',{sub:'became Dahrāgni in his next life',b:'manu'}),
             n('Viśravā',{b:'manu'},[
               n('Kuvera',{sub:'mother: Iḍaviḍā (1st wife)',b:'manu'}),
@@ -574,27 +576,27 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
           ])
         ]),
         n('Gati',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Pulaha',{sub:'husband of Gati',b:'manu'},[
+          n('Pulaha',{spouse:true,sub:'husband of Gati',b:'manu'},[
             n('Karmaśreṣṭha, Varīyān, Sahiṣṇu',{sub:'3 great sages',b:'manu'})
           ])
         ]),
         n('Kriyā',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Kratu',{sub:'husband of Kriyā',b:'manu'},[
+          n('Kratu',{spouse:true,sub:'husband of Kriyā',b:'manu'},[
             n('60,000 Vālakhilyas',{sub:'great sages · retired as vānaprasthas',b:'manu'})
           ])
         ]),
         n('Ūrjā',{sub:'a.k.a. Arundhatī · daughter of Devahūti',b:'manu'},[
-          n('Vasiṣṭha',{sub:'husband of Ūrjā',b:'manu'},[
+          n('Vasiṣṭha',{spouse:true,sub:'husband of Ūrjā',b:'manu'},[
             n('7 great sages',{sub:'Citraketu, Suroci, Virajā, Mitra, Ulbaṇa, Vasubhṛdyāna, Dyumān',b:'manu'})
           ])
         ]),
         n('Citti',{sub:'a.k.a. Śānti · daughter of Devahūti',b:'manu'},[
-          n('Atharvā',{sub:'husband of Citti',b:'manu'},[
+          n('Atharvā',{spouse:true,sub:'husband of Citti',b:'manu'},[
             n('Aśvaśirā',{sub:'a.k.a. Dadhyañca',b:'manu'})
           ])
         ]),
         n('Khyāti',{sub:'daughter of Devahūti',b:'manu'},[
-          n('Bhṛgu',{sub:'husband of Khyāti',b:'manu'},[
+          n('Bhṛgu',{spouse:true,sub:'husband of Khyāti',b:'manu'},[
             n('Śrī',{sub:'a daughter',b:'manu'}),
             n('Dhātā',{sub:'wife: Āyati',b:'manu'},[
               n('Mṛkaṇḍa',{b:'manu'},[
@@ -617,7 +619,7 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
 
 /* ---------------- layout + render engine (TOP → BOTTOM) ---------------- */
 const NS='http://www.w3.org/2000/svg';
-const NODEW=178, COLGAP=22, ROWGAP=42, PAD=40;
+const NODEW=178, COLGAP=22, ROWGAP=42, PAD=40, SPOUSEGAP=40;
 const svg=document.getElementById('svg'), stage=document.getElementById('stage');
 let gEdges, gNodes, measurer;
 
@@ -664,23 +666,40 @@ function visibleList(){
   return out;
 }
 
-/* horizontal leaf allocation; parents centre over children */
+/* A spouse node (spouse:true) is drawn to the RIGHT of its partner on the
+   SAME row (a marriage link), not below it. Its own children still go down.
+   Helper: the "descendant" children of a node = its non-spouse children. */
+function kidsOf(nd){ return (nd.c||[]).filter(c=>!c.spouse); }
+function spouseOf(nd){ return (nd.c||[]).find(c=>c.spouse) || null; }
+
+/* horizontal leaf allocation; parents centre over their descendant children.
+   A spouse sits one column to the right of its partner. */
 let curX;
 function layoutX(nd){
-  if(!nd.c || !nd.c.length || nd._collapsed){
+  const sp = (!nd._collapsed) ? spouseOf(nd) : null;
+  const kids = (!nd._collapsed) ? kidsOf(nd) : [];
+  if(sp){
+    // partner occupies a leaf slot; spouse (and its subtree) lay out to the right
+    nd._x = curX + NODEW/2; curX += NODEW + SPOUSEGAP;
+    layoutX(sp);
+    return;
+  }
+  if(!kids.length){
     nd._x=curX + NODEW/2; curX += NODEW + COLGAP; return;
   }
-  nd.c.forEach(layoutX);
-  const first=nd.c[0], last=nd.c[nd.c.length-1];
-  nd._x=(first._x + last._x)/2;
+  kids.forEach(layoutX);
+  nd._x=(kids[0]._x + kids[kids.length-1]._x)/2;
 }
 
-/* vertical position: each node sits directly below its OWN parent
-   (parent-bottom + gap), so deep single-child chains pack tightly and
-   edges stay short — no global depth rows, no empty bands. */
+/* vertical: each node sits below its own parent (parent-bottom + gap).
+   A spouse instead sits on the SAME row as its partner. */
 function layoutY(nd){
-  const top = nd._parent ? (nd._parent._y + nd._parent._h/2 + ROWGAP) : PAD;
-  nd._y = top + nd._h/2;
+  if(nd.spouse && nd._parent){
+    nd._y = nd._parent._y;                 // same row as partner (marriage → right)
+  } else {
+    const top = nd._parent ? (nd._parent._y + nd._parent._h/2 + ROWGAP) : PAD;
+    nd._y = top + nd._h/2;
+  }
   if(nd.c && !nd._collapsed) nd.c.forEach(layoutY);
 }
 
@@ -704,16 +723,21 @@ function render(){
   const gTog=document.createElementNS(NS,'g');
   gNodes=document.createElementNS(NS,'g');
   svg.appendChild(gEdges); svg.appendChild(gTog); svg.appendChild(gNodes);
-  // edges: smooth vertical cubic bézier from parent-bottom to child-top (d3 linkVertical style)
+  // edges: spouse → horizontal marriage link to the right; others → vertical bézier (d3 linkVertical)
   vis.forEach(nd=>{
-    if(nd._parent){
-      const p=nd._parent;
+    if(!nd._parent) return;
+    const p=nd._parent;
+    const path=document.createElementNS(NS,'path');
+    if(nd.spouse){
+      const x1=p._x+NODEW/2, x2=nd._x-NODEW/2, y=p._y;       // partner-right → spouse-left, same row
+      path.setAttribute('d',`M ${x1} ${y} L ${x2} ${y}`);
+      path.setAttribute('class','edge marriage');
+    } else {
       const x1=p._x, y1=p._y+p._h/2, x2=nd._x, y2=nd._y-nd._h/2, my=(y1+y2)/2;
-      const path=document.createElementNS(NS,'path');
       path.setAttribute('d',`M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`);
       path.setAttribute('class','edge b-'+(nd.b||'root'));
-      gEdges.appendChild(path);
     }
+    gEdges.appendChild(path);
   });
   // nodes
   vis.forEach(nd=>{
@@ -727,10 +751,12 @@ function render(){
     div.innerHTML=nodeHTML(nd);
     fo.appendChild(div); gNodes.appendChild(fo);
   });
-  // toggles — SVG chips sitting in the gap just below each expandable node (never clipped)
+  // toggles — SVG chips in the gap by each expandable node (below; or to the right if the child is a spouse)
   vis.forEach(nd=>{
     if(!(nd.c && nd.c.length)) return;
-    const cy=nd._y + nd._h/2 + 11, cx=nd._x, r=11;
+    const r=11, spouseChild=!!spouseOf(nd);
+    const cx = spouseChild ? nd._x + NODEW/2 + 11 : nd._x;
+    const cy = spouseChild ? nd._y : nd._y + nd._h/2 + 11;
     const g=document.createElementNS(NS,'g');
     g.setAttribute('class','tog'+(nd._collapsed?' collapsed':''));
     g.setAttribute('transform',`translate(${cx} ${cy})`);
