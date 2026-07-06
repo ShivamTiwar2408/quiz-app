@@ -170,7 +170,19 @@ function n(name, opts, children){ const o = opts||{}; o.name=name; if(children) 
 const TREE =
 n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
   n('Lord Brahmā',{sub:'born from Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa',b:'root',tag:'div'},[
-    n('Other sons of Brahmā',{sub:'Nārada Muni · Four Kumāras · Lord Śiva · Kratu · Bhṛgu · Atreya · Pulaha · Vasiṣṭha · Aṅgirā · Pulastya · others',b:'root'}),
+    n('Other sons of Brahmā',{sub:'mind-born sons (Prajāpatis & great sages) — Marīci & Atri are shown as their own branches below',b:'root'},[
+      n('Nārada Muni',{sub:'the great devotee-sage',b:'root'}),
+      n('Four Kumāras',{sub:'Sanaka, Sanandana, Sanātana, Sanat-kumāra',b:'root'}),
+      n('Lord Śiva',{sub:'a.k.a. Rudra',b:'root'}),
+      n('Aṅgirā',{sub:'wife: Śraddhā (daughter of Devahūti)',xref:'line drawn under Devahūti → Śraddhā',b:'root'}),
+      n('Pulastya',{sub:'wife: Havirbhū (daughter of Devahūti)',xref:'line (Viśravā → Rāvaṇa…) under Devahūti → Havirbhū',b:'root'}),
+      n('Pulaha',{sub:'wife: Gati (daughter of Devahūti)',xref:'line under Devahūti → Gati',b:'root'}),
+      n('Kratu',{sub:'wife: Kriyā (daughter of Devahūti)',xref:'line under Devahūti → Kriyā',b:'root'}),
+      n('Vasiṣṭha',{sub:'wife: Ūrjā / Arundhatī (daughter of Devahūti)',xref:'line under Devahūti → Ūrjā',b:'root'}),
+      n('Atharvā',{sub:'wife: Citti / Śānti (daughter of Devahūti)',xref:'line under Devahūti → Citti',b:'root'}),
+      n('Bhṛgu',{sub:'wife: Khyāti (daughter of Devahūti)',xref:'line (→ Mārkaṇḍeya, Śukrācārya) under Devahūti → Khyāti',b:'root'}),
+      n('Atreya',{b:'root'})
+    ]),
 
     /* ================= MARĪCI branch ================= */
     n('Marīci',{sub:'wife: Kalā (daughter of Devahūti)',b:'marici'},[
