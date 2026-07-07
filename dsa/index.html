@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA — visual references</title>
+<meta name="description" content="Visual references for data structures & algorithms — starting with the 10 must-know graph algorithms every engineer should recognize on sight.">
+<style>
+  :root{
+    --bg:#0e1117; --bg2:#141b27; --panel:#192232; --panel2:#202c40;
+    --ink:#e9eef6; --muted:#a7b4ca; --faint:#6d7c95;
+    --line:#283448; --accent:#5b9dff; --accent2:#8f7bff; --c:#5bb26b;
+    --radius:16px;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body{background:
+    radial-gradient(900px 500px at 80% -10%,rgba(91,178,107,.14),transparent 60%),
+    radial-gradient(800px 500px at 10% 0%,rgba(91,157,255,.12),transparent 55%),
+    var(--bg);
+    background-attachment:fixed}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(30px,6vw,64px) 22px 80px}
+
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:26px;transition:.15s}
+  .back:hover{color:var(--ink);gap:10px}
+
+  .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);background:var(--panel);padding:5px 13px;border-radius:30px;margin-bottom:18px}
+  .badge .d{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px rgba(91,178,107,.2)}
+  h1{font-size:clamp(30px,5.5vw,48px);font-weight:850;letter-spacing:-1px;line-height:1.05;margin-bottom:14px}
+  h1 .g{background:linear-gradient(90deg,var(--accent),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:clamp(15px,2vw,18px);color:#c5d2e4;max-width:640px;margin-bottom:clamp(28px,5vw,44px)}
+
+  .card{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel),var(--bg2));overflow:hidden;margin-bottom:26px}
+  .card .head{padding:20px 24px 16px;border-bottom:1px solid var(--line)}
+  .card .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--c);font-weight:700;margin-bottom:5px}
+  .card h2{font-size:21px;font-weight:780;letter-spacing:-.3px}
+  .card p{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.55}
+  .figure{padding:18px}
+  .figure img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line)}
+  .figure .cap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:14px;padding:0 4px}
+  .chip{font-size:11.5px;font-family:var(--mono);color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:3px 10px;border-radius:20px}
+  .src{margin-left:auto;font-size:12.5px;color:var(--faint)}
+  .src a{color:var(--muted);text-decoration:none}
+  .src a:hover{color:var(--ink)}
+
+  footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to the hub</a>
+
+  <div class="badge"><span class="d"></span> Data structures &amp; algorithms</div>
+  <h1>DSA — <span class="g">visual references</span></h1>
+  <p class="lead">Cheat-sheets and diagrams for the algorithms worth recognizing on sight. Each one distills a family of problems into a single picture you can recall under interview pressure. More sheets get added over time.</p>
+
+  <section class="card">
+    <div class="head">
+      <div class="kind">Reference · graphs</div>
+      <h2>10 Must-Know Graph Algorithms</h2>
+      <p>The core graph toolkit on one page — traversal, ordering, connectivity, and shortest paths. If you can name the technique and sketch its picture, most graph interview questions reduce to picking the right one from this list.</p>
+    </div>
+    <div class="figure">
+      <img src="assets/graph-algorithms.gif" alt="10 Must-Know Graph Algorithms: Depth-First Search, Breadth-First Search, Topological Sort, Union Find / DSU, Cycle Detection, Connected Components, Bipartite Check, Flood Fill, Minimum Spanning Tree, and Shortest Path — each illustrated with a small worked example.">
+      <div class="cap">
+        <span class="chip">DFS &amp; BFS</span>
+        <span class="chip">Topological sort</span>
+        <span class="chip">Union-Find / DSU</span>
+        <span class="chip">Cycle detection</span>
+        <span class="chip">MST</span>
+        <span class="chip">Shortest path</span>
+        <span class="src">Source: <a href="https://algomaster.io" target="_blank" rel="noopener">algomaster.io</a></span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Built with Claude Code.</span>
+    <a href="https://github.com/ShivamTiwar2408/quiz-app" target="_blank" rel="noopener">Source on GitHub ↗</a>
+    <span style="margin-left:auto">Static · hosted on GitHub Pages</span>
+  </footer>
+</div>
+</body>
+</html>
