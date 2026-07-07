@@ -722,7 +722,7 @@ function render(){
   gEdges=document.createElementNS(NS,'g');
   const gTog=document.createElementNS(NS,'g');
   gNodes=document.createElementNS(NS,'g');
-  svg.appendChild(gEdges); svg.appendChild(gTog); svg.appendChild(gNodes);
+  svg.appendChild(gEdges); svg.appendChild(gNodes); svg.appendChild(gTog);
   // edges: spouse → horizontal marriage link to the right; others → vertical bézier (d3 linkVertical)
   vis.forEach(nd=>{
     if(!nd._parent) return;
@@ -766,7 +766,7 @@ function render(){
     g.appendChild(c); g.appendChild(sign);
     if(nd._collapsed){                       // show hidden-descendant count on a small pill
       const cnt=descendantCount(nd);
-      const badge=document.createElementNS(NS,'g'); badge.setAttribute('transform',`translate(${r+2} -${r-2})`);
+      const badge=document.createElementNS(NS,'g'); badge.setAttribute('transform',`translate(${r+3} 0)`);
       const pill=document.createElementNS(NS,'rect');
       const w=String(cnt).length*6+8;
       pill.setAttribute('x',0); pill.setAttribute('y',-7); pill.setAttribute('width',w); pill.setAttribute('height',14);
