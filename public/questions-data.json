@@ -9558,6 +9558,318 @@
     "category": "communication patterns"
   },
   {
+    "id": "Container_Orchestration__MCPStdioTransport__0",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "According to the article, why are STDIO transport and Kubernetes fundamentally incompatible?",
+    "options": {
+      "A": "STDIO is too slow to keep up with Kubernetes networking speeds",
+      "B": "It is a design mismatch: STDIO belongs to single-host, process-oriented systems while Kubernetes is built for distributed, network-oriented architectures",
+      "C": "Kubernetes lacks a configuration flag to enable STDIO pipes between Pods",
+      "D": "STDIO requires root privileges that Kubernetes forbids by default"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The incompatibility is architectural, not a configuration problem you can flag your way out of. STDIO assumes a single host with a parent-child process relationship connected by OS pipes; Kubernetes assumes many hosts, ephemeral Pods, and network-based communication. As the article puts it: 'STDIO is a local optimization, not a distributed transport.' No amount of tuning bridges that gap because the two models make opposite assumptions about where processes live and how they find each other.",
+    "difficulty": "easy",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__1",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "In the Model Context Protocol (MCP), what is the client/server relationship?",
+    "options": {
+      "A": "The external tool is the client and the LLM is the server",
+      "B": "The LLM acts as the client and external tools (APIs, browsers, databases, OS tools) act as servers",
+      "C": "Both the LLM and the tools are peers with no client/server distinction",
+      "D": "Kubernetes is the client and the LLM is the server"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "In MCP the LLM is the client that connects to external tools acting as servers. Those servers expose capabilities beyond the model's training data — for example, an LLM invoking a weather-fetching tool to retrieve live data it could not otherwise know. Understanding this direction matters: it is the client (LLM) that spawns and drives the server over the chosen transport.",
+    "difficulty": "easy",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__2",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "Which of the following are transports defined by MCP as described in the article? (Choose all that apply)",
+    "options": {
+      "A": "STDIO",
+      "B": "SSE (Server-Sent Events)",
+      "C": "Streamable HTTP",
+      "D": "Raw UDP multicast"
+    },
+    "correct_answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "MCP defines three transports: STDIO (requires direct process/container attachment), SSE (an HTTP-based streaming transport), and Streamable HTTP (a custom stream-oriented HTTP transport). Raw UDP multicast is not one of them. The two HTTP-based options exist precisely because they work over a network, making them viable where STDIO is not — such as across Kubernetes Pods.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__3",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "How does a client connect to an MCP server over the STDIO transport?",
+    "options": {
+      "A": "It opens a TCP socket to the server's advertised IP and port",
+      "B": "It spawns the MCP server as a subprocess on the same machine, and the OS connects them via pipes",
+      "C": "It publishes messages to a shared message queue the server subscribes to",
+      "D": "It performs a DNS lookup for the server's Service name and dials the ClusterIP"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Over STDIO the client spawns the MCP server as a child subprocess on the same host (e.g. `uv run main.py`), and the operating system wires them together with pipes connecting the client to the server's standard streams. There is no network address, no port, and no service discovery — just a parent-child process pair on one machine. This is exactly why it cannot reach across Pods that live on different nodes.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__4",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "The STDIO transport uses three OS-provided streams. What roles do they play in MCP?",
+    "options": {
+      "A": "stdin for input, stdout for output, and stderr for logs/errors which the protocol ignores",
+      "B": "stdin for logs, stdout for errors, and stderr for protocol messages",
+      "C": "All three carry protocol messages in a round-robin fashion",
+      "D": "stdin and stdout are unused; stderr carries all JSON-RPC traffic"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "STDIO relies on the three standard streams: stdin carries input to the server, stdout carries its output back, and stderr carries logs and errors that the MCP protocol itself ignores. Protocol messages flow on stdin/stdout as newline-delimited JSON-RPC 2.0. Keeping diagnostics on stderr means log noise never corrupts the structured message channel.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__5",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "According to the article, what message format does the STDIO transport use?",
+    "options": {
+      "A": "Protocol Buffers over a binary framing layer",
+      "B": "Newline-delimited JSON-RPC 2.0",
+      "C": "XML-RPC with length-prefixed frames",
+      "D": "Plain unstructured text lines"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Messages on the STDIO transport are JSON-RPC 2.0, delimited by newlines. Newline delimiting lets each side read one complete message per line from the stream without a separate framing protocol — a simple, local-friendly choice that fits the pipe-based model.",
+    "difficulty": "easy",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__6",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "The article lists reasons developers favor STDIO locally. Which are cited? (Choose all that apply)",
+    "options": {
+      "A": "Zero network overhead",
+      "B": "Implicit trust between processes running under the same user",
+      "C": "A simple lifecycle where the server dies when the client exits",
+      "D": "Built-in load balancing across many server replicas"
+    },
+    "correct_answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "Locally, STDIO is attractive because there is zero network overhead (pipes, not sockets), there is implicit trust since both processes run under the same user on the same host, and the lifecycle is dead simple — the server subprocess dies when the client exits. Load balancing across replicas is the opposite of what STDIO offers; it is a strictly point-to-point, single-server channel, which is precisely why it breaks down in a replicated Kubernetes environment.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__7",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "In Kubernetes, why do Services exist given that every Pod already gets its own IP address?",
+    "options": {
+      "A": "Services encrypt all Pod-to-Pod traffic by default",
+      "B": "Because Pods are ephemeral and their IPs change frequently, a Service provides a stable virtual IP (ClusterIP), a single DNS name, and automatic load balancing",
+      "C": "Services replace Pod IPs so that Pods no longer need addresses",
+      "D": "Services convert network communication into STDIO pipes"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Pod IPs are unstable: Pods are ephemeral by design and are replaced (with new IPs) on crash, rescheduling, or scaling. A Service abstracts over that churn by offering a stable ClusterIP and DNS name, and it load-balances requests across the current set of healthy Pods. This network-level indirection is the Kubernetes-native way services find each other — and it is fundamentally incompatible with STDIO, which has no addressing at all.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__8",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "The article says Kubernetes provides no mechanism for several things STDIO depends on. Which are explicitly called out as missing? (Choose all that apply)",
+    "options": {
+      "A": "Spawning processes across Pods",
+      "B": "Attaching to another Pod's STDIN",
+      "C": "Preserving STDIO streams across Pod restarts",
+      "D": "Assigning each Pod its own IP address"
+    },
+    "correct_answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "Kubernetes offers no way to spawn a process in one Pod from another, no way to attach to a different Pod's STDIN, and no way to preserve STDIO streams across a Pod restart. Assigning each Pod its own IP is something Kubernetes *does* provide — it is part of the network-oriented model that makes STDIO unnecessary and unworkable between Pods.",
+    "difficulty": "hard",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__9",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "What happens to a STDIO pipe when the Pod on the other end crashes, is rescheduled, or is replaced during scaling?",
+    "options": {
+      "A": "Kubernetes transparently reconnects the pipe to the new Pod",
+      "B": "The original STDIO pipe is permanently broken, with no reconnection or retry",
+      "C": "The pipe is buffered and replayed once a replacement Pod is ready",
+      "D": "The Service migrates the pipe to a healthy Pod automatically"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "A STDIO pipe is bound to a specific pair of processes and their OS-level connection. When the peer Pod crashes, is rescheduled, or is replaced during scaling, that pipe is permanently broken — there is no reconnection or retry semantics. This is the crux of the conflict: STDIO assumes fixed process identity and a persistent pipe, while Kubernetes assumes dynamic lifecycles and automatic replacement. Network transports tolerate this churn by reconnecting to a stable Service name; STDIO cannot.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__10",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "The article frames the core conflict as STDIO's assumptions versus Kubernetes's guarantees. Which pairing correctly captures that conflict?",
+    "options": {
+      "A": "STDIO needs fixed process identity, a persistent OS pipe, and tightly coupled lifecycle; Kubernetes provides dynamic lifecycles, network communication, and automatic replacement",
+      "B": "STDIO needs network communication; Kubernetes provides only local pipes",
+      "C": "STDIO needs dynamic lifecycles; Kubernetes provides fixed, permanent processes",
+      "D": "Both STDIO and Kubernetes assume a single static host, so the conflict is only about performance"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "STDIO depends on three things: a fixed process identity, a persistent OS-level pipe, and a tightly coupled lifecycle between client and server. Kubernetes deliberately provides the opposite: dynamic Pod lifecycles, communication over the network, and automatic replacement of failed or rescheduled Pods. Each STDIO assumption is directly negated by a Kubernetes design choice, which is why the mismatch is fundamental rather than incidental.",
+    "difficulty": "hard",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__11",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "The article proposes running the MCP server as a sidecar container in the same Pod as the application. What does this actually solve?",
+    "options": {
+      "A": "It lets the two containers finally share STDIO pipes because they are in the same Pod",
+      "B": "It reduces network hops, latency, and failure points by sharing the Pod's network namespace, IP, localhost, and lifecycle",
+      "C": "It merges the two containers into a single process with one parent-child relationship",
+      "D": "It eliminates the need for any inter-container communication at all"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "A sidecar places the MCP server in the same Pod as (for example) a FastAPI app. Containers in a Pod share the network namespace, IP, localhost, and lifecycle, which cuts network hops, latency, and failure points — the article cites a drop from roughly 1-5 ms cross-Pod to sub-millisecond same-Pod. It does NOT let them share STDIO pipes: they remain separate processes with no parent-child relationship. That is why the recommended same-Pod communication is still HTTP, WebSockets, gRPC, or Unix domain sockets over localhost.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__12",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "Even inside a single Pod with the sidecar pattern, why can the two containers still not share STDIO pipes?",
+    "options": {
+      "A": "Because the Pod's network namespace blocks all pipe traffic",
+      "B": "Because they remain separate processes with no parent-child relationship, so STDIO pipes cannot be shared across containers",
+      "C": "Because Kubernetes disables stdin on all sidecar containers",
+      "D": "Because the containers use different CPU architectures"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Sharing a Pod gives containers a shared network namespace, IP, localhost, and lifecycle — but each container is still its own independently-started process. STDIO pipes require a parent-child relationship established when one process spawns another; two sibling containers have no such relationship, so the pipes cannot be shared. The practical answer is to communicate over localhost using HTTP, WebSockets, gRPC, or Unix domain sockets instead. The sidecar is the closest Kubernetes-native alternative because it aligns with network-based communication and a shared Pod lifecycle.",
+    "difficulty": "hard",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__13",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "In the MCP architecture described, what can the client (the LLM side) be?",
+    "options": {
+      "A": "Only a command-line script",
+      "B": "A desktop app (e.g. Claude), an IDE, or an AI agent",
+      "C": "Only the Kubernetes control plane",
+      "D": "Only another MCP server"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The article describes the client — the LLM side that consumes tools — as being a desktop app such as Claude, an IDE, or an AI agent, while the tool is exposed as the server. This matters because all of these clients, when using STDIO, must spawn the server as a local child subprocess; none of them can reach across a Kubernetes Pod boundary that way.",
+    "difficulty": "easy",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__14",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "According to the article, why is Kubernetes abbreviated as 'K8s'?",
+    "options": {
+      "A": "It is the eighth major version of the platform",
+      "B": "The 8 represents the number of letters between the K and the s",
+      "C": "It supports a maximum of 8 nodes per cluster",
+      "D": "It was originally released in August (the 8th month)"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "'K8s' is a numeronym: the 8 stands in for the eight letters between the leading K and trailing s in 'Kubernetes' (u-b-e-r-n-e-t-e). It is purely a shorthand and has nothing to do with versions, node limits, or release dates.",
+    "difficulty": "easy",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__15",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "Why does the article describe a container image as an 'immutable artifact'?",
+    "options": {
+      "A": "Because Kubernetes encrypts the image so it cannot be read",
+      "B": "Because it bundles the application code together with all its dependencies, so it runs identically across development, testing, and production",
+      "C": "Because container images can never be updated once built",
+      "D": "Because the image stores application state that persists across restarts"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "A container image packages the application code with its full dependency tree into a single unit, so it runs identically anywhere — dev, test, or prod — rather than depending on libraries manually installed per machine. The article's example is a Python app with a heavy dependency tree: instead of installing libraries everywhere, you bake them into the image. 'Immutable' means the artifact you ship is the same one that runs; containers are also stateless by default, which is why persistent state lives elsewhere.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
+    "id": "Container_Orchestration__MCPStdioTransport__16",
+    "topic": "Container Orchestration",
+    "subtopic": "MCPStdioTransport",
+    "question": "In the FastAPI-on-Kubernetes example, what happens when a request arrives at the Service and one of the backing Pods later crashes?",
+    "options": {
+      "A": "The Service picks one of the healthy FastAPI Pods and routes the request to it; if a Pod crashes, traffic is transparently routed to the remaining Pods",
+      "B": "The client must retry against a specific Pod IP it discovered earlier",
+      "C": "The Service buffers the request until the exact same Pod is recreated",
+      "D": "All three Pods receive the request simultaneously and the fastest response wins"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The Service exposes one stable endpoint (virtual IP + DNS name) and load-balances across the healthy Pods behind it. When a request arrives, Kubernetes selects an available FastAPI Pod and routes to it; if a Pod crashes, traffic transparently shifts to the remaining Pods. From the client's perspective there is a single endpoint, while Kubernetes manages Pod lifecycles, networking, and failover internally — the network-oriented model that STDIO's fixed process pipe cannot participate in.",
+    "difficulty": "medium",
+    "category": "container orchestration"
+  },
+  {
     "id": "Core_Concepts__Availability__0",
     "topic": "Core Concepts",
     "subtopic": "Availability",
@@ -30808,6 +31120,2652 @@
     "category": "trade-offs"
   },
   {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__0",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "At the very top of the Śrīmad-Bhāgavatam family tree, who is shown as the Supreme Personality of Godhead?",
+    "options": {
+      "A": "Kṛṣṇa",
+      "B": "Lord Brahmā",
+      "C": "Viṣṇu",
+      "D": "Marīci"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart is headed by KṚṢṆA, the Supreme Personality of Godhead, from whom everything else descends.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__1",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "From whom was Lord Brahmā born?",
+    "options": {
+      "A": "Kṛṣṇa directly",
+      "B": "Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa",
+      "C": "Marīci",
+      "D": "Svāyambhuva Manu"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart notes Lord Brahmā was 'born from Garbhodakaśāyī Viṣṇu, an expansion of Kṛṣṇa.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__2",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Marīci, Atri, and Svāyambhuva Manu are all shown descending directly from whom?",
+    "options": {
+      "A": "Kṛṣṇa",
+      "B": "Kaśyapa",
+      "C": "Lord Brahmā",
+      "D": "Vaivasvata Manu"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Lord Brahmā is the origin of the three great branches: Marīci, Atri, and Svāyambhuva Manu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__3",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which of these is shown as a son (mind-born son / prajāpati) of Lord Brahmā?",
+    "options": {
+      "A": "Prahlāda",
+      "B": "Dhruva",
+      "C": "Pṛthu",
+      "D": "Nārada Muni"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Alongside Marīci and Atri, Brahmā's sons in the chart include Nārada Muni, the Four Kumāras, Lord Śiva, Kratu, Bhṛgu, Atreya, Pulaha, Vasiṣṭha, Aṅgirā, and Pulastya.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__4",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who is shown as the son of Marīci?",
+    "options": {
+      "A": "Kaśyapa",
+      "B": "Atri",
+      "C": "Vivasvān",
+      "D": "Dakṣa"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Marīci's son is Kaśyapa, who married Diti, Aditi, and other wives.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__5",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Diti and Aditi were both wives of which sage?",
+    "options": {
+      "A": "Marīci",
+      "B": "Kaśyapa",
+      "C": "Atri",
+      "D": "Kardama"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Kaśyapa married Diti, Aditi, and other wives.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__6",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The 49 Maruts, Hiraṇyakaśipu, and Hiraṇyākṣa were the sons of which mother?",
+    "options": {
+      "A": "Aditi",
+      "B": "Kayādhu",
+      "C": "Diti",
+      "D": "Śatarūpā"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Diti, wife of Kaśyapa, bore the 49 Maruts, Hiraṇyakaśipu, and Hiraṇyākṣa.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__7",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vivasvān and many demigods were the sons of which wife of Kaśyapa?",
+    "options": {
+      "A": "Diti",
+      "B": "Vindhyāvalī",
+      "C": "Kayādhu",
+      "D": "Aditi"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Aditi, wife of Kaśyapa, bore Vivasvān and many demigods.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__8",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the wife of Hiraṇyakaśipu?",
+    "options": {
+      "A": "Kayādhu",
+      "B": "Vindhyāvalī",
+      "C": "Diti",
+      "D": "Menakā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Hiraṇyakaśipu's wife as Kayādhu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__9",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Hiraṇyakaśipu?",
+    "options": {
+      "A": "Virocana",
+      "B": "Prahlāda",
+      "C": "Bali",
+      "D": "Bāṇa"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Prahlāda, the great devotee, was the son of Hiraṇyakaśipu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__10",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Prahlāda → ? → Bali. Who is the missing link (Prahlāda's son and Bali's father)?",
+    "options": {
+      "A": "Bāṇa",
+      "B": "Hiraṇyākṣa",
+      "C": "Virocana",
+      "D": "Nṛga"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The line runs Prahlāda → Virocana → Bali.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__11",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Bali Mahārāja was the son of whom?",
+    "options": {
+      "A": "Prahlāda",
+      "B": "Hiraṇyakaśipu",
+      "C": "Bāṇa",
+      "D": "Virocana"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Bali (wife: Vindhyāvalī) was the son of Virocana.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__12",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the wife of Bali Mahārāja?",
+    "options": {
+      "A": "Vindhyāvalī",
+      "B": "Kayādhu",
+      "C": "Merudevī",
+      "D": "Arci"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Bali's wife as Vindhyāvalī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__13",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Bāṇa and 99 others were the sons of whom?",
+    "options": {
+      "A": "Virocana",
+      "B": "Bali",
+      "C": "Prahlāda",
+      "D": "Hiraṇyakaśipu"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Bali and Vindhyāvalī had Bāṇa and 99 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__14",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Vivasvān and the current Manu?",
+    "options": {
+      "A": "Svāyambhuva Manu",
+      "B": "Cākṣuṣa Manu",
+      "C": "Vaivasvata Manu",
+      "D": "Ikṣvāku"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Vivasvān's son is Vaivasvata Manu, the current Manu (a.k.a. Śrāddhadeva; wife: Śraddhā).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__15",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vaivasvata Manu, the current Manu, is also known as what?",
+    "options": {
+      "A": "Sudyumna",
+      "B": "Cākṣuṣa",
+      "C": "Priyavrata",
+      "D": "Śrāddhadeva"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart notes Vaivasvata Manu is the current Manu, a.k.a. Śrāddhadeva (wife: Śraddhā).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__16",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which of these was a child of Vaivasvata Manu?",
+    "options": {
+      "A": "Ikṣvāku",
+      "B": "Kaśyapa",
+      "C": "Dhruva",
+      "D": "Priyavrata"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Vaivasvata Manu's children include Ilā, Nṛga, Ikṣvāku, Śaryāti, Nabhaga, and 6 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__17",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Ilā, a child of Vaivasvata Manu, was transformed into whom?",
+    "options": {
+      "A": "Nṛga",
+      "B": "Sudyumna",
+      "C": "Nimi",
+      "D": "Nābhāga"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart notes 'Ilā (transformed into Sudyumna).'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__18",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "By the churning of whose body was Janaka born, according to the chart?",
+    "options": {
+      "A": "Ikṣvāku",
+      "B": "Śīradhvaja",
+      "C": "Nimi",
+      "D": "Daśaratha"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart notes 'Nimi (by churning, Janaka was born).'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__19",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the father of Sītā Devī?",
+    "options": {
+      "A": "Nimi",
+      "B": "Janaka (not Sītā's father)",
+      "C": "Daśaratha",
+      "D": "Śīradhvaja"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Sītā Devī's father was Śīradhvaja, identified in the chart as 'Janaka, Sītā's father.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__20",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Sītā Devī was the wife of whom?",
+    "options": {
+      "A": "Lord Rāma",
+      "B": "Lakṣmaṇa",
+      "C": "Lord Balarāma",
+      "D": "Kuśa"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Sītā Devī (daughter of Śīradhvaja) was the wife of Lord Rāma.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__21",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Hariścandra, in the Ikṣvāku line, had which son?",
+    "options": {
+      "A": "Sāgara",
+      "B": "Rohita",
+      "C": "Aṁśumān",
+      "D": "Dilīpa"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The line runs Hariścandra → Rohita → ... → Sāgara.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__22",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which king in the Ikṣvāku line was the father of Aṁśumān?",
+    "options": {
+      "A": "Rohita",
+      "B": "Dilīpa",
+      "C": "Sāgara",
+      "D": "Bhagīratha"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The line runs Sāgara → Aṁśumān → Dilīpa → Bhagīratha.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__23",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Aṁśumān?",
+    "options": {
+      "A": "Bhagīratha",
+      "B": "Sāgara",
+      "C": "Khaṭvāṅga",
+      "D": "Dilīpa"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Aṁśumān → Dilīpa → Bhagīratha.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__24",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Bhagīratha, famous for bringing the Gaṅgā, was the son of whom?",
+    "options": {
+      "A": "Dilīpa",
+      "B": "Aṁśumān",
+      "C": "Sāgara",
+      "D": "Khaṭvāṅga"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart shows Dilīpa → Bhagīratha.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__25",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the father of Lord Rāmacandra?",
+    "options": {
+      "A": "Khaṭvāṅga",
+      "B": "Daśaratha",
+      "C": "Bhagīratha",
+      "D": "Aja"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "In the chart, Khaṭvāṅga → (some descendants) → Daśaratha, the father of Lord Rāmacandra.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__26",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lakṣmaṇa and Lord Rāmacandra were the sons of whom?",
+    "options": {
+      "A": "Bhagīratha",
+      "B": "Khaṭvāṅga",
+      "C": "Daśaratha",
+      "D": "Śīradhvaja"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Daśaratha's sons include Lakṣmaṇa, Lord Rāmacandra, and other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__27",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lava and Kuśa were the sons of whom?",
+    "options": {
+      "A": "Lakṣmaṇa",
+      "B": "Daśaratha",
+      "C": "Bharata",
+      "D": "Lord Rāmacandra"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Lord Rāmacandra (wife: Sītā) had the sons Lava and Kuśa.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__28",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Sukanyā, who married Cyavana Muni, was the daughter of whom?",
+    "options": {
+      "A": "Śaryāti",
+      "B": "Nabhaga",
+      "C": "Ānarta",
+      "D": "Nṛga"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Śaryāti's children include Sukanyā (who married Cyavana Muni) and 2 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__29",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Sukanyā married which sage?",
+    "options": {
+      "A": "Kardama Muni",
+      "B": "Cyavana Muni",
+      "C": "Atri",
+      "D": "Marīci"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart notes Sukanyā 'married Cyavana Muni.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__30",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The devotee-king Ambarīṣa Mahārāja was the son of whom?",
+    "options": {
+      "A": "Nabhaga",
+      "B": "Ānarta",
+      "C": "Nābhāga",
+      "D": "Śaryāti"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The line runs Nabhaga → Nābhāga → Ambarīṣa Mahārāja.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__31",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Nābhāga was the son of whom?",
+    "options": {
+      "A": "Ambarīṣa",
+      "B": "Śaryāti",
+      "C": "Ānarta",
+      "D": "Nabhaga"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Nabhaga → Nābhāga → Ambarīṣa Mahārāja.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__32",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kakudmi's daughter, who married Lord Balarāma, was named what?",
+    "options": {
+      "A": "Revatī",
+      "B": "Sītā",
+      "C": "Subhadrā",
+      "D": "Devakī"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart notes Revatī 'married Lord Balarāma.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__33",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Revatī, who married Lord Balarāma, was the daughter of whom?",
+    "options": {
+      "A": "Revata",
+      "B": "Kakudmi",
+      "C": "Ānarta",
+      "D": "Śaryāti"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Ānarta → Revata → Kakudmi → Revatī (married Lord Balarāma).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__34",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "In the Ānarta line, who was the father of Kakudmi?",
+    "options": {
+      "A": "Ānarta",
+      "B": "Kakudmi",
+      "C": "Revata",
+      "D": "Nabhaga"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The line runs Ānarta → Revata → Kakudmi.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__35",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Atri (in the main descending line)?",
+    "options": {
+      "A": "Budha",
+      "B": "Purūrava",
+      "C": "Nahuṣa",
+      "D": "Soma"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Atri → Soma → Budha (not Lord Buddha) → Purūrava.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__36",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Budha, the son of Soma, is explicitly distinguished in the chart from whom?",
+    "options": {
+      "A": "Lord Buddha",
+      "B": "Lord Brahmā",
+      "C": "Lord Kṛṣṇa",
+      "D": "Jaḍa Bharata"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart labels him 'Budha (not Lord Buddha).'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__37",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Purūrava was the son of whom?",
+    "options": {
+      "A": "Soma",
+      "B": "Budha",
+      "C": "Atri",
+      "D": "Āyu"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Soma → Budha → Purūrava (wife: Urvaśī).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__38",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the wife of Purūrava?",
+    "options": {
+      "A": "Menakā",
+      "B": "Śraddhā",
+      "C": "Urvaśī",
+      "D": "Śatarūpā"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Purūrava's wife as Urvaśī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__39",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vijaya and Āyu were among the sons of whom?",
+    "options": {
+      "A": "Budha",
+      "B": "Soma",
+      "C": "Nahuṣa",
+      "D": "Purūrava"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Purūrava (wife: Urvaśī) had Vijaya, 4 other sons, and Āyu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__40",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Satyavatī and Viśvāmitra were the children of whom?",
+    "options": {
+      "A": "Gadhi",
+      "B": "Vijaya",
+      "C": "Āyu",
+      "D": "Jamadagni"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "In the Vijaya branch, Gadhi's children are Satyavatī and Viśvāmitra (wife: Menakā).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__41",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "According to the chart, who was the wife of Viśvāmitra?",
+    "options": {
+      "A": "Urvaśī",
+      "B": "Menakā",
+      "C": "Śakuntalā",
+      "D": "Kayādhu"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart lists Viśvāmitra's wife as Menakā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__42",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Śakuntalā was the daughter of Viśvāmitra and which apsarā?",
+    "options": {
+      "A": "Urvaśī",
+      "B": "Pūrvacitti",
+      "C": "Menakā",
+      "D": "Arci"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Śakuntalā was the daughter of Viśvāmitra (wife: Menakā); her husband was Duṣmanta.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__43",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Śakuntalā's husband was whom?",
+    "options": {
+      "A": "Bharata",
+      "B": "Yayāti",
+      "C": "Jamadagni",
+      "D": "Duṣmanta"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart notes Śakuntalā's husband was Duṣmanta (see Puru's descendants).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__44",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Jamadagni was the son of whom?",
+    "options": {
+      "A": "Satyavatī",
+      "B": "Viśvāmitra",
+      "C": "Gadhi",
+      "D": "Menakā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Satyavatī → Jamadagni → Lord Paraśurāma.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__45",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Paraśurāma was the son of whom?",
+    "options": {
+      "A": "Satyavatī",
+      "B": "Jamadagni",
+      "C": "Gadhi",
+      "D": "Viśvāmitra"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Jamadagni's son was Lord Paraśurāma.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__46",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kṣatravṛddha and Nahuṣa were among the sons of whom?",
+    "options": {
+      "A": "Purūrava",
+      "B": "Yayāti",
+      "C": "Āyu",
+      "D": "Nahuṣa"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Āyu's sons include Kṣatravṛddha, Nahuṣa, and 3 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__47",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Yayāti was the son of whom?",
+    "options": {
+      "A": "Āyu",
+      "B": "Kṣatravṛddha",
+      "C": "Yadu",
+      "D": "Nahuṣa"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Nahuṣa → Yayāti (and 5 other sons).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__48",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Yadu and Puru, founders of two great dynasties, were the sons of whom?",
+    "options": {
+      "A": "Yayāti",
+      "B": "Nahuṣa",
+      "C": "Āyu",
+      "D": "Sātvata"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Yayāti's sons include Yadu, Puru, and 3 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__49",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Devayānī, who married Yayāti, was the daughter of whom?",
+    "options": {
+      "A": "Priyavrata",
+      "B": "Śukrācārya",
+      "C": "Nahuṣa",
+      "D": "Kardama"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Priyavrata's one daughter married Śukrācārya; their daughter Devayānī married Yayāti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__50",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vṛṣṇi and Andhaka were among the sons of whom?",
+    "options": {
+      "A": "Yadu",
+      "B": "Krostā",
+      "C": "Sātvata",
+      "D": "Śūrasena"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Sātvata's sons include Vṛṣṇi, Andhaka, and 5 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__51",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Śūrasena descended from which son of Sātvata?",
+    "options": {
+      "A": "Andhaka",
+      "B": "Āhuka",
+      "C": "Ugrasena",
+      "D": "Vṛṣṇi"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Vṛṣṇi → (many descendants) → Śūrasena.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__52",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vasudeva and Kunti were the children of whom?",
+    "options": {
+      "A": "Śūrasena",
+      "B": "Vṛṣṇi",
+      "C": "Sātvata",
+      "D": "Devaka"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Śūrasena's children include Vasudeva, Kunti, and 4 other daughters.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__53",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the father of Lord Kṛṣṇa and Lord Balarāma?",
+    "options": {
+      "A": "Śūrasena",
+      "B": "Vasudeva",
+      "C": "Nanda",
+      "D": "Ugrasena"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Vasudeva's children include Lord Kṛṣṇa, Lord Balarāma, Subhadrā, and 9 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__54",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Subhadrā, in the chart, was a daughter (sister of Kṛṣṇa) of whom?",
+    "options": {
+      "A": "Śūrasena",
+      "B": "Devaka",
+      "C": "Vasudeva",
+      "D": "Ugrasena"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Subhadrā is listed among Vasudeva's children, alongside Kṛṣṇa and Balarāma.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__55",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kunti and Vasudeva were siblings; what does this make Kunti to Lord Kṛṣṇa?",
+    "options": {
+      "A": "His mother",
+      "B": "His cousin",
+      "C": "His grandmother",
+      "D": "His aunt (father's sister)"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Kunti was Vasudeva's sister (both children of Śūrasena), so she was Kṛṣṇa's paternal aunt.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__56",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the husband of Kunti?",
+    "options": {
+      "A": "Pāṇḍu",
+      "B": "Dhṛtarāṣṭra",
+      "C": "Vasudeva",
+      "D": "Vidura"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Kunti's husband as Pāṇḍu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__57",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Karṇa and the Pāṇḍavas were born to which mother?",
+    "options": {
+      "A": "Devakī",
+      "B": "Kunti",
+      "C": "Subhadrā",
+      "D": "Mādrī"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Kunti (husband: Pāṇḍu) is shown with Karṇa and the Pāṇḍavas.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__58",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Āhuka descended from which son of Sātvata?",
+    "options": {
+      "A": "Vṛṣṇi",
+      "B": "Śūrasena",
+      "C": "Andhaka",
+      "D": "Devaka"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Andhaka → (many descendants) → Āhuka.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__59",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Āhuka's two sons were whom?",
+    "options": {
+      "A": "Vasudeva and Kunti",
+      "B": "Kaṁsa and Devakī",
+      "C": "Vṛṣṇi and Andhaka",
+      "D": "Ugrasena and Devaka"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Āhuka's sons are Ugrasena and Devaka.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__60",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kaṁsa was the son of whom?",
+    "options": {
+      "A": "Ugrasena",
+      "B": "Devaka",
+      "C": "Āhuka",
+      "D": "Vasudeva"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Ugrasena's children include Kaṁsa, 5 daughters, and 8 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__61",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Devakī, the mother of Kṛṣṇa, was the daughter of whom?",
+    "options": {
+      "A": "Ugrasena",
+      "B": "Devaka",
+      "C": "Āhuka",
+      "D": "Śūrasena"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Devaka's children include Devakī, 6 other daughters, and 4 sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__62",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Since Kaṁsa (son of Ugrasena) and Devakī (daughter of Devaka) share a grandfather, who was he?",
+    "options": {
+      "A": "Sātvata",
+      "B": "Vṛṣṇi",
+      "C": "Āhuka",
+      "D": "Śūrasena"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Ugrasena and Devaka were both sons of Āhuka, so Kaṁsa and Devakī were his grandchildren.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__63",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The emperor Bharata (after whom Bhārata is named), son of Duṣmanta, is distinguished in the chart from whom?",
+    "options": {
+      "A": "Bharata, son of Ṛṣabhadeva",
+      "B": "Bharadvāja",
+      "C": "Bharata, brother of Rāma",
+      "D": "Jaḍa Bharata"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart labels him 'Bharata (not Jaḍa Bharata)' in the Puru line.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__64",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Duṣmanta and Śakuntalā's son was whom?",
+    "options": {
+      "A": "Bharata",
+      "B": "Bharadvāja",
+      "C": "Manyu",
+      "D": "Nara"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "In the Puru line, Duṣmanta → Bharata (not Jaḍa Bharata).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__65",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Rkṣa and Nila were among the sons of whom?",
+    "options": {
+      "A": "Kuru",
+      "B": "Ajamīḍha",
+      "C": "Jāhnu",
+      "D": "Bharata"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Ajamīḍha's sons include Rkṣa, Nila, and other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__66",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kuru, of the Kuru dynasty, was the son of whom?",
+    "options": {
+      "A": "Nila",
+      "B": "Ajamīḍha",
+      "C": "Rkṣa",
+      "D": "Jāhnu"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Ajamīḍha → Rkṣa → Kuru → Jāhnu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__67",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Kuru?",
+    "options": {
+      "A": "Rkṣa",
+      "B": "Śantanu",
+      "C": "Nila",
+      "D": "Jāhnu"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Rkṣa → Kuru → Jāhnu → (many descendants).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__68",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Drupada, father of Draupadī, descended from which son of Ajamīḍha?",
+    "options": {
+      "A": "Nila",
+      "B": "Rkṣa",
+      "C": "Kuru",
+      "D": "Jāhnu"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Nila → (many descendants) → Drupada.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__69",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dhṛṣṭadyumna and Draupadī were the children of whom?",
+    "options": {
+      "A": "Nila",
+      "B": "Drupada",
+      "C": "Kuru",
+      "D": "Śantanu"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Drupada's children include Dhṛṣṭadyumna, Draupadī, and other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__70",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vicitravīrya, Bhīṣma, and Citrāṅgada were the sons of whom?",
+    "options": {
+      "A": "Vicitravīrya",
+      "B": "Pāṇḍu",
+      "C": "Śantanu",
+      "D": "Kuru"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart shows Śantanu's sons as Vicitravīrya, Bhīṣma, and Citrāṅgada.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__71",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Bhīṣma was the son of whom?",
+    "options": {
+      "A": "Vicitravīrya",
+      "B": "Citrāṅgada",
+      "C": "Pāṇḍu",
+      "D": "Śantanu"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Bhīṣma is shown as a son of Śantanu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__72",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Pāṇḍu, Dhṛtarāṣṭra, and Vidura were the sons of whom?",
+    "options": {
+      "A": "Vicitravīrya",
+      "B": "Śantanu",
+      "C": "Bhīṣma",
+      "D": "Citrāṅgada"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart shows Vicitravīrya → Pāṇḍu, Dhṛtarāṣṭra, Vidura.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__73",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Duryodhana, 99 other sons, and 1 daughter were the children of whom?",
+    "options": {
+      "A": "Pāṇḍu",
+      "B": "Dhṛtarāṣṭra",
+      "C": "Vidura",
+      "D": "Vicitravīrya"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Dhṛtarāṣṭra had Duryodhana, 99 other sons, and 1 daughter — 100 sons in all.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__74",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The five Pāṇḍavas were the sons of whom?",
+    "options": {
+      "A": "Dhṛtarāṣṭra",
+      "B": "Vidura",
+      "C": "Pāṇḍu",
+      "D": "Vicitravīrya"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The Pāṇḍavas (Yudhiṣṭhira, Bhīma, Arjuna, Nakula, Sahadeva) are shown under Pāṇḍu (via Kunti).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__75",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which of these is one of the five Pāṇḍavas?",
+    "options": {
+      "A": "Duryodhana",
+      "B": "Abhimanyu",
+      "C": "Karṇa",
+      "D": "Nakula"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The five Pāṇḍavas are Yudhiṣṭhira, Bhīma, Arjuna, Nakula, and Sahadeva.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__76",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Abhimanyu was the son of which Pāṇḍava?",
+    "options": {
+      "A": "Arjuna",
+      "B": "Bhīma",
+      "C": "Yudhiṣṭhira",
+      "D": "Nakula"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Arjuna's children are Abhimanyu and 3 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__77",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Parīkṣit was the son of whom?",
+    "options": {
+      "A": "Arjuna",
+      "B": "Abhimanyu",
+      "C": "Janamejaya",
+      "D": "Bhīma"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Arjuna → Abhimanyu → Parīkṣit → Janamejaya.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__78",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Janamejaya was the son of whom?",
+    "options": {
+      "A": "Abhimanyu",
+      "B": "Arjuna",
+      "C": "Parīkṣit",
+      "D": "Yudhiṣṭhira"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Parīkṣit's children include Janamejaya and 3 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__79",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Following the line Arjuna → Abhimanyu → Parīkṣit → ?, who comes next?",
+    "options": {
+      "A": "Karṇa",
+      "B": "Nakula",
+      "C": "Kuru",
+      "D": "Janamejaya"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The line ends with Janamejaya, son of Parīkṣit.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__80",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the wife of Svāyambhuva Manu?",
+    "options": {
+      "A": "Śatarūpā",
+      "B": "Śraddhā",
+      "C": "Devahūti",
+      "D": "Prasūti"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Svāyambhuva Manu's wife as Śatarūpā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__81",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which of these was a son of Svāyambhuva Manu?",
+    "options": {
+      "A": "Dhruva",
+      "B": "Priyavrata",
+      "C": "Ṛṣabhadeva",
+      "D": "Uttama"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Svāyambhuva Manu's sons were Priyavrata and Uttānapāda; his daughters were Ākūti, Devahūti, and Prasūti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__82",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which of these was a daughter of Svāyambhuva Manu?",
+    "options": {
+      "A": "Suniti",
+      "B": "Satī",
+      "C": "Devahūti",
+      "D": "Sunīthā"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Svāyambhuva Manu's daughters were Ākūti, Devahūti, and Prasūti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__83",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "How many sons did Priyavrata have (besides 1 daughter)?",
+    "options": {
+      "A": "9 sons",
+      "B": "10 sons",
+      "C": "100 sons",
+      "D": "13 sons"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Priyavrata had 1 daughter (who married Śukrācārya) and 13 sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__84",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Of Priyavrata's 13 sons, 3 became sannyāsīs, 3 became Manus, and 7 became what?",
+    "options": {
+      "A": "Rulers of the 7 islands",
+      "B": "Yogendras",
+      "C": "Apsarās",
+      "D": "Demigods"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart notes 3 became sannyāsīs, 3 became Manus, and 7 became rulers of 7 islands.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__85",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Āgnīdhra, one of the seven island-rulers, had which wife?",
+    "options": {
+      "A": "Merudevī",
+      "B": "Pūrvacitti",
+      "C": "Jayantī",
+      "D": "Pañcajanī"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart lists Āgnīdhra's wife as Pūrvacitti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__86",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Āgnīdhra had 9 sons who married the 9 daughters of whom?",
+    "options": {
+      "A": "Dakṣa",
+      "B": "Kardama",
+      "C": "Meru",
+      "D": "Death"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Āgnīdhra's 9 sons married the 9 daughters of Meru.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__87",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The oldest of Āgnīdhra's 9 sons was whom?",
+    "options": {
+      "A": "Ṛṣabhadeva",
+      "B": "Bharata",
+      "C": "Gaya",
+      "D": "King Nābhi"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The oldest of the 9 sons is King Nābhi (wife: Merudevī).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__88",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "King Nābhi's wife was whom?",
+    "options": {
+      "A": "Merudevī",
+      "B": "Jayantī",
+      "C": "Pañcajanī",
+      "D": "Pūrvacitti"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists King Nābhi's wife as Merudevī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__89",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Ṛṣabhadeva was the son of whom?",
+    "options": {
+      "A": "Āgnīdhra",
+      "B": "King Nābhi",
+      "C": "Priyavrata",
+      "D": "Bharata"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "King Nābhi (wife: Merudevī) → Lord Ṛṣabhadeva (wife: Jayantī).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__90",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Ṛṣabhadeva's wife was whom?",
+    "options": {
+      "A": "Merudevī",
+      "B": "Pañcajanī",
+      "C": "Jayantī",
+      "D": "Pūrvacitti"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Lord Ṛṣabhadeva's wife as Jayantī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__91",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Bharata, who in his next life became Jaḍa Bharata, was the son of whom?",
+    "options": {
+      "A": "King Nābhi",
+      "B": "Duṣmanta",
+      "C": "Āgnīdhra",
+      "D": "Lord Ṛṣabhadeva"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Lord Ṛṣabhadeva (wife: Jayantī) → Bharata (wife: Pañcajanī) [in next life Jaḍa Bharata].",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__92",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "This Bharata (son of Ṛṣabhadeva) had which wife?",
+    "options": {
+      "A": "Pañcajanī",
+      "B": "Jayantī",
+      "C": "Merudevī",
+      "D": "Śakuntalā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Bharata's wife as Pañcajanī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__93",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Along with Bharata, Lord Ṛṣabhadeva's sons included the '9 Yogendras' and how many other sons?",
+    "options": {
+      "A": "99 other sons",
+      "B": "90 other sons",
+      "C": "13 other sons",
+      "D": "10 sons"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Ṛṣabhadeva's sons: Bharata, the 9 Yogendras, and 90 other sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__94",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Mahārāja Gaya descended from which Bharata's line?",
+    "options": {
+      "A": "Bharata, son of Duṣmanta",
+      "B": "Bharata, brother of Rāma",
+      "C": "Bharata, son of Ṛṣabhadeva",
+      "D": "Bharadvāja"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Bharata (son of Ṛṣabhadeva) → many descendants → Mahārāja Gaya.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__95",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Uttānapāda's two wives were whom?",
+    "options": {
+      "A": "Śatarūpā and Śraddhā",
+      "B": "Diti and Aditi",
+      "C": "Arci and Sunīthā",
+      "D": "Suruci and Suniti"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Uttānapāda married Suruci and Suniti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__96",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Uttama was the son of which wife of Uttānapāda?",
+    "options": {
+      "A": "Suruci",
+      "B": "Suniti",
+      "C": "Śatarūpā",
+      "D": "Svarvīthi"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Suruci's son was Uttama; Suniti's son was Dhruva.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__97",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The great devotee Dhruva was the son of which mother?",
+    "options": {
+      "A": "Suruci",
+      "B": "Suniti",
+      "C": "Śatarūpā",
+      "D": "Merudevī"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Suniti's son was Dhruva Mahārāja.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__98",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Uttama and Dhruva were half-brothers, both sons of whom?",
+    "options": {
+      "A": "Priyavrata",
+      "B": "Svāyambhuva Manu",
+      "C": "Uttānapāda",
+      "D": "Vatsara"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Uttama (via Suruci) and Dhruva (via Suniti) were both sons of Uttānapāda.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__99",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dhruva Mahārāja's sons were Vatsara and whom?",
+    "options": {
+      "A": "Puṣpārṇa",
+      "B": "Vyuṣṭa",
+      "C": "Uttama",
+      "D": "Utkala"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Dhruva's sons were Vatsara (wife: Svarvīthi) and Utkala.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__100",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vatsara's wife was whom?",
+    "options": {
+      "A": "Svarvīthi",
+      "B": "Arci",
+      "C": "Sunīthā",
+      "D": "Māriṣā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Vatsara's wife as Svarvīthi.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__101",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Following Dhruva → Vatsara → ? → Vyuṣṭa, who is the missing link?",
+    "options": {
+      "A": "Utkala",
+      "B": "Puṣpārṇa",
+      "C": "Sarvatejā",
+      "D": "Cākṣuṣa"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The line runs Vatsara → Puṣpārṇa → Vyuṣṭa → Sarvatejā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__102",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Vyuṣṭa?",
+    "options": {
+      "A": "Puṣpārṇa",
+      "B": "Cākṣuṣa Manu",
+      "C": "Sarvatejā",
+      "D": "Ulmuka"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Vyuṣṭa → Sarvatejā → Cākṣuṣa Manu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__103",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Cākṣuṣa Manu, in the Dhruva line, is identified as which Manu?",
+    "options": {
+      "A": "The current Manu",
+      "B": "The first Manu",
+      "C": "The seventh Manu",
+      "D": "The Sixth Manu"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart labels Cākṣuṣa Manu as the Sixth Manu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__104",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Cākṣuṣa Manu was the son of whom?",
+    "options": {
+      "A": "Sarvatejā",
+      "B": "Vyuṣṭa",
+      "C": "Ulmuka",
+      "D": "Aṅga"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Sarvatejā → Cākṣuṣa Manu → Ulmuka.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__105",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Ulmuka, son of Cākṣuṣa Manu, had which son?",
+    "options": {
+      "A": "Vena",
+      "B": "Aṅga",
+      "C": "Pṛthu",
+      "D": "Vijitāśva"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Cākṣuṣa Manu → Ulmuka → Aṅga → Vena.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__106",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Aṅga's wife, the daughter of Death, was whom?",
+    "options": {
+      "A": "Arci",
+      "B": "Svarvīthi",
+      "C": "Sunīthā",
+      "D": "Māriṣā"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Aṅga's wife as Sunīthā, daughter of Death.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__107",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The infamous King Vena was the son of whom?",
+    "options": {
+      "A": "Ulmuka",
+      "B": "Pṛthu",
+      "C": "Cākṣuṣa Manu",
+      "D": "Aṅga"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Aṅga (wife: Sunīthā) → Vena.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__108",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "From the churning of King Vena's thighs came which sinful race?",
+    "options": {
+      "A": "Niṣāda",
+      "B": "Pṛthu",
+      "C": "Haryaśvas",
+      "D": "Savalaśvas"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "From churning Vena's thighs came Niṣāda (the sinful race).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__109",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Mahārāja Pṛthu was produced from the churning of which part of King Vena?",
+    "options": {
+      "A": "His thighs",
+      "B": "His right hand",
+      "C": "His head",
+      "D": "His feet"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "From churning Vena's right hand came Pṛthu (wife: Arci).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__110",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the wife of Mahārāja Pṛthu?",
+    "options": {
+      "A": "Sunīthā",
+      "B": "Māriṣā",
+      "C": "Arci",
+      "D": "Svarvīthi"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Pṛthu's wife as Arci.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__111",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vijitāśva, son of Pṛthu, was also known by which name?",
+    "options": {
+      "A": "Barhiṣat",
+      "B": "Prācīnabarhi",
+      "C": "Havirdhāna",
+      "D": "Antardhāna"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart lists Vijitāśva 'a.k.a. Antardhāna.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__112",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Vijitāśva (Antardhāna) was the son of whom?",
+    "options": {
+      "A": "Pṛthu",
+      "B": "Vena",
+      "C": "Havirdhāna",
+      "D": "Aṅga"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Pṛthu → Vijitāśva (a.k.a. Antardhāna) → Havirdhāna.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__113",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the son of Vijitāśva (Antardhāna)?",
+    "options": {
+      "A": "Barhiṣat",
+      "B": "Havirdhāna",
+      "C": "Pracetās",
+      "D": "Dakṣa"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Vijitāśva → Havirdhāna → Barhiṣat.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__114",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Barhiṣat, son of Havirdhāna, was also known by all of these names EXCEPT which?",
+    "options": {
+      "A": "Prajāpati",
+      "B": "Prācīnabarhi",
+      "C": "Antardhāna",
+      "D": "Barhiṣmān"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Barhiṣat is a.k.a. Prajāpati, Prācīnabarhi, and Barhiṣmān. 'Antardhāna' was the other name of Vijitāśva.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__115",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The ten Pracetās were the sons of whom?",
+    "options": {
+      "A": "Havirdhāna",
+      "B": "Vijitāśva",
+      "C": "Dakṣa",
+      "D": "Barhiṣat"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Barhiṣat → the Pracetās (10 sons; wife: Māriṣā).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__116",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The Pracetās' wife was whom?",
+    "options": {
+      "A": "Māriṣā",
+      "B": "Asiknī",
+      "C": "Arci",
+      "D": "Sunīthā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists the Pracetās' wife as Māriṣā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__117",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dakṣa (in the Dhruva/Pṛthu line) was the son of whom?",
+    "options": {
+      "A": "Barhiṣat",
+      "B": "The Pracetās",
+      "C": "Havirdhāna",
+      "D": "Vena"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The Pracetās → Dakṣa (wife: Asiknī).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__118",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "This Dakṣa's wife was whom?",
+    "options": {
+      "A": "Māriṣā",
+      "B": "Prasūti",
+      "C": "Asiknī",
+      "D": "Arci"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Dakṣa's wife as Asiknī.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__119",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dakṣa's 60 daughters are noted as having done what?",
+    "options": {
+      "A": "Become Manus",
+      "B": "Ruled the 7 islands",
+      "C": "Become Apsarās",
+      "D": "Created many species"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart notes Dakṣa's 60 daughters 'created many species.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__120",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dakṣa's 10,000 Haryaśvas and 10,000 Savalaśvas both became what?",
+    "options": {
+      "A": "Sannyāsīs",
+      "B": "Rulers of islands",
+      "C": "Demigods",
+      "D": "Manus"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Both the Haryaśvas and Savalaśvas are noted as sannyāsīs.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__121",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "This Dakṣa is noted as being Prasūti's husband in which context?",
+    "options": {
+      "A": "In this life",
+      "B": "In his next life",
+      "C": "In a previous life",
+      "D": "As her father"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The chart notes Dakṣa was 'Prasūti's husband in his next life.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__122",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the husband of Ākūti (daughter of Svāyambhuva Manu)?",
+    "options": {
+      "A": "Dakṣa",
+      "B": "Kardama",
+      "C": "Ruci",
+      "D": "Dharma"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart lists Ākūti's husband as Ruci.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__123",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Yajña, an incarnation of Kṛṣṇa, was the son of whom?",
+    "options": {
+      "A": "Prasūti",
+      "B": "Devahūti",
+      "C": "Aditi",
+      "D": "Ākūti"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Ākūti (husband: Ruci) had Yajña, an incarnation of Kṛṣṇa, and Dakṣiṇa.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__124",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the husband of Prasūti (daughter of Svāyambhuva Manu)?",
+    "options": {
+      "A": "Dakṣa",
+      "B": "Ruci",
+      "C": "Kardama",
+      "D": "Dharma"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Prasūti's husband as Dakṣa.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__125",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Satī, the wife of Lord Śiva, was the daughter of whom?",
+    "options": {
+      "A": "Kardama and Devahūti",
+      "B": "Dakṣa and Prasūti",
+      "C": "Ruci and Ākūti",
+      "D": "Kaśyapa and Diti"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Satī (wife of Lord Śiva) is shown as a daughter of Dakṣa and Prasūti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__126",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Satī married which deity?",
+    "options": {
+      "A": "Lord Viṣṇu",
+      "B": "Dharma",
+      "C": "Lord Śiva",
+      "D": "Kaśyapa"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Satī is labeled 'wife of Lord Śiva.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__127",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Aditi and Diti, who married Kaśyapa, are shown as daughters of which couple?",
+    "options": {
+      "A": "Marīci and Kalā",
+      "B": "Kardama and Devahūti",
+      "C": "Svāyambhuva Manu and Śatarūpā",
+      "D": "Dakṣa and Prasūti"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Aditi (husband: Kaśyapa) and Diti (husband: Kaśyapa) are daughters of Dakṣa and Prasūti — the reason their descendants 'continue on the left, under Marīci.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__128",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Mūrti, a daughter of Dakṣa and Prasūti, married whom?",
+    "options": {
+      "A": "Dharma",
+      "B": "Kaśyapa",
+      "C": "Ruci",
+      "D": "Kardama"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart lists Mūrti's husband as Dharma.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__129",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Nara-Nārāyaṇa, the combined form of Kṛṣṇa and Arjuna, was the son of Mūrti and whom?",
+    "options": {
+      "A": "Kaśyapa",
+      "B": "Dharma",
+      "C": "Ruci",
+      "D": "Atri"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Mūrti (husband: Dharma) → Nara-Nārāyaṇa (form of Kṛṣṇa and Arjuna).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__130",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Nara-Nārāyaṇa is noted in the chart as having created Apsarās like whom?",
+    "options": {
+      "A": "Menakā",
+      "B": "Pūrvacitti",
+      "C": "Urvaśī",
+      "D": "Arci"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart notes Nara-Nārāyaṇa 'created Apsarās like Urvaśī.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__131",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Who was the husband of Devahūti?",
+    "options": {
+      "A": "Ruci",
+      "B": "Dakṣa",
+      "C": "Dharma",
+      "D": "Kardama"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart lists Devahūti's husband as Kardama (Muni).",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__132",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Kapila, the incarnation who taught Sāṅkhya to His mother, was the son of whom?",
+    "options": {
+      "A": "Kardama and Devahūti",
+      "B": "Ruci and Ākūti",
+      "C": "Dakṣa and Prasūti",
+      "D": "Kaśyapa and Aditi"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Lord Kapila is shown as the son of Kardama and Devahūti.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__133",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kalā, who married Marīci, was a daughter of whom?",
+    "options": {
+      "A": "Prasūti (and Dakṣa)",
+      "B": "Devahūti (and Kardama)",
+      "C": "Ākūti (and Ruci)",
+      "D": "Śatarūpā"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Kalā (husband: Marīci) is a daughter of Devahūti and Kardama.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__134",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Kalā and Marīci's sons were Kaśyapa and whom?",
+    "options": {
+      "A": "Vivasvān",
+      "B": "Dakṣa",
+      "C": "Pūrṇimā",
+      "D": "Soma"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Kalā (husband: Marīci) had Kaśyapa and Pūrṇimā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__135",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "According to the chart, who were the parents of Kaśyapa?",
+    "options": {
+      "A": "Brahmā and Śatarūpā",
+      "B": "Dakṣa and Prasūti",
+      "C": "Atri and Anasūyā",
+      "D": "Marīci and Kalā"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Kaśyapa is Marīci's son via Kalā (a daughter of Devahūti) — closing a loop in the tree.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__136",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Anasūyā, who married Atri, was a daughter of whom?",
+    "options": {
+      "A": "Devahūti (and Kardama)",
+      "B": "Prasūti (and Dakṣa)",
+      "C": "Ākūti (and Ruci)",
+      "D": "Menakā"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Anasūyā (husband: Atri) is a daughter of Devahūti and Kardama.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__137",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Soma, Dattātreya, and Durvāsā were the sons of Atri and which wife?",
+    "options": {
+      "A": "Kalā",
+      "B": "Anasūyā",
+      "C": "Prasūti",
+      "D": "Śatarūpā"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Anasūyā (husband: Atri) → Soma, Dattātreya, Durvāsā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__138",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Soma (son of Atri and Anasūyā) was a partial incarnation of whom?",
+    "options": {
+      "A": "Viṣṇu",
+      "B": "Śiva",
+      "C": "Brahmā",
+      "D": "Kṛṣṇa"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The chart notes Soma was a 'partial incarnation of Brahmā.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__139",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dattātreya was a partial incarnation of whom?",
+    "options": {
+      "A": "Brahmā",
+      "B": "Śiva",
+      "C": "Indra",
+      "D": "Viṣṇu"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "The chart notes Dattātreya was a 'partial incarnation of Viṣṇu.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__140",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Durvāsā, famous for his temper, was a partial incarnation of whom?",
+    "options": {
+      "A": "Śiva",
+      "B": "Viṣṇu",
+      "C": "Brahmā",
+      "D": "Kṛṣṇa"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "The chart notes Durvāsā was a 'partial incarnation of Śiva.'",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__141",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Dattātreya and Durvāsā were both sons of which sage?",
+    "options": {
+      "A": "Marīci",
+      "B": "Atri",
+      "C": "Kardama",
+      "D": "Kaśyapa"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Atri (via Anasūyā) had Soma, Dattātreya, and Durvāsā.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__142",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The three great original branches of the family tree stem from Brahmā's sons Marīci, Atri, and whom?",
+    "options": {
+      "A": "Kaśyapa",
+      "B": "Vivasvān",
+      "C": "Svāyambhuva Manu",
+      "D": "Priyavrata"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "The tree's three main branches are Marīci (→ Kaśyapa), Atri (→ Soma), and Svāyambhuva Manu.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__143",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Kṛṣṇa and Lord Balarāma appear in the chart within which dynasty?",
+    "options": {
+      "A": "The Puru (Kuru) dynasty",
+      "B": "The Ikṣvāku dynasty",
+      "C": "The Priyavrata line",
+      "D": "The Yadu dynasty"
+    },
+    "correct_answers": [
+      "D"
+    ],
+    "explanation": "Kṛṣṇa and Balarāma descend from Yadu → Sātvata → Vṛṣṇi → Śūrasena → Vasudeva.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__144",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "The Pāṇḍavas and Kauravas (Mahābhārata) belong to which dynasty?",
+    "options": {
+      "A": "The Puru (Kuru) dynasty",
+      "B": "The Yadu dynasty",
+      "C": "The Ikṣvāku dynasty",
+      "D": "The Ānarta line"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Puru → Bharata → ... → Kuru → Śantanu → the Pāṇḍavas and Dhṛtarāṣṭra's sons.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__145",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Lord Rāmacandra belongs to which dynasty?",
+    "options": {
+      "A": "The Yadu dynasty",
+      "B": "The Ikṣvāku dynasty",
+      "C": "The Puru dynasty",
+      "D": "The Priyavrata line"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Rāma descends from Vaivasvata Manu → Ikṣvāku → ... → Daśaratha → Lord Rāmacandra.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__The_Complete_Family_Tree__146",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "The Complete Family Tree",
+    "question": "Which chain of incarnations were the three sons of Atri and Anasūyā?",
+    "options": {
+      "A": "Yajña, Kapila, Ṛṣabhadeva",
+      "B": "Nara, Nārāyaṇa, Hari",
+      "C": "Soma, Dattātreya, Durvāsā",
+      "D": "Kṛṣṇa, Balarāma, Subhadrā"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "Atri and Anasūyā's sons — Soma, Dattātreya, and Durvāsā — were partial incarnations of Brahmā, Viṣṇu, and Śiva respectively.",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
     "id": "Srimad_Bhagavatam__Ch_1_Questions_by_Vidura__0",
     "topic": "Śrīmad Bhāgavatam (Canto 3)",
     "subtopic": "Ch 1: Questions by Vidura",
@@ -32676,6 +35634,582 @@
       "A"
     ],
     "explanation": "",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__0",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "At the opening of the chapter, why was Satī moving in and out of the room \"as a swing moves this way and that\"?",
+    "options": {
+      "A": "She was preparing decorations to welcome her father to Lord Śiva's home",
+      "B": "Her mind was divided between the desire to see her relatives and her fear of Lord Śiva's warning",
+      "C": "She was searching the house for her pet bird before the journey",
+      "D": "She was performing a yogic exercise to steady her breathing"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"The sage Maitreya said: Lord Śiva was silent after speaking to Satī, seeing her between decisions. Satī was very much anxious to see her relatives at her father's house, but at the same time she was afraid of Lord Śiva's warning. Her mind unsettled, she moved in and out of the room as a swing moves this way and that.\" (Purport: \"Satī's mind was divided about whether to go to her father's house or obey the orders of Lord Śiva. The struggle between the two decisions was so strong that she was pushed from one side of the room to another, and she began to move just like the pendulum of a clock.\")",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__1",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "According to the purport, what was the Vedic conception of the family relationship that existed between Lord Śiva and Satī when it is said he \"had given her half his body\"?",
+    "options": {
+      "A": "The husband owns the wife's body completely",
+      "B": "The husband gives half his body to his wife, and the wife gives half of her body to her husband, so that a husband without a wife or a wife without a husband is incomplete",
+      "C": "The wife must give her entire body to her husband while he retains his own",
+      "D": "Half the body is given only at the time of death"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"According to the Vedic conception of family life, the husband gives half his body to his wife, and the wife gives half of her body to her husband. In other words, a husband without a wife or a wife without a husband is incomplete.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__2",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "The word 'apratipūruṣam' is used to describe Lord Śiva when Satī looked at him \"as if she were going to blast him with her vision.\" What does the purport say this word means and indicate?",
+    "options": {
+      "A": "\"One who is easily angered,\" indicating Śiva's temper",
+      "B": "\"One who has no equal\" / \"the personality who has no rival\"; since Śiva is the ātmā, it indicates Satī was prepared to commit suicide",
+      "C": "\"One who lives in the crematorium,\" indicating his inauspicious dwelling",
+      "D": "\"One who cannot be seen,\" indicating Śiva's invisibility"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"The word apratipūruṣam, used in this verse, means 'one who has no equal.' ... In other words, since Lord Śiva is the ātmā (śiva also means ātmā), it is indicated here that Satī was prepared to commit suicide. Another meaning of the word apratipūruṣa is 'the personality who has no rival.'\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__3",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "In the purport describing Satī leaving her husband, what does the text identify as the general cause of separation and divorce between husband and wife?",
+    "options": {
+      "A": "Economic hardship",
+      "B": "Interference from in-laws",
+      "C": "Womanly behavior / womanly weakness",
+      "D": "The husband's neglect of religious duties"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "\"Generally, separation between husband and wife is due to womanly behavior; divorce takes place due to womanly weakness. The best course for a woman is to abide by the orders of her husband. That makes family life very peaceful.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__4",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Which of Lord Śiva's disciples are named as those who, headed the thousands of followers, quickly followed Satī when she left alone?",
+    "options": {
+      "A": "Nandi and Bhṛṅgi",
+      "B": "Maṇimān and Mada",
+      "C": "Marīci and Atri",
+      "D": "Jagāi and Mādhāi"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"When they saw Satī leaving alone very rapidly, thousands of Lord Śiva's disciples, headed by Maṇimān and Mada, quickly followed her with his bull Nandi in front and accompanied by the Yakṣas.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__5",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "The word 'anucarāḥ' used to describe Lord Śiva's disciples following Satī is explained to mean what?",
+    "options": {
+      "A": "\"Those who are afraid of their master\"",
+      "B": "\"Those who ride upon bulls\"",
+      "C": "\"Those who can immediately understand the purpose of their master\"",
+      "D": "\"Those who chant Vedic hymns\""
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "\"The word anucarāḥ is also significant, for it indicates that Lord Śiva's disciples were always ready to sacrifice anything for Lord Śiva. All of them could understand the desire of Śiva, who did not want Satī to go alone. Anucarāḥ means 'those who can immediately understand the purpose of their master.'\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__6",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "How did Lord Śiva's disciples arrange for Satī to travel to her father's house?",
+    "options": {
+      "A": "On foot, surrounded by an armed guard",
+      "B": "In a golden chariot pulled by horses",
+      "C": "Seated on the back of a bull, given her pet bird, a lotus flower, a mirror, and covered with a great canopy, in a pompous procession",
+      "D": "Carried in a palanquin by the Yakṣas alone"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "\"The disciples of Lord Śiva arranged for Satī to be seated on the back of a bull and gave her the bird which was her pet. They bore a lotus flower, a mirror and all such paraphernalia for her enjoyment and covered her with a great canopy. Followed by a singing party with drums, conchshells and bugles, the entire procession was as pompous as a royal parade.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__7",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Regarding the animals gathered at the sacrifice, what does the purport clarify was their real purpose?",
+    "options": {
+      "A": "They were meant to be killed and eaten as prasādam",
+      "B": "They were kept as pets for the demigods",
+      "C": "They were used to test the power of Vedic mantras — an old animal was offered in the fire and rejuvenated to test the brāhmaṇas' realization, not to be killed for meat",
+      "D": "They were traded as payment to the priests"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "\"That these animals were meant for sacrifice does not mean that they were meant to be killed. ... to test their realization an old animal was offered in the fire and rejuvenated. That was the test of a Vedic mantra. The animals gathered were not meant to be killed and eaten. The real purpose of a sacrifice was not to replace a slaughterhouse but to test a Vedic mantra by giving an animal new life. Animals were used to test the power of Vedic mantras, not for meat.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__8",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "When Satī arrived at the sacrificial arena, who welcomed her, and why did no one else?",
+    "options": {
+      "A": "Her father welcomed her; the others were busy chanting",
+      "B": "Only her mother and sisters welcomed her with tears; the others were afraid of Dakṣa",
+      "C": "The demigods welcomed her; her family ignored her",
+      "D": "The brāhmaṇas welcomed her; her mother was absent"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"When Satī, with her followers, reached the arena, because all the people assembled were afraid of Dakṣa, none of them received her well. No one welcomed her but her mother and sisters, who, with tears in their eyes and with glad faces, welcomed her and talked with her very pleasingly.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__9",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Although her mother and sisters offered her greetings, a seat, and presents, why did Satī refuse to accept anything?",
+    "options": {
+      "A": "Because the gifts were impure",
+      "B": "Because Lord Śiva had forbidden her from accepting gifts",
+      "C": "Because her father neither talked with her nor welcomed her by asking about her welfare",
+      "D": "Because she was fasting for the sacrifice"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "\"Although she was received by her sisters and mother, she did not reply to their words of reception, and although she was offered a seat and presents, she did not accept anything, for her father neither talked with her nor welcomed her by asking about her welfare.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__10",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "What position did Satī hold among Dakṣa's children, and how had that relationship changed?",
+    "options": {
+      "A": "She was the eldest and remained Dakṣa's favorite",
+      "B": "She was the youngest child and had been his pet, but because of her association with Lord Śiva, Dakṣa forgot all his affection for her",
+      "C": "She was a middle child whom Dakṣa never favored",
+      "D": "She was adopted and thus never truly loved"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Satī was the youngest child of Dakṣa, and she knew that she was his pet. But now, because of her association with Lord Śiva, Dakṣa forgot all his affection for his daughter, and this very much aggrieved her.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__11",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "What specific observation at the sacrifice made Satī 'greatly angry, so much so that she looked at her father as if she were going to burn him with her eyes'?",
+    "options": {
+      "A": "That her sisters had been given better seats than her",
+      "B": "That there were no oblations for her husband Lord Śiva, and that Dakṣa had neither invited Śiva nor received her",
+      "C": "That the brāhmaṇas were arguing instead of chanting",
+      "D": "That the sacrificial animals were being mistreated"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Present in the arena of sacrifice, Satī saw that there were no oblations for her husband, Lord Śiva. Next she realized that not only had her father failed to invite Lord Śiva, but when he saw Lord Śiva's exalted wife, Dakṣa did not receive her either. Thus she became greatly angry, so much so that she looked at her father as if she were going to burn him with her eyes.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__12",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "The purport states that when Viṣṇu or a Vaiṣṇava is insulted, one should be angry, and cites Lord Caitanya as an example. On whose behalf did Lord Caitanya become angry and want to kill the offenders?",
+    "options": {
+      "A": "When Advaita was offended by the demigods",
+      "B": "When Nityānanda was offended by Jagāi and Mādhāi",
+      "C": "When Haridāsa Ṭhākura was beaten in the marketplace",
+      "D": "When His own mother was insulted"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Lord Caitanya, who always preached nonviolence, meekness and humility, also became angry when Nityānanda was offended by Jagāi and Mādhāi, and He wanted to kill them. When Viṣṇu or a Vaiṣṇava is blasphemed or dishonored, one should be very angry.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__13",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "In her speech, how does Satī characterize Lord Śiva's attitude toward all living entities to prove that only Dakṣa could be envious of him?",
+    "options": {
+      "A": "Śiva loves only his devotees and hates the demons",
+      "B": "Śiva is the most beloved of all living entities, has no rival, no one is very dear to him and no one is his enemy, being free from all enmity",
+      "C": "Śiva favors the demigods above ordinary men",
+      "D": "Śiva is indifferent and cares for no one"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"The blessed goddess said: Lord Śiva is the most beloved of all living entities. He has no rival. No one is very dear to him, and no one is his enemy. No one but you could be envious of such a universal being, who is free from all enmity.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__14",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Satī addresses Dakṣa as 'dvija' (twice-born) and contrasts his fault-finding with a great soul's vision, using the analogy of what creature that seeks only honey?",
+    "options": {
+      "A": "A butterfly among flowers",
+      "B": "A bee, which is always interested in the honey in the flower and does not consider the thorns and colors",
+      "C": "A swan separating milk from water",
+      "D": "An ant collecting only sweet grains"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Just as a bee is always interested in the honey in the flower and does not consider the thorns and colors, highly qualified persons, who are uncommon, accept only the good qualities of others, not considering their bad qualities, whereas the common man can judge what are good qualities and what are bad qualities.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__15",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "In the purport to Text 12, the story of a devotee who wanted the benediction that 'whenever he touched someone on the head, that person's head would at once be separated from his trunk' is used to illustrate which name and quality of Lord Śiva?",
+    "options": {
+      "A": "Yogeśvara — master of yoga",
+      "B": "Āśutoṣa — one who is satisfied very easily and offers the highest benediction, magnifying even a small good quality",
+      "C": "Mahādeva — the greatest god",
+      "D": "Vṛṣadhvaja — one who carries the bull banner"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Lord Śiva is also called Āśutoṣa, which refers to one who is satisfied very easily and who offers to any person the highest level of benediction. For example, once a devotee of Lord Śiva wanted the benediction that whenever he touched someone on the head, that person's head would at once be separated from his trunk. Lord Śiva agreed. ... Thus Lord Śiva accepted his bad qualities as magnificently good qualities.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__16",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Satī says the name of Lord Śiva, 'consisting of two syllables, śi and va,' does what? And what does 'śiva' mean according to the purport?",
+    "options": {
+      "A": "It grants wealth; śiva means 'wealthy'",
+      "B": "It purifies one of all sinful activities; śiva means maṅgala, or auspicious",
+      "C": "It brings victory in battle; śiva means 'conqueror'",
+      "D": "It ensures long life; śiva means 'eternal'"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Satī continued: My dear father, you are committing the greatest offense by envying Lord Śiva, whose very name, consisting of two syllables, śi and va, purifies one of all sinful activities. ... Śiva means maṅgala, or auspicious. Within the body the soul is auspicious.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__17",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "The purport uses the analogy of milk and curd (from the Brahma-saṁhitā) to explain the position of Lord Śiva relative to the Supreme Personality of Godhead. What is the point of this analogy?",
+    "options": {
+      "A": "Lord Śiva and Lord Viṣṇu are exactly equal, like two cups of the same milk",
+      "B": "Lord Śiva is like curd — in one sense he is the Supreme Personality of Godhead, but in another sense he is not, just as curd is milk yet we must distinguish between the two",
+      "C": "Lord Śiva is superior to Viṣṇu, as curd is thicker than milk",
+      "D": "Lord Śiva has no relation to Viṣṇu, as water differs from milk"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Lord Śiva is described in the Brahma-saṁhitā to be like curd or yogurt. Curd is not different from milk. Since milk is transformed into curd, in one sense curd is also milk. Similarly, Lord Śiva is in one sense the Supreme Personality of Godhead, but in another sense he is not, just as curd is milk although we have to distinguish between the two.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__18",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Satī prescribes what one should do upon hearing an irresponsible person blaspheme the master and controller of religion. What is the graded instruction she gives?",
+    "options": {
+      "A": "One should always forgive the blasphemer and continue chanting",
+      "B": "If unable to punish, block one's ears and go away; but if able, one should by force cut out the blasphemer's tongue and kill the offender, and after that give up one's own life",
+      "C": "One should report the blasphemer to the king for judgment",
+      "D": "One should debate the blasphemer until he is convinced"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Satī continued: If one hears an irresponsible person blaspheme the master and controller of religion, one should block his ears and go away if unable to punish him. But if one is able to kill, then one should by force cut out the blasphemer's tongue and kill the offender, and after that one should give up his own life.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__19",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "According to the purport of Text 17, the response to hearing blasphemy differs by social order. Why did Satī decide to give up her own body rather than kill Dakṣa?",
+    "options": {
+      "A": "Because she was physically unable to harm him",
+      "B": "Because she considered herself among the vaiśyas and śūdras (with whom women are grouped), who should immediately give up their bodies upon hearing blasphemy of an exalted person",
+      "C": "Because Lord Śiva had ordered her not to harm anyone",
+      "D": "Because killing was forbidden inside a sacrificial arena"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"But as far as the vaiśyas and śūdras are concerned, they should immediately give up their bodies. Satī decided to give up her body because she thought herself to be among the śūdras and vaiśyas. As stated in Bhagavad-gītā (9.32), striyo vaiśyās tathā śūdrāḥ. Women, laborers and the mercantile class are on the same level.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__20",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Satī compares her rejection of the body received from Dakṣa to what medical analogy?",
+    "options": {
+      "A": "Amputating an infected limb",
+      "B": "Vomiting — 'If someone has taken food which is poisonous, the best treatment is to vomit'",
+      "C": "Fasting to cleanse the body",
+      "D": "Applying medicine to a wound"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Therefore I shall no longer bear this unworthy body, which has been received from you, who have blasphemed Lord Śiva. If someone has taken food which is poisonous, the best treatment is to vomit.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__21",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "According to the purport of Text 18, why did Satī — described as the representation of the external potency of the Lord, able to vanquish many universes — choose to give up her own body instead of destroying Dakṣa?",
+    "options": {
+      "A": "Because she feared retaliation from the demigods",
+      "B": "To save her husband from the charge that he employed his wife to kill Dakṣa because he could not do so himself due to his inferior position",
+      "C": "Because she had lost her powers upon entering the arena",
+      "D": "Because the Vedas forbid a woman from killing her father"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Since Satī was the representation of the external potency of the Lord, it was in her power to vanquish many universes, including many Dakṣas, but in order to save her husband from the charge that he employed his wife, Satī, to kill Dakṣa because he could not do so due to his inferior position, she decided to give up her body.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__22",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Satī explains that when Lord Śiva addresses her by a particular name during relaxed conversation, she becomes morose and her smile disappears. What is that name and its meaning?",
+    "options": {
+      "A": "Bhavānī — 'wife of Bhava'",
+      "B": "Dākṣāyaṇī — 'the daughter of King Dakṣa'",
+      "C": "Pārvatī — 'daughter of the mountain'",
+      "D": "Durgā — 'the invincible one'"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Because of our family relationship, when Lord Śiva addresses me as Dākṣāyaṇī I at once become morose, and my jolliness and my smile at once disappear. ... The word dākṣāyaṇī means 'the daughter of King Dakṣa.' Sometimes, when there was relaxed conversation between husband and wife, Lord Śiva used to call Satī 'the daughter of King Dakṣa,' and because this very word reminded her about her family relationship with King Dakṣa, she at once became ashamed.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__23",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "After finishing her speech to Dakṣa, what did Satī do to prepare to give up her body?",
+    "options": {
+      "A": "She threw herself into the sacrificial fire pit",
+      "B": "She sat down on the ground facing north, dressed in saffron/yellow garments, sanctified herself with water, closed her eyes, and absorbed herself in the mystic yoga process",
+      "C": "She ran back toward Lord Śiva's abode",
+      "D": "She drank poison offered at the altar"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Maitreya the sage told Vidura: O annihilator of enemies, while thus speaking to her father in the arena of sacrifice, Satī sat down on the ground and faced north. Dressed in saffron garments, she sanctified herself with water and closed her eyes to absorb herself in the process of mystic yoga.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__24",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Describe the yogic path by which Satī raised her life air before quitting her body.",
+    "options": {
+      "A": "From the head down to the feet",
+      "B": "She placed the prāṇa and apāna in equilibrium near the navel, then raised the life air (mixed with intelligence) to the heart, then to the pulmonary passage, and from there to between the eyebrows",
+      "C": "She circulated the air only within the heart",
+      "D": "She held her breath entirely until the body stopped"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"First of all she sat in the required sitting posture, and then she carried the life air upwards and placed it in the position of equilibrium near the navel. Then she raised her life air, mixed with intelligence, to the heart and then gradually towards the pulmonary passage, and from there to between her eyebrows.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__25",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "By meditating on what did Satī become 'completely cleansed of all taints of sin' and quit her body in a blazing fire?",
+    "options": {
+      "A": "The sacrificial fire of her father",
+      "B": "The holy lotus feet of her husband, Lord Śiva, the supreme spiritual master of all the world",
+      "C": "The image of Lord Brahmā",
+      "D": "The mantra of the Yajur Veda"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Satī concentrated all her meditation on the holy lotus feet of her husband, Lord Śiva, who is the supreme spiritual master of all the world. Thus she became completely cleansed of all taints of sin and quit her body in a blazing fire by meditation on the fiery elements.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__26",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "According to the commentators cited in the purport of Text 27 (Śrī Jīva Gosvāmī and Śrī Viśvanātha Cakravartī Ṭhākura), what happened to Satī when she 'quit her body'?",
+    "options": {
+      "A": "She attained a spiritual body and went to Vaikuṇṭha",
+      "B": "She gave up her relationship with Dakṣa within her heart; being the superintendent deity of the external potency, she did not get a spiritual body but transferred to another (better) body — later taking birth as Pārvatī, daughter of the Himālayas",
+      "C": "She merged into the Supreme and ceased to exist",
+      "D": "She was reborn as a demigod on a higher planet"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"According to Śrī Jīva Gosvāmī, that Satī quit her body means that she gave up within her heart her relationship with Dakṣa. Śrī Viśvanātha Cakravartī Ṭhākura also comments that since Satī is the superintendent deity of the external potency, when she quit her body she did not get a spiritual body but simply transferred from the body she had received from Dakṣa. Other commentators also say that she immediately transferred herself into the womb of Menakā, her future mother.\" (Also, purport to Text 26: \"in her next life she would take birth as the daughter of the Himālayas, Pārvatī, and then she would again accept Lord Śiva as her husband.\")",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__27",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "Who is named as Satī's future mother, into whose womb she was said to have immediately transferred herself?",
+    "options": {
+      "A": "Aditi",
+      "B": "Menakā",
+      "C": "Diti",
+      "D": "Devahūti"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"Other commentators also say that she immediately transferred herself into the womb of Menakā, her future mother. She gave up the body she had received from Dakṣa and immediately transferred herself to another, better body, but this does not mean that she got a spiritual body.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__28",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "What happened in the universe at the moment Satī annihilated her body in anger?",
+    "options": {
+      "A": "The sun went dark and the earth trembled silently",
+      "B": "There was a tumultuous roar all over the universe, with the demigods of different planets crying out 'hā hā' in astonishment",
+      "C": "A rain of flowers fell from the heavens",
+      "D": "The sacrificial fire was immediately extinguished"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"When Satī annihilated her body in anger, there was a tumultuous roar all over the universe. Why had Satī, the wife of the most respectable demigod, Lord Śiva, quit her body in such a manner? ... There was a tumultuous roaring all over the universe in the societies of the demigods of different planets because Satī was the daughter of Dakṣa, the greatest of all kings, and the wife of Lord Śiva, the greatest of all demigods.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__29",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "The purport to Text 28 draws a lesson from Satī's dissatisfaction despite her exalted material position. What is that philosophical point (citing SB 1.2.6)?",
+    "options": {
+      "A": "Material opulence always guarantees happiness",
+      "B": "Even the greatest material opulence cannot give complete satisfaction; the ātmā becomes fully satisfied only by developing devotional service to the Absolute Truth (Adhokṣaja)",
+      "C": "Only renunciation of all activity brings peace",
+      "D": "Satisfaction comes from family relationships alone"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"One cannot attain complete satisfaction even if one is situated in the greatest material opulence. ... Therefore Śrīmad-Bhāgavatam (1.2.6) explains that one has to achieve real satisfaction (yayātmā suprasīdati), but ātmā — the body, mind and soul — all become completely satisfied only if one develops devotional service to the Absolute Truth (sa vai puṁsāṁ paro dharmo yato bhaktir adhokṣaje). Adhokṣaja means the Absolute Truth.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__30",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "When the attendants of Lord Śiva rose up with uplifted weapons to kill Dakṣa, who stopped them, and by what means?",
+    "options": {
+      "A": "Lord Brahmā stopped them by his personal presence",
+      "B": "Bhṛgu Muni offered oblations into the southern side of the sacrificial fire and uttered mantric hymns from the Yajur Veda by which the destroyers of yajña could be killed",
+      "C": "Nandi the bull blocked their path",
+      "D": "The demigods surrounded and disarmed them"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"They came forward forcibly, but Bhṛgu Muni saw the danger and, offering oblations into the southern side of the sacrificial fire, immediately uttered mantric hymns from the Yajur Veda by which the destroyers of yajñic performances could be killed immediately.\"",
+    "difficulty": "medium",
+    "category": "Scripture"
+  },
+  {
+    "id": "Srimad_Bhagavatam__Ch_4_Sat_Quits_Her_Body__31",
+    "topic": "Śrīmad Bhāgavatam (Canto 3)",
+    "subtopic": "Ch 4: Satī Quits Her Body",
+    "question": "What was the outcome when Bhṛgu Muni offered oblations into the fire, and how were Satī's attendants (the Pramathas and Guhyakas) driven off?",
+    "options": {
+      "A": "Lord Viṣṇu appeared and pacified everyone",
+      "B": "Many thousands of demigods named Ṛbhus became manifested, empowered by Soma the moon, and they attacked the ghosts and Guhyakas with half-burned firebrands, causing them to flee — accomplished through brahma-tejas, brahminical power",
+      "C": "A great flood extinguished the sacrifice and scattered the crowd",
+      "D": "Dakṣa's soldiers defeated the attendants in battle"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "\"When Bhṛgu Muni offered oblations in the fire, immediately many thousands of demigods named Ṛbhus became manifested. All of them were powerful, having achieved strength from Soma, the moon.\" And: \"When the Ṛbhu demigods attacked the ghosts and Guhyakas with half-burned fuel from the yajña fire, all these attendants of Satī fled in different directions and disappeared. This was possible simply because of brahma-tejas, brahminical power.\"",
     "difficulty": "medium",
     "category": "Scripture"
   },
