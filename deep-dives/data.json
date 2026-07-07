@@ -1,23 +1,11 @@
 {
-  "title": "MCP in Production — a field guide",
-  "subtitle": "How the Model Context Protocol behaves when it leaves your laptop — transports, their trade-offs, and what actually survives a Kubernetes deployment. Each article ends with a quiz.",
+  "title": "Deep Dives — read, then quiz yourself",
+  "subtitle": "A growing collection of deep dives on whatever's worth understanding properly. Each article explains a topic from first principles, links back to its source, and ends with a quiz. Anything can land here.",
   "tiers": [
     {
-      "id": "foundations",
-      "name": "Foundations",
-      "blurb": "What MCP is, the client/server model, and the vocabulary you need before talking about transports.",
-      "topics": []
-    },
-    {
-      "id": "transports",
-      "name": "Transports",
-      "blurb": "STDIO, SSE, and Streamable HTTP — how each moves messages and where each one fits.",
-      "topics": []
-    },
-    {
-      "id": "production",
-      "name": "Production & Kubernetes",
-      "blurb": "What breaks when MCP meets ephemeral, network-oriented orchestration — and the patterns that adapt to it.",
+      "id": "systems",
+      "name": "Systems & Infrastructure",
+      "blurb": "Distributed systems, networking, orchestration, protocols — how software behaves at scale and in production.",
       "topics": [
         {
           "id": "stdio-vs-kubernetes",
@@ -111,6 +99,24 @@
           ]
         }
       ]
+    },
+    {
+      "id": "languages",
+      "name": "Languages & Runtimes",
+      "blurb": "How languages, compilers, and runtimes actually work under the hood — memory, concurrency, execution models.",
+      "topics": []
+    },
+    {
+      "id": "foundations",
+      "name": "Theory & Foundations",
+      "blurb": "The durable ideas — algorithms, data structures, computer-science fundamentals worth understanding deeply.",
+      "topics": []
+    },
+    {
+      "id": "beyond",
+      "name": "Everything Else",
+      "blurb": "Anything worth a proper deep dive that doesn't fit a neat box — because anything can land here.",
+      "topics": []
     }
   ]
 }

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCP in Production — a field guide</title>
+<title>Deep Dives — read, then quiz yourself</title>
 <style>
   :root{
     --bg:#0e1117; --bg2:#141b27; --panel:#192232; --panel2:#202c40;
     --ink:#e9eef6; --muted:#a7b4ca; --faint:#6d7c95;
     --line:#283448; --accent:#5b9dff; --accent2:#8f7bff;
-    --b:#5b9dff; --i:#46c98b; --a:#e0a93f;        /* tier accents */
+    --b:#5b9dff; --i:#46c98b; --a:#e0a93f; --d:#8f7bff;   /* section accents (cycled by index) */
     --radius:14px;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
     --mono:ui-monospace,'SF Mono',Menlo,monospace;
@@ -33,9 +33,10 @@
   .tier>.row .caret{transition:.18s;color:var(--faint);font-size:11px;width:11px}
   .tier.open>.row .caret{transform:rotate(90deg)}
   .tier>.row .pill{font-size:10px;font-family:var(--mono);padding:1px 7px;border-radius:20px;margin-left:auto;color:#08111f}
-  .tier[data-t=foundations]>.row .pill{background:var(--b)} .tier[data-t=foundations]>.row .dotc{color:var(--b)}
-  .tier[data-t=transports]>.row .pill{background:var(--i)} .tier[data-t=transports]>.row .dotc{color:var(--i)}
-  .tier[data-t=production]>.row .pill{background:var(--a)} .tier[data-t=production]>.row .dotc{color:var(--a)}
+  .tier[data-c="0"]>.row .pill{background:var(--b)} .tier[data-c="0"]>.row .dotc{color:var(--b)}
+  .tier[data-c="1"]>.row .pill{background:var(--i)} .tier[data-c="1"]>.row .dotc{color:var(--i)}
+  .tier[data-c="2"]>.row .pill{background:var(--a)} .tier[data-c="2"]>.row .dotc{color:var(--a)}
+  .tier[data-c="3"]>.row .pill{background:var(--accent2)} .tier[data-c="3"]>.row .dotc{color:var(--accent2)}
   .kids{display:none;margin:2px 0 8px 7px;border-left:1px solid var(--line);padding-left:8px}
   .tier.open>.kids{display:block}
   .leaf{display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:.12s;line-height:1.35}
@@ -66,6 +67,7 @@
   .tcard.b{border-top:3px solid var(--b)} .tcard.b .tag{background:var(--b)}
   .tcard.i{border-top:3px solid var(--i)} .tcard.i .tag{background:var(--i)}
   .tcard.a{border-top:3px solid var(--a)} .tcard.a .tag{background:var(--a)}
+  .tcard.d{border-top:3px solid var(--accent2)} .tcard.d .tag{background:var(--accent2)}
   .tcard .tag{color:#08111f}
   .allgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
   .allgrid a{display:block;text-decoration:none;color:var(--muted);font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);transition:.12s}
@@ -75,7 +77,7 @@
 
   /* article */
   .crumbtag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:30px;color:#08111f;font-weight:700;margin-bottom:14px}
-  .crumbtag.b{background:var(--b)} .crumbtag.i{background:var(--i)} .crumbtag.a{background:var(--a)}
+  .crumbtag.b{background:var(--b)} .crumbtag.i{background:var(--i)} .crumbtag.a{background:var(--a)} .crumbtag.d{background:var(--accent2)}
   article h1{font-size:clamp(24px,3.4vw,32px);font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:18px}
   .sec{margin:18px 0}
   .sec .lbl{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:750;color:var(--ink);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
@@ -151,7 +153,7 @@
 <div class="app">
   <aside id="sidebar">
     <div class="head">
-      <div class="t">🔌 MCP in Production</div>
+      <div class="t">📚 Deep Dives</div>
       <div class="s" id="meta">loading…</div>
     </div>
     <div class="search"><input id="search" placeholder="Filter articles…" autocomplete="off"></div>
@@ -170,12 +172,16 @@
 
 <script>
 const $=id=>document.getElementById(id);
-let DATA=null, flat=[]; // flat = [{tierId,tierName,tierAbbr,cls,topic}]
-const TIER_CLS={foundations:'b',transports:'i',production:'a'};
+let DATA=null, flat=[]; // flat = [{tierId,tierName,cls,topic}]
+// Section colors cycle by position, so any number of sections with any names work.
+const CLS_CYCLE=['b','i','a','d'];
+const TIER_CLS={};          // id -> class letter
+const TIER_CIDX={};         // id -> color index (0-3, for CSS [data-c])
 
 async function init(){
   try{ DATA=await (await fetch('data.json')).json(); }
   catch(e){ $('meta').textContent='failed to load'; return; }
+  DATA.tiers.forEach((t,idx)=>{ TIER_CLS[t.id]=CLS_CYCLE[idx%CLS_CYCLE.length]; TIER_CIDX[t.id]=idx%CLS_CYCLE.length; });
   let n=0;
   DATA.tiers.forEach(t=>t.topics.forEach(top=>{
     flat.push({tierId:t.id,tierName:t.name,cls:TIER_CLS[t.id],topic:top}); n++;
@@ -192,7 +198,7 @@ function buildTree(filter=''){
     if(!t.topics.length) return; // hide sections with no articles yet
     const kids=t.topics.filter(top=>!f||top.name.toLowerCase().includes(f)||t.name.toLowerCase().includes(f));
     if(f&&!kids.length) return;
-    const tEl=document.createElement('div'); tEl.className='tier'+(f?' open':''); tEl.dataset.t=t.id;
+    const tEl=document.createElement('div'); tEl.className='tier'+(f?' open':''); tEl.dataset.t=t.id; tEl.dataset.c=TIER_CIDX[t.id];
     const row=document.createElement('div'); row.className='row';
     row.innerHTML=`<span class="caret dotc">▶</span><span>${t.name}</span><span class="pill">${t.topics.length}</span>`;
     row.addEventListener('click',()=>{const w=tEl.classList.contains('open');document.querySelectorAll('.tier.open').forEach(x=>x.classList.remove('open'));if(!w)tEl.classList.add('open');});
@@ -212,7 +218,7 @@ function buildTree(filter=''){
 let activeId=null;
 function route(){
   const m=(location.hash||'').match(/^#\/(.+)$/);
-  if(!m){ activeId=null; document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active')); $('topCrumb').textContent='Field guide'; document.title='MCP in Production — a field guide'; $('articleView').classList.add('hide'); $('introView').classList.remove('hide'); document.querySelector('main').scrollTo({top:0}); return; }
+  if(!m){ activeId=null; document.querySelectorAll('.leaf.active').forEach(x=>x.classList.remove('active')); $('topCrumb').textContent='Deep Dives'; document.title='Deep Dives — read, then quiz yourself'; $('articleView').classList.add('hide'); $('introView').classList.remove('hide'); document.querySelector('main').scrollTo({top:0}); return; }
   const id=decodeURIComponent(m[1]);
   const item=flat.find(x=>x.topic.id===id);
   if(!item){ location.hash=''; return; }
@@ -249,7 +255,7 @@ function renderArticle(item){
   const a=$('articleView'); a.classList.remove('hide');
   const t=item.topic, cls=item.cls;
   $('topCrumb').innerHTML=`${item.tierName}<span class="sep">›</span><span class="now">${esc(t.name)}</span>`;
-  document.title=`${t.name} · MCP in Production`;
+  document.title=`${t.name} · Deep Dives`;
   // prev/next within flat list
   const i=flat.findIndex(x=>x.topic.id===t.id);
   const prev=flat[i-1], next=flat[i+1];
