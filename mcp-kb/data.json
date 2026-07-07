@@ -1,0 +1,116 @@
+{
+  "title": "MCP in Production — a field guide",
+  "subtitle": "How the Model Context Protocol behaves when it leaves your laptop — transports, their trade-offs, and what actually survives a Kubernetes deployment. Each article ends with a quiz.",
+  "tiers": [
+    {
+      "id": "foundations",
+      "name": "Foundations",
+      "blurb": "What MCP is, the client/server model, and the vocabulary you need before talking about transports.",
+      "topics": []
+    },
+    {
+      "id": "transports",
+      "name": "Transports",
+      "blurb": "STDIO, SSE, and Streamable HTTP — how each moves messages and where each one fits.",
+      "topics": []
+    },
+    {
+      "id": "production",
+      "name": "Production & Kubernetes",
+      "blurb": "What breaks when MCP meets ephemeral, network-oriented orchestration — and the patterns that adapt to it.",
+      "topics": [
+        {
+          "id": "stdio-vs-kubernetes",
+          "name": "Why STDIO transport is incompatible with Kubernetes",
+          "premise": "MCP's STDIO transport is convenient locally because it needs nothing more than a parent process spawning a child and talking over OS pipes. That same design makes it fundamentally unfit for Kubernetes, where workloads are ephemeral, distributed across nodes, and communicate over the network. The mismatch is architectural, not a configuration gap — as the source article puts it, 'STDIO is a local optimization, not a distributed transport.'",
+          "year": "Based on \"The Fundamental Incompatibility Between STDIO Transport and Kubernetes\" by Kartik Sarda (Medium, Feb 2026). MCP was introduced by Anthropic in late 2024; STDIO-heavy examples remain common in local development.",
+          "why": "STDIO transport assumes a stable, one-to-one relationship between two processes on the same host: the client spawns the server as a subprocess and holds open stdin/stdout pipes. Kubernetes assumes the opposite — pods are ephemeral, get their own (changing) IPs, are rescheduled across nodes, and communicate over the network through Services. There is no Kubernetes mechanism to spawn a process across pods, attach to another pod's stdin, or preserve STDIO streams across a restart. So the two models' core assumptions directly contradict each other.",
+          "deepDive": "MCP (Model Context Protocol) lets an LLM act as a client that connects to external tools exposed as servers — APIs, browsers, databases, OS tools. The classic example: an LLM has no real-time knowledge of a city's current temperature, so you expose a weather-fetching tool through an MCP server; the LLM invokes the tool, gets the response, and folds it into its reasoning. MCP defines three transports for client↔server communication: STDIO (direct process/container attachment), SSE (Server-Sent Events, HTTP-based streaming), and Streamable HTTP (a custom stream-oriented HTTP transport).\n\nSTDIO — standard input/output — is an OS-level mechanism built on three preconnected streams: stdin (input), stdout (normal output), and stderr (logs/errors). In MCP, the client (a desktop app like Claude, an IDE, or an AI agent) does not dial a network port. It spawns the MCP server as a subprocess on the same machine (e.g. `uv run main.py`); the OS wires them together with pipes. The server reads requests on stdin and writes structured responses on stdout, while stderr carries logs the protocol ignores — that separation lets you debug without corrupting the message channel. Messages are JSON-RPC 2.0, newline-delimited so the receiver knows where each one ends. Locally this is delightful: zero network overhead, implicit trust (both processes run as the same user), and a dead-simple lifecycle (kill the client and the server dies with it).\n\nKubernetes is a different world. The smallest deployable unit is a pod (one or more containers sharing a network namespace); each pod gets its own IP and can talk to its own containers over localhost. Pods run on nodes (worker machines running a container runtime like containerd), and a cluster spreads pods across many nodes. Pods are ephemeral by design — created, destroyed, and rescheduled at will. If you ask for replicas = 3, Kubernetes keeps three identical pods alive and replaces any that crash (self-healing). Because pod IPs churn constantly, you don't address pods directly; you put a Service in front of them, which gives a stable virtual IP (ClusterIP) and DNS name and load-balances across the healthy pods behind it.\n\nNow drop an STDIO MCP server into that world. Put the MCP server in one pod and a FastAPI app that needs it in another. Pods communicate over the network via a Service — but STDIO doesn't speak IP addresses or Services; it requires a direct parent–child process relationship. There is no way for the FastAPI pod to spawn the MCP server as its subprocess across the pod boundary, no way to attach to the other pod's stdin, and no way to keep a pipe alive across a restart. And restarts are the normal case: if either pod crashes, is rescheduled, or is replaced during scaling, the original STDIO pipe is permanently broken. Kubernetes starts a fresh pod, but the process-level connection cannot be restored — no reconnection, no retry, no awareness of where the new process landed. The communication flow simply collapses.\n\nThe root cause, stated plainly: STDIO depends on a fixed process identity, a persistent OS-level pipe, and a tightly coupled lifecycle. Kubernetes provides dynamic pod lifecycles, network-based communication, and automatic replacement of failed workloads. These are not reconcilable with a config flag — they are opposite design centers. STDIO belongs to single-host, process-oriented systems; Kubernetes is built for distributed, network-oriented ones.\n\nThe closest Kubernetes-native mitigation is the sidecar pattern: run the MCP server as a second container inside the same pod as the app. Containers in a pod share the network namespace, IP, localhost (127.0.0.1), and lifecycle, so the app can reach the MCP server over localhost without crossing pods, Services, or nodes — cutting network hops, latency, and failure points (the article cites a drop from ~1–5 ms cross-pod to sub-millisecond same-pod). But a crucial caveat: sidecars fix network locality, not process boundaries. The two containers are still separate processes with no parent–child relationship, so STDIO pipes still cannot be shared between them. What the sidecar actually enables is fast, reliable localhost communication over HTTP, WebSockets, gRPC, or Unix domain sockets. It is a practical replacement for STDIO in Kubernetes — not a literal continuation of it. It works because it finally aligns with Kubernetes' assumptions: network-based communication, a shared pod lifecycle, and failure isolation at the pod level. The takeaway for anyone building MCP for a cluster: adapt the architecture to the platform's networking and lifecycle model rather than forcing process-level communication into a distributed environment.",
+          "diagram": "<svg viewBox=\"0 0 760 300\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"ui-monospace,Menlo,monospace\" font-size=\"12\"><style>.b{fill:#192232;stroke:#283448;rx:8}.t{fill:#e9eef6}.m{fill:#a7b4ca}.g{stroke:#46c98b;stroke-width:2}.r{stroke:#f0635c;stroke-width:2;stroke-dasharray:5 4}.lbl{fill:#6d7c95;font-size:10px}</style><text x=\"20\" y=\"22\" class=\"m\" font-size=\"13\">STDIO (local): parent spawns child, pipes over one host</text><rect x=\"20\" y=\"36\" width=\"150\" height=\"52\" class=\"b\"/><text x=\"34\" y=\"66\" class=\"t\">Client (parent)</text><rect x=\"300\" y=\"36\" width=\"150\" height=\"52\" class=\"b\"/><text x=\"314\" y=\"66\" class=\"t\">MCP server (child)</text><line x1=\"170\" y1=\"52\" x2=\"300\" y2=\"52\" class=\"g\" marker-end=\"url(#a)\"/><text x=\"185\" y=\"48\" class=\"lbl\">stdin →</text><line x1=\"300\" y1=\"72\" x2=\"170\" y2=\"72\" class=\"g\" marker-end=\"url(#a)\"/><text x=\"185\" y=\"86\" class=\"lbl\">← stdout</text><text x=\"20\" y=\"140\" class=\"m\" font-size=\"13\">Kubernetes: pods on the network — the pipe cannot exist</text><rect x=\"20\" y=\"156\" width=\"150\" height=\"64\" class=\"b\"/><text x=\"34\" y=\"182\" class=\"t\">Pod A: FastAPI</text><text x=\"34\" y=\"202\" class=\"lbl\">ip 10.1.4.7 (ephemeral)</text><rect x=\"300\" y=\"156\" width=\"170\" height=\"64\" class=\"b\"/><text x=\"314\" y=\"182\" class=\"t\">Pod B: MCP server</text><text x=\"314\" y=\"202\" class=\"lbl\">ip 10.1.9.2 (ephemeral)</text><line x1=\"170\" y1=\"188\" x2=\"300\" y2=\"188\" class=\"r\" marker-end=\"url(#x)\"/><text x=\"188\" y=\"182\" class=\"lbl\" fill=\"#f0635c\">no stdio pipe across pods</text><text x=\"188\" y=\"210\" class=\"lbl\" fill=\"#f0635c\">restart ⇒ pipe gone</text><rect x=\"560\" y=\"150\" width=\"180\" height=\"96\" fill=\"#141b27\" stroke=\"#e0a93f\" stroke-width=\"2\" rx=\"8\"/><text x=\"574\" y=\"172\" class=\"t\">Sidecar (same pod)</text><rect x=\"572\" y=\"182\" width=\"70\" height=\"26\" class=\"b\"/><text x=\"582\" y=\"199\" class=\"m\" font-size=\"10\">FastAPI</text><rect x=\"656\" y=\"182\" width=\"72\" height=\"26\" class=\"b\"/><text x=\"666\" y=\"199\" class=\"m\" font-size=\"10\">MCP srv</text><line x1=\"642\" y1=\"195\" x2=\"656\" y2=\"195\" class=\"g\"/><text x=\"574\" y=\"230\" class=\"lbl\" fill=\"#46c98b\">localhost: HTTP/gRPC/WS</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"#46c98b\"/></marker><marker id=\"x\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"#f0635c\"/></marker></defs></svg>",
+          "solutions": [
+            ["Sidecar container (closest K8s-native fit)", "Run the MCP server as a second container in the same pod as the app. Shared network namespace, IP, localhost, and lifecycle mean localhost communication with minimal hops — but over HTTP/WebSockets/gRPC/Unix sockets, not STDIO."],
+            ["Switch to an HTTP-based transport", "Use SSE or Streamable HTTP so the MCP server is a network endpoint fronted by a Kubernetes Service — stable DNS/ClusterIP, load balancing, and reconnection across pod restarts."],
+            ["Keep STDIO only where it belongs", "STDIO is ideal for local development and single-host tooling where the client legitimately spawns the server as a child process. Don't carry that assumption into a cluster."]
+          ],
+          "papers": "Kartik Sarda, \"The Fundamental Incompatibility Between STDIO Transport and Kubernetes,\" Medium, Feb 2026. Background: Anthropic, Model Context Protocol specification (transports: stdio, SSE, Streamable HTTP).",
+          "links": [
+            ["Article — The Fundamental Incompatibility Between STDIO Transport and Kubernetes", "https://medium.com/@kartiksardadegana/the-fundamental-incompatibility-between-stdio-transport-and-kubernetes-caceadda723b"],
+            ["Model Context Protocol — official site", "https://modelcontextprotocol.io/"],
+            ["MCP transports specification", "https://modelcontextprotocol.io/docs/concepts/transports"],
+            ["Kubernetes — Services, Load Balancing, and Networking", "https://kubernetes.io/docs/concepts/services-networking/service/"],
+            ["Kubernetes — Pods", "https://kubernetes.io/docs/concepts/workloads/pods/"]
+          ],
+          "takeaway": "STDIO is a local optimization, not a distributed transport. In Kubernetes, adapt to the platform — use an HTTP-based MCP transport behind a Service, or co-locate the server as a sidecar and talk over localhost. Don't try to force a process pipe across ephemeral pods.",
+          "mcqs": [
+            {
+              "q": "Why is STDIO transport fundamentally incompatible with Kubernetes, rather than just misconfigured?",
+              "options": [
+                "Kubernetes lacks a flag to enable STDIO pipes between pods",
+                "It is a design mismatch: STDIO assumes single-host, process-oriented parent–child pipes, while Kubernetes is distributed and network-oriented with ephemeral pods",
+                "STDIO is simply too slow for cluster networking speeds",
+                "STDIO requires root privileges that Kubernetes forbids"
+              ],
+              "answer": 1,
+              "explanation": "The conflict is architectural. STDIO depends on a fixed process identity, a persistent OS-level pipe, and a tightly coupled lifecycle; Kubernetes provides dynamic pod lifecycles, network communication, and automatic replacement. Those are opposite design centers — no config flag reconciles them."
+            },
+            {
+              "q": "How does a client connect to an MCP server over the STDIO transport?",
+              "options": [
+                "It opens a TCP socket to the server's advertised IP and port",
+                "It performs a DNS lookup for the server's Service and dials the ClusterIP",
+                "It spawns the MCP server as a subprocess on the same machine and the OS connects them with pipes",
+                "It publishes messages to a shared queue the server subscribes to"
+              ],
+              "answer": 2,
+              "explanation": "Over STDIO the client (a desktop app, IDE, or agent) spawns the server as a child subprocess (e.g. `uv run main.py`); the OS wires stdin/stdout pipes between them. There is no network address or port — which is exactly why it can't reach across pods."
+            },
+            {
+              "q": "In Kubernetes, why is a Service placed in front of a set of pods?",
+              "options": [
+                "To encrypt all pod-to-pod traffic by default",
+                "Because pod IPs are ephemeral and change; a Service gives a stable virtual IP (ClusterIP), a DNS name, and load balancing across healthy pods",
+                "To convert network calls into STDIO pipes",
+                "To replace pod IPs so pods no longer need addresses"
+              ],
+              "answer": 1,
+              "explanation": "Pods are ephemeral and their IPs churn on crash, reschedule, or scaling. A Service abstracts that with a stable ClusterIP/DNS name and load-balances across the current healthy pods — the network-oriented indirection STDIO has no equivalent for."
+            },
+            {
+              "q": "What happens to a STDIO pipe when the peer pod crashes, is rescheduled, or is replaced during scaling?",
+              "options": [
+                "Kubernetes transparently reconnects the pipe to the new pod",
+                "The pipe is buffered and replayed once a replacement is ready",
+                "The Service migrates the pipe to a healthy pod",
+                "The original STDIO pipe is permanently broken — no reconnection, no retry"
+              ],
+              "answer": 3,
+              "explanation": "A STDIO pipe is bound to a specific process pair. When the peer pod is replaced, Kubernetes starts a fresh process, but the process-level connection cannot be restored — there is no reconnection or retry, and the flow collapses."
+            },
+            {
+              "q": "The sidecar pattern places the MCP server in the same pod as the app. What does it actually solve — and not solve?",
+              "options": [
+                "It lets the two containers finally share STDIO pipes because they're in one pod",
+                "It solves network locality (shared namespace/IP/localhost/lifecycle) but not process boundaries, so they still communicate over HTTP/gRPC/WebSockets/Unix sockets, not STDIO",
+                "It merges both containers into a single parent–child process",
+                "It removes the need for any inter-container communication"
+              ],
+              "answer": 1,
+              "explanation": "Containers in a pod share the network namespace, IP, localhost, and lifecycle — cutting hops and latency. But they remain separate processes with no parent–child relationship, so STDIO pipes still can't be shared. The sidecar enables fast localhost communication over HTTP/gRPC/WebSockets/Unix sockets — a practical replacement for STDIO, not a continuation of it."
+            },
+            {
+              "q": "Which transports does MCP define for client↔server communication?",
+              "options": [
+                "STDIO, SSE (Server-Sent Events), and Streamable HTTP",
+                "STDIO and raw UDP multicast only",
+                "gRPC, Thrift, and STDIO",
+                "Only HTTP"
+              ],
+              "answer": 0,
+              "explanation": "MCP defines STDIO (direct process/container attachment), SSE (HTTP-based streaming), and Streamable HTTP (a custom stream-oriented HTTP transport). The two HTTP-based transports are the ones that work over a network and thus survive a Kubernetes deployment behind a Service."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
