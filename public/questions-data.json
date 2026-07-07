@@ -25196,6 +25196,452 @@
     "category": "networking"
   },
   {
+    "id": "Networking__SMTP__0",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What is SMTP's actual job?",
+    "options": {
+      "A": "Both sending and reading email — it is the complete email protocol",
+      "B": "Only sending and relaying email between servers",
+      "C": "Only reading email from a mailbox",
+      "D": "Encrypting email so only the recipient can read it"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SMTP (Simple Mail Transfer Protocol) is ONLY for pushing/relaying mail outward: client-to-server on submission, and server-to-server on delivery. It does NOT read mail (that's IMAP/POP3) and does NOT encrypt content by itself. The common belief 'SMTP = email' is wrong — SMTP is just the outbound half.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__1",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Which protocol(s) are used to READ/retrieve email from a mailbox?",
+    "options": {
+      "A": "SMTP",
+      "B": "IMAP or POP3",
+      "C": "HTTP only",
+      "D": "MX"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Reading mail uses IMAP or POP3 — separate protocols from SMTP. Mental model: SMTP is the outbound mail truck; IMAP/POP3 are you opening your mailbox to read. A common pitfall is assuming the same protocol both sends and receives; it does not.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__2",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What is the key difference between IMAP and POP3?",
+    "options": {
+      "A": "IMAP sends mail, POP3 reads mail",
+      "B": "IMAP keeps mail on the server and syncs across devices; POP3 typically downloads mail to one device",
+      "C": "IMAP is encrypted, POP3 can never be encrypted",
+      "D": "There is no difference; they are aliases"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Both READ mail (neither sends — that's SMTP). IMAP keeps messages on the server and syncs state across devices, so your inbox looks the same on phone and laptop. POP3 traditionally downloads and removes mail, tying it to one device. Neither has anything to do with sending.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__3",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "True or False: When you send an email, your app connects directly to the recipient's computer.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "False. Email is a store-and-forward relay system, not a direct connection. You hand your message to YOUR mail server; it relays to the recipient's mail server; the message sits in their mailbox until they retrieve it with IMAP/POP3. You never talk to the recipient directly. At least two independent server systems are always involved.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__4",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "When your mail server needs to deliver a message to '@gmail.com', how does it find where to send it?",
+    "options": {
+      "A": "It guesses gmail.com on port 25",
+      "B": "It does a DNS lookup for the domain's MX record",
+      "C": "It asks SMTP for the IP directly",
+      "D": "It uses the recipient's IMAP settings"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The sending server queries DNS for the recipient domain's MX (Mail eXchanger) record, which names the server responsible for receiving that domain's mail. DNS is the internet's phone book; the MX record is the specific 'who receives mail for this domain' entry. Only then does it open an SMTP connection to that server.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__5",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "A single email between two different providers typically involves how many SMTP conversations?",
+    "options": {
+      "A": "Exactly one, end to end",
+      "B": "Zero — SMTP is only for reading",
+      "C": "At least two: client-to-server (submission), then server-to-server (relay)",
+      "D": "One SMTP and one IMAP hop between the servers"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "SMTP runs multiple times: first when your client/app submits the message to your outbound server, then again server-to-server when your server relays it to the recipient's inbound server (found via MX). IMAP/POP3 only appears later, when the human reads it — and is not part of the send path.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__6",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Why is it trivially easy to SEND spam, making the receiving side do all the filtering work?",
+    "options": {
+      "A": "Because SMTP encrypts the sender identity",
+      "B": "Because SMTP has no built-in identity verification — a server will accept almost any 'MAIL FROM' address you claim",
+      "C": "Because IMAP allows spoofing",
+      "D": "Because DNS lets anyone edit MX records"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SMTP has no native identity check — you can put nearly any address in 'MAIL FROM' and your own server will accept it. That's why the entire anti-spam battle happens on the RECEIVING side (Gmail, Outlook), which scrutinizes incoming mail with reputation checks before trusting it. Sending is easy; being trusted is the hard part.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__7",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What is the genuinely hard part of running your own email sending?",
+    "options": {
+      "A": "Writing the SMTP client code",
+      "B": "Being TRUSTED by receiving servers so mail reaches the inbox instead of spam",
+      "C": "Finding a mail server library",
+      "D": "Choosing between IMAP and POP3"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Technically sending is easy — any library speaks SMTP in a few lines. The hard, ongoing work is deliverability: reputable sending IPs, correct SPF/DKIM/DMARC, bounce and complaint handling, and not landing in spam. This difficulty is the entire reason managed services like Amazon SES exist.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__8",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What does an SPF record do?",
+    "options": {
+      "A": "Encrypts the email body",
+      "B": "Lists (in DNS) which servers are authorized to send email for a domain",
+      "C": "Cryptographically signs each message",
+      "D": "Stores the recipient's mailbox location"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SPF (Sender Policy Framework) is a DNS record declaring 'these servers/IPs are allowed to send mail for my domain.' The receiving server checks whether the sending server is on that list. It's an authorization list, not a signature or encryption.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__9",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What does DKIM provide?",
+    "options": {
+      "A": "A cryptographic signature proving the message came from the domain and was not tampered with",
+      "B": "A list of allowed sending IPs",
+      "C": "Encryption of the message so only the recipient can read it",
+      "D": "The MX record for the domain"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "DKIM (DomainKeys Identified Mail) attaches a cryptographic signature to the message, letting receivers verify it genuinely came from the claimed domain and wasn't altered in transit. Note: it proves authenticity/integrity, NOT confidentiality — DKIM does not encrypt the body.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__10",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What is DMARC's role relative to SPF and DKIM?",
+    "options": {
+      "A": "It replaces both SPF and DKIM",
+      "B": "It's a policy tying SPF+DKIM together and telling receivers what to do when checks fail",
+      "C": "It encrypts the SMTP connection",
+      "D": "It reads mail from the server"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "DMARC builds on top of SPF and DKIM. It's a published policy that says 'align these checks, and if they fail, do X (reject / quarantine to spam / allow),' plus optional reporting. It coordinates the other two rather than replacing them.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__11",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Is Amazon SES fundamentally different technology from SMTP?",
+    "options": {
+      "A": "Yes — SES invented a proprietary protocol that replaces SMTP",
+      "B": "No — SES is a managed sending service that still relays over SMTP underneath; it even offers an SMTP endpoint",
+      "C": "Yes — SES only works over HTTP and never touches SMTP",
+      "D": "No — SES is actually an IMAP service"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SES is not magic new tech. Under the hood it relays mail via SMTP just like any mail server. What you pay for is the MANAGED part: reputable IPs, help with SPF/DKIM/DMARC, and bounce/complaint handling — i.e., being a trusted sender. SES even exposes a standard SMTP endpoint.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__12",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Amazon SES exposes which interfaces for sending mail?",
+    "options": {
+      "A": "Only a raw SMTP endpoint",
+      "B": "Only an HTTPS API (SDK)",
+      "C": "Both: an HTTPS API (via the AWS SDK, e.g. boto3) AND an SMTP endpoint with generated SMTP credentials",
+      "D": "Only IMAP"
+    },
+    "correct_answers": [
+      "C"
+    ],
+    "explanation": "SES has two front doors to the same engine: (1) the HTTPS API via the AWS SDK (authenticated by IAM — great from Lambda, no password to store), and (2) a standard SMTP endpoint (email-smtp.<region>.amazonaws.com) using SMTP credentials SES generates for you. Same sending engine, two interfaces.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__13",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "You want to send via SES's SMTP endpoint using Python's smtplib. What credential do you use?",
+    "options": {
+      "A": "Your AWS account root password",
+      "B": "A dedicated SES SMTP username/password that you generate in SES (derived from an IAM user)",
+      "C": "Your IMAP password",
+      "D": "No credential is needed for SES SMTP"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "The SES SMTP password is NOT your AWS console password and not your raw IAM secret key. You explicitly generate a dedicated SMTP credential pair in SES (backed by an IAM user). Once you have it, plain smtplib works exactly like against any mail server — only host/port/creds differ. Note: SES SMTP requires TLS.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__14",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "True or False: If you have SMTP host, port, username, and password for ANY mail server, a simple library like Python's smtplib can send through it.",
+    "options": {
+      "A": "True",
+      "B": "False"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "True. All you fundamentally need to send is a mail server plus valid credentials. Python's smtplib (standard library) speaks the raw SMTP conversation for you against any server — SmarterASP, SES's SMTP endpoint, Gmail, etc. Swapping providers is just changing host/port/credentials.",
+    "difficulty": "easy",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__15",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "What does the SES 'sandbox' restrict?",
+    "options": {
+      "A": "You can only send to pre-verified email addresses, with low daily/rate limits, until you request production access",
+      "B": "You cannot send any email at all",
+      "C": "You can only receive email, not send",
+      "D": "You can only send within your AWS region"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "In the SES sandbox you can only send to addresses/domains you've verified, with tight caps (e.g., ~200/day, 1/sec). It's an anti-abuse gate: an unproven new sender is exactly how spam operations start. You leave it by requesting production access (usually approved within about a day).",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__16",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "By default, is Amazon SES a mailbox that receives and stores replies?",
+    "options": {
+      "A": "Yes — SES gives you a full inbox like a normal email account",
+      "B": "No — SES is a sending engine; by default nothing catches or stores incoming replies",
+      "C": "Yes, but only for verified domains",
+      "D": "No — SES can only receive, never send"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "This is the biggest SES misconception. SES is send-only by default — it is NOT a mailbox. Think franking machine/mailroom for outgoing letters, not a PO box. If someone replies, there is no 'SES inbox' collecting it unless you explicitly build receiving. Sending and receiving are separate capabilities.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__17",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "To actually RECEIVE email through SES, what must you set up?",
+    "options": {
+      "A": "Nothing — replies arrive automatically once you send from SES",
+      "B": "Point the domain's MX record at SES's inbound endpoint AND create receipt rules (deliver to S3, trigger Lambda, or publish to SNS)",
+      "C": "Just verify the sending address",
+      "D": "Enable IMAP in the SES console"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Receiving is a separate, bolt-on pipeline: point the domain's MX to inbound-smtp.<region>.amazonaws.com, then define receipt rules telling SES what to do with each message (dump to S3, invoke Lambda, or SNS). SES has no inbox to drop mail into, so you build the storage/processing yourself.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__18",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "A domain's mail is currently received by SmarterASP (its MX points there). Can you also point the MX at SES to receive there simultaneously?",
+    "options": {
+      "A": "Yes — a domain can have unlimited active receiving destinations",
+      "B": "No — mail delivery follows the MX records, and you'd be redirecting incoming mail away from SmarterASP to SES",
+      "C": "Yes — SES and SmarterASP automatically share incoming mail",
+      "D": "No — SES cannot receive under any circumstances"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Incoming mail follows the MX records, which designate where a domain's mail is delivered. Repointing MX to SES redirects inbound mail to SES and away from the existing SmarterASP mailbox. You can't casually 'also' receive at SES for an address already served elsewhere without changing where that domain's mail lands.",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__19",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "To send FROM your domain via SES, what do you provide to SES to establish trust?",
+    "options": {
+      "A": "A mailbox username and password",
+      "B": "Proof of ownership via DNS — verify the domain (or a specific address) and publish DKIM (and ideally SPF/DMARC) records",
+      "C": "Your IMAP server settings",
+      "D": "Nothing; SES lets anyone send as any domain"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SES makes you prove you own what you claim to send as. Either verify a single address (click a confirmation link — which requires access to that mailbox) or verify the whole domain by adding DNS records SES provides (ownership + DKIM signing keys, plus recommended SPF/DMARC). 'The email is linked' means: linked to a domain you've proven you control.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__20",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "When a Lambda sends an email via SES (or any SMTP server), what is the Lambda's role in the email system?",
+    "options": {
+      "A": "The Lambda is the mailbox that stores the email",
+      "B": "The Lambda is just the compute layer making the send call; it has no email identity and does not receive replies",
+      "C": "The Lambda becomes the MX destination for the domain",
+      "D": "The Lambda relays the mail server-to-server itself"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Lambda (or App Runner, or your laptop) is only compute — it triggers the send and is done. It has no email identity, holds no mailbox, and receives no replies. Replies go wherever the From-domain's MX points, entirely independent of what compute sent the message.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__21",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "A legacy config had SMTP with 'EnableSsl = false' on a custom port. What's the security concern?",
+    "options": {
+      "A": "None — SMTP is always encrypted",
+      "B": "The SMTP conversation, including the login username and password, travels in cleartext and can be read on the wire",
+      "C": "It makes email slower but is otherwise safe",
+      "D": "Replies will be lost"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "SMTP is plaintext by default. With SSL/TLS disabled, the entire exchange — the SMTP commands, message content, and crucially the login credentials — is transmitted unencrypted and can be intercepted. Production sending should use TLS (STARTTLS on 587, or implicit TLS on 465).",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__22",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Why do transactional emails like OTPs and verification codes typically come from a 'no-reply@' address, and why is SES a good fit for them?",
+    "options": {
+      "A": "Because OTP emails legally cannot have a real sender",
+      "B": "Because they're fire-and-forget with no expected reply, so SES's send-only nature is a perfect fit and the 'no mailbox' limitation doesn't matter",
+      "C": "Because no-reply addresses send faster over IMAP",
+      "D": "Because SES refuses to send from real addresses"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "OTP/verification mail is one-way — nobody should reply. The 'no-reply@' convention signals that. Since there's no reply to catch, SES's send-only design is ideal: you just verify the domain and send, and never need a receiving/mailbox pipeline. This is why SES suits OTP delivery even though it isn't a mailbox.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__23",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "Why does a service like Cognito impose a small default email cap (e.g. ~50/day), and how is it usually lifted?",
+    "options": {
+      "A": "Because Cognito cannot send more than 50 emails ever",
+      "B": "Because Cognito uses a tiny built-in email sender by default; wiring it to a real sending service like SES raises the volume",
+      "C": "Because email itself is capped at 50/day globally",
+      "D": "Because IMAP limits reads to 50/day"
+    },
+    "correct_answers": [
+      "B"
+    ],
+    "explanation": "Cognito has no magic email tech — it sends through an email service. Its built-in default sender is deliberately tiny (a low daily cap) to nudge you toward connecting a proper sending service (SES). Once wired to SES (which itself must leave the sandbox), the low cap no longer applies.",
+    "difficulty": "medium",
+    "category": "networking"
+  },
+  {
+    "id": "Networking__SMTP__24",
+    "topic": "Networking",
+    "subtopic": "SMTP",
+    "question": "SMTP submission from a client commonly uses which port, and receiving-server-to-server relay classically uses which?",
+    "options": {
+      "A": "Submission on 587 (or 465 implicit TLS); server-to-server relay on 25",
+      "B": "Submission on 25; relay on 143",
+      "C": "Both use 110",
+      "D": "Submission on 993; relay on 995"
+    },
+    "correct_answers": [
+      "A"
+    ],
+    "explanation": "Client submission uses port 587 (STARTTLS) or 465 (implicit TLS). Port 25 is the classic server-to-server relay port and is often blocked/throttled for outbound client use by cloud providers to curb spam — which is why custom ports or 587 are used from app servers. (143/993 = IMAP, 110/995 = POP3 — reading, not sending.)",
+    "difficulty": "hard",
+    "category": "networking"
+  },
+  {
     "id": "Networking__TCPvsUDP__0",
     "topic": "Networking",
     "subtopic": "TCPvsUDP",
