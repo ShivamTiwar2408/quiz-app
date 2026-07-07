@@ -23,11 +23,35 @@ Sections are just top-level buckets; add, rename, or reorder them freely in
 
 ## Articles
 
-- **Why STDIO transport is incompatible with Kubernetes** *(Systems & Infrastructure)* —
-  the parent–child process / pipe model of STDIO vs. Kubernetes' ephemeral,
-  network-oriented pods; why the pipe cannot cross pods or survive restarts; and
-  the sidecar mitigation. Absorbed from Kartik Sarda, *"The Fundamental
-  Incompatibility Between STDIO Transport and Kubernetes"* (Medium, Feb 2026).
+All current articles live under **Systems & Infrastructure** and share a theme:
+OS-level design tradeoffs where a primitive optimal in one context is wrong in
+another. Every article is written from first principles — a "Before we start —
+building blocks" section explains the prerequisite OS/Linux/hardware constructs
+before the problem — and ends with an interactive quiz.
+
+1. **Why STDIO transport is incompatible with Kubernetes** — parent–child pipes
+   vs. ephemeral network-oriented pods; the sidecar mitigation. (Kartik Sarda,
+   Medium 2026.)
+2. **Same Machine, Wrong Wire: the local IPC performance hierarchy** — shared
+   memory > pipes > Unix domain sockets > loopback TCP; the mirror image of the
+   STDIO case. (UW-Madison IPC study; goldsborough/ipc-bench.)
+3. **Are You Sure You Want to mmap Your Database?** — mmap vs a purpose-built
+   buffer pool: WAL ordering, page-fault stalls, TLB shootdowns. (Crotty/Leis/
+   Pavlo, CIDR 2022.)
+4. **A fork() in the Road** — fork() vs posix_spawn(): fails to compose, breaks
+   with threads and accelerators, cost scales with memory. (Baumann et al.,
+   HotOS 2019.)
+5. **The Byte-Stream Tax: TCP, QUIC, and head-of-line blocking** — one ordered
+   stream vs independent streams over UDP; kernel ossification. (Langley et al.,
+   SIGCOMM 2017; RFC 9000.)
+6. **One Thread Per Connection Doesn't Scale: the C10K problem** — blocking
+   thread-per-connection vs event-driven epoll/kqueue; O(n) vs O(active).
+   (Kegel's C10K; Gammo et al., 2004.)
+7. **Why Wall-Clock Time Can't Order Distributed Events** — physical vs logical
+   (Lamport) clocks; happened-before, partial order, TrueTime. (Lamport, CACM
+   1978.)
+8. **The Location-Transparency Fallacy** — local calls vs remote objects along
+   latency, memory, partial failure, concurrency. (Waldo et al., 1994.)
 
 ## Adding an article
 

@@ -105,6 +105,15 @@
   /* deep dive */
   .deepdive p{color:var(--muted);font-size:15.5px;margin-bottom:12px}
   .deepdive p:last-child{margin-bottom:0}
+  .deepdive code,.sec p code{font-family:var(--mono);font-size:13px;background:var(--panel2);padding:1px 5px;border-radius:4px;color:#cdd9ea}
+  /* prerequisites — first-principles building blocks */
+  .prereq-intro{color:var(--faint);font-size:13.5px;margin-bottom:12px;font-style:italic}
+  .prereqs{display:flex;flex-direction:column;gap:10px}
+  .prereq{border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 16px}
+  .prereq .pt{color:var(--ink);font-weight:750;font-size:14.5px;margin-bottom:6px;font-family:var(--mono)}
+  .prereq p{color:var(--muted);font-size:14.5px;margin-bottom:9px;line-height:1.55}
+  .prereq p:last-child{margin-bottom:0}
+  .prereq code{font-family:var(--mono);font-size:13px;background:var(--panel2);padding:1px 5px;border-radius:4px;color:#cdd9ea}
   /* diagram */
   .diagram{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:10px;overflow-x:auto}
   .diagram svg{display:block;width:100%;height:auto;max-width:760px;margin:0 auto}
@@ -266,11 +275,18 @@ function renderArticle(item){
     `<div class="sec"><div class="lbl"><span class="ic">🔥</span>Real-world outages &amp; case studies</div>`+
     t.caseStudies.map(c=>`<div class="case"><div class="ct">${esc(c.title)}</div><p>${esc(c.body)}</p></div>`).join('')+`</div>` : '';
   const mcqHtml = (t.mcqs&&t.mcqs.length) ? renderMcqs(t.mcqs, t.id) : '';
+  const prereqHtml = (t.prerequisites&&t.prerequisites.length) ?
+    `<div class="sec"><div class="lbl"><span class="ic">🧱</span>Before we start — building blocks</div>`+
+    `<p class="prereq-intro">Everything below is explained from first principles. If you already know these, skip ahead — otherwise, read them first; the rest of the article builds directly on them.</p>`+
+    `<div class="prereqs">`+
+    t.prerequisites.map(p=>`<div class="prereq"><div class="pt">${esc(p.term)}</div>${paras(p.explain)}</div>`).join('')+
+    `</div></div>` : '';
   a.innerHTML=`
     <div class="crumbtag ${cls}">${item.tierName}</div>
     <h1>${esc(t.name)}</h1>
     <div class="sec premise"><div class="lbl"><span class="ic">🧭</span>What it is</div><p>${esc(t.premise)}</p></div>
     ${t.year?`<div class="sec"><div class="lbl"><span class="ic">📅</span>Context</div><div class="yearbox">${esc(t.year)}</div></div>`:''}
+    ${prereqHtml}
     <div class="sec"><div class="lbl"><span class="ic">⚙️</span>Why it happens</div><p>${esc(t.why)}</p></div>
     ${deepDiveHtml}
     ${diagramHtml}
@@ -288,8 +304,10 @@ function renderArticle(item){
   document.querySelector('main').scrollTo({top:0,behavior:'smooth'});
 }
 
-// split a multi-paragraph string (\n\n separated) into <p> blocks
-function paras(s){ return String(s).split(/\n\n+/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join(''); }
+// split a multi-paragraph string (\n\n separated) into <p> blocks.
+// `backtick` spans become <code> (applied AFTER escaping, so it stays XSS-safe).
+function inlineFmt(s){ return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>'); }
+function paras(s){ return String(s).split(/\n\n+/).map(p=>`<p>${inlineFmt(p)}</p>`).join(''); }
 
 function renderMcqs(mcqs, topicId){
   const items = mcqs.map((m,qi)=>{
