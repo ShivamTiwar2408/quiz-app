@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux from the Kernel Out — 100+ things, one mental model</title>
+<meta name="description" content="A first-principles field guide to Linux: the kernel as the boundary between software and hardware, and everything built around it — the boot sequence, system calls and protection rings, GNU coreutils and the shell, the filesystem hierarchy, users and permissions, processes and signals, and the distro landscape. Built from Fireship's '100+ Linux Things you Need to Know'.">
+<style>
+  :root{
+    /* Tux's world: warm near-black, penguin-belly ink, beak amber. */
+    --bg:#100f0c; --bg2:#171510; --panel:#1c1a14; --panel2:#242017;
+    --ink:#f0ece1; --muted:#b3ab97; --faint:#7d745f;
+    --line:#332e22;
+    --amber:#f7a41b; --amber-soft:#ffbe4d;
+    --teal:#5bc0be; --green:#5ad48a; --red:#ff6b6b; --violet:#b78cff;
+    --accent:var(--amber);
+    --radius:12px;
+    --mono:'SF Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.72;-webkit-font-smoothing:antialiased}
+
+  /* top bar */
+  header.top{position:fixed;inset:0 0 auto 0;height:52px;display:flex;align-items:center;gap:16px;padding:0 20px;background:rgba(16,15,12,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:50}
+  header.top .brand{font-family:var(--mono);font-weight:700;font-size:13.5px;letter-spacing:.3px;color:var(--muted)}
+  header.top .brand b{color:var(--amber)}
+  header.top .prompt{color:var(--teal)}
+  header.top .meta{margin-left:auto;font-size:11.5px;color:var(--faint);font-family:var(--mono)}
+  @media(max-width:900px){header.top .meta{display:none}}
+
+  /* layout */
+  .shell{display:grid;grid-template-columns:288px 1fr;max-width:1300px;margin:0 auto;padding-top:52px}
+  @media(max-width:980px){.shell{grid-template-columns:1fr}}
+  aside.toc{position:sticky;top:52px;align-self:start;height:calc(100vh - 52px);overflow-y:auto;border-right:1px solid var(--line);padding:24px 14px 60px 22px;scrollbar-width:thin}
+  aside.toc::-webkit-scrollbar{width:6px}aside.toc::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  aside.toc .grp{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);opacity:.8;margin:20px 0 6px;padding-left:10px;border-left:2px solid var(--line)}
+  aside.toc a{display:block;color:var(--muted);text-decoration:none;font-size:13px;padding:5px 10px;border-radius:7px;border-left:2px solid transparent;line-height:1.4}
+  aside.toc a:hover{background:var(--panel2);color:var(--ink)}
+  aside.toc a.active{color:var(--ink);border-left-color:var(--amber);background:linear-gradient(90deg,rgba(247,164,27,.12),transparent)}
+  #tocToggle{display:none}
+  @media(max-width:980px){
+    aside.toc{position:fixed;z-index:60;top:52px;left:0;width:288px;background:var(--bg);transform:translateX(-105%);transition:transform .25s}
+    aside.toc.open{transform:none}
+    #tocToggle{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:650;cursor:pointer;font-family:var(--mono)}
+  }
+
+  main{padding:30px 44px 90px;min-width:0}
+  @media(max-width:600px){main{padding:24px 18px 80px}}
+
+  /* hero */
+  .hero{padding:30px 0 22px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .hero .kicker{font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .hero .kicker::before{content:'●';color:var(--green);font-size:9px;animation:blink 1.6s step-end infinite}
+  @keyframes blink{50%{opacity:.15}}
+  @media(prefers-reduced-motion:reduce){.hero .kicker::before{animation:none}}
+  h1{font-family:var(--mono);font-size:clamp(27px,4.3vw,46px);line-height:1.08;letter-spacing:-1.5px;font-weight:700;margin-bottom:16px}
+  h1 em{font-style:normal;color:var(--amber)}
+  .hero p{font-size:17px;color:#d6cfbe;max-width:770px}
+  .hero p code{font-size:.86em}
+
+  section{padding:40px 0 10px;scroll-margin-top:66px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:none}
+  h2{font-family:var(--mono);font-size:clamp(20px,2.7vw,27px);letter-spacing:-.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  h2 .num{font-size:14px;color:var(--amber);font-weight:600;opacity:.85}
+  h3{font-size:16.5px;font-weight:700;margin:24px 0 8px;color:var(--ink);font-family:var(--sans)}
+  p{color:var(--muted);font-size:16px;margin-bottom:13px;max-width:830px}
+  p strong{color:var(--ink);font-weight:650}
+  .def{font-size:16px;color:#ded7c6;border-left:3px solid var(--amber);background:var(--panel);padding:13px 18px;border-radius:0 10px 10px 0;margin:15px 0;max-width:830px}
+  .def b{color:var(--amber-soft)}
+  ul,ol{color:var(--muted);font-size:15.5px;margin:0 0 14px 22px;max-width:830px}
+  li{margin-bottom:6px}
+  li strong{color:var(--ink);font-weight:650}
+  code{font-family:var(--mono);font-size:.85em;background:var(--panel2);padding:2px 7px;border-radius:6px;color:var(--amber-soft);border:1px solid var(--line)}
+  a.inline{color:var(--teal);text-decoration:none;border-bottom:1px solid rgba(91,192,190,.35)}a.inline:hover{border-bottom-color:var(--teal)}
+
+  .analogy{border-left:3px solid var(--teal);background:var(--panel);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:830px}
+  .analogy b{color:var(--teal)}
+  .note{border-left:3px solid var(--green);background:var(--panel);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:830px}
+  .note b{color:var(--green)}
+  .warn{border-left:3px solid var(--red);background:var(--panel);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:15px;max-width:830px}
+  .warn b{color:var(--red)}
+
+  /* terminal snippet block */
+  .term{background:#0b0a08;border:1px solid var(--line);border-radius:10px;margin:15px 0;max-width:830px;overflow:hidden;font-family:var(--mono);font-size:13.5px}
+  .term .bar{display:flex;align-items:center;gap:7px;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .term .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .term .bar i:nth-child(1){background:#ff5f56}.term .bar i:nth-child(2){background:#ffbd2e}.term .bar i:nth-child(3){background:#27c93f}
+  .term .bar span{margin-left:8px;color:var(--faint);font-size:11px}
+  .term pre{padding:13px 15px;overflow-x:auto;line-height:1.65;color:#d6cfbe}
+  .term .c{color:var(--amber-soft)} /* command */
+  .term .p{color:var(--teal)}       /* prompt */
+  .term .o{color:var(--faint)}      /* output/comment */
+
+  figure{margin:20px 0;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:22px 18px 12px;max-width:900px}
+  figure.master{max-width:940px;padding:26px 24px 16px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-size:12.5px;color:var(--faint);text-align:center;margin-top:12px;font-family:var(--mono)}
+
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:15px 0;max-width:900px}
+  th{color:var(--amber);font-family:var(--mono);font-size:11px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted)}
+  td strong{color:var(--ink)}
+  td code{font-size:12.5px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0 2px;justify-content:center;font-family:var(--mono)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* SVG helpers */
+  .lbl{fill:var(--ink);font-size:13px;font-weight:700;text-anchor:middle;font-family:var(--sans)}
+  .lblL{fill:var(--ink);font-size:12.5px;font-weight:700;text-anchor:start;font-family:var(--sans)}
+  .sub{fill:var(--faint);font-size:10.5px;text-anchor:middle;font-family:var(--mono)}
+  .subL{fill:var(--faint);font-size:10px;text-anchor:start;font-family:var(--mono)}
+  .mono{font-family:var(--mono)}
+  .box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+  .wire{fill:none;stroke:#5a5138;stroke-width:1.8}
+  .wire.amber{stroke:var(--amber)}.wire.teal{stroke:var(--teal)}.wire.g{stroke:var(--green)}
+  .flow{fill:var(--faint);font-size:10px;text-anchor:middle;font-family:var(--mono)}
+
+  .footer{padding:34px 0 10px;color:var(--faint);font-size:13px;max-width:830px}
+  .footer a{color:var(--teal);text-decoration:none}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:14px 0;padding:0 16px;max-width:830px}
+  details summary{cursor:pointer;padding:12px 0;font-weight:650;color:var(--amber);list-style:none;font-family:var(--mono);font-size:14px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:'▸ ';display:inline-block;transition:.2s}
+  details[open] summary::before{transform:rotate(90deg)}
+  details .body{padding-bottom:14px;font-size:14.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top">
+  <button id="tocToggle" onclick="document.querySelector('.toc').classList.toggle('open')">☰ Contents</button>
+  <div class="brand"><span class="prompt">user@linux</span>:<b>~</b>$ field-guide</div>
+  <div class="meta">Fireship · 100+ Linux Things</div>
+</header>
+
+<div class="shell">
+  <aside class="toc">
+    <div class="grp">Start here</div>
+    <a href="#overview">The one mental model</a>
+
+    <div class="grp">The kernel</div>
+    <a href="#heritage">Unix, POSIX &amp; the lineage</a>
+    <a href="#what-is-linux">What Linux actually is</a>
+    <a href="#boot">The boot sequence</a>
+    <a href="#kernel-jobs">What the kernel does</a>
+    <a href="#rings">Protection rings &amp; syscalls</a>
+
+    <div class="grp">Userland</div>
+    <a href="#gnu">GNU &amp; the coreutils</a>
+    <a href="#shell">The shell &amp; the terminal</a>
+    <a href="#files">Working with files</a>
+    <a href="#pipes">Redirection &amp; pipes</a>
+    <a href="#scripts">Bash scripts</a>
+
+    <div class="grp">Users &amp; filesystem</div>
+    <a href="#users">Users, root &amp; sudo</a>
+    <a href="#fhs">The filesystem hierarchy</a>
+    <a href="#path">PATH &amp; environment</a>
+    <a href="#perms">File permissions</a>
+
+    <div class="grp">Runtime</div>
+    <a href="#processes">Processes &amp; signals</a>
+    <a href="#utils">Utilities worth knowing</a>
+
+    <div class="grp">The ecosystem</div>
+    <a href="#distros">Distributions</a>
+    <a href="#sources">Sources</a>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">Field guide · from the kernel out</div>
+      <h1>Linux is <em>one boundary</em>,<br>and everything guarding it.</h1>
+      <p>The video races through 100-plus terms. They're easier to hold if you see that almost all of them orbit a single line: the one between your <strong>software</strong> and your <strong>hardware</strong>. The kernel <em>is</em> that line. The shell, system calls, protection rings, users and permissions are all machinery for crossing it safely — or stopping you from crossing it at all. Learn the boundary first; the vocabulary falls into place around it.</p>
+    </div>
+
+    <section id="overview">
+      <h2><span class="num">§0</span> The one mental model</h2>
+      <p>Picture your machine as concentric rings. At the dead center sits the <strong>hardware</strong> — CPU, RAM, disks, devices. Wrapped around it is the <strong>kernel</strong>, the only code allowed to touch that hardware directly. Around the kernel sits <strong>userspace</strong>: your shell, your editor, your browser, everything you actually run. A program in userspace cannot reach in and poke the hardware — it has to <em>ask</em> the kernel, through a narrow, guarded doorway called a <strong>system call</strong>.</p>
+      <p>Every concept in this guide lives somewhere on that map. Booting is how the innermost rings come alive. The filesystem, permissions, and users are rules the kernel enforces at the doorway. The shell and coreutils are the userland tools you use to send requests through it. Keep the picture in your head and the 100 terms stop being trivia — they become <em>positions</em> on a diagram.</p>
+      <div class="def"><b>The thesis:</b> Linux protects the hardware behind the kernel and forces every program to request access through system calls. Understand that boundary and the rest is detail.</div>
+
+      <figure class="master">
+        <svg viewBox="0 0 900 430" role="img" aria-label="Concentric rings: hardware at the center, kernel in ring 0, userspace in ring 3, with a system call crossing the boundary.">
+          <!-- outermost: userspace ring 3 -->
+          <circle cx="330" cy="215" r="185" fill="#141209" stroke="var(--line)" stroke-width="1.5"/>
+          <circle cx="330" cy="215" r="120" fill="#1a1710" stroke="var(--line)" stroke-width="1.5"/>
+          <circle cx="330" cy="215" r="60" fill="rgba(247,164,27,.10)" stroke="var(--amber)" stroke-width="1.8"/>
+          <!-- core -->
+          <circle cx="330" cy="215" r="24" fill="var(--panel2)" stroke="var(--teal)" stroke-width="1.8"/>
+
+          <text class="mono" x="330" y="218" fill="var(--teal)" font-size="10.5" text-anchor="middle" font-weight="700">HW</text>
+          <text class="lbl" x="330" y="150" fill="var(--amber-soft)">Kernel — ring 0</text>
+          <text class="sub" x="330" y="166">full privilege · talks to hardware</text>
+          <text class="lbl" x="330" y="80">Userspace — ring 3</text>
+          <text class="sub" x="330" y="96">your programs · least privilege</text>
+          <text class="sub" x="330" y="330">shell · editors · browsers · daemons</text>
+
+          <!-- the doorway: syscall arrow crossing rings -->
+          <line x1="640" y1="215" x2="392" y2="215" class="wire amber" marker-end="url(#ah)"/>
+          <rect x="640" y="150" width="230" height="130" rx="10" class="box"/>
+          <text class="lblL" x="656" y="176">A program wants to write a file.</text>
+          <text class="subL" x="656" y="198">It can't touch the disk itself —</text>
+          <text class="subL" x="656" y="214">it issues a <tspan fill="var(--amber-soft)">system call</tspan>.</text>
+          <text class="subL" x="656" y="236">The kernel checks permissions,</text>
+          <text class="subL" x="656" y="252">drives the hardware, returns.</text>
+          <text class="mono" x="656" y="274" fill="var(--teal)" font-size="10.5">ring 3 ──▶ ring 0 ──▶ ring 3</text>
+
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="var(--amber)"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>The whole OS on one map — hardware at the core, the kernel guarding it, userspace outside, syscalls the only door in.</figcaption>
+      </figure>
+    </section>
+
+    <section id="heritage">
+      <h2><span class="num">§1</span> Unix, POSIX &amp; the lineage</h2>
+      <p>To understand Linux you first meet its ancestor. <strong>Unix</strong> was an operating system built at AT&amp;T Bell Labs in the 1970s. It was so influential that its ideas were codified into a standard — <strong>POSIX</strong>, the Portable Operating System Interface — so that different Unix-like systems would behave compatibly: same system-call shapes, same shell utilities, same conventions.</p>
+      <p>That standard is why skills transfer across systems. <strong>macOS, Android, FreeBSD, and most Linux distributions are POSIX-compliant</strong> to a large degree, which is why the same <code>ls</code>, <code>cat</code>, and pipe you learn here work almost everywhere.</p>
+      <div class="analogy"><b>Analogy:</b> POSIX is to operating systems what a standard rail gauge is to railways — the trains (OSes) differ wildly, but because the track spacing is agreed, a lot of the same rolling stock runs on all of them.</div>
+      <div class="note"><b>Timeline:</b> In 1987, <b>MINIX</b> — a small Unix-like OS for teaching — appeared, but its code couldn't be freely redistributed. That restriction inspired a Finnish CS student, <b>Linus Torvalds</b>, to write his own kernel in <b>1991</b>: Linux.</div>
+    </section>
+
+    <section id="what-is-linux">
+      <h2><span class="num">§2</span> What "Linux" actually is</h2>
+      <p>Here's the correction almost everyone needs: <strong>Linux is not an operating system — it's an operating-system <em>kernel</em></strong>. It's written in the <strong>C</strong> language, and it's the layer that sits between your software and the hardware. On its own it boots and manages a machine, but it isn't the shell, the utilities, or the desktop — those come from elsewhere (see <a href="#gnu" class="inline">GNU</a>).</p>
+      <p>It's also <strong>free and open-source software</strong>, licensed under the <strong>GPL 2.0</strong>. "Free" here means <em>freedom</em>, not price: you're free to run, study, modify, redistribute, and even sell it. That licensing is the reason Linux spread into everything from servers to phones to routers.</p>
+      <div class="def"><b>Kernel:</b> the core program that manages memory, processes, the filesystem, and hardware, and mediates every request from userspace. When people say "Linux," they usually mean the kernel <b>plus</b> a stack of GNU tools and other software bundled around it — a <a href="#distros" class="inline">distribution</a>.</div>
+    </section>
+
+    <section id="boot">
+      <h2><span class="num">§3</span> The boot sequence</h2>
+      <p>Pressing the power button kicks off a short, fixed relay race that ends at your login prompt. Each stage exists to bring the next inner-to-outer layer to life.</p>
+      <figure class="master">
+        <svg viewBox="0 0 900 190" role="img" aria-label="Boot sequence: power to bootloader (GRUB) to kernel loaded into RAM, then hardware detection, then init (systemd), then userspace login.">
+          <defs>
+            <marker id="bh" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="var(--amber)"/></marker>
+          </defs>
+          <g>
+            <rect x="14"  y="66" width="120" height="58" rx="9" class="box"/>
+            <text class="lbl" x="74" y="90">Power on</text>
+            <text class="sub" x="74" y="108">firmware / BIOS</text>
+
+            <rect x="170" y="66" width="130" height="58" rx="9" class="box"/>
+            <text class="lbl" x="235" y="90">Bootloader</text>
+            <text class="sub" x="235" y="108">usually GRUB</text>
+
+            <rect x="336" y="66" width="150" height="58" rx="9" class="box" stroke="var(--teal)"/>
+            <text class="lbl" x="411" y="90" fill="var(--teal)">Kernel → RAM</text>
+            <text class="sub" x="411" y="108">detects hardware</text>
+
+            <rect x="522" y="66" width="150" height="58" rx="9" class="box" stroke="var(--amber)"/>
+            <text class="lbl" x="597" y="90" fill="var(--amber-soft)">init system</text>
+            <text class="sub" x="597" y="108">typically systemd</text>
+
+            <rect x="708" y="66" width="178" height="58" rx="9" class="box"/>
+            <text class="lbl" x="797" y="90">Userspace</text>
+            <text class="sub" x="797" y="108">login screen</text>
+
+            <line x1="134" y1="95" x2="168" y2="95" class="wire amber" marker-end="url(#bh)"/>
+            <line x1="300" y1="95" x2="334" y2="95" class="wire amber" marker-end="url(#bh)"/>
+            <line x1="486" y1="95" x2="520" y2="95" class="wire amber" marker-end="url(#bh)"/>
+            <line x1="672" y1="95" x2="706" y2="95" class="wire amber" marker-end="url(#bh)"/>
+          </g>
+          <text class="flow" x="450" y="24" font-size="11" fill="var(--faint)">each stage's only job is to start the next one</text>
+        </svg>
+        <figcaption>Power → GRUB → kernel into RAM → systemd brings up services → userspace hands you a login.</figcaption>
+      </figure>
+      <p>The <strong>bootloader</strong> (commonly <strong>GRUB</strong>) loads the kernel into RAM. The kernel detects hardware, then starts the <strong>init system</strong> — the first userspace process, typically <strong>systemd</strong> (alternatives exist). systemd brings up background services and then the login screen. From there, userspace programs run and you're in.</p>
+    </section>
+
+    <section id="kernel-jobs">
+      <h2><span class="num">§4</span> What the kernel actually does</h2>
+      <p>Once running, the kernel carries a lot of responsibility on behalf of every program. Four jobs matter most:</p>
+      <table>
+        <thead><tr><th>Job</th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Memory management</strong></td><td>Allocates and frees RAM for each process. Via <strong>virtual memory</strong> it can even hand out <em>more</em> memory than physically exists, by paging some to disk (swap).</td></tr>
+          <tr><td><strong>Virtual filesystem</strong></td><td>A uniform way to read/write files regardless of the underlying disk format. The common default on Linux is <strong>ext4</strong> (the fourth extended filesystem) — but it's one option among many.</td></tr>
+          <tr><td><strong>Device drivers</strong></td><td>Talks to peripherals — disks, GPUs, keyboards — through drivers, so programs don't need to know the hardware details.</td></tr>
+          <tr><td><strong>Process scheduling</strong></td><td>Decides which process runs on the CPU and when (see <a href="#processes" class="inline">Processes</a>).</td></tr>
+        </tbody>
+      </table>
+      <div class="analogy"><b>Analogy:</b> virtual memory is a restaurant with 20 tables selling 60 reservations — it works because not everyone shows up at once. The kernel juggles who's actually "seated" in RAM versus parked on disk.</div>
+    </section>
+
+    <section id="rings">
+      <h2><span class="num">§5</span> Protection rings &amp; system calls</h2>
+      <p>You can't just walk up and poke the kernel, because the CPU enforces <strong>protection rings</strong>. <strong>Ring 0</strong> is the kernel, with maximum privilege. <strong>Ring 3</strong> is where the rest of us live in userspace, with the least. The rings are the hardware-level fence around that central boundary from §0.</p>
+      <p>So when a program needs something only the kernel can do — write a file, open a socket — it makes a <strong>system call</strong>, which briefly transitions the CPU from ring 3 to ring 0, does the privileged work, and drops back. In practice you rarely invoke a raw syscall yourself: you call a <strong>wrapper</strong> from <strong>glibc</strong> (the GNU C standard library), e.g. the <code>write()</code> function, which packages the real syscall for you.</p>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span>hello.c — a syscall wrapper in action</span></div>
+<pre><span class="o">// glibc's write() wraps the real "write" system call</span>
+<span class="c">write</span>(1, <span class="o">"hello, kernel\n"</span>, 14);
+<span class="o">//    ▲ fd=1 (stdout)   ▲ bytes    ▲ length</span>
+<span class="o">// ring 3 → [ syscall ] → ring 0 → pixels on screen → ring 3</span></pre>
+      </div>
+      <div class="warn"><b>Common mix-up:</b> <code>write</code> in your C code is <b>not itself the system call</b> — it's a glibc wrapper. glibc provides wrappers for nearly every syscall, which is a big part of what makes the kernel usable from ordinary C.</div>
+    </section>
+
+    <section id="gnu">
+      <h2><span class="num">§6</span> GNU &amp; the coreutils</h2>
+      <p>If the kernel is just the engine, what makes it a usable system? <strong>GNU</strong> (pronounced "guh-NOO", a recursive acronym for "GNU's Not Unix") — a project started by <strong>Richard Stallman in 1983</strong>, predating the Linux kernel itself. GNU supplies the <strong>coreutils</strong>: the everyday commands (<code>ls</code>, <code>cat</code>, <code>echo</code>, <code>rm</code>, and dozens more) that turn a bare kernel into something a human can operate.</p>
+      <div class="note"><b>Why some people say "GNU/Linux":</b> a typical Linux system is the GNU userland running on top of the Linux kernel. Both halves are doing real work — the kernel manages hardware; GNU gives you the tools to command it.</div>
+    </section>
+
+    <section id="shell">
+      <h2><span class="num">§7</span> The shell &amp; the terminal</h2>
+      <p>The <strong>terminal</strong> is the graphical window that lets you type commands; the <strong>shell</strong> is the program inside it that interprets them. It's called a "shell" because it wraps a protective layer around the kernel — you talk to the shell, the shell arranges the syscalls. The most common shell is <strong>Bash</strong>.</p>
+      <p>Say hello with <code>echo</code>, a GNU utility that prints its argument to <strong>standard output</strong>. Under the hood, a syscall goes to the kernel, which checks permissions and drives the display — but as a user, you just see text.</p>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span>bash</span></div>
+<pre><span class="p">$</span> <span class="c">echo</span> "hello, Linux kernel"
+<span class="o">hello, Linux kernel</span>
+
+<span class="p">$</span> <span class="c">man</span> touch          <span class="o"># pull up the manual for any command</span>
+<span class="o">TOUCH(1)   ... update timestamps / create an empty file ...</span></pre>
+      </div>
+      <div class="note"><b>Your first reflex:</b> when you don't know a command, ask <code>man</code> — the built-in manual. <code>man touch</code>, <code>man ls</code>, <code>man man</code>. It's the fastest way to learn without leaving the terminal.</div>
+    </section>
+
+    <section id="files">
+      <h2><span class="num">§8</span> Working with files</h2>
+      <p>A handful of coreutils cover most day-to-day file work. Note the split between a file's <em>contents</em> and its <em>metadata</em> (timestamps, size, ownership) — different commands read each.</p>
+      <table>
+        <thead><tr><th>Command</th><th>Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>touch f.txt</code></td><td>Creates a new empty file (or updates its timestamp if it exists).</td></tr>
+          <tr><td><code>ls</code></td><td>Lists files in the current directory.</td></tr>
+          <tr><td><code>cat f.txt</code></td><td>Prints a file's <strong>contents</strong> (nothing shows for an empty file).</td></tr>
+          <tr><td><code>stat f.txt</code></td><td>Shows a file's <strong>metadata</strong> — birth, modified, and accessed times.</td></tr>
+          <tr><td><code>ls -lh</code></td><td><code>-l</code> = long details, <code>-h</code> = human-readable sizes. Flags <strong>combine</strong>: <code>-lh</code>.</td></tr>
+          <tr><td><code>rm f.txt</code></td><td>Removes a file.</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>Flags stack.</b> Most single-letter flags can be merged behind one dash — <code>ls -l -h</code> and <code>ls -lh</code> are the same command, just more concise.</div>
+    </section>
+
+    <section id="pipes">
+      <h2><span class="num">§9</span> Redirection &amp; pipes</h2>
+      <p>The real power of the terminal is <em>combining</em> commands. Two mechanisms do almost all of it: <strong>redirection</strong> moves a command's input/output to or from files, and <strong>pipes</strong> feed one command's output straight into the next.</p>
+      <figure class="master">
+        <svg viewBox="0 0 900 170" role="img" aria-label="Pipe flow: cat log reads a file, pipes to sort, pipes to uniq, producing clean output.">
+          <defs><marker id="ph" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="var(--teal)"/></marker></defs>
+          <rect x="20"  y="58" width="150" height="54" rx="9" class="box"/>
+          <text class="lbl" x="95" y="80" class="mono">cat log.txt</text>
+          <text class="sub" x="95" y="98">read the file</text>
+
+          <rect x="270" y="58" width="130" height="54" rx="9" class="box"/>
+          <text class="lbl" x="335" y="80" class="mono">sort</text>
+          <text class="sub" x="335" y="98">order lines</text>
+
+          <rect x="500" y="58" width="130" height="54" rx="9" class="box"/>
+          <text class="lbl" x="565" y="80" class="mono">uniq</text>
+          <text class="sub" x="565" y="98">drop repeats</text>
+
+          <rect x="730" y="58" width="150" height="54" rx="9" class="box" stroke="var(--green)"/>
+          <text class="lbl" x="805" y="80" fill="var(--green)">clean output</text>
+
+          <line x1="170" y1="85" x2="268" y2="85" class="wire teal" marker-end="url(#ph)"/>
+          <line x1="400" y1="85" x2="498" y2="85" class="wire teal" marker-end="url(#ph)"/>
+          <line x1="630" y1="85" x2="728" y2="85" class="wire teal" marker-end="url(#ph)"/>
+          <text class="flow" x="219" y="78" fill="var(--teal)">|</text>
+          <text class="flow" x="449" y="78" fill="var(--teal)">|</text>
+          <text class="flow" x="679" y="78" fill="var(--teal)">|</text>
+        </svg>
+        <figcaption><code>cat log.txt | sort | uniq</code> — each <code>|</code> hands the previous command's output to the next.</figcaption>
+      </figure>
+      <table>
+        <thead><tr><th>Operator</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>echo hi &gt; f.txt</code></td><td>Redirect output <strong>into</strong> a new file (overwrites it).</td></tr>
+          <tr><td><code>sort &lt; f.txt</code></td><td>Redirect a file <strong>in</strong> as a command's input.</td></tr>
+          <tr><td><code>a | b</code></td><td><strong>Pipe</strong> — send the output of <code>a</code> as the input of <code>b</code>.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="scripts">
+      <h2><span class="num">§10</span> Bash scripts</h2>
+      <p>When you catch yourself running the same sequence over and over, put it in a <strong>Bash script</strong> — a file of commands you can run as one. You create it with a text editor: <strong>Vim</strong> or <strong>Emacs</strong> if you want the deep end, or <strong>nano</strong>, a minimal editor shipped with most distros, to just get it done.</p>
+      <p>The first line is a <strong>shebang</strong> (<code>#!/bin/bash</code>) telling Linux which interpreter to run the file with. After that, any Bash you like.</p>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span>greet.sh</span></div>
+<pre><span class="c">#!/bin/bash</span>          <span class="o"># shebang: run this with bash</span>
+<span class="c">echo</span> "What's your name?"
+<span class="c">read</span> name             <span class="o"># read a value from standard input</span>
+<span class="c">echo</span> "Hello, $name"</pre>
+      </div>
+      <div class="note"><b>Running it:</b> save the file, then execute it by giving its path — e.g. <code>./greet.sh</code>. (It needs execute permission first — see <a href="#perms" class="inline">§14</a>.)</div>
+    </section>
+
+    <section id="users">
+      <h2><span class="num">§11</span> Users, root &amp; sudo</h2>
+      <p>Every account has a name (<code>whoami</code>) and a numeric <strong>UID</strong> (<code>id</code>). One account is special: <strong>root</strong>, UID <strong>0</strong> — the superuser/admin with maximum privilege.</p>
+      <ul>
+        <li><code>su</code> — switch to another user (root by default).</li>
+        <li><code>sudo &lt;cmd&gt;</code> — run a single command with elevated privilege, if you've been granted it.</li>
+        <li><code>sudo -l</code> — check what sudo privileges you currently have.</li>
+      </ul>
+      <p>Linux also has <strong>groups</strong>, each with a group ID, which bundle users together so permissions can be managed for many people at once instead of one by one.</p>
+      <div class="warn"><b>Respect UID 0.</b> root can do <em>anything</em>, including destroy the system. Prefer <code>sudo</code> for the one command that needs it over living as root — a small habit that prevents large accidents.</div>
+    </section>
+
+    <section id="fhs">
+      <h2><span class="num">§12</span> The filesystem hierarchy</h2>
+      <p>Everything hangs off a single root, <code>/</code>. You start in your <strong>home directory</strong> (<code>~</code>), a personal workspace. Move around with <code>mkdir</code> (make a directory), <code>cd</code> (change directory), and <code>pwd</code> (print working directory). Run <code>cd /</code> and <code>ls</code> to see the top-level directories every Linux user should recognize:</p>
+      <figure class="master">
+        <svg viewBox="0 0 900 260" role="img" aria-label="Filesystem tree rooted at slash with boot, dev, etc, var, bin, sbin, home, usr directories.">
+          <line x1="80" y1="40" x2="80" y2="220" class="wire"/>
+          <rect x="40" y="18" width="80" height="34" rx="7" class="box" stroke="var(--amber)"/>
+          <text class="lbl" x="80" y="40" fill="var(--amber-soft)" class="mono">/</text>
+
+          <g font-family="var(--mono)">
+            <!-- rows -->
+            <g>
+              <line x1="80" y1="72" x2="120" y2="72" class="wire"/>
+              <rect x="120" y="55" width="110" height="34" rx="7" class="box"/><text class="lblL" x="134" y="76" class="mono">/boot</text>
+              <text class="subL" x="250" y="76">the Linux kernel itself</text>
+            </g>
+            <g>
+              <line x1="80" y1="112" x2="120" y2="112" class="wire"/>
+              <rect x="120" y="95" width="110" height="34" rx="7" class="box"/><text class="lblL" x="134" y="116" class="mono">/dev</text>
+              <text class="subL" x="250" y="116">devices — disks &amp; peripherals</text>
+            </g>
+            <g>
+              <line x1="80" y1="152" x2="120" y2="152" class="wire"/>
+              <rect x="120" y="135" width="110" height="34" rx="7" class="box"/><text class="lblL" x="134" y="156" class="mono">/etc</text>
+              <text class="subL" x="250" y="156">system config files</text>
+            </g>
+            <g>
+              <line x1="80" y1="192" x2="120" y2="192" class="wire"/>
+              <rect x="120" y="175" width="110" height="34" rx="7" class="box"/><text class="lblL" x="134" y="196" class="mono">/var</text>
+              <text class="subL" x="250" y="196">variable data — log files</text>
+            </g>
+            <!-- right column -->
+            <g>
+              <rect x="560" y="55" width="120" height="34" rx="7" class="box" stroke="var(--teal)"/><text class="lblL" x="574" y="76" fill="var(--teal)" class="mono">/bin</text>
+              <text class="subL" x="700" y="76">user binaries (commands)</text>
+            </g>
+            <g>
+              <rect x="560" y="95" width="120" height="34" rx="7" class="box" stroke="var(--teal)"/><text class="lblL" x="574" y="116" fill="var(--teal)" class="mono">/sbin</text>
+              <text class="subL" x="700" y="116">system binaries</text>
+            </g>
+            <g>
+              <rect x="560" y="135" width="120" height="34" rx="7" class="box"/><text class="lblL" x="574" y="156" class="mono">/usr</text>
+              <text class="subL" x="700" y="156">more programs &amp; resources</text>
+            </g>
+            <g>
+              <rect x="560" y="175" width="120" height="34" rx="7" class="box"/><text class="lblL" x="574" y="196" class="mono">/home</text>
+              <text class="subL" x="700" y="196">your personal workspace (~)</text>
+            </g>
+          </g>
+        </svg>
+        <figcaption>The directories worth memorizing — <code>/bin</code> and <code>/sbin</code> hold the executables commands actually run.</figcaption>
+      </figure>
+      <p>When you type <code>ls</code>, Linux finds and runs an executable <strong>binary</strong>. Binaries live in <code>/bin</code> and <code>/sbin</code>, but also under <code>/usr</code> — and potentially anywhere. Which raises the question the next section answers: how does Linux know <em>which</em> binary to run?</p>
+    </section>
+
+    <section id="path">
+      <h2><span class="num">§13</span> PATH &amp; environment variables</h2>
+      <p><strong>PATH</strong> is a special <strong>environment variable</strong> holding a list of directories separated by colons. When you type a command, Linux searches those directories in order and runs the <strong>first matching binary</strong> it finds. That's the whole mechanism behind "how does the shell find <code>ls</code>."</p>
+      <p>You set environment variables with <code>export</code>. The common way to customize <em>your</em> PATH is to edit <strong><code>.bashrc</code></strong> — a script that runs before every terminal session, so your changes stick.</p>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span>~/.bashrc</span></div>
+<pre><span class="c">export</span> PATH="$HOME/bin:$PATH"   <span class="o"># add your own bin dir, keep the rest</span>
+<span class="c">export</span> PS1="\u@\h:\w\$ "         <span class="o"># customize the terminal prompt</span></pre>
+      </div>
+      <div class="note"><b>PS1</b> is the environment variable that defines your prompt's look. Tweaking it (colors, username, path) is a popular bit of terminal vanity — and harmless practice with environment variables.</div>
+    </section>
+
+    <section id="perms">
+      <h2><span class="num">§14</span> File permissions</h2>
+      <p>This is where the kernel enforces the boundary at the file level. Run <code>ls -l</code> and you'll see nine cryptic characters — the <strong>symbolic permissions</strong>. They're three triplets: <strong>owner</strong>, <strong>group</strong>, <strong>everyone else</strong>. Each triplet has <strong>r</strong>ead, <strong>w</strong>rite, e<strong>x</strong>ecute — a letter means granted, a dash means denied.</p>
+      <figure class="master">
+        <svg viewBox="0 0 900 250" role="img" aria-label="Decoding rwxr-xr-- into owner, group, and other triplets, and their octal value 754.">
+          <!-- the 9 chars -->
+          <g font-family="var(--mono)" font-size="30" font-weight="700">
+            <text x="120" y="70" fill="var(--green)">rwx</text>
+            <text x="215" y="70" fill="var(--amber-soft)">r-x</text>
+            <text x="310" y="70" fill="var(--muted)">r--</text>
+          </g>
+          <!-- brackets -->
+          <path d="M118 82 L118 92 L188 92 L188 82" class="wire g"/>
+          <path d="M213 82 L213 92 L283 92 L283 82" class="wire amber"/>
+          <path d="M308 82 L308 92 L360 92 L360 82" class="wire"/>
+          <text class="sub" x="153" y="112" fill="var(--green)">owner</text>
+          <text class="sub" x="248" y="112" fill="var(--amber-soft)">group</text>
+          <text class="sub" x="334" y="112" fill="var(--muted)">others</text>
+
+          <!-- octal mapping -->
+          <text class="lblL" x="120" y="160">Each triplet is also a number (octal):</text>
+          <g font-family="var(--mono)" font-size="13">
+            <text x="120" y="186" fill="var(--muted)">r = 4   w = 2   x = 1   → add them up per triplet</text>
+            <text x="120" y="210" fill="var(--green)">rwx = 4+2+1 = 7</text>
+            <text x="300" y="210" fill="var(--amber-soft)">r-x = 4+0+1 = 5</text>
+            <text x="500" y="210" fill="var(--muted)">r-- = 4+0+0 = 4</text>
+          </g>
+          <rect x="640" y="140" width="230" height="80" rx="10" class="box" stroke="var(--amber)"/>
+          <text class="lbl" x="755" y="170" fill="var(--amber-soft)" class="mono" font-size="26">754</text>
+          <text class="sub" x="755" y="196">owner / group / others</text>
+
+          <text class="subL" x="120" y="240" fill="var(--red)">777 = anyone can do anything — almost always a mistake.</text>
+        </svg>
+        <figcaption>Symbolic <code>rwxr-xr--</code> decodes to octal <code>754</code>: owner full, group read+execute, others read-only.</figcaption>
+      </figure>
+      <table>
+        <thead><tr><th>Command</th><th>Changes</th></tr></thead>
+        <tbody>
+          <tr><td><code>chmod</code></td><td>Permissions — e.g. <code>chmod 754 f</code> or <code>chmod o+r f</code> (grant others read).</td></tr>
+          <tr><td><code>chown</code></td><td>The file's <strong>owner</strong>.</td></tr>
+          <tr><td><code>chgrp</code></td><td>The file's <strong>group</strong>.</td></tr>
+        </tbody>
+      </table>
+      <div class="warn"><b>Principle of least privilege:</b> <code>777</code> lets everyone read, write, and execute a file — lucky on a slot machine, dangerous on a filesystem. Grant access only where genuinely needed, and trust no one by default.</div>
+    </section>
+
+    <section id="processes">
+      <h2><span class="num">§15</span> Processes &amp; signals</h2>
+      <p>Every command or program you run becomes a <strong>process</strong> on the CPU, managed by the kernel's scheduler. Each has a unique <strong>PID</strong> (process ID) and an owning user.</p>
+      <ul>
+        <li><code>ps</code> — list processes (PID + owner).</li>
+        <li><code>htop</code> — an interactive, filterable process viewer.</li>
+        <li><strong>daemons</strong> — system processes running quietly in the background (e.g. logging, networking).</li>
+        <li><code>./long.sh &amp;</code> — append <code>&amp;</code> to run your own process in the background.</li>
+        <li><strong>crontab</strong> — schedule a script to run at set times (e.g. a 4:20pm daily reminder).</li>
+      </ul>
+      <p>Sometimes a process misbehaves and must be stopped. You do that by sending it a <strong>signal</strong>:</p>
+      <table>
+        <thead><tr><th>Command</th><th>Signal</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>kill &lt;pid&gt;</code></td><td><strong>SIGTERM</strong></td><td>Politely asks the process to shut down — it can clean up first.</td></tr>
+          <tr><td><code>kill -9 &lt;pid&gt;</code></td><td><strong>SIGKILL</strong></td><td>Forcefully terminates it immediately — no chance to clean up.</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>Reach for SIGTERM first.</b> <code>kill -9</code> is the sledgehammer — use it only when a graceful shutdown fails, since it gives the process no opportunity to save state or release resources.</div>
+    </section>
+
+    <section id="utils">
+      <h2><span class="num">§16</span> Utilities worth knowing</h2>
+      <p>A few more standard tools show up constantly across Linux machines:</p>
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>grep</code></td><td>Search through text for matching lines / patterns.</td></tr>
+          <tr><td><code>sed</code></td><td>Stream editor — find-and-modify text programmatically.</td></tr>
+          <tr><td><code>gzip</code></td><td>Compress files to make them smaller.</td></tr>
+          <tr><td><code>tar</code></td><td>Archive many files/directories into one (often paired with gzip).</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>tar vs gzip:</b> they're often used together but do different jobs — <code>tar</code> bundles files into a single archive, <code>gzip</code> shrinks it. A <code>.tar.gz</code> is both applied in sequence.</div>
+    </section>
+
+    <section id="distros">
+      <h2><span class="num">§17</span> Distributions</h2>
+      <p>Everything so far is roughly universal. Where Linux varies wildly is the <strong>distribution</strong> — a complete OS built on the kernel, with an opinionated bundle of default software for a target audience. Distros differ along a few axes:</p>
+      <table>
+        <thead><tr><th>Axis</th><th>Options</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Package manager</strong></td><td>How you install software — <code>apt</code> (Debian family), <code>yum</code>/<code>dnf</code> (Red Hat family), <code>pacman</code> (Arch).</td></tr>
+          <tr><td><strong>Release model</strong></td><td><strong>Fixed</strong> releases (predictable, stable) vs <strong>rolling</strong> releases (always cutting-edge).</td></tr>
+          <tr><td><strong>Desktop environment</strong></td><td>On a PC, the GUI — <strong>GNOME</strong>, <strong>KDE Plasma</strong>, and others — shapes the whole feel.</td></tr>
+        </tbody>
+      </table>
+      <h3>Families worth knowing</h3>
+      <table>
+        <thead><tr><th>Family</th><th>Known for</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Slackware</strong></td><td>The original — one of the oldest distros, from the early '90s.</td></tr>
+          <tr><td><strong>Debian</strong></td><td>The most popular base overall; open philosophy, ease of use (Ubuntu descends from it).</td></tr>
+          <tr><td><strong>Red Hat</strong></td><td>The enterprise choice, valued for long-term support.</td></tr>
+          <tr><td><strong>Arch</strong></td><td>Minimal, rolling, build-it-yourself. Home of the "I use Arch, by the way" ethos.</td></tr>
+        </tbody>
+      </table>
+      <div class="analogy"><b>Analogy:</b> the kernel is the engine; a distro is the finished car. Same engine can sit in a family sedan (Ubuntu), a work truck (Red Hat), or a stripped-down track build you assemble yourself (Arch).</div>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <p>Built from the video <em>100+ Linux Things you Need to Know</em> by Fireship (<a class="inline" href="https://www.youtube.com/watch?v=LKCVKw9CzFo">youtube.com/watch?v=LKCVKw9CzFo</a>), transcribed with AWS Transcribe. Auto-transcribed technical terms were corrected against their established meanings — e.g. POSIX (heard as "PSI/P6"), MINIX (heard as "Linux, 1987"), systemd, ext4, glibc, coreutils, GNOME, pacman, chmod/chown/chgrp, sed, gzip, tar, SIGTERM/SIGKILL, and daemons.</p>
+      <div class="footer">
+        <p>A first-principles field guide organized from the kernel outward, not a transcript rehash. Facts reflect widely documented Linux fundamentals.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const links=[...document.querySelectorAll('aside.toc a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const secs=[...document.querySelectorAll('section[id]')];
+  function onScroll(){
+    const y=scrollY+90;let cur=secs[0];
+    for(const s of secs){if(s.offsetTop<=y)cur=s;else break;}
+    links.forEach(a=>a.classList.remove('active'));
+    const a=cur&&map.get(cur.id);if(a){a.classList.add('active');a.scrollIntoView({block:'nearest'});}
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  links.forEach(a=>a.addEventListener('click',()=>document.querySelector('.toc').classList.remove('open')));
+</script>
+</body>
+</html>
