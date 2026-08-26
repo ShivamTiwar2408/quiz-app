@@ -172,8 +172,8 @@ tf = txt(s, Inches(1.1), Inches(4.35), Inches(11.2), Inches(0.5))
 line(tf, "Śrīmad-Bhāgavatam 10.67 — Lord Balarāma slays Dvivida", 21, MUTED, font=SERIF, italic=True, first=True)
 box(s, Inches(1.1), Inches(5.05), Inches(4.2), Pt(1), LINE, shape=MSO_SHAPE.RECTANGLE).fill.fore_color.rgb = LINE
 tf = txt(s, Inches(1.1), Inches(5.35), Inches(11.2), Inches(1.2))
-line(tf, "HH Romāpāda Swami  ·  Fort Lauderdale, FL  ·  23 August 2024", 14, MUTED, first=True)
-line(tf, "A study guide in 20 slides", 13, FAINT, font=MONO, space_before=7)
+line(tf, "Fort Lauderdale, FL  ·  Balarāma-pūrṇimā  ·  23 August 2024", 14, MUTED, first=True)
+line(tf, "A study guide in 21 slides", 13, FAINT, font=MONO, space_before=7)
 
 # ─────────────────────────────────────────── 2 · the one idea
 s = new("sāra", "The one idea everything hangs off",
@@ -304,7 +304,7 @@ bullets(s, [
     ("The shape of the offence:", "he directed attention to the Lord while deprecating the one making the introduction possible. He kept the object of devotion and discarded the channel."),
     ("The symmetry:", "he offends the guru-tattva in Rāma's pastimes and is killed by the guru-tattva in Kṛṣṇa's. Across yugas, he is dealt with by the very principle he slighted."),
 ], top=4.3, size=16, gap=12)
-callout(s, "The generalisation the class insists on:", "“It's not just that you're not Lakṣmaṇa, so I can mess with you.” The principle is vaiṣṇava-aparādha — offence to any devotee — and one can lose one's spiritual standing as its consequence.", RED, 5.95, height=1.1)
+callout(s, "The generalisation I want to insist on:", "“It's not just that you're not Lakṣmaṇa, so I can mess with you.” The principle is vaiṣṇava-aparādha — offence to any devotee — and one can lose one's spiritual standing as its consequence.", RED, 5.95, height=1.1)
 
 # ─────────────────────────────────────────── 10 · the mechanism
 s = new("anartha", "The mechanism of degradation",
@@ -426,7 +426,7 @@ s = new("mukti", "Killed, and therefore liberated",
 verse(s, "All these demoniac personalities — Pralamba, Dhenuka, Baka, Keśī, Ariṣṭa, Cāṇūra, Muṣṭika, Kuvalayāpīḍa, Kaṁsa, Yavana, Narakāsura, Pauṇḍraka; marshals like Śālva, Dvivida the monkey, Balvala, Dantavakra, the seven bulls, Śambara, Vidūratha and Rukmī — would all fight vigorously with the Lord Hari, or with Him under the names Baladeva, Arjuna, Bhīma; and the demons, being thus killed, would attain either the impersonal brahmajyoti or His personal abode in the Vaikuṇṭha planets.",
       "SB 2.7.34–35 · the scheduled incarnations", 2.6, height=1.9)
 callout(s, "So the descent was a round trip.", "The soul who fell from an attendant's position in the Lord's abode is returned to it — by being killed by the Lord.", INK, 4.75, height=0.8)
-callout(s, "“We don't imitate.”", "The class heads off the obvious conclusion at once: you cannot arrange to be an exception — that is what exception means. The mercy shown to Dvivida is a statement about the Lord's nature, not a strategy available to us.", RED, 5.7, height=1.0)
+callout(s, "“We don't imitate.”", "Let me head off the obvious conclusion at once: you cannot arrange to be an exception — that is what exception means. The mercy shown to Dvivida is a statement about the Lord's nature, not a strategy available to us.", RED, 5.7, height=1.0)
 callout(s, "Why He appears at all — BG 4.7–8.", "Whenever dharma declines and adharma rises, He descends: to deliver the devotees, annihilate the miscreants, and re-establish dharma, age after age. Balarāma frees the caved-in villagers and kills the ape in the same afternoon.", GOLD, 6.8, height=0.62)
 
 # ─────────────────────────────────────────── 17 · kavaca
@@ -443,7 +443,7 @@ callout(s, "The move being made here:", "Balarāma's victories are not filed as 
 
 # ─────────────────────────────────────────── 18 · the tongue
 s = new("vāk-saṁyama", "Controlling the tongue",
-        "A fair question in a chapter where the first offence was something said. The answer came in four resources, from most structural to most direct.")
+        "A fair question in a chapter where the first offence was something said. I gave four resources, from most structural to most direct.")
 bullets(s, [
     ("1 · Cultivate the mode of goodness.", "BG 17.15 defines austerity of speech: truthfully, and pleasingly. Both halves are the instruction — and goodness is cultivated by habit (cleanliness, compassion, charity, truthfulness), not summoned on demand."),
     ("2 · The tongue has two functions —", "tasting and vibrating. So take only kṛṣṇa-prasādam. Not as rule-following: prasādam spiritualises the tongue, so purity produces control rather than control producing purity."),
@@ -454,7 +454,7 @@ callout(s, "The trap in half-obeying BG 17.15:", "“I just have to speak the tr
 
 # ─────────────────────────────────────────── 19 · anger
 s = new("krodha", "Anger, and why bhakti is the cure",
-        "The sharpest exchange of the class: “I understand once anger kicks in there is no stopping point — so I think I should stop before it kicks in. But it kicks in.”")
+        "The sharpest question I was asked: “I understand once anger kicks in there is no stopping point — so I think I should stop before it kicks in. But it kicks in.”")
 bullets(s, [
     ("BG 2.62–63, as a practical problem:", "from anger comes delusion, from delusion bewilderment of memory, from that the loss of intelligence. The verse describes a system that disables the faculty you would use to interrupt it."),
     ("The proof case — Bhīma and Duryodhana,", "both Balarāma's own students in club-fighting. He came to the battlefield and asked them to stop: Bhīma is stronger, Duryodhana more skilled, neither can win — stop wasting your time."),
@@ -463,7 +463,17 @@ bullets(s, [
 ], top=2.5, size=14.5, gap=11)
 callout(s, "And then the direct request.", "Not self-improvement, but the kavaca: “May Lord Balarāma, who killed Dvivida, always protect me from anger.” He can remove the tendency itself — He has done it before, in public, to the strongest angry being in the chapter. Bhakti is the cure.", GOLD, 6.15, height=1.05)
 
-# ─────────────────────────────────────────── 20 · close
+# ─────────────────────────────────────────── 20 · where I take a problem
+s = new("āśraya", "Where I take a problem",
+        "We read this on Balarāma-pūrṇimā, so let me close where the chapter closes — not with the ape but with the two brothers in Vṛndāvana, and with something practical to do about the anger, the pride and the offences.")
+bullets(s, [
+    ("Śrīla Prabhupāda, asked on a morning walk", "what to do about an obstacle you cannot overcome: go before the deity — of Gaurāṅga, or of Kṛṣṇa-Balarāma, they are non-different — and say, “Sir, I have a problem. Please help me.” And he will do the needful."),
+    ("Two qualifications he attached.", "Not because the Lord is an order-supplier — that is not the relationship. But because He is merciful to one who depends on Him as a child depends on a parent. And: don't make it too much your business to bother Him too many times."),
+    ("A confirmation from the room.", "A devotee said they pray exactly like that, and that it is true — not instantaneously, but it works. When something is genuinely required, you know where to go."),
+], top=2.5, size=14.5, gap=11)
+callout(s, "A good combination to have on your side:", "Kṛṣṇa is very kind and Balarāma is all-powerful.", GOLD, 5.95, height=0.95)
+
+# ─────────────────────────────────────────── 21 · close
 s = prs.slides.add_slide(BLANK)
 s.background.fill.solid(); s.background.fill.fore_color.rgb = BG
 box(s, Inches(0), Inches(7.46), W, Pt(3), GOLD, shape=MSO_SHAPE.RECTANGLE).fill.fore_color.rgb = GOLD
@@ -476,7 +486,7 @@ line(tf, "It is not bad association — by then the outcome is largely written. 
 box(s, Inches(1.1), Inches(4.55), Inches(4.2), Pt(1), LINE, shape=MSO_SHAPE.RECTANGLE).fill.fore_color.rgb = LINE
 tf = txt(s, Inches(1.1), Inches(4.85), Inches(11.2), Inches(2.2))
 line(tf, "SOURCES", 11, FAINT, font=MONO, first=True)
-line(tf, "HH Romāpāda Swami, “SB 10.67 — Lord Balarāma slays Dvivida Gorilla,” Fort Lauderdale FL, 23 August 2024 (1 hr 17 min).",
+line(tf, "From the class “SB 10.67 — Lord Balarāma slays Dvivida Gorilla,” Fort Lauderdale FL, Balarāma-pūrṇimā, 23 August 2024 (1 hr 17 min).",
      13, MUTED, space_before=8, spacing=1.2)
 line(tf, "Śrīmad-Bhāgavatam 10.67 with 10.2, 10.59, 10.65, 10.66, 2.7.34–35, 1.2.24–26 · Bhagavad-gītā 2.62–63, 4.7–8, 17.15 · Vālmīki Rāmāyaṇa (Kiṣkindhā- and Uttara-kāṇḍa) · Viśvanātha Cakravartī Ṭhākura on SB 10.67 · Jīva Gosvāmī, Bhakti-sandarbha, his SB commentary and Gopāla-campū · Garga-saṁhitā · Bhaktivinoda Ṭhākura, Caitanya-śikṣāmṛta and Kṛṣṇa-saṁhitā.",
      11.5, FAINT, space_before=7, spacing=1.2)
