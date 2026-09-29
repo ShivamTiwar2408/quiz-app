@@ -364,8 +364,15 @@ function renderQ(){
   $('explain').className='explain'; $('explain').innerHTML='';
   $('nextBtn').classList.add('hide');
   $('checkBtn').classList.toggle('hide',!multi);  // single-select auto-checks on click
+  // Options are shuffled and relabelled a..d per attempt: authored sets tend to list
+  // the correct option first, which is a free giveaway if display order is fixed.
+  const LABELS='abcdefghij';
+  const src=$('shuffleChk').checked?shuffle(q.options):q.options;
+  const view={options:src.map((o,i)=>({key:LABELS[i],text:o.text,src:o.key})),correct:[]};
+  view.options.forEach(o=>{ if(q.correct.includes(o.src)) view.correct.push(o.key); });
+  q._view=view;
   const wrap=$('optWrap'); wrap.innerHTML='';
-  q.options.forEach(o=>{
+  view.options.forEach(o=>{
     const b=document.createElement('button'); b.className='opt'; b.dataset.key=o.key;
     b.innerHTML=`<span class="k">${o.key}</span><span class="ot">${o.text}</span><span class="mark"></span>`;
     b.addEventListener('click',()=>onOpt(o.key,b,multi));
@@ -386,11 +393,11 @@ function onOpt(key,btn,multi){
 function grade(){
   locked=true;
   const q=quiz[idx];
-  const correct=new Set(q.correct);
+  const correct=new Set(q._view.correct);
   const chosen=[...selected];
   const isRight = chosen.length===correct.size && chosen.every(k=>correct.has(k));
   if(isRight) score++;
-  results.push({q,chosen:chosen.slice().sort(),correct:[...correct].sort(),isRight});
+  results.push({q,options:q._view.options,chosen:chosen.slice().sort(),correct:[...correct].sort(),isRight});
   [...$('optWrap').children].forEach(b=>{
     const k=b.dataset.key; b.classList.add('locked'); b.classList.remove('sel');
     if(correct.has(k)){b.classList.add('correct');b.querySelector('.mark').textContent='✓';}
@@ -417,7 +424,7 @@ function showResults(){
   $('rVerdict').textContent=v;
   const rv=$('review'); rv.innerHTML='<h3>Review &amp; explanations</h3>';
   results.forEach((r,i)=>{
-    const m={}; r.q.options.forEach(o=>m[o.key]=o.text);
+    const m={}; (r.options||r.q.options).forEach(o=>m[o.key]=o.text);
     const fmt=ks=>ks.map(k=>`${k.toUpperCase()}. ${m[k]||'—'}`).join('<br>');
     const div=document.createElement('div'); div.className='ritem';
     div.innerHTML=`<div class="rq">${i+1}. ${r.q.question}<span class="badge ${r.isRight?'ok':'no'}">${r.isRight?'correct':'wrong'}</span></div>
