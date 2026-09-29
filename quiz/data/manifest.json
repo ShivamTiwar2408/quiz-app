@@ -497,6 +497,11 @@
           "name": "Ch 11 · Stream Processing",
           "set": "ddia-ch11",
           "count": 118
+        },
+        {
+          "name": "Ch 12 · The Future of Data Systems",
+          "set": "ddia-ch12",
+          "count": 141
         }
       ]
     },
@@ -1061,6 +1066,6 @@
       ]
     }
   ],
-  "total_questions": 4156,
+  "total_questions": 4297,
   "total_sets": 175
 }
