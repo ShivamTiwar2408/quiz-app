@@ -452,6 +452,16 @@
           "name": "Ch 2 · Data Models and Query Languages",
           "set": "ddia-ch02",
           "count": 106
+        },
+        {
+          "name": "Ch 3 · Storage and Retrieval",
+          "set": "ddia-ch03",
+          "count": 123
+        },
+        {
+          "name": "Ch 4 · Encoding and Evolution",
+          "set": "ddia-ch04",
+          "count": 113
         }
       ]
     },
@@ -1016,6 +1026,6 @@
       ]
     }
   ],
-  "total_questions": 2977,
+  "total_questions": 3213,
   "total_sets": 175
 }
