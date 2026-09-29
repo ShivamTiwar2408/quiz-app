@@ -61,7 +61,10 @@ for (const file of files) {
       if (right.every((o) => o.text.length >= longest) && rLen > wLen * 1.3) flags.push('correct-is-longest');
       if (rLen > wLen * 2) flags.push(`length-tell-${(rLen / wLen).toFixed(1)}x`);
 
-      const throwaway = wrong.filter((o) => THROWAWAY.some((p) => p.test(o.text.trim())));
+      // A negation only counts as throwaway if it is also bare: "Nothing changed" does no
+      // work, whereas "None of the columns are hashed, so range scans stay efficient" is a
+      // real claim a reader has to evaluate.
+      const throwaway = wrong.filter((o) => o.text.length < 70 && THROWAWAY.some((p) => p.test(o.text.trim())));
       if (throwaway.length) flags.push(`throwaway-distractor-x${throwaway.length}`);
       if (throwaway.length === wrong.length) flags.push('all-distractors-throwaway');
 
