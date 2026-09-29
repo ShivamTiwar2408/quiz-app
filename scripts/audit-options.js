@@ -57,9 +57,13 @@ for (const file of files) {
       const wLen = wrong.reduce((a, o) => a + o.text.length, 0) / wrong.length;
       const longest = Math.max(...q.options.map((o) => o.text.length));
 
-      // The dominant tell: pick the longest option and you are right.
-      if (right.every((o) => o.text.length >= longest) && rLen > wLen * 1.3) flags.push('correct-is-longest');
-      if (rLen > wLen * 2) flags.push(`length-tell-${(rLen / wLen).toFixed(1)}x`);
+      // The dominant tell: pick the longest option and you are right. Only meaningful when
+      // the options are long enough for the difference to be visible — "Maintainability" vs
+      // "Reliability" is a 4-character gap that no reader can use as a cue.
+      if (longest >= 45) {
+        if (right.every((o) => o.text.length >= longest) && rLen > wLen * 1.3) flags.push('correct-is-longest');
+        if (rLen > wLen * 2) flags.push(`length-tell-${(rLen / wLen).toFixed(1)}x`);
+      }
 
       // A negation only counts as throwaway if it is also bare: "Nothing changed" does no
       // work, whereas "None of the columns are hashed, so range scans stay efficient" is a
