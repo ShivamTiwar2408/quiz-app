@@ -462,6 +462,16 @@
           "name": "Ch 4 · Encoding and Evolution",
           "set": "ddia-ch04",
           "count": 113
+        },
+        {
+          "name": "Ch 5 · Replication",
+          "set": "ddia-ch05",
+          "count": 143
+        },
+        {
+          "name": "Ch 6 · Partitioning",
+          "set": "ddia-ch06",
+          "count": 82
         }
       ]
     },
@@ -1026,6 +1036,6 @@
       ]
     }
   ],
-  "total_questions": 3213,
+  "total_questions": 3438,
   "total_sets": 175
 }
