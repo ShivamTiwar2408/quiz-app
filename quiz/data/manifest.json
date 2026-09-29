@@ -441,6 +441,21 @@
       ]
     },
     {
+      "name": "Designing Data-Intensive Applications",
+      "children": [
+        {
+          "name": "Ch 1 · Reliable, Scalable, Maintainable",
+          "set": "ddia-ch01",
+          "count": 77
+        },
+        {
+          "name": "Ch 2 · Data Models and Query Languages",
+          "set": "ddia-ch02",
+          "count": 106
+        }
+      ]
+    },
+    {
       "name": "Distributed Systems",
       "children": [
         {
@@ -532,6 +547,16 @@
           "name": "Two Phase Commit",
           "set": "distributed-transactions-twophasecommit-json",
           "count": 12
+        }
+      ]
+    },
+    {
+      "name": "Electronics",
+      "children": [
+        {
+          "name": "Fundamentals",
+          "set": "electronics-fundamentals",
+          "count": 20
         }
       ]
     },
@@ -989,18 +1014,8 @@
           "count": 12
         }
       ]
-    },
-    {
-      "name": "Electronics",
-      "children": [
-        {
-          "name": "Fundamentals",
-          "set": "electronics-fundamentals",
-          "count": 20
-        }
-      ]
     }
   ],
-  "total_questions": 2627,
+  "total_questions": 2977,
   "total_sets": 175
 }
