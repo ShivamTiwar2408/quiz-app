@@ -366,8 +366,10 @@ function renderQ(){
   $('checkBtn').classList.toggle('hide',!multi);  // single-select auto-checks on click
   // Options are shuffled and relabelled a..d per attempt: authored sets tend to list
   // the correct option first, which is a free giveaway if display order is fixed.
+  // Always shuffled, regardless of the question-order Shuffle checkbox: authored sets
+  // overwhelmingly list the correct option first, so fixed option order is free marks.
   const LABELS='abcdefghij';
-  const src=$('shuffleChk').checked?shuffle(q.options):q.options;
+  const src=shuffle(q.options);
   const view={options:src.map((o,i)=>({key:LABELS[i],text:o.text,src:o.key})),correct:[]};
   view.options.forEach(o=>{ if(q.correct.includes(o.src)) view.correct.push(o.key); });
   q._view=view;
