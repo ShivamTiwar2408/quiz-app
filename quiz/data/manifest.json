@@ -482,6 +482,11 @@
           "name": "Ch 8 · The Trouble with Distributed Systems",
           "set": "ddia-ch08",
           "count": 147
+        },
+        {
+          "name": "Ch 9 · Consistency and Consensus",
+          "set": "ddia-ch09",
+          "count": 171
         }
       ]
     },
@@ -1046,6 +1051,6 @@
       ]
     }
   ],
-  "total_questions": 3730,
+  "total_questions": 3901,
   "total_sets": 175
 }
