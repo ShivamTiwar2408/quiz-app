@@ -492,6 +492,11 @@
           "name": "Ch 10 · Batch Processing",
           "set": "ddia-ch10",
           "count": 137
+        },
+        {
+          "name": "Ch 11 · Stream Processing",
+          "set": "ddia-ch11",
+          "count": 118
         }
       ]
     },
@@ -1056,6 +1061,6 @@
       ]
     }
   ],
-  "total_questions": 4038,
+  "total_questions": 4156,
   "total_sets": 175
 }
