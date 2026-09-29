@@ -487,6 +487,11 @@
           "name": "Ch 9 · Consistency and Consensus",
           "set": "ddia-ch09",
           "count": 171
+        },
+        {
+          "name": "Ch 10 · Batch Processing",
+          "set": "ddia-ch10",
+          "count": 137
         }
       ]
     },
@@ -1051,6 +1056,6 @@
       ]
     }
   ],
-  "total_questions": 3901,
+  "total_questions": 4038,
   "total_sets": 175
 }
