@@ -472,6 +472,16 @@
           "name": "Ch 6 · Partitioning",
           "set": "ddia-ch06",
           "count": 82
+        },
+        {
+          "name": "Ch 7 · Transactions",
+          "set": "ddia-ch07",
+          "count": 145
+        },
+        {
+          "name": "Ch 8 · The Trouble with Distributed Systems",
+          "set": "ddia-ch08",
+          "count": 147
         }
       ]
     },
@@ -1036,6 +1046,6 @@
       ]
     }
   ],
-  "total_questions": 3438,
+  "total_questions": 3730,
   "total_sets": 175
 }
