@@ -29,7 +29,13 @@ const THROWAWAY = [
 
 // A question that asks what the *text* says tests recall of the book, not understanding of
 // the subject. Ask about the subject instead.
-const BOOK_REFERENTIAL = /epigraph|who said it|\bFigure \d|\bTable \d|on page \d|footnote|boxed note|sidebar|(does|did) the (chapter|book|author) |the chapter's|the summary's|the Summary (say|list|describe|give|split|credit|name)/i;
+// A question must be self-contained: a reader who knows the subject should be able to answer
+// it without having the book open. Any appeal to the text itself — "the chapter says",
+// "Figure 3-6", "Chapter 8's obstacle", a footnote, a sidebar, an epigraph — tests recall of
+// the source rather than understanding, so whatever context the question needs must be stated
+// in the question. This is deliberately broad: mentioning the text at all is the defect.
+const BOOK_REFERENTIAL =
+  /\bchapters?\b|\bthe book\b|\bthe author\b|\bthe summary\b|\bSummary\b|epigraph|\bFigures?\s*\d|\bTables?\s*\d|on page \d|footnote|boxed note|sidebar|who said it/i;
 
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
 
