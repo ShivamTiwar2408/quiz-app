@@ -27,6 +27,10 @@ const THROWAWAY = [
   /(is|are) (entirely )?(unrelated|irrelevant|meaningless|impossible|forbidden|always wrong)/i,
 ];
 
+// A question that asks what the *text* says tests recall of the book, not understanding of
+// the subject. Ask about the subject instead.
+const BOOK_REFERENTIAL = /epigraph|who said it|\bFigure \d|\bTable \d|on page \d|footnote|boxed note|sidebar|(does|did) the (chapter|book|author) |the chapter's|the summary's|the Summary (say|list|describe|give|split|credit|name)/i;
+
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
 
 const files = fs
@@ -49,6 +53,9 @@ for (const file of files) {
     const flags = [];
     const right = q.options.filter((o) => q.correct.includes(o.key));
     const wrong = q.options.filter((o) => !q.correct.includes(o.key));
+
+    // Asking what the *text* says tests recall of the book, not understanding of the subject.
+    if (BOOK_REFERENTIAL.test(q.question)) flags.push('book-referential-stem');
 
     if (!wrong.length) {
       flags.push('no-wrong-option');
