@@ -68,10 +68,27 @@ for (const file of fs.readdirSync(SETS).filter((f) => f.endsWith('.json'))) {
     if (!Array.isArray(q.correct) || q.correct.length === 0) return err(`${at} no correct answer`);
     for (const k of q.correct)
       if (!keys.includes(k)) err(`${at} correct key "${k}" is not an option — ungradeable`);
+    if (q.correct.length > 1) {
+      const reasons = q.optionExplanations;
+      if (!reasons || typeof reasons !== 'object' || Array.isArray(reasons)) {
+        err(`${at} multi-select question needs an optionExplanations object`);
+      } else {
+        for (const key of keys) {
+          const reason = reasons[key];
+          if (typeof reason !== 'string' || !reason.trim())
+            err(`${at} missing explanation for option "${key}"`);
+          else if (reason.trim().length < 50)
+            err(`${at} explanation for option "${key}" is too short (${reason.trim().length} chars)`);
+        }
+        for (const key of Object.keys(reasons))
+          if (!keys.includes(key)) err(`${at} explanation has unknown option key "${key}"`);
+      }
+    }
     if (q.correct.length === keys.length) warn(`${at} every option marked correct`);
     if (!q.explanation) warn(`${at} missing explanation`);
     // options + explanation are injected with innerHTML by quiz/index.html
-    for (const s of [...q.options.map((o) => o.text), q.explanation || ''])
+    const optionReasons = Object.values(q.optionExplanations || {});
+    for (const s of [...q.options.map((o) => o.text), q.explanation || '', ...optionReasons])
       if (/[<>]/.test(s)) warn(`${at} raw angle bracket in innerHTML-rendered text`);
   });
 }

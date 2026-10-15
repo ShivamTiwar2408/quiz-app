@@ -112,6 +112,17 @@
   .explain{margin-top:8px;border-left:3px solid var(--accent);background:rgba(91,157,255,.08);padding:12px 15px;border-radius:0 10px 10px 0;font-size:14px;color:var(--muted);display:none}
   .explain.show{display:block}
   .explain b{color:var(--ink)}
+  .option-reasons{display:grid;gap:9px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+  .option-reason{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:8px;padding:9px 11px}
+  .option-reason.is-correct{border-left-color:var(--green)}
+  .option-reason.is-incorrect{border-left-color:var(--red)}
+  .option-reason-head{display:flex;align-items:flex-start;gap:7px;color:var(--ink);font-size:13px;font-weight:650}
+  .option-reason-key{text-transform:uppercase;color:var(--accent);flex:none}
+  .option-reason-text{flex:1}
+  .option-reason-verdict{flex:none;font-size:11px;font-weight:750;border-radius:20px;padding:2px 7px}
+  .option-reason.is-correct .option-reason-verdict{background:rgba(70,201,139,.18);color:var(--green)}
+  .option-reason.is-incorrect .option-reason-verdict{background:rgba(240,99,92,.16);color:var(--red)}
+  .option-reason-why{margin-top:5px;font-size:13px;line-height:1.5;color:var(--muted)}
   .nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 
   /* results */
@@ -392,6 +403,30 @@ function onOpt(key,btn,multi){
   }
 }
 
+function appendOptionReasons(container,q,viewOptions){
+  if(q.correct.length<2 || !q.optionExplanations) return;
+  const block=document.createElement('div'); block.className='option-reasons';
+  (viewOptions||q.options).forEach(o=>{
+    const sourceKey=o.src||o.key;
+    const rationale=q.optionExplanations[sourceKey];
+    if(!rationale) return;
+    const isCorrect=q.correct.includes(sourceKey);
+    const item=document.createElement('div');
+    item.className=`option-reason ${isCorrect?'is-correct':'is-incorrect'}`;
+    const head=document.createElement('div'); head.className='option-reason-head';
+    const key=document.createElement('span'); key.className='option-reason-key';
+    key.textContent=`${o.key.toUpperCase()}.`;
+    const text=document.createElement('span'); text.className='option-reason-text';
+    text.textContent=o.text;
+    const verdict=document.createElement('span'); verdict.className='option-reason-verdict';
+    verdict.textContent=isCorrect?'Correct':'Incorrect';
+    const why=document.createElement('div'); why.className='option-reason-why';
+    why.textContent=rationale;
+    head.append(key,text,verdict); item.append(head,why); block.appendChild(item);
+  });
+  container.appendChild(block);
+}
+
 function grade(){
   locked=true;
   const q=quiz[idx];
@@ -409,6 +444,7 @@ function grade(){
   $('pbar').style.width=((idx+1)/quiz.length*100)+'%';  // advance to reflect this answered question
   const ex=$('explain');
   ex.innerHTML=`<b>${isRight?'Correct!':'Not quite.'}</b> ${q.explanation||''}`;
+  appendOptionReasons(ex,q,q._view.options);
   ex.classList.add('show');
   $('checkBtn').classList.add('hide');
   $('nextBtn').classList.remove('hide');
@@ -433,6 +469,7 @@ function showResults(){
       <div class="ra you ${r.isRight?'ok':'no'}"><span class="tag">Your answer:</span> ${r.chosen.length?fmt(r.chosen):'—'}</div>
       ${r.isRight?'':`<div class="ra sol"><span class="tag">Correct answer:</span> ${fmt(r.correct)}</div>`}
       <div class="rex">${r.q.explanation||''}</div>`;
+    appendOptionReasons(div.querySelector('.rex'),r.q,r.options||r.q.options);
     rv.appendChild(div);
   });
   document.querySelector('main').scrollTo({top:0,behavior:'smooth'});
