@@ -34,12 +34,61 @@
   header .home svg{width:14px;height:14px}
 
   .search{position:relative;margin-left:auto}
-  .search input{width:238px;max-width:44vw;height:34px;background:var(--panel);border:1px solid var(--line);color:var(--ink);
-    border-radius:10px;padding:0 30px 0 32px;font-size:13px;transition:.14s;box-shadow:0 1px 2px rgba(20,40,80,.04)}
+  .search input{width:262px;max-width:46vw;height:34px;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:0 54px 0 32px;font-size:13px;transition:.14s;box-shadow:0 1px 2px rgba(20,40,80,.04)}
   .search input:focus{outline:none;border-color:var(--marici);box-shadow:0 0 0 3px rgba(47,107,214,.14)}
   .search input::placeholder{color:var(--faint)}
   .search .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--faint);width:15px;height:15px;pointer-events:none}
-  .search .hits{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10.5px;color:var(--gold);pointer-events:none}
+  .search .hits{position:absolute;right:28px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10.5px;color:var(--gold);pointer-events:none}
+  .search .clr{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:18px;height:18px;border:none;border-radius:50%;
+    background:#e7ecf6;color:var(--muted);font-size:11px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center}
+  .search .clr.on{display:inline-flex}
+  .search .clr:hover{background:#d8e0ef;color:var(--ink)}
+
+  /* ---- typeahead dropdown ---- */
+  .ac{position:absolute;top:calc(100% + 6px);right:0;width:min(360px,86vw);z-index:40;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 18px 44px -14px rgba(20,40,80,.4),0 2px 6px rgba(20,40,80,.1);display:none}
+  .ac.open{display:block}
+  .ac-list{max-height:min(58vh,420px);overflow-y:auto;overscroll-behavior:contain}
+  .ac-item{display:flex;align-items:center;gap:9px;padding:7px 11px;cursor:pointer;border-bottom:1px solid #f0f3f9}
+  .ac-item:last-child{border-bottom:none}
+  .ac-item.on,.ac-item:hover{background:#f3f7fe}
+  .ac-item .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--faint)}
+  .ac-item .dot.b-root{background:var(--root)} .ac-item .dot.b-marici{background:var(--marici)}
+  .ac-item .dot.b-atri{background:var(--atri)} .ac-item .dot.b-manu{background:var(--manu)}
+  .ac-txt{min-width:0;flex:1}
+  .ac-nm{display:block;font-size:12.5px;font-weight:650;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ac-nm b{color:var(--root);background:#fff3dd;border-radius:3px;padding:0 1px}
+  .ac-ln{display:block;font-size:10px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .ac-ct{flex:none;font-family:var(--mono);font-size:9.5px;font-weight:700;color:#fff;background:var(--faint);
+    border-radius:7px;padding:1px 6px}
+  .ac-foot{display:flex;align-items:center;gap:10px;padding:6px 11px;border-top:1px solid var(--line);
+    background:var(--panel2);font-size:10px;color:var(--faint)}
+  .ac-foot kbd{font-family:var(--mono);font-size:9.5px;background:#fff;border:1px solid var(--line);
+    border-bottom-width:2px;border-radius:4px;padding:0 4px;color:var(--muted)}
+  .ac-none{padding:14px 12px;font-size:12px;color:var(--faint);text-align:center}
+  /* narrow screens: let the field span the header so the dropdown can't hang
+     off the left edge (it is right-anchored to the field) */
+  @media(max-width:560px){
+    .search{flex:1 1 100%;margin-left:0;order:3}
+    .search input{width:100%;max-width:none}
+    .ac{width:auto;left:0;right:0}
+  }
+
+  /* ---- lineage breadcrumb bar ---- */
+  .crumbs{flex:none;z-index:18;display:flex;align-items:center;gap:5px;overflow-x:auto;white-space:nowrap;
+    padding:6px 12px;background:linear-gradient(90deg,#fffaf0,rgba(255,255,255,.94));border-bottom:1px solid var(--line)}
+  .crumbs.hidden{display:none}
+  .crumbs .cl{font-size:9.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);margin-right:3px}
+  .crumbs .sep{color:var(--faint);font-size:11px}
+  .crumb{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:2px 8px;font-family:inherit;
+    font-size:11.5px;color:var(--muted);cursor:pointer;transition:.12s}
+  .crumb:hover{border-color:var(--root);color:var(--root);background:#fff8ee}
+  .crumb.cur{border-color:var(--gold);background:var(--goldbg);color:#8a6508;font-weight:700;cursor:default}
+  .crumbs .cx{margin-left:auto;flex:none;border:1px solid var(--line);background:var(--panel);border-radius:7px;
+    width:22px;height:22px;cursor:pointer;color:var(--muted);font-size:11px;line-height:1}
+  .crumbs .cx:hover{border-color:var(--manu);color:var(--manu)}
 
   /* segmented control groups */
   .seg{display:inline-flex;align-items:stretch;height:34px;background:var(--panel);border:1px solid var(--line);
@@ -56,17 +105,25 @@
     display:inline-flex;align-items:center;justify-content:center;box-shadow:inset 1px 0 0 var(--line);cursor:default}
   .seg .zval:hover{background:none;color:var(--faint)}
 
-  #stage{flex:1;min-height:0;position:relative;overflow:hidden;cursor:grab}
+  #stage{flex:1;min-height:0;position:relative;overflow:hidden;cursor:grab;
+    background-image:radial-gradient(rgba(70,100,150,.085) 1px,transparent 1px);background-size:24px 24px}
   #stage.grabbing{cursor:grabbing}
-  #svg{display:block}
+  #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+  #world.anim{transition:transform .42s cubic-bezier(.3,.85,.25,1)}
+  #edges,#togs{position:absolute;left:0;top:0;display:block;overflow:visible}
+  #edges{z-index:1}
+  #nodes{position:absolute;left:0;top:0;z-index:2}
+  #togs{z-index:3;pointer-events:none}
+  #togs .tog{pointer-events:auto}
   @media(max-width:560px){ .seg button.wide .lbl{display:none} .seg button.wide{width:36px;padding:0} }
 
-  /* node cards (rendered via foreignObject) */
-  .node{border:1px solid var(--line);border-radius:12px;background:var(--panel);
-    padding:8px 12px 9px;font-family:var(--sans);position:relative;
-    transition:box-shadow .18s,border-color .18s,opacity .18s,transform .18s;
+  /* node cards (absolutely positioned HTML — cheaper than foreignObject) */
+  .node{position:absolute;width:178px;cursor:pointer;
+    border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    padding:8px 12px 9px;font-family:var(--sans);
+    transition:box-shadow .18s,border-color .18s,opacity .18s;
     overflow:hidden;box-shadow:0 1px 2px rgba(20,40,80,.05),0 4px 14px -6px rgba(20,40,80,.18)}
-  .node:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(20,40,80,.08),0 10px 24px -8px rgba(20,40,80,.28)}
+  .node:hover{border-color:#9fb0cd;box-shadow:0 2px 4px rgba(20,40,80,.08),0 10px 24px -8px rgba(20,40,80,.28)}
   .node .nm{font-size:12.5px;font-weight:750;color:var(--ink);line-height:1.25;letter-spacing:-.1px}
   .node .sub{font-size:10px;color:var(--muted);line-height:1.32;margin-top:2px}
   .node .xref{font-size:9.5px;color:var(--faint);font-style:italic;line-height:1.25;margin-top:3px;
@@ -84,14 +141,18 @@
   .node.godhead{background:linear-gradient(135deg,#fff0c4,#ffe39c);border-color:var(--gold);border-left-color:var(--gold)}
   .node.godhead .nm{font-size:15px;color:#6f5205}
   .node .badge{position:absolute;top:6px;right:8px;font-size:11px;color:var(--gold);filter:drop-shadow(0 1px 1px rgba(184,134,11,.3))}
-  .node.dim{opacity:.26}
-  .node.match{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,134,11,.6),0 8px 22px -8px rgba(184,134,11,.55)}
+  .node.dim{opacity:.2}
+  .node.onpath{border-color:#d9a948;box-shadow:0 0 0 1px rgba(184,134,11,.3),0 6px 18px -8px rgba(184,134,11,.4)}
+  .node.match{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.55),0 10px 26px -8px rgba(184,134,11,.6);
+    animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes pop{0%{box-shadow:0 0 0 12px rgba(184,134,11,0)}60%{box-shadow:0 0 0 7px rgba(184,134,11,.3)}}
 
   /* edges — smooth d3-style curves */
   .edge{fill:none;stroke:#aab7cf;stroke-width:1.6;stroke-linecap:round}
   .edge.b-marici{stroke:rgba(47,107,214,.5)} .edge.b-atri{stroke:rgba(31,157,99,.5)}
   .edge.b-manu{stroke:rgba(194,63,134,.5)} .edge.b-root{stroke:rgba(200,129,27,.55)}
-  .edge.dim{stroke:rgba(180,195,216,.3)}
+  .edge.dim{stroke:rgba(180,195,216,.22)}
+  .edge.lit{stroke:var(--gold);stroke-width:2.4;opacity:1}
   .edge.marriage{stroke:#c23f86;stroke-width:2;stroke-dasharray:2 4;opacity:.75}
 
   /* expand/collapse toggle — an SVG chip in the gap, never clipped */
@@ -127,8 +188,14 @@
 
   <div class="search">
     <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-    <input id="q" placeholder="Search a name…" autocomplete="off">
+    <input id="q" placeholder="Search a name…" autocomplete="off" role="combobox"
+           aria-autocomplete="list" aria-expanded="false" aria-controls="acList">
     <span class="hits" id="hits"></span>
+    <button class="clr" id="qclr" title="Clear search" aria-label="Clear search">✕</button>
+    <div class="ac" id="ac">
+      <div class="ac-list" id="acList" role="listbox"></div>
+      <div class="ac-foot"><kbd>↑</kbd><kbd>↓</kbd> move · <kbd>↵</kbd> open lineage · <kbd>esc</kbd> close</div>
+    </div>
   </div>
 
   <div class="seg" role="group" aria-label="Zoom">
@@ -149,8 +216,14 @@
   </div>
 </header>
 
+<div class="crumbs hidden" id="crumbs"></div>
+
 <div id="stage">
-  <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="world">
+    <svg id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="nodes"></div>
+    <svg id="togs" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
 </div>
 
 <div class="legend" id="legend">
@@ -162,7 +235,7 @@
   <div class="row"><span class="sw" style="background:var(--manu)"></span> Svāyambhuva Manu (Dhruva, Pṛthu, Dakṣa)</div>
   <div class="row"><span style="color:var(--gold)">✦</span> Divine form / incarnation</div>
   <div class="row"><span class="sw" style="background:var(--manu);border-radius:0;height:2px"></span> spouse — dashed pink link goes to the right</div>
-  <div class="hint">Opens as an overview — deep branches are folded. Click a gold <b style="color:var(--root)">＋</b> to expand a node (its badge shows how many are hidden); <b>–</b> folds it back. Spouses branch to the right (marriage); children go down. Drag to pan · scroll to zoom.</div>
+  <div class="hint"><b>Search a name</b> (or press <b>/</b>) and pick from the suggestions — the tree opens only along that person's line and centres on them, with the lineage shown above. Otherwise: click a card or a gold <b style="color:var(--root)">＋</b> to unfold it (the badge counts what's hidden); <b>–</b> folds it back. Spouses branch right (marriage); children go down. Drag to pan · scroll to zoom · <b>esc</b> clears.</div>
 </div>
 
 <script>
@@ -728,28 +801,42 @@ n('KṚṢṆA',{sub:'The Supreme Personality of Godhead',b:'root',tag:'god'},[
   ])
 ]);
 
-/* ---------------- layout + render engine (TOP → BOTTOM) ---------------- */
+/* ---------------- layout + render engine (TOP → BOTTOM) ----------------
+   Perf notes — the three things that made this slow before:
+     1. every keystroke re-measured every card's offsetHeight (forced reflow)
+        → heights are now measured ONCE at boot and cached on the node.
+     2. the search painted via findById() per node → O(n²) tree walks
+        → there is now a flat array + an id→node Map, so lookups are O(1).
+     3. cards were <foreignObject>, which browsers rasterize far slower than
+        plain divs → cards are absolutely-positioned HTML in a transformed
+        layer, and each render is 3 innerHTML writes instead of ~460
+        createElement calls. Typing no longer re-renders the tree at all. */
 const NS='http://www.w3.org/2000/svg';
 const NODEW=178, COLGAP=22, ROWGAP=42, PAD=40, SPOUSEGAP=40;
-const svg=document.getElementById('svg'), stage=document.getElementById('stage');
-let gEdges, gNodes, measurer;
+const stage=document.getElementById('stage'), world=document.getElementById('world');
+const edgeSvg=document.getElementById('edges'), togSvg=document.getElementById('togs');
+const nodesEl=document.getElementById('nodes');
 
-/* assign ids, parent, depth, inherit branch.
+/* assign ids, parent, depth, inherit branch, precompute search keys and
+   descendant counts (the structure never changes, so compute them once).
    Collapse everything below COLLAPSE_DEPTH by default so the opening
    view is a compact overview that fits on screen; users expand (⊕) the
    branch they want. This is what keeps the huge tree legible at once. */
 const COLLAPSE_DEPTH=3;
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const ALL=[], byId=new Map();
 let _id=0;
 (function walk(node,parent,depth){
   node._id=_id++; node._parent=parent; node._depth=depth;
-  node._collapsed = (depth>=COLLAPSE_DEPTH || node.collapse===true) && !!(node.c&&node.c.length);
   if(!node.b && parent) node.b=parent.b;
+  node._nname=norm(node.name); node._nsub=norm(node.sub||'');
+  ALL.push(node); byId.set(node._id,node);
   (node.c||[]).forEach(ch=>walk(ch,node,depth+1));
+  node._desc=(node.c||[]).reduce((a,c)=>a+1+c._desc,0);
+  node._collapsed=(depth>=COLLAPSE_DEPTH || node.collapse===true) && node._desc>0;
 })(TREE,null,0);
 
-function descendantCount(node){
-  let n=0; (node.c||[]).forEach(c=>{ n+=1+descendantCount(c); }); return n;
-}
+function ancestors(nd){ const a=[]; for(let p=nd._parent;p;p=p._parent) a.push(p); return a.reverse(); }
 function nodeHTML(node){
   const badge = node.tag ? `<span class="badge">${node.tag==='god'?'★':'✦'}</span>` : '';
   const sub = node.sub ? `<div class="sub">${esc(node.sub)}</div>` : '';
@@ -757,18 +844,22 @@ function nodeHTML(node){
   return `${badge}<div class="nm">${esc(node.name)}</div>${sub}${xref}`;
 }
 function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-
-/* measure heights using a hidden DOM layer */
-function measure(nodes){
-  if(!measurer){ measurer=document.createElement('div');
-    measurer.style.cssText=`position:absolute;left:-9999px;top:0;width:${NODEW}px;visibility:hidden`;
-    document.body.appendChild(measurer); }
-  measurer.innerHTML='';
-  const map={};
-  nodes.forEach(nd=>{ const d=document.createElement('div'); d.className='node b-'+(nd.b||'root')+(nd.tag==='god'?' divine godhead':(nd.tag?' divine':'')); d.style.width=NODEW+'px';
-    d.innerHTML=nodeHTML(nd); measurer.appendChild(d); map[nd._id]=d; });
-  nodes.forEach(nd=>{ nd._h=Math.max(34,map[nd._id].offsetHeight); });
+function cls(nd){
+  return 'node b-'+(nd.b||'root')+(nd.tag==='god'?' divine godhead':(nd.tag?' divine':''));
 }
+
+/* measure every card's height ONCE (one reflow for the whole tree, then never
+   again — card content is static, so the height can never change). */
+(function measureAll(){
+  const host=document.createElement('div');
+  host.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none';
+  const els=ALL.map(nd=>{ const d=document.createElement('div');
+    d.className=cls(nd); d.style.position='static'; d.innerHTML=nodeHTML(nd);
+    host.appendChild(d); return d; });
+  document.body.appendChild(host);
+  ALL.forEach((nd,i)=>{ nd._h=Math.max(34,els[i].offsetHeight); });
+  host.remove();
+})();
 
 /* collect visible nodes (respect collapse) */
 function visibleList(){
@@ -789,17 +880,14 @@ let curX;
 function layoutX(nd){
   const sp = (!nd._collapsed) ? spouseOf(nd) : null;
   const kids = (!nd._collapsed) ? kidsOf(nd) : [];
-  if(sp){
-    // partner occupies a leaf slot; spouse (and its subtree) lay out to the right
-    nd._x = curX + NODEW/2; curX += NODEW + SPOUSEGAP;
-    layoutX(sp);
-    return;
-  }
   if(!kids.length){
-    nd._x=curX + NODEW/2; curX += NODEW + COLGAP; return;
+    // leaf (or collapsed): take one column. A partner leaves room for its spouse.
+    nd._x = curX + NODEW/2; curX += NODEW + (sp?SPOUSEGAP:COLGAP);
+  } else {
+    kids.forEach(layoutX);
+    nd._x=(kids[0]._x + kids[kids.length-1]._x)/2;
   }
-  kids.forEach(layoutX);
-  nd._x=(kids[0]._x + kids[kids.length-1]._x)/2;
+  if(sp) layoutX(sp);   // spouse (and its own subtree) lays out to the right
 }
 
 /* vertical: each node sits below its own parent (parent-bottom + gap).
@@ -817,7 +905,6 @@ function layoutY(nd){
 let bbox={w:0,h:0};
 function layout(){
   const vis=visibleList();
-  measure(vis);
   layoutY(TREE);          // vertical: relative to each parent
   curX=PAD; layoutX(TREE); // horizontal: leaf allocation, parents centred
   let maxX=0,maxY=0;
@@ -826,142 +913,266 @@ function layout(){
   return vis;
 }
 
+/* ---------------- render: 3 innerHTML writes per frame ---------------- */
+let focusId=null, pathIds=new Set(), dimmed=false;
+
 function render(){
   const vis=layout();
-  svg.setAttribute('width',bbox.w); svg.setAttribute('height',bbox.h);
-  svg.innerHTML='';
-  gEdges=document.createElementNS(NS,'g');
-  const gTog=document.createElementNS(NS,'g');
-  gNodes=document.createElementNS(NS,'g');
-  svg.appendChild(gEdges); svg.appendChild(gNodes); svg.appendChild(gTog);
-  // edges: spouse → horizontal marriage link to the right; others → vertical bézier (d3 linkVertical)
-  vis.forEach(nd=>{
-    if(!nd._parent) return;
-    const p=nd._parent;
-    const path=document.createElementNS(NS,'path');
-    if(nd.spouse){
-      const x1=p._x+NODEW/2, x2=nd._x-NODEW/2, y=p._y;       // partner-right → spouse-left, same row
-      path.setAttribute('d',`M ${x1} ${y} L ${x2} ${y}`);
-      path.setAttribute('class','edge marriage');
-    } else {
-      const x1=p._x, y1=p._y+p._h/2, x2=nd._x, y2=nd._y-nd._h/2, my=(y1+y2)/2;
-      path.setAttribute('d',`M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`);
-      path.setAttribute('class','edge b-'+(nd.b||'root'));
+  edgeSvg.setAttribute('width',bbox.w);  edgeSvg.setAttribute('height',bbox.h);
+  togSvg.setAttribute('width',bbox.w);   togSvg.setAttribute('height',bbox.h);
+  nodesEl.style.width=bbox.w+'px'; nodesEl.style.height=bbox.h+'px';
+
+  const edges=[], cards=[], togs=[];
+  for(const nd of vis){
+    /* --- edge from parent: spouse → horizontal marriage link to the right;
+           others → vertical bézier (d3 linkVertical shape) --- */
+    if(nd._parent){
+      const p=nd._parent, lit=dimmed && (nd._id===focusId || pathIds.has(nd._id));
+      const extra=lit?' lit':(dimmed?' dim':'');
+      if(nd.spouse){
+        const x1=p._x+NODEW/2, x2=nd._x-NODEW/2, y=p._y;
+        edges.push(`<path class="edge marriage${extra}" d="M ${x1} ${y} L ${x2} ${y}"/>`);
+      } else {
+        const x1=p._x, y1=p._y+p._h/2, x2=nd._x, y2=nd._y-nd._h/2, my=(y1+y2)/2;
+        edges.push(`<path class="edge b-${nd.b||'root'}${extra}" d="M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}"/>`);
+      }
     }
-    gEdges.appendChild(path);
-  });
-  // nodes
-  vis.forEach(nd=>{
-    const fo=document.createElementNS(NS,'foreignObject');
-    fo.setAttribute('x',nd._x - NODEW/2); fo.setAttribute('y',nd._y - nd._h/2);
-    fo.setAttribute('width',NODEW); fo.setAttribute('height',nd._h+4);
-    const div=document.createElement('div');
-    div.className=['node','b-'+(nd.b||'root'),
-      (nd.tag==='god'?'divine godhead':(nd.tag==='inc'||nd.tag==='div'?'divine':''))].join(' ').trim();
-    div.dataset.nid=nd._id;
-    div.innerHTML=nodeHTML(nd);
-    fo.appendChild(div); gNodes.appendChild(fo);
-  });
-  // toggles — SVG chips in the gap by each expandable node (below; or to the right if the child is a spouse)
-  vis.forEach(nd=>{
-    if(!(nd.c && nd.c.length)) return;
-    const r=11, spouseChild=!!spouseOf(nd);
-    const cx = spouseChild ? nd._x + NODEW/2 + 11 : nd._x;
-    const cy = spouseChild ? nd._y : nd._y + nd._h/2 + 11;
-    const g=document.createElementNS(NS,'g');
-    g.setAttribute('class','tog'+(nd._collapsed?' collapsed':''));
-    g.setAttribute('transform',`translate(${cx} ${cy})`);
-    const c=document.createElementNS(NS,'circle'); c.setAttribute('r',r);
-    const sign=document.createElementNS(NS,'text'); sign.setAttribute('class','sign');
-    sign.setAttribute('y','1'); sign.textContent = nd._collapsed?'+':'–';
-    g.appendChild(c); g.appendChild(sign);
-    if(nd._collapsed){                       // show hidden-descendant count on a small pill
-      const cnt=descendantCount(nd);
-      const badge=document.createElementNS(NS,'g'); badge.setAttribute('transform',`translate(${r+3} 0)`);
-      const pill=document.createElementNS(NS,'rect');
-      const w=String(cnt).length*6+8;
-      pill.setAttribute('x',0); pill.setAttribute('y',-7); pill.setAttribute('width',w); pill.setAttribute('height',14);
-      pill.setAttribute('rx',7); pill.setAttribute('fill',branchColor(nd.b)); pill.setAttribute('opacity','.9');
-      const ct=document.createElementNS(NS,'text'); ct.setAttribute('class','cnt'); ct.setAttribute('x',w/2); ct.setAttribute('y',1); ct.textContent=cnt;
-      badge.appendChild(pill); badge.appendChild(ct); g.appendChild(badge);
+
+    /* --- the card --- */
+    let state='';
+    if(nd._id===focusId) state=' match';
+    else if(pathIds.has(nd._id)) state=' onpath';
+    else if(dimmed) state=' dim';
+    cards.push(`<div class="${cls(nd)}${state}" data-nid="${nd._id}" `+
+      `style="left:${nd._x-NODEW/2}px;top:${nd._y-nd._h/2}px">${nodeHTML(nd)}</div>`);
+
+    /* --- expand/collapse chip in the gap (below; right if the child is a spouse) --- */
+    if(nd._desc){
+      const r=11, spouseChild=!!spouseOf(nd);
+      const cx = spouseChild ? nd._x + NODEW/2 + 11 : nd._x;
+      const cy = spouseChild ? nd._y : nd._y + nd._h/2 + 11;
+      let pill='';
+      if(nd._collapsed){                     // hidden-descendant count on a small pill
+        const w=String(nd._desc).length*6+8;
+        pill=`<g transform="translate(${r+3} 0)">`+
+          `<rect x="0" y="-7" width="${w}" height="14" rx="7" fill="${branchColor(nd.b)}" opacity=".9"/>`+
+          `<text class="cnt" x="${w/2}" y="1">${nd._desc}</text></g>`;
+      }
+      togs.push(`<g class="tog${nd._collapsed?' collapsed':''}" data-nid="${nd._id}" `+
+        `transform="translate(${cx} ${cy})"><circle r="${r}"/>`+
+        `<text class="sign" y="1">${nd._collapsed?'+':'–'}</text>${pill}</g>`);
     }
-    g.addEventListener('click',e=>{ e.stopPropagation(); nd._collapsed=!nd._collapsed; render(); });
-    gTog.appendChild(g);
-  });
-  applySearch();
+  }
+  edgeSvg.innerHTML=edges.join('');
+  nodesEl.innerHTML=cards.join('');
+  togSvg.innerHTML=togs.join('');
 }
 function branchColor(b){ return ({root:'#c8811b',marici:'#2f6bd6',atri:'#1f9d63',manu:'#c23f86'})[b]||'#8390a8'; }
-
-function findById(id){ let f=null; (function rec(nd){ if(nd._id===id){f=nd;return;} (nd.c||[]).forEach(rec);})(TREE); return f; }
 
 /* ---------------- pan & zoom ---------------- */
 const MINK=0.08, MAXK=2.6;
 const zval=document.getElementById('zval');
 let tx=0,ty=0,k=1;
 function apply(){
-  svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`; svg.style.transformOrigin='0 0';
+  world.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
   if(zval) zval.textContent=Math.round(k*100)+'%';
 }
 function clampK(v){ return Math.min(MAXK,Math.max(MINK,v)); }
 function zoomAt(cx,cy,nk){ nk=clampK(nk); tx=cx-(cx-tx)*(nk/k); ty=cy-(cy-ty)*(nk/k); k=nk; apply(); }
 function zoomCenter(f){ zoomAt(stage.clientWidth/2, stage.clientHeight/2, k*f); }
+function glide(fn){           // animate one programmatic camera move
+  world.classList.add('anim'); fn(); clearTimeout(glide._t);
+  glide._t=setTimeout(()=>world.classList.remove('anim'),460);
+}
 function fit(){
   const vw=stage.clientWidth, vh=stage.clientHeight;
   k=clampK(Math.min(vw/bbox.w, vh/bbox.h, 1)*0.94);
   tx=(vw-bbox.w*k)/2; ty=Math.max(14,(vh-bbox.h*k)/2); apply();
+}
+/* put one node in the middle of the stage, at a readable zoom */
+function centerOn(nd){
+  const vw=stage.clientWidth, vh=stage.clientHeight;
+  k=clampK(Math.max(k,0.85));
+  tx=vw/2-nd._x*k; ty=vh/2-nd._y*k; apply();
 }
 stage.addEventListener('wheel',e=>{ e.preventDefault();
   const r=stage.getBoundingClientRect();
   zoomAt(e.clientX-r.left, e.clientY-r.top, k*(e.deltaY<0?1.12:1/1.12));
 },{passive:false});
 let drag=null, moved=false;
-stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.tog'))return; drag={x:e.clientX,y:e.clientY,tx,ty}; moved=false; stage.classList.add('grabbing'); stage.setPointerCapture(e.pointerId); });
-stage.addEventListener('pointermove',e=>{ if(!drag)return; if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3) moved=true; tx=drag.tx+(e.clientX-drag.x); ty=drag.ty+(e.clientY-drag.y); apply(); });
+stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.tog'))return;
+  world.classList.remove('anim');
+  drag={x:e.clientX,y:e.clientY,tx,ty}; moved=false;
+  stage.classList.add('grabbing'); stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove',e=>{ if(!drag)return;
+  if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3) moved=true;
+  tx=drag.tx+(e.clientX-drag.x); ty=drag.ty+(e.clientY-drag.y); apply(); });
 function endDrag(){ drag=null; stage.classList.remove('grabbing'); }
 stage.addEventListener('pointerup',endDrag);
 stage.addEventListener('pointercancel',endDrag);
+
+/* ---------------- expand / collapse ---------------- */
+function collapseToOverview(){
+  for(const nd of ALL) nd._collapsed=(nd._depth>=COLLAPSE_DEPTH || nd.collapse===true) && nd._desc>0;
+}
+togSvg.addEventListener('click',e=>{
+  const g=e.target.closest('.tog'); if(!g)return;
+  e.stopPropagation();
+  const nd=byId.get(+g.dataset.nid); if(!nd)return;
+  nd._collapsed=!nd._collapsed; render();
+});
+/* the whole card is a hit target too, and it updates the lineage bar */
+nodesEl.addEventListener('click',e=>{
+  if(moved)return;
+  const el=e.target.closest('.node'); if(!el)return;
+  const nd=byId.get(+el.dataset.nid); if(!nd)return;
+  if(nd._desc) nd._collapsed=!nd._collapsed;
+  setFocus(nd,false); render(); drawCrumbs(nd);
+});
 document.getElementById('zin').onclick=()=>zoomCenter(1.2);
 document.getElementById('zout').onclick=()=>zoomCenter(1/1.2);
-document.getElementById('fit').onclick=fit;
-document.getElementById('expand').onclick=()=>{ (function rec(nd){nd._collapsed=false;(nd.c||[]).forEach(rec);})(TREE); render(); fit(); };
-document.getElementById('collapse').onclick=()=>{ collapseToOverview(); render(); fit(); };
+document.getElementById('fit').onclick=()=>glide(fit);
+document.getElementById('expand').onclick=()=>{ for(const nd of ALL) nd._collapsed=false; render(); glide(fit); };
+document.getElementById('collapse').onclick=()=>{ collapseToOverview(); clearFocus(); glide(fit); };
 document.getElementById('legClose').onclick=()=>document.getElementById('legend').classList.add('hidden');
-addEventListener('keydown',e=>{ if(e.target===qEl)return;
-  if(e.key==='+'||e.key==='='){zoomCenter(1.2);} else if(e.key==='-'){zoomCenter(1/1.2);}
-  else if(e.key==='0'||e.key.toLowerCase()==='f'){fit();} });
 
-function collapseToOverview(){
-  (function rec(nd){ nd._collapsed = (nd._depth>=COLLAPSE_DEPTH || nd.collapse===true) && !!(nd.c&&nd.c.length);
-    (nd.c||[]).forEach(rec); })(TREE);
+/* ---------------- focus: expand ONLY down to one person ---------------- */
+function setFocus(nd,dim){
+  focusId=nd?nd._id:null;
+  pathIds=nd?new Set(ancestors(nd).map(p=>p._id)):new Set();
+  dimmed=!!(nd&&dim);
+}
+function clearFocus(){ setFocus(null,false); render(); drawCrumbs(null); }
+/* Collapse back to the overview, then open just the chain of ancestors above
+   the target — so the tree expands *to* that person and no further. The
+   target itself stays folded, with its descendant count on the chip. */
+function revealNode(nd){
+  collapseToOverview();
+  for(const p of ancestors(nd)) p._collapsed=false;
+  setFocus(nd,true);
+  render(); drawCrumbs(nd);
+  glide(()=>centerOn(nd));
 }
 
-/* ---------------- search ---------------- */
-const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const qEl=document.getElementById('q'), hitsEl=document.getElementById('hits');
-let query='';
-qEl.addEventListener('input',()=>{ query=qEl.value.trim();
-  if(query){ const q=norm(query);
-    (function rec(nd){ let self=norm(nd.name+' '+(nd.sub||'')).includes(q); let kid=false;
-      (nd.c||[]).forEach(ch=>{ if(rec(ch)) kid=true; });
-      if(kid) nd._collapsed=false; return self||kid; })(TREE);
-    render();
-  }
-  applySearch();
+/* ---------------- lineage breadcrumb bar ---------------- */
+const crumbsEl=document.getElementById('crumbs');
+function drawCrumbs(nd){
+  if(!nd){ crumbsEl.className='crumbs hidden'; crumbsEl.innerHTML=''; return; }
+  const chain=[...ancestors(nd),nd];
+  crumbsEl.className='crumbs';
+  crumbsEl.innerHTML='<span class="cl">Lineage</span>'+
+    chain.map((p,i)=>`<button class="crumb${i===chain.length-1?' cur':''}" data-nid="${p._id}">${esc(p.name)}</button>`)
+         .join('<span class="sep">›</span>')+
+    '<button class="cx" data-clear="1" title="Clear highlight" aria-label="Clear highlight">✕</button>';
+  crumbsEl.scrollLeft=crumbsEl.scrollWidth;   // deep lines are long: keep the person in view
+}
+crumbsEl.addEventListener('click',e=>{
+  const btn=e.target.closest('button'); if(!btn)return;
+  if(btn.dataset.clear){ clearFocus(); return; }
+  const nd=byId.get(+btn.dataset.nid); if(nd) revealNode(nd);
 });
-function applySearch(){
-  const q=query?norm(query):'';
-  let hits=0;
-  document.querySelectorAll('.node').forEach(el=>{
-    const nd=findById(+el.dataset.nid); if(!nd)return;
-    el.classList.remove('match','dim');
-    if(!q) return;
-    if(norm(nd.name+' '+(nd.sub||'')).includes(q)){ el.classList.add('match'); hits++; }
-    else el.classList.add('dim');
-  });
-  if(q) document.querySelectorAll('.edge').forEach(e=>e.classList.add('dim'));
-  else document.querySelectorAll('.edge').forEach(e=>e.classList.remove('dim'));
-  hitsEl.textContent = q ? (hits+' hit'+(hits===1?'':'s')) : '';
+
+/* ---------------- search: typeahead, zero tree work while typing ---------------- */
+const qEl=document.getElementById('q'), hitsEl=document.getElementById('hits');
+const acEl=document.getElementById('ac'), acList=document.getElementById('acList');
+const qclr=document.getElementById('qclr');
+const AC_MAX=14;
+let acNodes=[], acIdx=0, acQuery='';
+
+/* rank: name prefix > word start in name > anywhere in name > in the subtitle */
+function search(q){
+  const out=[];
+  for(const nd of ALL){
+    const nm=nd._nname; let s=-1;
+    if(nm.startsWith(q)) s=0;
+    else if(nm.includes(' '+q)) s=1;
+    else if(nm.includes(q)) s=2;
+    else if(nd._nsub.includes(q)) s=3;
+    if(s>=0) out.push([s,nd]);
+  }
+  /* tie-break on name length: a short name is a more specific hit than a
+     node that happens to list eight names, which would otherwise win on depth */
+  out.sort((a,b)=>a[0]-b[0] || a[1].name.length-b[1].name.length
+                 || a[1]._depth-b[1]._depth || a[1]._id-b[1]._id);
+  return out.map(p=>p[1]);
 }
+/* normalise while keeping a map back to the ORIGINAL indices, so the matched
+   span can be bolded even though the name carries diacritics */
+function normMap(s){
+  let out=''; const map=[];
+  for(let i=0;i<s.length;i++){
+    const c=norm(s[i]);
+    for(const ch of c){ out+=ch; map.push(i); }
+  }
+  return {out,map};
+}
+function markName(nd,q){
+  const {out,map}=normMap(nd.name);
+  const i=out.indexOf(q);
+  if(i<0) return esc(nd.name);
+  const a=map[i], b=(map[i+q.length-1]??a)+1;
+  return esc(nd.name.slice(0,a))+'<b>'+esc(nd.name.slice(a,b))+'</b>'+esc(nd.name.slice(b));
+}
+function openAC(raw){
+  const q=norm(raw.trim());
+  acQuery=q;
+  qclr.classList.toggle('on',!!raw);
+  if(!q){ closeAC(); hitsEl.textContent=''; return; }
+  const all=search(q);
+  acNodes=all.slice(0,AC_MAX); acIdx=0;
+  hitsEl.textContent=all.length?String(all.length):'0';
+  if(!all.length){
+    acList.innerHTML='<div class="ac-none">No one by that name</div>';
+  } else {
+    acList.innerHTML=acNodes.map((nd,i)=>{
+      const line=ancestors(nd).slice(1).slice(-2).map(p=>p.name).join(' › ');
+      return `<div class="ac-item${i===0?' on':''}" role="option" data-nid="${nd._id}">`+
+        `<span class="dot b-${nd.b||'root'}"></span>`+
+        `<span class="ac-txt"><span class="ac-nm">${markName(nd,q)}</span>`+
+        (line?`<span class="ac-ln">${esc(line)}</span>`:'')+'</span>'+
+        (nd._desc?`<span class="ac-ct">${nd._desc}</span>`:'')+'</div>';
+    }).join('');
+  }
+  acEl.classList.add('open'); qEl.setAttribute('aria-expanded','true');
+}
+function closeAC(){ acEl.classList.remove('open'); qEl.setAttribute('aria-expanded','false'); acNodes=[]; }
+function moveAC(d){
+  if(!acNodes.length)return;
+  acIdx=(acIdx+d+acNodes.length)%acNodes.length;
+  const items=acList.children;
+  for(let i=0;i<items.length;i++) items[i].classList.toggle('on',i===acIdx);
+  items[acIdx].scrollIntoView({block:'nearest'});
+}
+function pickAC(i){
+  const nd=acNodes[i??acIdx]; if(!nd)return;
+  closeAC(); qEl.blur(); revealNode(nd);
+}
+qEl.addEventListener('input',()=>openAC(qEl.value));
+qEl.addEventListener('focus',()=>{ if(qEl.value.trim()) openAC(qEl.value); });
+qEl.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'){ e.preventDefault(); moveAC(1); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); moveAC(-1); }
+  else if(e.key==='Enter'){ e.preventDefault(); pickAC(); }
+  else if(e.key==='Escape'){ e.preventDefault();
+    if(acEl.classList.contains('open')) closeAC();
+    else { qEl.value=''; qclr.classList.remove('on'); hitsEl.textContent=''; clearFocus(); qEl.blur(); } }
+});
+acList.addEventListener('mousedown',e=>{            // mousedown: beats the blur
+  const it=e.target.closest('.ac-item'); if(!it)return;
+  e.preventDefault();
+  pickAC(acNodes.findIndex(n=>n._id===+it.dataset.nid));
+});
+qclr.onclick=()=>{ qEl.value=''; qclr.classList.remove('on'); hitsEl.textContent=''; closeAC(); clearFocus(); qEl.focus(); };
+document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.search')) closeAC(); });
+
+addEventListener('keydown',e=>{
+  if(e.target===qEl || e.target.tagName==='INPUT')return;
+  if(e.key==='/'){ e.preventDefault(); qEl.focus(); qEl.select(); }
+  else if(e.key==='+'||e.key==='='){zoomCenter(1.2);}
+  else if(e.key==='-'){zoomCenter(1/1.2);}
+  else if(e.key==='Escape'){clearFocus();}
+  else if(e.key==='0'||e.key.toLowerCase()==='f'){glide(fit);}
+});
 
 /* ---------------- init ---------------- */
 render(); fit();   // opens as a compact, collapsed overview that fits on screen
